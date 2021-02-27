@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build only",
+            "type": "shell",
+            "command": "sampctl package build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": "$sampctl"
+        },
+        {
+            "label": "run tests",
+            "type": "shell",
+            "command": "sampctl package run",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": "$sampctl",
+            "dependsOn": [
+                "build only"
+            ]
+        }
+    ]
+}

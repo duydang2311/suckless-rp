@@ -1,0 +1,8 @@
+site: ""
+user: sundayproject
+repo: sunday
+entry: src/main.pwn
+output: gamemodes/main.amx
+dependencies:
+- sampctl/samp-stdlib
+local: true

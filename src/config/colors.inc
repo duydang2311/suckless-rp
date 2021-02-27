@@ -1,0 +1,77 @@
+#if defined _config_colors_included
+	#endinput
+#endif
+
+#define _config_colors_included
+
+#define COLOR_ERROR						0xf20f0fFF
+
+#define COLOR_WHITE						0xFFFFFFFF
+#define COLOR_FADE1						0xE5E5E5FF
+#define COLOR_FADE2						0xCCCCCCFF
+#define COLOR_FADE3						0xB2B2B2FF
+#define COLOR_FADE4						0x999999FF
+#define COLOR_FADE5						0x7F7F7FFF
+#define COLOR_FADE6						0x666666FF
+#define COLOR_FADE7						0x4C4C4CFF
+#define COLOR_FADE8						0x333333FF
+#define COLOR_FADE9						0x191919FF
+#define COLOR_BLACK						0x000000FF
+#define COLOR_LIGHTYELLOW				0xFBFF42FF
+#define COLOR_YELLOW					0xE0BB00FF
+#define COLOR_MEGAPHONE					0xFFFF00FF
+#define COLOR_ORANGE					0xE07700FF
+#define COLOR_RED						0xff0000FF
+#define COLOR_GREEN						0x008421FF
+#define COLOR_LIGHTGREEN				0x00EA3AFF
+#define COLOR_CYAN						0x4CFFF6FF
+#define COLOR_BLUESKY					0x5BC5FFFF
+#define COLOR_BLUE						0x00368EFF
+#define COLOR_LIGHTPURPLE				0xBC51FFFF
+#define COLOR_PURPLE					0x7A00C6FF
+#define COLOR_LIGHTPINK					0xFF8EFBFF
+#define COLOR_PINK 						0xD600CFFF
+#define COLOR_ROLEPLAY					0xC2A2DAFF
+#define COLOR_NEWBIE					0x4C78E0FF
+#define COLOR_FACTION_RADIO				0xEFE7A5FF
+#define COLOR_PORTABLE_RADIO			0xFAE952FF
+#define COLOR_DEPT						0xFCF6C5FF
+#define COLOR_TEXTDRAW_HOVER			0x6D96BFFF
+#define COLOR_TEXTDRAW_CLICK			0x404040FF
+#define COLOR_EMERGENCY_CALL			0x00B7FFFF
+#define COLOR_MECHANIC					0x557C9EFF
+
+#define E_COLOR_WHITE				"{FFFFFF}"
+#define E_COLOR_FADE1				"{E5E5E5}"
+#define E_COLOR_FADE2				"{CCCCCC}"
+#define E_COLOR_FADE3               "{B2B2B2}"
+#define E_COLOR_FADE4				"{999999}"
+#define E_COLOR_FADE5				"{7F7F7F}"
+#define E_COLOR_FADE6				"{666666}"
+#define E_COLOR_FADE7				"{4C4C4C}"
+#define E_COLOR_FADE8				"{333333}"
+#define E_COLOR_FADE9				"{191919}"
+#define E_COLOR_BLACK				"{000000}"
+#define E_COLOR_LIGHTYELLOW			"{FBFF42}"
+#define E_COLOR_YELLOW				"{E0BB00}"
+#define E_COLOR_MEGAPHONE			"{FFFF00}"
+#define E_COLOR_ORANGE			    "{E07700}"
+#define E_COLOR_RED					"{E61919}"
+#define E_COLOR_GREEN				"{008421}"
+#define E_COLOR_LIGHTGREEN			"{00EA3A}"
+#define E_COLOR_CYAN				"{4CFFF6}"
+#define E_COLOR_BLUESKY				"{5BC5FF}"
+#define E_COLOR_BLUE				"{00368E}"
+#define E_COLOR_LIGHTPURPLE			"{BC51FF}"
+#define E_COLOR_PURPLE				"{7A00C6}"
+#define E_COLOR_LIGHTPINK			"{FF8EFB}"
+#define E_COLOR_PINK 				"{D600CF}"
+#define E_COLOR_ROLEPLAY			"{C2A2DA}"
+#define E_COLOR_NEWBIE				"{4C78E0}"
+#define E_COLOR_FACTION_RADIO		"{EFE7A5}"
+#define E_COLOR_PORTABLE_RADIO	    "{FAE952}"
+#define E_COLOR_DEPT				"{FCF6C5}"
+#define E_COLOR_TEXTDRAW_HOVER	    "{6D96BF}"
+#define E_COLOR_TEXTDRAW_CLICK		"{404040}"
+#define E_COLOR_EMERGENCY_CALL		"{00B7FF}"
+#define E_COLOR_MECHANIC			"{557C9E}"

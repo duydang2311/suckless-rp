@@ -9,11 +9,9 @@ dependencies:
 - IllidanS4/PawnPlus:v1.3.2
 - pBlueG/SA-MP-MySQL:R41-4
 - dakyskye/pawn-env:1.1.1
+- Awsomedude/easyDialog
+- Open-GTO/zmessage:v3.2.1
 local: true
-build:
-  includes:
-    - src/mysql
-    - src/player
 runtime:
   version: 0.3.DL-R1
   mode: server
@@ -51,3 +49,9 @@ runtime:
   conncookies: true
   cookielogging: false
   output: true
+build:
+  name: ""
+  includes:
+  - src/mysql
+  - src/player
+  - src/config

@@ -4,6 +4,10 @@
 
 static MySQL:mysql_conn = MySQL:MYSQL_INVALID_HANDLE;
 
+stock MySQL:MySQL_Connection() {
+	return mysql_conn;
+}
+
 #include <YSI_Coding\y_hooks>
 
 HOOK__ OnGameModeInit() {
@@ -30,7 +34,7 @@ HOOK__ OnGameModeInit() {
 	mysql_set_option(options, POOL_SIZE, 8);
 	mysql_conn = mysql_connect(host, user, password, database, options);
 	if(mysql_conn == MySQL:MYSQL_INVALID_HANDLE || mysql_errno(mysql_conn)) {
-		printf("ERROR: Failed to connect to database server.");
+		print("ERROR: Failed to connect to database server.");
 		SendRconCommand("exit");
 		return Y_HOOKS_BREAK_RETURN_0;
 	}

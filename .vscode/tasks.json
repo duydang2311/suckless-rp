@@ -11,21 +11,21 @@
             },
             "presentation": {
                 "reveal": "always",
-                "panel": "dedicated"
+                "panel": "shared"
             },
             "problemMatcher": "$sampctl"
         },
         {
             "label": "run tests",
             "type": "shell",
-            "command": "sampctl package run",
+            "command": "MYSQL_USER=root MYSQL_PASSWORD=123456 MYSQL_HOST=localhost MYSQL_DATABASE=sundaydb sampctl package run",
             "group": {
                 "kind": "test",
                 "isDefault": true
             },
             "presentation": {
                 "reveal": "always",
-                "panel": "dedicated"
+                "panel": "shared"
             },
             "problemMatcher": "$sampctl",
             "dependsOn": [

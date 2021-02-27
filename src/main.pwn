@@ -15,4 +15,12 @@
 
 */
 
+#define task_unblock(%0) \
+	task_detach(); \
+	task_yield(%0)
+
+
+#include <mysql>
+#include <player>
+
 main() {}

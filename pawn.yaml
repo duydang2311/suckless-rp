@@ -14,6 +14,7 @@ dependencies:
 - lassir/bcrypt-samp:v2.2.3
 - Y-LESS/sscanf:2.10.2-r2
 - oscar-broman/strlib
+- southclaws/pawn-chrono:1.1.1
 local: true
 runtime:
   version: 0.3.DL-R1

@@ -16,6 +16,7 @@
 #include <zmessage>
 #include <YSI_Extra\y_inline_mysql>
 #include <YSI_Extra\y_inline_bcrypt>
+#include <chrono>
 
 
 #include <config/colors>
@@ -24,6 +25,7 @@
 
 #include "./player_utility.inc"
 #include "./player_auth.inc"
+#include "./player_stats.inc"
 #include "./player_spawn.inc"
 
 #include "./events/connect.inc"

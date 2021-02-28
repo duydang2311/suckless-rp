@@ -39,3 +39,22 @@ stock Player_Spawn(playerid) {
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_spawn WHERE id = %d LIMIT 1", Player_GetId(playerid));
 	return 1;
 }
+
+#include <YSI_Coding\y_hooks>
+
+hook OnGameModeInit() {
+	mysql_query(MySQL_Connection(),
+	"CREATE TABLE IF NOT EXISTS player_spawn (\
+	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	id INT UNSIGNED PRIMARY KEY,\
+	x FLOAT(11, 4) DEFAULT 0.0000,\
+	y FLOAT(11, 4) DEFAULT 0.0000,\
+	z FLOAT(11, 4) DEFAULT 0.0000,\
+	a FLOAT(11, 4) DEFAULT 0.0000,\
+	vw INT UNSIGNED DEFAULT 0,\
+	int INT UNSIGNED DEFAULT 0,\
+	FOREIGN KEY (id) REFERENCES player_auth(id) ON UPDATE CASCADE ON DELETE CASCADE\
+	)", false);
+	return 1;
+}

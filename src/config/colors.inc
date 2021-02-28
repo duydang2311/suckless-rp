@@ -1,8 +1,8 @@
-#if defined _config_colors_included
+#if defined config_colors_included
 	#endinput
 #endif
 
-#define _config_colors_included
+#define config_colors_included
 
 #define COLOR_ERROR						0xf20f0fFF
 

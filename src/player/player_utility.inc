@@ -1,8 +1,8 @@
-#include <a_samp>
-#include <PawnPlus>
-#include <zmessage>
+#if defined player_utility_included
+	#endinput
+#endif
 
-#include <config/colors>
+#define player_utility_included
 
 stock Player_Msg(playerid, color, const message[]) {
 	ZMsg_SendClientMessage(playerid, color, message);
@@ -26,16 +26,19 @@ stock bool:Player_IsValidName(const name[]) {
         return false;
     }
 
-    if(strlen(first_name) == 0 || strlen(last_name) == 0) {
+    if(!strlen(first_name) || !strlen(last_name)) {
         return false;
     }
 
+	new len = strlen(name);
     while(len--) {
-        switch(name[len]) {
-			if(name[len] < 'a' || (name[len] > 'z' && name[len] < 'A') || name[len] > 'Z' || name[len] != '_') {
-				return false;
-			}
-        }
+		if(!((name[len] >= 'a' && name[len] <= 'z') || (name[len] >= 'A' && name[len] >= 'Z') || name[len] == '_')) {
+			return false;
+		}
     }
     return true;
+}
+
+stock bool:Player_IsValidPassword(const password[]) {
+	return !(isnull(password) || strlen(password) < 8 || strlen(password) > 64);
 }

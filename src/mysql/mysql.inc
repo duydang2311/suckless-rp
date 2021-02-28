@@ -1,3 +1,9 @@
+#if defined sunday_mysql_included
+	#endinput
+#endif
+
+#define sunday_mysql_included
+
 #include <a_samp>
 #include <a_mysql>
 #include <env>

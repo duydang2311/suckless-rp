@@ -11,6 +11,9 @@ dependencies:
 - dakyskye/pawn-env:1.1.1
 - Awsomedude/easyDialog
 - Open-GTO/zmessage:v3.2.1
+- lassir/bcrypt-samp:v2.2.3
+- Y-LESS/sscanf:2.10.2-r2
+- oscar-broman/strlib
 local: true
 runtime:
   version: 0.3.DL-R1
@@ -54,4 +57,4 @@ build:
   includes:
   - src/mysql
   - src/player
-  - src/config
+  - src/

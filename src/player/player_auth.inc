@@ -69,6 +69,7 @@ Dialog:Auth_LoginDialog(playerid, response, listitem, inputtext[]) {
 			return 1;
 		}
 
+		// y_inline related
 		new password[64];
 		strcopy(password, inputtext);
 		inline const QueryFinished() {

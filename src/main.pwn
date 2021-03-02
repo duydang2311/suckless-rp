@@ -29,5 +29,6 @@
 
 #include <mysql>
 #include <player>
+#include <admin>
 
 main() {}

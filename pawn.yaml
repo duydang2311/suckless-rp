@@ -17,6 +17,8 @@ dependencies:
 - southclaws/pawn-chrono:1.1.1
 - bmisiak/samp-precise-timers:v2.0.2
 - Crayder/Skin-Tags
+- katursis/Pawn.CMD:3.3.3
+- Zeex/samp-plugin-jit:v2.4.1
 local: true
 runtime:
   version: 0.3.DL-R1
@@ -60,4 +62,5 @@ build:
   includes:
   - src/mysql
   - src/player
+  - src/admin
   - src/

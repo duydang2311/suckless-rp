@@ -40,19 +40,19 @@ stock Player_GetLevel(playerid) {
 
 stock Player_SetupStats(playerid) {
 	TogglePlayerSpectating(playerid, true);
-	Dialog_Show(playerid, StatsSetupSkin, DIALOG_STYLE_INPUT, "Stats Setup | Skin", "Ban dang trong qua trinh setup thong tin nhan vat.\n> Nhap ID trang phuc cho nhan vat cua ban.", ">>", "<<");
+	Dialog_Show(playerid, StatsSetupSkin, DIALOG_STYLE_INPUT, "Stats Setup | Skin", "Ban dang trong qua trinh setup thong tin nhan vat.\n> Nhap ID trang phuc cho nhan vat cua ban.\n\nGioi tinh cua nhan vat se tu dong duoc xac dinh dua tren trang phuc ban nhap.", ">>", "<<");
 	return 1;
 }
 
 Dialog:StatsSetupSkin(playerid, response, listitem, inputtext[]) {
 	if(response) {
 		extract inputtext -> new model; else {
-			Dialog_Show(playerid, StatsSetupSkin, DIALOG_STYLE_INPUT, "Stats Setup | Skin", "Ban dang trong qua trinh setup thong tin nhan vat.\n> Nhap ID trang phuc cho nhan vat cua ban.", ">>", "<<");
+			Dialog_Show(playerid, StatsSetupSkin, DIALOG_STYLE_INPUT, "Stats Setup | Skin", "Ban dang trong qua trinh setup thong tin nhan vat.\n> Nhap ID trang phuc cho nhan vat cua ban.\n\nGioi tinh cua nhan vat se tu dong duoc xac dinh dua tren trang phuc ban nhap.\nTrang phuc khong hop le.", ">>", "<<");
 			return 1;
 		}
 
 		if(model < 1 || model > 311 || model == 74) {
-			Dialog_Show(playerid, StatsSetupSkin, DIALOG_STYLE_INPUT, "Stats Setup | Skin", "Ban dang trong qua trinh setup thong tin nhan vat.\n> Nhap ID trang phuc cho nhan vat cua ban.", ">>", "<<");
+			Dialog_Show(playerid, StatsSetupSkin, DIALOG_STYLE_INPUT, "Stats Setup | Skin", "Ban dang trong qua trinh setup thong tin nhan vat.\n> Nhap ID trang phuc cho nhan vat cua ban.\n\nGioi tinh cua nhan vat se tu dong duoc xac dinh dua tren trang phuc ban nhap.\nTrang phuc khong hop le.", ">>", "<<");
 			return 1;
 		}
 
@@ -113,6 +113,7 @@ Dialog:StatsSetupBirthday(playerid, response, listitem, inputtext[]) {
 		if(map_has_key(m_playerStats, playerid)) {
 			map_remove(m_playerStats, playerid);
 		}
+		Dialog_Show(playerid, StatsSetupSkin, DIALOG_STYLE_INPUT, "Stats Setup | Skin", "Ban dang trong qua trinh setup thong tin nhan vat.\n> Nhap ID trang phuc cho nhan vat cua ban.\n\nGioi tinh cua nhan vat se tu dong duoc xac dinh dua tren trang phuc ban nhap.", ">>", "<<");
 	}
 	return 1;
 }

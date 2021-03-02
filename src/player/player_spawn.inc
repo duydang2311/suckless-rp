@@ -20,13 +20,16 @@ public Player_OnSpawn(playerid) {
 
 stock Player_Spawn(playerid) {
 	inline const QueryFinished() {
-		new data[PlayerSpawn];
-		cache_get_value_name_float(0, "x", data[pSpawnX]);
-		cache_get_value_name_float(0, "y", data[pSpawnY]);
-		cache_get_value_name_float(0, "z", data[pSpawnZ]);
-		cache_get_value_name_float(0, "a", data[pSpawnA]);
-		cache_get_value_name_int(0, "vw", data[pSpawnVW]);
-		cache_get_value_name_int(0, "int", data[pSpawnInt]);
+		new data[PlayerSpawn] = {0.0000, 0.0000, 2.0000, 0.0000, 0, 0};
+		if(cache_num_rows()) {
+			cache_get_value_name_float(0, "x", data[pSpawnX]);
+			cache_get_value_name_float(0, "y", data[pSpawnY]);
+			cache_get_value_name_float(0, "z", data[pSpawnZ]);
+			cache_get_value_name_float(0, "a", data[pSpawnA]);
+			cache_get_value_name_int(0, "vw", data[pSpawnVW]);
+			cache_get_value_name_int(0, "interior", data[pSpawnInt]);
+		}
+		TogglePlayerSpectating(playerid, false);
 		SetSpawnInfo(playerid, 1, 0, data[pSpawnX], data[pSpawnY], data[pSpawnZ], data[pSpawnA], 0, 0, 0, 0, 0, 0);
 		SpawnPlayer(playerid);
 		SetPlayerVirtualWorld(playerid, data[pSpawnVW]);
@@ -34,7 +37,7 @@ stock Player_Spawn(playerid) {
 		TogglePlayerControllable(playerid, false);
 		SetCameraBehindPlayer(playerid);
 
-		Player_OnSpawn(playerid);
+		CallLocalFunction("Player_OnSpawn", "i", playerid);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_spawn WHERE id = %d LIMIT 1", Player_GetId(playerid));
 	return 1;
@@ -53,7 +56,7 @@ hook OnGameModeInit() {
 	z FLOAT(11, 4) DEFAULT 0.0000,\
 	a FLOAT(11, 4) DEFAULT 0.0000,\
 	vw INT UNSIGNED DEFAULT 0,\
-	int INT UNSIGNED DEFAULT 0,\
+	interior INT UNSIGNED DEFAULT 0,\
 	FOREIGN KEY (id) REFERENCES player_auth(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
 	return 1;

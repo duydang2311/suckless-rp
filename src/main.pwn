@@ -7,9 +7,17 @@
  \___.'   `._.'  |   \|  /---/ ,'      \ _-'           /     /   \  `.__.'  `--/    /----/  `.__,     /
 
 
-	- Founder:
+	Founder:
+		- Duy Dang
+		- Thom
+
+	Gameplay Developer:
 		- Duy Dang
 
+	Gameplay Designer:
+		- Thom
+
+	This tiny project started on Sunday 01/03/2021.
 */
 
 #define PP_SYNTAX_AWAIT

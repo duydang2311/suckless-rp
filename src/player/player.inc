@@ -27,5 +27,3 @@
 #include "./player_auth.inc"
 #include "./player_stats.inc"
 #include "./player_spawn.inc"
-
-#include "./events/connect.inc"

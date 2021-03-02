@@ -36,7 +36,6 @@ HOOK__ OnGameModeInit() {
 	}
 
 	new MySQLOpt:options = mysql_init_options();
-	mysql_set_option(options, MULTI_STATEMENTS, true);
 	mysql_set_option(options, POOL_SIZE, 8);
 	mysql_conn = mysql_connect(host, user, password, database, options);
 	if(mysql_conn == MySQL:MYSQL_INVALID_HANDLE || mysql_errno(mysql_conn)) {

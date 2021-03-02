@@ -7,6 +7,7 @@
 enum _:PlayerStats {
 	pSkin,
 	pLevel,
+	bool:pGender, // false = female, true = male
 	Timestamp:pBirthday
 }
 
@@ -57,6 +58,7 @@ Dialog:StatsSetupSkin(playerid, response, listitem, inputtext[]) {
 
 		new stats[PlayerStats];
 		stats[pSkin] = model;
+		stats[pGender] = bool:GetSkinGender(model);
 		stats[pLevel] = 0;
 		stats[pBirthday] = Timestamp:0;
 		map_set_arr(m_playerStats, playerid, stats);
@@ -106,7 +108,7 @@ Dialog:StatsSetupBirthday(playerid, response, listitem, inputtext[]) {
 			printf("INFO: Player %s (SQL ID %d) has completed their stats setup (%d affected rows).", name, Player_GetId(playerid), cache_affected_rows());
 			Player_Spawn(playerid);
 		}
-		MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO player_stats (id, skin, birthday) VALUES (%d, %d, '%e')", Player_GetId(playerid), stats[pSkin], time);
+		MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO player_stats (id, skin, birthday, gender) VALUES (%d, %d, '%e', %d)", Player_GetId(playerid), stats[pSkin], time, stats[pGender]);
 	} else {
 		if(map_has_key(m_playerStats, playerid)) {
 			map_remove(m_playerStats, playerid);
@@ -127,6 +129,7 @@ hook Player_OnSpawn(playerid) {
 				Float:armour;
 			cache_get_value_name_int(0, "skin", stats[pSkin]);
 			cache_get_value_name_int(0, "level", stats[pLevel]);
+			cache_get_value_name_int(0, "gender", stats[pGender]);
 			cache_get_value_name_int(0, "birthday_timestamp", timestamp);
 			cache_get_value_name_float(0, "health", health);
 			cache_get_value_name_float(0, "armour", armour);
@@ -156,6 +159,7 @@ hook OnGameModeInit() {
 	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED PRIMARY KEY,\
 	skin INT UNSIGNED DEFAULT 0,\
+	gender BOOLEAN DEFAULT FALSE,\
 	health FLOAT(11, 4) DEFAULT 100.0000,\
 	armour FLOAT(11, 4) DEFAULT 0.0000,\
 	birthday TIMESTAMP DEFAULT 0,\

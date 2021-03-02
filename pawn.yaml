@@ -16,6 +16,7 @@ dependencies:
 - oscar-broman/strlib
 - southclaws/pawn-chrono:1.1.1
 - bmisiak/samp-precise-timers:v2.0.2
+- Crayder/Skin-Tags
 local: true
 runtime:
   version: 0.3.DL-R1

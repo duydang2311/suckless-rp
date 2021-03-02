@@ -18,6 +18,7 @@
 #include <YSI_Extra\y_inline_bcrypt>
 #include <chrono>
 #include <samp-precise-timers>
+#include <skintags>
 
 #include <config/colors>
 

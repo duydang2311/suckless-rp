@@ -88,8 +88,8 @@ Dialog:StatsSetupBirthday(playerid, response, listitem, inputtext[]) {
 			return 1;
 		}
 
-		if(year < 1950 || year > 2010) {
-			Dialog_Show(playerid, StatsSetupBirthday, DIALOG_STYLE_INPUT, "Stats Setup | Birthday", "Ban dang trong qua trinh setup thong tin nhan vat.\n> Nhap ngay-thang-nam sinh cho nhan vat cua ban (vi du: 1-1-2020).\n\nSo nam khong hop le, gia tri hop le nam trong khoang [1950, 2010].", "Hoan tat", "<<");
+		if(year < 1970 || year > 2010) {
+			Dialog_Show(playerid, StatsSetupBirthday, DIALOG_STYLE_INPUT, "Stats Setup | Birthday", "Ban dang trong qua trinh setup thong tin nhan vat.\n> Nhap ngay-thang-nam sinh cho nhan vat cua ban (vi du: 1-1-2020).\n\nSo nam khong hop le, gia tri hop le nam trong khoang [1970, 2010].", "Hoan tat", "<<");
 			return 1;
 		}
 
@@ -122,12 +122,15 @@ hook Player_OnSpawn(playerid) {
 		if(cache_num_rows()) {
 			new
 				stats[PlayerStats],
+				timestamp,
 				Float:health,
 				Float:armour;
 			cache_get_value_name_int(0, "skin", stats[pSkin]);
 			cache_get_value_name_int(0, "level", stats[pLevel]);
+			cache_get_value_name_int(0, "birthday_timestamp", timestamp);
 			cache_get_value_name_float(0, "health", health);
 			cache_get_value_name_float(0, "armour", armour);
+			stats[pBirthday] = Timestamp:timestamp;
 
 			SetPlayerHealth(playerid, health);
 			SetPlayerArmour(playerid, armour);
@@ -141,7 +144,7 @@ hook Player_OnSpawn(playerid) {
 			return Y_HOOKS_BREAK_RETURN_1;
 		}
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_stats WHERE id = %d LIMIT 1", Player_GetId(playerid));
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT *, UNIX_TIMESTAMP(birthday) as birthday_timestamp FROM player_stats WHERE id = %d LIMIT 1", Player_GetId(playerid));
 	return 1;
 }
 
@@ -155,7 +158,7 @@ hook OnGameModeInit() {
 	skin INT UNSIGNED DEFAULT 0,\
 	health FLOAT(11, 4) DEFAULT 100.0000,\
 	armour FLOAT(11, 4) DEFAULT 0.0000,\
-	birthday DATE DEFAULT 0,\
+	birthday TIMESTAMP DEFAULT 0,\
 	level TINYINT UNSIGNED DEFAULT 1,\
 	FOREIGN KEY (id) REFERENCES player_auth(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);

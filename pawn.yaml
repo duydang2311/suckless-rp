@@ -15,6 +15,7 @@ dependencies:
 - Y-LESS/sscanf:2.10.2-r2
 - oscar-broman/strlib
 - southclaws/pawn-chrono:1.1.1
+- bmisiak/samp-precise-timers:v2.0.2
 local: true
 runtime:
   version: 0.3.DL-R1

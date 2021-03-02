@@ -42,3 +42,9 @@ stock bool:Player_IsValidName(const name[]) {
 stock bool:Player_IsValidPassword(const password[]) {
 	return !(isnull(password) || strlen(password) < 8 || strlen(password) > 64);
 }
+
+forward Player_ToggleControllable(playerid, bool:toggle);
+public Player_ToggleControllable(playerid, bool:toggle) {
+	TogglePlayerControllable(playerid, toggle);
+	return 1;
+}

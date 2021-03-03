@@ -28,6 +28,8 @@
 	task_yield(%0)
 
 #include <mysql>
+#include <item>
+#include <weapon>
 #include <player>
 #include <admin>
 

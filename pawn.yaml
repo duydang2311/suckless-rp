@@ -63,4 +63,6 @@ build:
   - src/mysql
   - src/player
   - src/admin
+  - src/weapon
+  - src/item
   - src/

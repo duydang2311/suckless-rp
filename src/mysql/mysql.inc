@@ -39,7 +39,7 @@ HOOK__ OnGameModeInit() {
 	mysql_set_option(options, POOL_SIZE, 8);
 	mysql_conn = mysql_connect(host, user, password, database, options);
 	if(mysql_conn == MySQL:MYSQL_INVALID_HANDLE || mysql_errno(mysql_conn)) {
-		print("ERROR: Failed to connect to database server.");
+		print("ERROR: Failed to connect to database server, try checking the environment variables.");
 		SendRconCommand("exit");
 		return Y_HOOKS_BREAK_RETURN_0;
 	}

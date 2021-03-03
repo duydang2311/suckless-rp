@@ -19,6 +19,7 @@ dependencies:
 - Crayder/Skin-Tags
 - katursis/Pawn.CMD:3.3.3
 - Zeex/samp-plugin-jit:v2.4.1
+- AGraber/pawn-plus-mysql:1.0.3
 local: true
 runtime:
   version: 0.3.DL-R1

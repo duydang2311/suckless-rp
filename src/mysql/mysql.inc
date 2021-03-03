@@ -14,6 +14,13 @@ stock MySQL:MySQL_Connection() {
 	return mysql_conn;
 }
 
+public OnQueryError(errorid, const error[], const callback[], const query[], MySQL:handle) {
+	print(error);
+	print(callback);
+	print(query);
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 HOOK__ OnGameModeInit() {

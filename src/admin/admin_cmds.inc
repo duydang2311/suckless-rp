@@ -70,7 +70,7 @@ alias:adestroyvehicle("adesveh", "adesv", "adestroyveh")
 
 public OnPlayerCommandReceived(playerid, cmd[], params[], flags)
 {
-    if(!(flags & Admin_GetFlags(playerid))) {
+    if(flags && !(flags & Admin_GetFlags(playerid))) {
 		Player_Msg(playerid, COLOR_RED, "Lenh khong ton tai.");
         return 0;
     }

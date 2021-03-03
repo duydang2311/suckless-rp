@@ -45,14 +45,29 @@ enum Weapon {
 
 enum WeaponStats {
 	weaponInheritId,
+	bool:isGun,
 	bool:isExtended
 }
 
 static arr_weaponStats[Weapon][WeaponStats];
 
-stock Weapon_Define(Weapon:weapon, inherit_id, bool:extended = false) {
+stock Weapon_Define(Weapon:weapon, inherit_id, bool:gun = false, bool:extended = false) {
 	arr_weaponStats[weapon][weaponInheritId] = inherit_id;
 	arr_weaponStats[weapon][isExtended] = extended;
+	arr_weaponStats[weapon][isGun] = gun;
+	return 1;
+}
+
+stock Weapon_SetPlayerArmed(playerid, Weapon:weapon, ammo) {
+	if(arr_weaponStats[weapon][isExtended]) {
+		// TODO: attach custom object
+	}
+	GivePlayerWeapon(playerid, arr_weaponStats[weapon][weaponInheritId], ammo);
+	return 1;
+}
+
+stock Weapon_Reset(playerid) {
+	ResetPlayerWeapons(playerid);
 	return 1;
 }
 
@@ -72,18 +87,26 @@ hook OnGameModeInit() {
 	Weapon_Define(SilverVibrator, WEAPON_VIBRATOR2);
 	Weapon_Define(Flower, WEAPON_FLOWER);
 	Weapon_Define(Cane, WEAPON_CANE);
-	Weapon_Define(Colt45, WEAPON_COLT45);
-	Weapon_Define(Silenced, WEAPON_SILENCED);
-	Weapon_Define(Deagle, WEAPON_DEAGLE);
-	Weapon_Define(Shotgun, WEAPON_SHOTGUN);
-	Weapon_Define(SawnoffShotgun, WEAPON_SAWEDOFF);
-	Weapon_Define(CombatShotgun, WEAPON_SHOTGSPA);
-	Weapon_Define(Uzi, WEAPON_UZI);
-	Weapon_Define(MP5, WEAPON_MP5);
-	Weapon_Define(AK47, WEAPON_AK47);
-	Weapon_Define(M4, WEAPON_M4);
-	Weapon_Define(Tec9, WEAPON_TEC9);
-	Weapon_Define(CountryRifle, WEAPON_RIFLE);
-	Weapon_Define(SniperRifle, WEAPON_SNIPER);
+	Weapon_Define(Colt45, WEAPON_COLT45, true);
+	Weapon_Define(Silenced, WEAPON_SILENCED, true);
+	Weapon_Define(Deagle, WEAPON_DEAGLE, true);
+	Weapon_Define(Shotgun, WEAPON_SHOTGUN, true);
+	Weapon_Define(SawnoffShotgun, WEAPON_SAWEDOFF, true);
+	Weapon_Define(CombatShotgun, WEAPON_SHOTGSPA, true);
+	Weapon_Define(Uzi, WEAPON_UZI, true);
+	Weapon_Define(MP5, WEAPON_MP5, true);
+	Weapon_Define(AK47, WEAPON_AK47, true);
+	Weapon_Define(M4, WEAPON_M4, true);
+	Weapon_Define(Tec9, WEAPON_TEC9, true);
+	Weapon_Define(CountryRifle, WEAPON_RIFLE, true);
+	Weapon_Define(SniperRifle, WEAPON_SNIPER, true);
+	Weapon_Define(RPG, WEAPON_ROCKETLAUNCHER, true);
+	Weapon_Define(HSRocket, WEAPON_HEATSEEKER, true);
+	Weapon_Define(Flamethrower, WEAPON_FLAMETHROWER, true);
+	Weapon_Define(Minigun, WEAPON_MINIGUN, true);
+	Weapon_Define(Spraycan, WEAPON_SPRAYCAN, true);
+	Weapon_Define(FireExtinguisher, WEAPON_FIREEXTINGUISHER, true);
+	Weapon_Define(Camera, WEAPON_CAMERA, true);
+	Weapon_Define(Parachute, WEAPON_PARACHUTE, true);
 	return 1;
 }

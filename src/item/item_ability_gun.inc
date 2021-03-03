@@ -18,23 +18,23 @@ stock Task:Item_CreateGun(Weapon:weapon, Float:damage, ammo = 0) {
 	task_yield(t);
 	task_detach();
 
-	await mysql_aquery_s(MySQL_Connection(), str_format("INSERT INTO item_stats (ability) VALUES (%d)", _:ItemAbility:ITEM_ABILITY_GUN));
+	inline const QueryFinished() {
+		new
+			insert_id = cache_insert_id(),
+			stats[ItemAbilityGunStats],
+			query[150];
+		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_ability_gun (id, weapon, ammo, damage) VALUES (%d, %d, %d, %.4f)", insert_id, _:weapon, ammo, damage);
+		mysql_pquery(MySQL_Connection(), query);
 
-	new
-		insert_id = cache_insert_id(),
-		stats[ItemAbilityGunStats],
-		query[150];
-	printf("query finished called, cache insert id %d", insert_id);
-	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_ability_gun (id, weapon, ammo, damage) VALUES (%d, %d, %d, %.4f)", insert_id, _:weapon, ammo, damage);
-	mysql_pquery(MySQL_Connection(), query);
-
-	stats[itemWeapon] = weapon;
-	stats[itemAmmo] = ammo;
-	stats[itemDamage] = damage;
-	stats[itemReliability] = 1.0;
-	map_set_arr(m_weaponGun, insert_id, stats);
-	task_set_result(t, insert_id);
-	return Task:0;
+		stats[itemWeapon] = weapon;
+		stats[itemAmmo] = ammo;
+		stats[itemDamage] = damage;
+		stats[itemReliability] = 1.0;
+		map_set_arr(m_weaponGun, insert_id, stats);
+		task_set_result(t, insert_id);
+	}
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability) VALUES (%d)", _:ItemAbility:ITEM_ABILITY_GUN);
+	return t;
 }
 
 #include <YSI_Coding\y_hooks>

@@ -9,7 +9,7 @@ static Map:m_inventory;
 CMD:inv(playerid) {
 	if(map_has_key(m_inventory, playerid)) {
 		for(new Iter:it = linked_list_iter(LinkedList:map_get(m_inventory, playerid)); iter_inside(it); iter_move_next(it)) {
-			printf("player %d inv: %d", iter_get(it));
+			printf("player %d inv: %d", playerid, iter_get(it));
 		}
 	}
 	return 1;
@@ -23,7 +23,7 @@ stock Inventory_GiveItem(playerid, item_id) {
 		ll = linked_list_new();
 	}
 
-	new query[92];
+	new query[128];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_inventory (id, item_id) VALUES (%d, %d)", Player_GetId(playerid), item_id);
 	mysql_pquery(MySQL_Connection(), query);
 	linked_list_add(ll, item_id);

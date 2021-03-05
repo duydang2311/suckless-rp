@@ -121,6 +121,7 @@ Dialog:StatsSetupBirthday(playerid, response, listitem, inputtext[]) {
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnSpawn(playerid) {
+	print("player_stats.inc");
 	inline const QueryFinished() {
 		if(cache_num_rows()) {
 			new

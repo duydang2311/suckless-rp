@@ -68,8 +68,7 @@ CMD:adestroyvehicle(playerid, params[]) {
 }
 alias:adestroyvehicle("adesveh", "adesv", "adestroyveh")
 
-public OnPlayerCommandReceived(playerid, cmd[], params[], flags)
-{
+public OnPlayerCommandReceived(playerid, cmd[], params[], flags) {
     if(flags && !(flags & Admin_GetFlags(playerid))) {
 		Player_Msg(playerid, COLOR_RED, "Lenh khong ton tai.");
         return 0;
@@ -78,10 +77,9 @@ public OnPlayerCommandReceived(playerid, cmd[], params[], flags)
     return 1;
 }
 
-public OnPlayerCommandPerformed(playerid, cmd[], params[], result, flags)
-{
+public OnPlayerCommandPerformed(playerid, cmd[], params[], result, flags) {
     if(result == -1) {
-        SendClientMessage(playerid, 0xFFFFFFFF, "Lenh khong ton tai.");
+        SendClientMessage(playerid, COLOR_RED, "Lenh khong ton tai.");
         return 0;
     }
     return 1;

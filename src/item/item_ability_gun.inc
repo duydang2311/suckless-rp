@@ -13,9 +13,17 @@ enum _:ItemAbilityGunStats {
 
 static Map:m_weaponGun;
 
-stock Task:Item_CreateGun(Weapon:weapon, Float:damage, ammo = 0) {
+stock Weapon:ItemGun_GetWeapon(item_id) {
+	if(map_has_key(m_weaponGun, item_id)) {
+		new stats[ItemAbilityGunStats];
+		map_get_arr(m_weaponGun, item_id, stats);
+		return stats[itemWeapon];
+	}
+	return Weapon:-1;
+}
+
+stock Task:ItemGun_Create(Weapon:weapon, Float:damage, ammo = 0) {
 	new Task:t = task_new();
-	task_yield(t);
 	task_detach();
 
 	inline const QueryFinished() {
@@ -33,8 +41,37 @@ stock Task:Item_CreateGun(Weapon:weapon, Float:damage, ammo = 0) {
 		map_set_arr(m_weaponGun, insert_id, stats);
 		task_set_result(t, insert_id);
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability) VALUES (%d)", _:ItemAbility:ITEM_ABILITY_GUN);
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability) VALUES (%d)", _:ITEM_ABILITY:ITEM_ABILITY_GUN);
 	return t;
+}
+
+forward ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
+public ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
+	if(map_has_key(m_weaponGun, item_id)) {
+		new stats[ItemAbilityGunStats];
+		map_get_arr(m_weaponGun, item_id, stats);
+		if(hand_leftright) {
+			Weapon_SetPlayerArmed(playerid, stats[itemWeapon], stats[itemAmmo]);
+		}
+	}
+	return 1;
+}
+
+forward ItemGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id);
+public ItemGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
+	if(hand_leftright) {
+		new Weapon:weapon = ItemGun_GetWeapon(item_id);
+		if(weapon != Weapon:-1) {
+			new
+				ammo = Weapon_GetAmmo(playerid, weapon),
+				query[128];
+			mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE item_ability_gun SET ammo = %d WHERE id = %d LIMIT 1", ammo, item_id);
+			mysql_pquery(MySQL_Connection(), query);
+			print(query);
+			Weapon_Reset(playerid);
+		}
+	}
+	return 1;
 }
 
 #include <YSI_Coding\y_hooks>

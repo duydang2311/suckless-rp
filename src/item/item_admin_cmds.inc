@@ -11,8 +11,7 @@ CMD:agivegun(playerid, params[]) {
 	}
 
 	task_unblock(1);
-	new itemid = await Item_CreateGun(Weapon:weapon, damage, ammo);
-	printf("itemid = %d", itemid);
-	Inventory_GiveItem(targetid, itemid);
+	new itemid = await ItemGun_Create(Weapon:weapon, damage, ammo);
+	Inventory_AddItem(targetid, itemid);
 	return 1;
 }

@@ -15,6 +15,7 @@ enum PlayerSpawn {
 
 forward Player_OnSpawn(playerid);
 public Player_OnSpawn(playerid) {
+	print("player_spawn.inc");
 	return 1;
 }
 

@@ -66,4 +66,5 @@ build:
   - src/admin
   - src/weapon
   - src/item
+  - src/inventory
   - src/

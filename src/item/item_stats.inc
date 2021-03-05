@@ -6,7 +6,7 @@
 
 const Float:MAX_ITEM_RELIABILITY = 1.0;
 
-enum ItemAbility {
+enum ITEM_ABILITY {
 	ITEM_ABILITY_GUN,
 	ITEM_ABILITY_MELEE,
 	ITEM_ABILITY_PHONE,
@@ -18,7 +18,49 @@ enum ItemStats {
 	itemAbility
 }
 
+forward Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
+public Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
+	inline const QueryFinished() {
+		if(cache_num_rows()) {
+			new ability;
+			cache_get_value_name_int(0, "ability", ability);
+			switch(ITEM_ABILITY:ability) {
+				case ITEM_ABILITY_GUN: {
+					CallLocalFunction("ItemGun_OnPlayerEquipped", "iii", playerid, _:hand_leftright, item_id);
+				}
+				case ITEM_ABILITY_MELEE: {
+					CallLocalFunction("ItemMelee_OnPlayerEquipped", "iii", playerid, _:hand_leftright, item_id);
+				}
+			}
+		}
+	}
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT ability FROM item_stats WHERE id = %d LIMIT 1", item_id);
+	return 1;
+}
+
+forward Item_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id);
+public Item_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
+	inline const QueryFinished() {
+		if(cache_num_rows()) {
+			new ability;
+			cache_get_value_name_int(0, "ability", ability);
+			switch(ITEM_ABILITY:ability) {
+				case ITEM_ABILITY_GUN: {
+					CallLocalFunction("ItemGun_OnPlayerUnequipped", "iii", playerid, _:hand_leftright, item_id);
+				}
+				case ITEM_ABILITY_MELEE: {
+					CallLocalFunction("ItemMelee_OnPlayerUnequipped", "iii", playerid, _:hand_leftright, item_id);
+				}
+			}
+		}
+	}
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT ability FROM item_stats WHERE id = %d LIMIT 1", item_id);
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
+
+
 
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),

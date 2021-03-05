@@ -14,7 +14,6 @@ static Map:m_weaponMelee;
 
 stock Task:Item_CreateMelee(Weapon:weapon, Float:damage) {
 	new Task:t = task_new();
-	task_yield(t);
 	task_detach();
 
 	inline const QueryFinished() {
@@ -32,7 +31,7 @@ stock Task:Item_CreateMelee(Weapon:weapon, Float:damage) {
 		map_set(m_weaponMelee, insert_id, stats);
 		task_set_result(t, insert_id);
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability) VALUES (%d)", _:ItemAbility:ITEM_ABILITY_MELEE);
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability) VALUES (%d)", _:ITEM_ABILITY:ITEM_ABILITY_MELEE);
 	return t;
 }
 

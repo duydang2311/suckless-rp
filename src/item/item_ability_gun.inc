@@ -6,7 +6,6 @@
 
 enum _:ItemAbilityGunStats {
 	Weapon:itemWeapon,
-	itemAmmo,
 	Float:itemDamage,
 	Float:itemReliability,
 }
@@ -14,7 +13,7 @@ enum _:ItemAbilityGunStats {
 static Map:m_weaponGun;
 
 stock Weapon:ItemGun_GetWeapon(item_id) {
-	if(map_has_key(m_weaponGun, item_id)) {
+	if(map_valid(m_weaponGun) && map_has_key(m_weaponGun, item_id)) {
 		new stats[ItemAbilityGunStats];
 		map_get_arr(m_weaponGun, item_id, stats);
 		return stats[itemWeapon];
@@ -35,9 +34,11 @@ stock Task:ItemGun_Create(Weapon:weapon, Float:damage, ammo = 0) {
 		mysql_pquery(MySQL_Connection(), query);
 
 		stats[itemWeapon] = weapon;
-		stats[itemAmmo] = ammo;
 		stats[itemDamage] = damage;
 		stats[itemReliability] = 1.0;
+		if(!map_valid(m_weaponGun)) {
+			m_weaponGun = map_new();
+		}
 		map_set_arr(m_weaponGun, insert_id, stats);
 		task_set_result(t, insert_id);
 	}
@@ -47,11 +48,19 @@ stock Task:ItemGun_Create(Weapon:weapon, Float:damage, ammo = 0) {
 
 forward ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
 public ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
-	if(map_has_key(m_weaponGun, item_id)) {
+	if(map_valid(m_weaponGun) && map_has_key(m_weaponGun, item_id)) {
 		new stats[ItemAbilityGunStats];
 		map_get_arr(m_weaponGun, item_id, stats);
 		if(hand_leftright) {
-			Weapon_SetPlayerArmed(playerid, stats[itemWeapon], stats[itemAmmo]);
+			inline const QueryFinished() {
+				if(cache_num_rows()) {
+					new ammo;
+					cache_get_value_name_int(0, "ammo", ammo);
+					Weapon_SetPlayerArmed(playerid, stats[itemWeapon], ammo);
+				}
+			}
+			MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT ammo FROM item_ability_gun WHERE id = %d LIMIT 1", item_id);
+
 		}
 	}
 	return 1;
@@ -60,14 +69,13 @@ public ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 forward ItemGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id);
 public ItemGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
 	if(hand_leftright) {
-		new Weapon:weapon = ItemGun_GetWeapon(item_id);
+		new Weapon:weapon = ItemGun_GetWeapon(item_id); // this function already checks for map valid
 		if(weapon != Weapon:-1) {
 			new
 				ammo = Weapon_GetAmmo(playerid, weapon),
 				query[128];
 			mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE item_ability_gun SET ammo = %d WHERE id = %d LIMIT 1", ammo, item_id);
 			mysql_pquery(MySQL_Connection(), query);
-			print(query);
 			Weapon_Reset(playerid);
 		}
 	}
@@ -77,7 +85,6 @@ public ItemGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {
-	m_weaponGun = map_new();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_ability_gun (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -89,5 +96,27 @@ hook OnGameModeInit() {
 	reliability FLOAT(11, 4) DEFAULT 1.0000,\
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
+
+	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_ability_gun", true);
+
+	new rows = cache_num_rows();
+	if(rows) {
+		m_weaponGun = map_new();
+		new
+			iWeapon,
+			item_id;
+		for(new i = 0; i != rows; i++) {
+			new stats[ItemAbilityGunStats];
+			cache_get_value_name_int(i, "id", item_id);
+			cache_get_value_name_int(i, "weapon", iWeapon);
+			cache_get_value_name_float(i, "damage", stats[itemDamage]);
+			cache_get_value_name_float(i, "reliability", stats[itemReliability]);
+			stats[itemWeapon] = Weapon:iWeapon;
+
+			map_set_arr(m_weaponGun, item_id, stats);
+		}
+	}
+	cache_delete(result);
+	printf("INFO: Loaded %d item with gun ability.", rows);
 	return 1;
 }

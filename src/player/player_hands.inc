@@ -98,6 +98,51 @@ stock Player_GetHandItemId(playerid, bool:hand_leftright) {
 
 #include <YSI_Coding\y_hooks>
 
+hook Player_OnSpawn(playerid) {
+	print("player_hands.inc");
+
+	inline const QueryFinished() {
+		new rows = cache_num_rows();
+		if(rows) {
+			new LinkedList:ll;
+			if(!map_has_key(m_hands, playerid)) {
+				ll = linked_list_new();
+				map_set(m_hands, playerid, ll);
+			} else {
+				ll = LinkedList:map_get(m_hands, playerid);
+			}
+
+			for(new i = 0; i != rows; i++) {
+				new stats[PlayerHandItemStats];
+				cache_get_value_name_int(i, "item_id", stats[hand_itemId]);
+				cache_get_value_name_int(i, "leftright", stats[hand_itemHand]);
+				cache_get_value_name_float(i, "offset_x", stats[hand_itemOffset][0]);
+				cache_get_value_name_float(i, "offset_y", stats[hand_itemOffset][1]);
+				cache_get_value_name_float(i, "offset_z", stats[hand_itemOffset][2]);
+				cache_get_value_name_float(i, "rot_x", stats[hand_itemRot][0]);
+				cache_get_value_name_float(i, "rot_y", stats[hand_itemRot][1]);
+				cache_get_value_name_float(i, "rot_z", stats[hand_itemRot][2]);
+				cache_get_value_name_float(i, "scale_x", stats[hand_itemScale][0]);
+				cache_get_value_name_float(i, "scale_y", stats[hand_itemScale][1]);
+				cache_get_value_name_float(i, "scale_z", stats[hand_itemScale][2]);
+
+				linked_list_add_arr(ll, stats);
+
+				CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, _:stats[hand_itemHand], stats[hand_itemId]);
+			}
+		}
+	}
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_hands WHERE player_id = %d", Player_GetId(playerid));
+	return 1;
+}
+
+hook OnPlayerDisconnect(playerid, reason) {
+	if(map_has_key(m_hands, playerid)) {
+		map_remove_deep(m_hands, playerid);
+	}
+	return 1;
+}
+
 hook OnGameModeInit() {
 	m_hands = map_new();
 	mysql_query(MySQL_Connection(),

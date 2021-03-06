@@ -107,7 +107,13 @@ hook Player_OnSpawn(playerid) {
 		if(rows) {
 			new
 				stats[InventoryItemStats],
-				LinkedList:ll = linked_list_new();
+				LinkedList:ll;
+			if(!map_has_key(m_inventory, playerid)) {
+				ll = linked_list_new();
+				map_set(m_inventory, playerid, ll);
+			} else {
+				ll = LinkedList:map_get(m_inventory, playerid);
+			}
 			for(new i = 0; i != rows; i++) {
 				cache_get_value_name_int(i, "item_id", stats[inv_itemId]);
 				cache_get_value_name_int(i, "visible", stats[inv_itemVisible]);
@@ -123,10 +129,16 @@ hook Player_OnSpawn(playerid) {
 				cache_get_value_name_float(i, "scale_z", stats[inv_itemScale][2]);
 				linked_list_add_arr(ll, stats[inv_itemId]);
 			}
-			map_set(m_inventory, playerid, ll);
 		}
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM inventory WHERE player_id = %d", Player_GetId(playerid));
+	return 1;
+}
+
+hook OnPlayerDisconnect(playerid, reason) {
+	if(map_has_key(m_inventory, playerid)) {
+		map_remove_deep(m_inventory, playerid);
+	}
 	return 1;
 }
 

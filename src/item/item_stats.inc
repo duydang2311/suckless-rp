@@ -60,8 +60,6 @@ public Item_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
 
 #include <YSI_Coding\y_hooks>
 
-
-
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_stats (\

@@ -28,6 +28,9 @@ stock Task:Item_CreateMelee(Weapon:weapon, Float:damage) {
 		stats[itemWeapon] = weapon;
 		stats[itemDamage] = damage;
 		stats[itemReliability] = 1.0;
+		if(!map_valid(m_weaponMelee)) {
+			m_weaponMelee = map_new();
+		}
 		map_set(m_weaponMelee, insert_id, stats);
 		task_set_result(t, insert_id);
 	}
@@ -38,7 +41,6 @@ stock Task:Item_CreateMelee(Weapon:weapon, Float:damage) {
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {
-	m_weaponMelee = map_new();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_ability_melee (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\

@@ -81,6 +81,11 @@ stock Weapon_Reset(playerid) {
 	return 1;
 }
 
+stock Weapon_GetName(Weapon:weapon, name[], size = sizeof(name)) {
+	GetWeaponName(arr_weaponStats[weapon][weaponInheritId], name, size);
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {

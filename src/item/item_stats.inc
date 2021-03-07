@@ -18,6 +18,25 @@ enum ItemStats {
 	itemAbility
 }
 
+stock Item_GetName(item_id, name[], size = sizeof(name)) {
+	inline const QueryFinished() {
+		if(cache_num_rows()) {
+			new ability;
+			cache_get_value_name_int(0, "ability", ability);
+			switch(ITEM_ABILITY:ability) {
+				case ITEM_ABILITY_GUN: {
+					ItemGun_GetName(item_id, name, size);
+				}
+				case ITEM_ABILITY_MELEE: {
+					// TODO: ItemMelee_GetName(item_id, name, size);
+				}
+			}
+		}
+	}
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT ability FROM item_stats WHERE id = %d LIMIT 1", item_id);
+	return 1;
+}
+
 forward Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
 public Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 	inline const QueryFinished() {

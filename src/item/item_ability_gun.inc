@@ -46,6 +46,15 @@ stock Task:ItemGun_Create(Weapon:weapon, Float:damage, ammo = 0) {
 	return t;
 }
 
+stock ItemGun_GetName(item_id, name[], size = sizeof(name)) {
+	new Weapon:weapon = ItemGun_GetWeapon(item_id);
+	if(weapon == Weapon:-1) {
+		return 0;
+	}
+	Weapon_GetName(weapon, name, size);
+	return 1;
+}
+
 forward ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
 public ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 	if(map_valid(m_weaponGun) && map_has_key(m_weaponGun, item_id)) {

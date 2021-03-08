@@ -13,13 +13,6 @@ enum PlayerHandStats {
 
 static playerHands[MAX_PLAYERS][2][PlayerHandStats];
 
-CMD:handsinfo(playerid) {
-	new string[128];
-	format(string, sizeof(string), "hands: %d, %d", playerHands[playerid][0][hand_itemId], playerHands[playerid][1][hand_itemId]);
-	Player_Msg(playerid, -1, string);
-	return 1;
-}
-
 stock Player_EquipItem(playerid, hand_index, item_id) {
 	if(playerHands[playerid][hand_index][hand_itemId] != -1) {
 		return Player_UnequipItem(playerid, hand_index);

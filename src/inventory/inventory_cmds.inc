@@ -6,7 +6,7 @@
 
 CMD:inv(playerid) {
 	new
-		Iter:it = Inventory_GetFirstItemIter(playerid),
+		Iter:it = Inventory_GetIter(playerid),
 		name[64],
 		string[512] = "ID vat pham\tTen vat pham";
 	if(iter_valid(it)) {
@@ -26,16 +26,20 @@ CMD:inv(playerid) {
 		}
 		format(string, sizeof(string), "%s\n%d\t%s(%s)", string, iter_get(it), name, (i ? "Tay trai" : "Tay phai"));
 	}
-	Player_Msg(playerid, COLOR_LIGHTYELLOW, string);
+	Dialog_Show(playerid, InventoryDialog, DIALOG_STYLE_TABLIST_HEADERS, "Inventory", string, ">>", "Dong");
 	return 1;
 }
 
-CMD:lefthand(playerid, params[]) {
-	Player_EquipItem(playerid, false, strval(params));
-	return 1;
-}
+Dialog:InventoryDialog(playerid, response, listitem, inputtext[]) {
+	if(response) {
+		new size = Inventory_GetSize(playerid);
+		if(size < listitem) {
+			switch(listitem) {
 
-CMD:righthand(playerid, params[]) {
-	Player_EquipItem(playerid, true, strval(params));
+			}
+		} else {
+
+		}
+	}
 	return 1;
 }

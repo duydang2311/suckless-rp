@@ -47,7 +47,7 @@ stock Inventory_RemoveItem(playerid, item_id) {
 	return 0;
 }
 
-stock Iter:Inventory_GetItemIter(playerid, item_id) {
+stock Iter:Inventory_GetIterByItem(playerid, item_id) {
 	if(map_has_key(m_inventory, playerid)) {
 		new
 			Iter:it = linked_list_iter(LinkedList:map_get(m_inventory, playerid)),
@@ -64,21 +64,10 @@ stock Iter:Inventory_GetItemIter(playerid, item_id) {
 	return Iter:0;
 }
 
-CMD:invinfo(playerid) {
-	new string[128],
-		inventory = 0;
-	if(map_has_key(m_inventory, playerid)) {
-		inventory = linked_list_size(LinkedList:map_get(m_inventory, playerid));
-	}
-	format(string, sizeof(string), "m_inventory ll size: %d", inventory);
-	Player_Msg(playerid, -1, string);
-	return 1;
-}
-
-stock Iter:Inventory_GetFirstItemIter(playerid) {
+stock Iter:Inventory_GetIter(playerid, index = 0) {
 	if(map_has_key(m_inventory, playerid)) {
 		new
-			Iter:it = linked_list_iter(LinkedList:map_get(m_inventory, playerid));
+			Iter:it = linked_list_iter(LinkedList:map_get(m_inventory, playerid), index);
 		iter_acquire(it);
 		return it;
 	}
@@ -96,6 +85,13 @@ stock Inventory_RemoveItemByIter(Iter:it) {
 		iter_erase(it);
 	}
 	return 1;
+}
+
+stock Inventory_GetSize(playerid) {
+	if(map_has_key(m_inventory, playerid)) {
+		return linked_list_size(LinkedList:map_get(m_inventory, playerid));
+	}
+	return 0;
 }
 
 #include <YSI_Coding\y_hooks>

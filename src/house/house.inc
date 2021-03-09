@@ -15,7 +15,7 @@ hook OnGameModeInit() {
 	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
 	owner_id INT UNSIGNED,\
-	FOREIGN KEY (owner_id) REFERENCES player_auth(id) ON UPDATE CASCADE ON DELETE CASCADE,\
-	);")
+	FOREIGN KEY (owner_id) REFERENCES player_auth(id) ON UPDATE CASCADE ON DELETE CASCADE\
+	)", false);
 	return 1;
 }

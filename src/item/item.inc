@@ -18,6 +18,6 @@
 #include <mysql>
 
 #include "./item_stats.inc"
-#include "./item_ability_gun.inc"
-#include "./item_ability_melee.inc"
+#include "./ability/gun.inc"
+#include "./ability/melee.inc"
 #include "./item_admin_cmds.inc"

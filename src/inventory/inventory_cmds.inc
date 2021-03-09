@@ -35,16 +35,13 @@ CMD:inv(playerid) {
 Dialog:InventoryDialog(playerid, response, listitem, inputtext[]) {
 	if(response) {
 		new size = Inventory_GetSize(playerid);
-		printf("size: %d, listitem: %d", size, listitem);
 		if(listitem < size) {
 			new hand = Player_GetFreeHand(playerid);
-			printf("free hand: %d", hand);
 			if(hand != -1) {
 				new Iter:it = Inventory_GetIter(playerid, listitem);
 				if(iter_valid(it)) {
 					new stats[InventoryItemStats];
 					iter_get_arr(it, stats);
-					printf("iter valid, selected item id %d", stats[inv_itemId]);
 					Player_EquipItem(playerid, hand, stats[inv_itemId]);
 					iter_release(it);
 				}

@@ -66,4 +66,6 @@ build:
   - src/weapon
   - src/item
   - src/inventory
+  - src/door
+  - src/house
   - src/

@@ -34,5 +34,7 @@
 #include <inventory>
 #include <player>
 #include <admin>
+#include <door>
+#include <house>
 
 main() {}

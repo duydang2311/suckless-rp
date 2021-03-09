@@ -29,3 +29,4 @@
 #include "./player_stats.inc"
 #include "./player_spawn.inc"
 #include "./player_hands.inc"
+#include "./player_death.inc"

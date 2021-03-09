@@ -15,25 +15,24 @@ static playerHands[MAX_PLAYERS][2][PlayerHandStats];
 
 stock Player_EquipItem(playerid, hand_index, item_id) {
 	if(playerHands[playerid][hand_index][hand_itemId] != -1) {
-		return Player_UnequipItem(playerid, hand_index);
+		return 0;
 	}
 
-	new Iter:inv_it = Inventory_GetItemIter(playerid, item_id);
+	new Iter:inv_it = Inventory_GetIterByItem(playerid, item_id);
 	if(iter_valid(inv_it)) {
 		new
-			stats[PlayerHandStats],
-			inv_stats[InventoryItemStats];
+			stats[PlayerHandStats],			inv_stats[InventoryItemStats];
 		iter_get_arr(inv_it, inv_stats);
-		stats[hand_itemId] = inv_stats[inv_itemId];
-		stats[hand_itemOffset] = inv_stats[inv_itemOffset];
-		stats[hand_itemRot] = inv_stats[inv_itemRot];
-		stats[hand_itemScale] = inv_stats[inv_itemScale];
+		playerHands[playerid][hand_index][hand_itemId] = inv_stats[inv_itemId];
+		playerHands[playerid][hand_index][hand_itemOffset] = inv_stats[inv_itemOffset];
+		playerHands[playerid][hand_index][hand_itemRot] = inv_stats[inv_itemRot];
+		playerHands[playerid][hand_index][hand_itemScale] = inv_stats[inv_itemScale];
 
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hands (player_id, item_id, hand_index) VALUES (%d, %d, %d)", Player_GetId(playerid), item_id, hand_index);
 		mysql_pquery(MySQL_Connection(), query);
 
-		CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, _:hand_index, item_id);
+		CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, hand_index, item_id);
 		Inventory_RemoveItemByIter(inv_it);
 		iter_release(inv_it);
 	}
@@ -49,16 +48,21 @@ stock Player_UnequipItem(playerid, hand_index) {
 	Inventory_AddItem(playerid, playerHands[playerid][hand_index][hand_itemId]);
 	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM player_hands WHERE player_id = %d AND hand_index = %d", Player_GetId(playerid), hand_index);
 	mysql_pquery(MySQL_Connection(), query);
+	CallLocalFunction("Item_OnPlayerUnequipped", "iii", playerid, hand_index, playerHands[playerid][hand_index][hand_itemId]);
 	playerHands[playerid][hand_index][hand_itemId] = -1;
 	playerHands[playerid][hand_index][hand_itemOffset][hand_index] = playerHands[playerid][hand_index][hand_itemOffset][1] = playerHands[playerid][hand_index][hand_itemOffset][2] =
 	playerHands[playerid][hand_index][hand_itemRot][hand_index] = playerHands[playerid][hand_index][hand_itemRot][1] = playerHands[playerid][hand_index][hand_itemRot][2] =
 	playerHands[playerid][hand_index][hand_itemScale][hand_index] = playerHands[playerid][hand_index][hand_itemScale][1] = playerHands[playerid][hand_index][hand_itemScale][2] = 0.0000;
-	CallLocalFunction("Item_OnPlayerUnequipped", "iii", playerid, _:hand_index, playerHands[playerid][hand_index][hand_itemId]);
+	print("unequipped");
 	return 1;
 }
 
 stock Player_GetHandItemId(playerid, hand_index) {
 	return playerHands[playerid][hand_index][hand_itemId];
+}
+
+stock Player_GetFreeHand(playerid) {
+	return (playerHands[playerid][1][hand_itemId] == -1 ? 1 : playerHands[playerid][0][hand_itemId] == -1 ? 0 : -1);
 }
 
 #include <YSI_Coding\y_hooks>

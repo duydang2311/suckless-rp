@@ -77,12 +77,15 @@ public ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 
 forward ItemGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id);
 public ItemGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
+	print("ItemGun_OnPlayerUnequipped");
 	if(hand_leftright) {
 		new Weapon:weapon = ItemGun_GetWeapon(item_id); // this function already checks for map valid
+		printf("Weapon %d", _:weapon);
 		if(weapon != Weapon:-1) {
 			new
 				ammo = Weapon_GetAmmo(playerid, weapon),
 				query[128];
+			printf("weapon ammo %d", ammo);
 			mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE item_ability_gun SET ammo = %d WHERE id = %d LIMIT 1", ammo, item_id);
 			mysql_pquery(MySQL_Connection(), query);
 			Weapon_Reset(playerid);

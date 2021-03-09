@@ -59,12 +59,16 @@ public Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 
 forward Item_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id);
 public Item_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
+	print("Item_OnPlayerUnequipped");
 	inline const QueryFinished() {
+		printf("rows %d", cache_num_rows());
 		if(cache_num_rows()) {
 			new ability;
 			cache_get_value_name_int(0, "ability", ability);
+			printf("item ability %d", ability);
 			switch(ITEM_ABILITY:ability) {
 				case ITEM_ABILITY_GUN: {
+					print("called ItemGun_OnPlayerUnequipped");
 					CallLocalFunction("ItemGun_OnPlayerUnequipped", "iii", playerid, _:hand_leftright, item_id);
 				}
 				case ITEM_ABILITY_MELEE: {

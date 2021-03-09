@@ -22,6 +22,7 @@
 
 #define PP_SYNTAX_AWAIT
 #define YSI_YES_HEAP_MALLOC
+#define YSI_NO_MODE_CACHE
 
 #define task_unblock(%0) \
 	task_detach(); \

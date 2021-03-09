@@ -61,17 +61,20 @@ stock Iter:Inventory_GetIterByItem(playerid, item_id) {
 		}
 		iter_release(it);
 	}
-	return Iter:0;
+	return Iter:-1;
 }
 
 stock Iter:Inventory_GetIter(playerid, index = 0) {
 	if(map_has_key(m_inventory, playerid)) {
-		new
-			Iter:it = linked_list_iter(LinkedList:map_get(m_inventory, playerid), index);
-		iter_acquire(it);
-		return it;
+		new LinkedList:ll = LinkedList:map_get(m_inventory, playerid);
+		if(index < linked_list_size(ll)) {
+			new
+				Iter:it = linked_list_iter(ll, index);
+			iter_acquire(it);
+			return it;
+		}
 	}
-	return Iter:0;
+	return Iter:-1;
 }
 
 stock Inventory_RemoveItemByIter(Iter:it) {

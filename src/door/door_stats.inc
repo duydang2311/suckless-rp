@@ -4,9 +4,9 @@
 
 #define door_stats_included
 
-enum DOOR_TYPE {
-	DOOR_TYPE_NONE
-	DOOR_TYPE_HOUSE
+enum DoorType {
+	DOOR_TYPE_NONE,
+	DOOR_TYPE_HOUSE,
 	DOOR_TYPE_BUSINESS
 }
 
@@ -30,7 +30,7 @@ stock Door_Valid(id) {
 	return map_has_key(m_door, id);
 }
 
-stock Task:Door_Create(type = DOOR_TYPE_NONE) {
+stock Task:Door_Create(DoorType:type = DOOR_TYPE_NONE) {
 	new Task:t = task_new();
 	task_detach(t);
 

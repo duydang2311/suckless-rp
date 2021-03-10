@@ -19,6 +19,7 @@ dependencies:
 - Crayder/Skin-Tags
 - katursis/Pawn.CMD:3.3.3
 - AGraber/pawn-plus-mysql:1.0.3
+- samp-incognito/samp-streamer-plugin:v2.9.4
 local: true
 runtime:
   version: 0.3.DL-R1

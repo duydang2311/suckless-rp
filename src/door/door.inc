@@ -13,5 +13,7 @@
 #include <mysql>
 
 #include "./door_stats.inc"
+#include "./door_entrance.inc"
+#include "./door_exit.inc"
 #include "./type/house.inc"
 #include "./door_cmds.inc"

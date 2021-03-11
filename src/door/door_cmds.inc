@@ -102,7 +102,7 @@ CMD:adoor(playerid, params[]) {
 	} else if(!strcmp(option, "pickupmodel", true)) {
 		new
 			string[128];
-		Door_SetEnAddonsPickupModel(id, value);
+		Door_SetEnPickupModel(id, value);
 		format(string, sizeof(string), "INFO: Pickup Model cua Door ID %d da duoc dieu chinh thanh %d.", id, value);
 		Player_Msg(playerid, COLOR_GREEN, string);
 	} else {

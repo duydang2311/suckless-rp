@@ -9,21 +9,23 @@ CMD:adoor(playerid, params[]) {
 		id,
 		option[16],
 		value;
-	if(sscanf(params, "S[16]()I(-1)I(0)", option, id, value)) {
-		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /adoor [door id] [option] (value || 0)");
-		Player_Msg(playerid, COLOR_FADE2, "> option: create, delete, en, ex, enint, exint, envw, exvw, locked, vehicleallowed, sync");
+	if(sscanf(params, "s[16]I(-1)I(0)", option, id, value)) {
+		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /adoor [option] [door id] (value || 0)");
+		Player_Msg(playerid, COLOR_FADE2, "> option: create, delete, en, ex, enint, exint, envw, exvw, locked, vehicleallowed, sync, pickupmodel.");
 		return 1;
 	}
 
 	if(!strcmp(option, "create", true)) {
 		new string[128];
 		task_unblock(1);
-		format(string, sizeof(string), "INFO: Door ID %d da duoc tao.", task_await(Door_Create(0)));
+		format(string, sizeof(string), "INFO: Door ID %d da duoc tao.", task_await(Door_Create(DoorType:DOOR_TYPE_NONE)));
 		Player_Msg(playerid, COLOR_GREEN, string);
+		return 1;
 	}
 
 	if(!Door_Valid(id)) {
 		Player_Msg(playerid, COLOR_RED, "ERROR: Door ID khong hop le.");
+		return 1;
 	}
 
 	if(!strcmp(option, "delete", true)) {
@@ -82,24 +84,30 @@ CMD:adoor(playerid, params[]) {
 	} else if(!strcmp(option, "locked", true)) {
 		new
 			string[128];
-		Door_SetLocked(id, value);
+		Door_SetLocked(id, bool:value);
 		format(string, sizeof(string), "INFO: Locked cua Door ID %d da duoc dieu chinh thanh '%s'.", id, (value ? "Khoa" : "Mo khoa"));
 		Player_Msg(playerid, COLOR_GREEN, string);
 	} else if(!strcmp(option, "vehicleallowed", true)) {
 		new
 			string[128];
-		Door_SetVehicleAllowed(id, value);
+		Door_SetVehicleAllowed(id, bool:value);
 		format(string, sizeof(string), "INFO: Locked cua Door ID %d da duoc dieu chinh thanh '%s'.", id, (value ? "Cho phep" : "Khong cho phep"));
 		Player_Msg(playerid, COLOR_GREEN, string);
 	} else if(!strcmp(option, "sync", true)) {
 		new
 			string[128];
-		Door_SetSync(id, value);
+		Door_SetStreamingSync(id, bool:value);
 		format(string, sizeof(string), "INFO: Locked cua Door ID %d da duoc dieu chinh thanh '%s'.", id, (value ? "Dong bo" : "Khong dong bo"));
 		Player_Msg(playerid, COLOR_GREEN, string);
+	} else if(!strcmp(option, "pickupmodel", true)) {
+		new
+			string[128];
+		Door_SetEnAddonsPickupModel(id, value);
+		format(string, sizeof(string), "INFO: Pickup Model cua Door ID %d da duoc dieu chinh thanh %d.", id, value);
+		Player_Msg(playerid, COLOR_GREEN, string);
 	} else {
-		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /adoor [door id] [option] (value || 0)");
-		Player_Msg(playerid, COLOR_FADE2, "> option: create, delete, en, ex, enint, exint, envw, exvw, locked, vehicleallowed, sync");
+		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /adoor [option] [door id] (value || 0)");
+		Player_Msg(playerid, COLOR_FADE2, "> option: create, delete, en, ex, enint, exint, envw, exvw, locked, vehicleallowed, sync, pickupmodel.");
 	}
 	return 1;
 }

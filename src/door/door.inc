@@ -14,3 +14,4 @@
 
 #include "./door_stats.inc"
 #include "./type/house.inc"
+#include "./door_cmds.inc"

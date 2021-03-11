@@ -11,7 +11,7 @@ enum DoorType {
 }
 
 enum doorStats {
-	doorType,
+	DoorType:doorType,
 	doorDesc[64],
 	Float:doorEn[4],
 	doorEnInt,
@@ -41,7 +41,7 @@ stock Door_Valid(id) {
 
 stock Task:Door_Create(DoorType:type = DOOR_TYPE_NONE) {
 	new Task:t = task_new();
-	task_detach(t);
+	task_detach();
 
 	inline const QueryFinished() {
 		if(!cache_affected_rows()) {
@@ -49,13 +49,13 @@ stock Task:Door_Create(DoorType:type = DOOR_TYPE_NONE) {
 		} else {
 			new
 				insert_id = cache_insert_id(),
-				stats[doorStats] = {0, "", {0.0000, 0.0000, 0.0000, 0.0000}, 0, 0, {0.0000, 0.0000, 0.0000, 0.0000}, 0, 0, false, false, false};
+				stats[doorStats] = {DoorType:DOOR_TYPE_NONE, "", {0.0000, 0.0000, 0.0000, 0.0000}, 0, 0, {0.0000, 0.0000, 0.0000, 0.0000}, 0, 0, false, false, false, 0};
 			stats[doorType] = type;
 			map_set_arr(m_doorStats, insert_id, stats);
 			task_set_result(t, insert_id);
 		}
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO door_stats (type) VALUES (%d)", type);
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO door_stats (type) VALUES (%d)", _:type);
 	return t;
 }
 
@@ -63,7 +63,7 @@ stock Door_Delete(id) {
 	if(!map_has_key(m_doorStats, id)) {
 		return 0;
 	}
-	new string[128];
+	new query[128];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM door_stats WHERE id = %d LIMIT 1", id);
 	mysql_pquery(MySQL_Connection(), query);
 	return 1;
@@ -135,27 +135,27 @@ stock Door_SetExVW(id, vw) {
 	return 1;
 }
 
-stock Door_GetLocked(id) {
+stock bool:Door_GetLocked(id) {
 	if(!map_has_key(m_doorStats, id)) {
-		return 0;
+		return false;
 	}
 	new stats[doorStats];
 	map_get_arr(m_doorStats, id, stats);
 	return stats[doorLocked];
 }
 
-stock Door_GetVehicleAllowed(id) {
+stock bool:Door_GetVehicleAllowed(id) {
 	if(!map_has_key(m_doorStats, id)) {
-		return 0;
+		return false;
 	}
 	new stats[doorStats];
 	map_get_arr(m_doorStats, id, stats);
 	return stats[doorVehicleAllowed];
 }
 
-stock Door_GetStreamingSync(id) {
+stock bool:Door_GetStreamingSync(id) {
 	if(!map_has_key(m_doorStats, id)) {
-		return 0;
+		return false;
 	}
 	new stats[doorStats];
 	map_get_arr(m_doorStats, id, stats);
@@ -256,7 +256,7 @@ stock Door_SetExAddons(id, Float:x, Float:y, Float:z, int, vw) {
 		}
 	}
 	addon[doorDynExAreaId] = CreateDynamicSphere(x, y, z, 2.5, vw, int),
-	addon[doorDynExCPId] = CreateDynamicCP(x, y, z, 10.0, vw, int, .streamdistance = 11.0);
+	addon[doorDynExCPId] = CreateDynamicCP(x, y, z, 2.5, vw, int, .streamdistance = 10.0);
 	map_set_arr(m_doorAddons, id, addon);
 	return 1;
 }
@@ -289,15 +289,28 @@ stock Door_SetExAddonsVW(id, vw) {
 	return 1;
 }
 
+stock Door_SetEnAddonsPickupModel(id, model) {
+	if(map_has_key(m_doorAddons, id)) {
+		new addon[doorAddons] = {-1, -1, -1, -1};
+		map_get_arr(m_doorAddons, id, addon);
+		if(addon[doorDynEnPickupId] != -1) {
+			Streamer_SetIntData(STREAMER_TYPE_PICKUP, addon[doorDynEnPickupId], E_STREAMER_MODEL_ID, model);
+		}
+	}
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {
 	m_doorStats = map_new();
+	m_doorAddons = map_new();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS door_stats (\
 	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
 	type TINYINT UNSIGNED DEFAULT 0,\
-	desc VARCHAR(64) DEFAULT '',\
+	pickup_model MEDIUMINT UNSIGNED DEFAULT 0,\
+	description VARCHAR(64) DEFAULT '',\
 	en_x FLOAT(11, 4) DEFAULT 0.0000,\
 	en_y FLOAT(11, 4) DEFAULT 0.0000,\
 	en_z FLOAT(11, 4) DEFAULT 0.0000,\
@@ -321,10 +334,14 @@ hook OnGameModeInit() {
 	if(rows) {
 		new
 			id,
-			stats[doorStats];
+			stats[doorStats],
+			type;
 		for(new i = 0; i != rows; i++) {
 			cache_get_value_name_int(i, "id", id);
-			cache_get_value_name(i, "desc", stats[doorDesc], 64);
+			cache_get_value_name_int(i, "type", type);
+			stats[doorType] = DoorType:type;
+			cache_get_value_name_int(i, "pickup_model", stats[doorPickupModel]);
+			cache_get_value_name(i, "description", stats[doorDesc], 64);
 			cache_get_value_name_float(i, "en_x", stats[doorEn][0]);
 			cache_get_value_name_float(i, "en_y", stats[doorEn][1]);
 			cache_get_value_name_float(i, "en_z", stats[doorEn][2]);

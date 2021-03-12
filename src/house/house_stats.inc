@@ -4,17 +4,80 @@
 
 #define house_stats_included
 
-static Map:m_house;
+enum houseStats {
+	houseOwnerId,
+	houseDoorId
+}
+
+static Map:m_houseStats;
+
+stock Task:House_Create() {
+	new Task:t = task_new();
+	task_detach();
+
+	inline const QueryFinished() {
+		new id = -1;
+		if(cache_affected_rows()) {
+			new stats[houseStats] = {-1, -1};
+			id = cache_insert_id();
+			map_set_arr(m_houseStats, id, stats);
+		}
+		task_set_result(t, id);
+	}
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO house_stats VALUES ()");
+	return t;
+}
+
+stock House_SetOwnerId(id, owner_id) {
+	if(!map_has_key(m_houseStats, id)) {
+		return 0;
+	}
+	new query[128];
+	map_set_cell(m_houseStats, id, _:houseOwnerId, owner_id);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE house_stats SET owner_id = %d WHERE id = %d LIMIT 1", owner_id, id);
+	mysql_pquery(MySQL_Connection(), query);
+	return 1;
+}
+
+stock House_SetDoorId(id, door_id) {
+	if(!map_has_key(m_houseStats, id)) {
+		return 0;
+	}
+	new query[128];
+	map_set_cell(m_houseStats, id, _:houseDoorId, door_id);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE house_stats SET door_id = %d WHERE id = %d LIMIT 1", door_id, id);
+	mysql_pquery(MySQL_Connection(), query);
+	return 1;
+}
 
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {
+	m_houseStats = map_new();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS house_stats (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
-	id INT UNSIGNED PRIMARY KEY,\
-	FOREIGN KEY (id) REFERENCES house(id) ON UPDATE CASCADE ON DELETE CASCADE\
+	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
+	owner_id INT UNSIGNED DEFAULT NULL,\
+	door_id INT UNSIGNED DEFAULT NULL,\
+	FOREIGN KEY (owner_id) REFERENCES player_auth(id) ON UPDATE CASCADE ON DELETE CASCADE,\
+	FOREIGN KEY (door_id) REFERENCES door_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
+
+	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM house_stats", true);
+
+	new rows = cache_num_rows();
+	for(new i = 0, stats[houseStats] = {-1, -1}, id, bool:null; i != rows; i++) {
+		cache_get_value_name_int(i, "id", id);
+		if(cache_is_value_name_null(i, "owner_id", null) && !null) {
+			cache_get_value_name_int(i, "owner_id", stats[houseOwnerId]);
+		}
+		if(cache_is_value_name_null(i, "door_id", null) && !null) {
+			cache_get_value_name_int(i, "door_id", stats[houseDoorId]);
+		}
+		map_set_arr(m_houseStats, id, stats);
+	}
+	cache_delete(result);
 	return 1;
 }

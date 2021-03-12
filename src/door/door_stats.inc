@@ -119,6 +119,26 @@ stock Door_GetIdByAreaId(areaid) {
 	return id;
 }
 
+stock DoorType:Door_GetType(id) {
+	if(map_has_key(m_doorStats, id)) {
+		new stats[doorStats];
+		map_get_arr(m_doorStats, id, stats);
+		return stats[doorType];
+	}
+	return -1;
+}
+
+stock Door_SetType(id, DoorType:type) {
+	if(map_has_key(m_doorStats, id)) {
+		new query[128];
+		map_set_cell(m_doorStats, id, _:doorType, _:type);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE door_stats SET type = %d WHERE id = %d LIMIT 1", _:type, id);
+		mysql_pquery(MySQL_Connection(), query);
+		return 1;
+	}
+	return 0;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {

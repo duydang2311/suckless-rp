@@ -21,7 +21,7 @@ stock Player_EquipItem(playerid, hand_index, item_id) {
 	new Iter:inv_it = Inventory_GetIterByItem(playerid, item_id);
 	if(iter_valid(inv_it)) {
 		new
-			stats[PlayerHandStats],			inv_stats[InventoryItemStats];
+			inv_stats[InventoryItemStats];
 		iter_get_arr(inv_it, inv_stats);
 		playerHands[playerid][hand_index][hand_itemId] = inv_stats[inv_itemId];
 		playerHands[playerid][hand_index][hand_itemOffset] = inv_stats[inv_itemOffset];

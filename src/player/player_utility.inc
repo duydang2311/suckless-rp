@@ -45,8 +45,10 @@ stock bool:Player_IsValidPassword(const password[]) {
 
 stock Player_StreamToPosition(playerid, Float:x, Float:y, Float:z, Float:a, int, vw) {
 	SetPlayerPos(playerid, x, y, z);
+	SetPlayerFacingAngle(playerid, a);
 	SetPlayerInterior(playerid, int);
 	SetPlayerVirtualWorld(playerid, vw);
+	SetCameraBehindPlayer(playerid);
 	return 1;
 }
 

@@ -41,7 +41,6 @@ hook Player_OnSpawn(playerid) {
 				m_adminFlags = map_new();
 			}
 			map_set(m_adminFlags, playerid, flags);
-			printf("set flags %d == %d", flags, ADMIN_FLAGS_5);
 		}
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM admin_flags WHERE id = %d LIMIT 1", Player_GetId(playerid));

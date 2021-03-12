@@ -111,3 +111,25 @@ CMD:adoor(playerid, params[]) {
 	}
 	return 1;
 }
+
+CMD:enter(playerid) {
+	new id = Door_GetPlayerEntranceDoorId(playerid);
+	if(id == -1) {
+		Player_Msg(playerid, COLOR_YELLOW, "Ban khong o gan canh cua nao de vao.");
+		return 1;
+	}
+
+	Door_StreamPlayerToExit(id, playerid);
+	return 1;
+}
+
+CMD:exit(playerid) {
+	new id = Door_GetPlayerExitDoorId(playerid);
+	if(id == -1) {
+		Player_Msg(playerid, COLOR_YELLOW, "Ban khong o gan canh cua nao de vao.");
+		return 1;
+	}
+
+	Door_StreamPlayerToEntrance(id, playerid);
+	return 1;
+}

@@ -7,8 +7,7 @@
 enum doorExit {
 	Float:doorEx[4],
 	doorExInt,
-	doorExVW,
-	doorExPickupModel
+	doorExVW
 }
 
 enum doorExitAddons {
@@ -16,8 +15,9 @@ enum doorExitAddons {
 	doorExAreaId
 }
 
-static Map:m_doorExit;
-static Map:m_doorExitAddons;
+static Map:m_doorExit,
+	Map:m_doorExitAddons,
+	doorExitExtraId;
 
 stock Door_SetExit(id, Float:x, Float:y, Float:z, Float:a, int, vw) {
 	if(!Door_Valid(id)) {
@@ -83,6 +83,7 @@ stock Door_UpdateExAddons(id) {
 	}
 	addon[doorExAreaId] = CreateDynamicSphere(ex[doorEx][0], ex[doorEx][1], ex[doorEx][2], 2.5, ex[doorExVW], ex[doorExInt]),
 	addon[doorExCPId] = CreateDynamicCP(ex[doorEx][0], ex[doorEx][1], ex[doorEx][2], 2.5, ex[doorExVW], ex[doorExInt], .streamdistance = 10.0);
+	Streamer_SetIntData(STREAMER_TYPE_AREA, addon[doorExAreaId], E_STREAMER_EXTRA_ID, doorExitExtraId);
 	map_set_arr(m_doorExitAddons, id, addon);
 	return 1;
 }
@@ -115,13 +116,45 @@ stock Door_UpdateExAddonsVW(id, vw) {
 	return 1;
 }
 
+stock Door_StreamPlayerToExit(id, playerid) {
+	if(!map_has_key(m_doorExit, id)) {
+		return 0;
+	}
+
+	new ex[doorExit];
+	map_get_arr(m_doorExit, id, ex);
+	if(Door_GetStreamingSync(id)) {
+		Player_SyncedStreamToPosition(playerid, ex[doorEx][0], ex[doorEx][1], ex[doorEx][2], ex[doorEx][3], ex[doorExInt], ex[doorExVW]);
+	} else {
+		Player_StreamToPosition(playerid, ex[doorEx][0], ex[doorEx][1], ex[doorEx][2], ex[doorEx][3], ex[doorExInt], ex[doorExVW]);
+	}
+	return 1;
+}
+
+stock Door_GetIdByExitAreaId(areaid) {
+	for(new Iter:it = map_iter(m_doorExitAddons), ex[doorExitAddons]; iter_inside(it); iter_move_next(it)) {
+		iter_get_arr(it, ex);
+		if(ex[doorExAreaId] == areaid) {
+			return iter_get_key(it);
+		}
+	}
+	return -1;
+}
+
+stock Door_GetExitExtraId() {
+	return doorExitExtraId;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {
 	m_doorExit = map_new();
 	m_doorExitAddons = map_new();
+	doorExitExtraId = Session_GenerateId();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS door_exit (\
+	created_date TIMESTAMP DEFAULT TIMESTAMP,\
+	modified_date TIMESTAM ON UPDATE TIMESTAMP,\
 	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
 	x FLOAT(11, 4) DEFAULT 0.0000,\
 	y FLOAT(11, 4) DEFAULT 0.0000,\
@@ -129,6 +162,7 @@ hook OnGameModeInit() {
 	a FLOAT(11, 4) DEFAULT 0.0000,\
 	interior INT UNSIGNED DEFAULT 0,\
 	vw INT UNSIGNED DEFAULT 0,\
+	FOREIGN KEY (id) REFERENCES door_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
 
 	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM door_exit", true);

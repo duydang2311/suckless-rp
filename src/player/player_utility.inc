@@ -43,6 +43,19 @@ stock bool:Player_IsValidPassword(const password[]) {
 	return !(isnull(password) || strlen(password) < 8 || strlen(password) > 64);
 }
 
+stock Player_StreamToPosition(playerid, Float:x, Float:y, Float:z, Float:a, int, vw) {
+	SetPlayerPos(playerid, x, y, z);
+	SetPlayerInterior(playerid, int);
+	SetPlayerVirtualWorld(playerid, vw);
+	return 1;
+}
+
+stock Player_SyncedStreamToPosition(playerid, Float:x, Float:y, Float:z, Float:a, int, vw) {
+	Player_StreamToPosition(playerid, x, y, z, a, int, vw);
+	Streamer_UpdateEx(playerid, x, y, z, vw, int, STREAMER_TYPE_OBJECT);
+	return 1;
+}
+
 forward Player_ToggleControllable(playerid, bool:toggle);
 public Player_ToggleControllable(playerid, bool:toggle) {
 	TogglePlayerControllable(playerid, toggle);

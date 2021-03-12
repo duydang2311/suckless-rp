@@ -6,6 +6,7 @@
 
 #include <a_samp>
 #include <a_mysql>
+#include <streamer>
 #include <YSI_Coding\y_inline>
 #include <YSI_Data\y_iterate>
 #include <PawnPlus>

@@ -4,6 +4,8 @@
 
 #define door_entrance_included
 
+static doorEntranceExtraId = -1;
+
 enum doorEntrance {
 	Float:doorEn[4],
 	doorEnInt,
@@ -64,6 +66,7 @@ stock Door_UpdateEnAddons(id) {
 	}
 	addon[doorEnAreaId] = CreateDynamicSphere(entrance[doorEn][0], entrance[doorEn][1], entrance[doorEn][2], 2.5, entrance[doorEnVW], entrance[doorEnInt]),
 	addon[doorEnPickupId] = CreateDynamicPickup(entrance[doorEnPickupModel], 0, entrance[doorEn][0], entrance[doorEn][1], entrance[doorEn][2], entrance[doorEnVW], entrance[doorEnInt], .streamdistance = 10.0);
+	Streamer_SetIntData(STREAMER_TYPE_AREA, addon[doorEnAreaId], E_STREAMER_EXTRA_ID, doorEntranceExtraId);
 	map_set_arr(m_doorEntranceAddons, id, addon);
 	return 1;
 }
@@ -138,13 +141,45 @@ stock Door_SetEnPickupModel(id, model) {
 	return 0;
 }
 
+stock Door_StreamPlayerToEntrance(id, playerid) {
+	if(!map_has_key(m_doorEntrance, id)) {
+		return 0;
+	}
+
+	new entrance[doorEntrance];
+	map_get_arr(m_doorEntrance, id, entrance);
+	if(Door_GetStreamingSync(id)) {
+		Player_SyncedStreamToPosition(playerid, entrance[doorEn][0], entrance[doorEn][1], entrance[doorEn][2], entrance[doorEn][3], entrance[doorEnInt], entrance[doorEnVW]);
+	} else {
+		Player_StreamToPosition(playerid, entrance[doorEn][0], entrance[doorEn][1], entrance[doorEn][2], entrance[doorEn][3], entrance[doorEnInt], entrance[doorEnVW]);
+	}
+	return 1;
+}
+
+stock Door_GetIdByEntranceAreaId(areaid) {
+	for(new Iter:it = map_iter(m_doorEntranceAddons), entrance[doorEntranceAddons]; iter_inside(it); iter_move_next(it)) {
+		iter_get_arr(it, entrance);
+		if(entrance[doorEnAreaId] == areaid) {
+			return iter_get_key(it);
+		}
+	}
+	return -1;
+}
+
+stock Door_GetEntranceExtraId() {
+	return doorEntranceExtraId;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {
 	m_doorEntrance = map_new();
 	m_doorEntranceAddons = map_new();
+	doorEntranceExtraId = Session_GenerateId();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS door_entrance (\
+	created_date TIMESTAMP DEFAULT TIMESTAMP,\
+	modified_date TIMESTAM ON UPDATE TIMESTAMP,\
 	id INT UNSIGNED PRIMARY KEY,\
 	pickup_model MEDIUMINT UNSIGNED DEFAULT 0,\
 	x FLOAT(11, 4) DEFAULT 0.0000,\

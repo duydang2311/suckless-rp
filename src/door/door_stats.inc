@@ -111,6 +111,14 @@ stock Door_SetStreamingSync(id, bool:sync) {
 	return 1;
 }
 
+stock Door_GetIdByAreaId(areaid) {
+	new id = Door_GetIdByEntranceAreaId(areaid);
+	if(id == -1) {
+		id = Door_GetIdByExitAreaId(areaid);
+	}
+	return id;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {

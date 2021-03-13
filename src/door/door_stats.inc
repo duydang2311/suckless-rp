@@ -125,7 +125,7 @@ stock DoorType:Door_GetType(id) {
 		map_get_arr(m_doorStats, id, stats);
 		return stats[doorType];
 	}
-	return -1;
+	return DoorType:DOOR_TYPE_NONE;
 }
 
 stock Door_SetType(id, DoorType:type) {
@@ -137,6 +137,21 @@ stock Door_SetType(id, DoorType:type) {
 		return 1;
 	}
 	return 0;
+}
+
+stock Door_GetTypeName(DoorType:type, name[], size = sizeof(name)) {
+	switch(type) {
+		case DOOR_TYPE_NONE: {
+			format(name, size, "None");
+		}
+		case DOOR_TYPE_HOUSE: {
+			format(name, size, "House");
+		}
+		case DOOR_TYPE_BUSINESS: {
+			format(name, size, "Business");
+		}
+	}
+	return 1;
 }
 
 #include <YSI_Coding\y_hooks>

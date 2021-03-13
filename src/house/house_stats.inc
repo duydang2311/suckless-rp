@@ -50,6 +50,17 @@ stock House_SetDoorId(id, door_id) {
 	return 1;
 }
 
+stock House_Delete(id) {
+	if(!map_has_key(m_houseStats, id)) {
+		return 0;
+	}
+	new query[128];
+	map_remove(m_houseStats, id);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM house_stats WHERE id = %d LIMIT 1", id);
+	mysql_pquery(MySQL_Connection(), query);
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {

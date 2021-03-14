@@ -11,6 +11,22 @@ enum _:FactionRank {
 
 static Map:m_factionRanks;
 
+stock Faction_AddRank(id, order, const name[]) {
+	if(!Faction_Valid(id)) {
+		return 0;
+	}
+
+	new LinkedList:ll;
+	if(!map_has_key(m_factionRanks, id)) {
+		ll = linked_list_new();
+		map_set(m_factionRanks, id, ll);
+	} else {
+		ll = LinkedList:map_get(m_factionRanks, id);
+	}
+	linked_list_add_str(ll, name, order);
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {

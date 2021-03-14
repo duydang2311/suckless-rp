@@ -58,6 +58,7 @@ stock House_Delete(id) {
 	map_remove(m_houseStats, id);
 	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM house_stats WHERE id = %d LIMIT 1", id);
 	mysql_pquery(MySQL_Connection(), query);
+	// CallLocalFunction("House_OnDeleted", "i", id); // if needed in future
 	return 1;
 }
 

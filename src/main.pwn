@@ -36,5 +36,6 @@
 #include <admin>
 #include <door>
 #include <house>
+#include <faction>
 
 main() {}

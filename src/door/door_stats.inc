@@ -51,6 +51,7 @@ stock Door_Delete(id) {
 	new query[128];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM door_stats WHERE id = %d LIMIT 1", id);
 	mysql_pquery(MySQL_Connection(), query);
+	CallLocalFunction("Door_OnDeleted", "i", id);
 	return 1;
 }
 

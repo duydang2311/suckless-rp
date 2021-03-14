@@ -4,13 +4,13 @@
 
 #define door_exit_included
 
-enum doorExit {
+enum _:DoorExit {
 	Float:doorEx[4],
 	doorExInt,
 	doorExVW
 }
 
-enum doorExitAddons {
+enum _:DoorExitAddons {
 	doorExCPId,
 	doorExAreaId
 }
@@ -25,7 +25,7 @@ stock Door_SetExit(id, Float:x, Float:y, Float:z, Float:a, int, vw) {
 	}
 	new
 		query[384],
-		ex[doorExit];
+		ex[DoorExit];
 	ex[doorEx][0] = x;
 	ex[doorEx][1] = y;
 	ex[doorEx][2] = z;
@@ -69,8 +69,8 @@ stock Door_UpdateExAddons(id) {
 	}
 
 	new
-		ex[doorExit],
-		addon[doorExitAddons] = {-1, -1};
+		ex[DoorExit],
+		addon[DoorExitAddons] = {-1, -1};
 	map_get_arr(m_doorExit, id, ex);
 	if(map_has_key(m_doorExitAddons, id)) {
 		map_get_arr(m_doorExitAddons, id, addon);
@@ -90,7 +90,7 @@ stock Door_UpdateExAddons(id) {
 
 stock Door_UpdateExAddonsInt(id, int) {
 	if(map_has_key(m_doorExitAddons, id)) {
-		new addon[doorExitAddons];
+		new addon[DoorExitAddons];
 		map_get_arr(m_doorExitAddons, id, addon);
 		if(addon[doorExAreaId] != -1) {
 			Streamer_SetIntData(STREAMER_TYPE_AREA, addon[doorExAreaId], E_STREAMER_INTERIOR_ID, int);
@@ -104,7 +104,7 @@ stock Door_UpdateExAddonsInt(id, int) {
 
 stock Door_UpdateExAddonsVW(id, vw) {
 	if(map_has_key(m_doorExitAddons, id)) {
-		new addon[doorExitAddons];
+		new addon[DoorExitAddons];
 		map_get_arr(m_doorExitAddons, id, addon);
 		if(addon[doorExAreaId] != -1) {
 			Streamer_SetIntData(STREAMER_TYPE_AREA, addon[doorExAreaId], E_STREAMER_WORLD_ID, vw);
@@ -121,7 +121,7 @@ stock Door_StreamPlayerToExit(id, playerid) {
 		return 0;
 	}
 
-	new ex[doorExit];
+	new ex[DoorExit];
 	map_get_arr(m_doorExit, id, ex);
 	if(Door_GetStreamingSync(id)) {
 		Player_SyncedStreamToPosition(playerid, ex[doorEx][0], ex[doorEx][1], ex[doorEx][2], ex[doorEx][3], ex[doorExInt], ex[doorExVW]);
@@ -132,7 +132,7 @@ stock Door_StreamPlayerToExit(id, playerid) {
 }
 
 stock Door_GetIdByExitAreaId(areaid) {
-	for(new Iter:it = map_iter(m_doorExitAddons), ex[doorExitAddons]; iter_inside(it); iter_move_next(it)) {
+	for(new Iter:it = map_iter(m_doorExitAddons), ex[DoorExitAddons]; iter_inside(it); iter_move_next(it)) {
 		iter_get_arr(it, ex);
 		if(ex[doorExAreaId] == areaid) {
 			return iter_get_key(it);
@@ -146,6 +146,25 @@ stock Door_GetExitExtraId() {
 }
 
 #include <YSI_Coding\y_hooks>
+
+hook Door_OnDeleted(id) {
+	if(map_has_key(m_doorExit, id)) {
+		map_remove(m_doorExit, id);
+	}
+	if(map_has_key(m_doorExitAddons, id)) {
+		new addon[DoorExitAddons];
+		map_get_arr(m_doorExitAddons, id, addon);
+
+		if(addon[doorExAreaId] != -1) {
+			DestroyDynamicArea(addon[doorExAreaId]);
+		}
+		if(addon[doorExCPId] != -1) {
+			DestroyDynamicCP(addon[doorExCPId]);
+		}
+		map_remove(m_doorExitAddons, id);
+	}
+	return 1;
+}
 
 hook OnGameModeInit() {
 	m_doorExit = map_new();
@@ -171,7 +190,7 @@ hook OnGameModeInit() {
 	if(rows) {
 		new
 			id,
-			ex[doorExit];
+			ex[DoorExit];
 		for(new i = 0; i != rows; i++) {
 			cache_get_value_name_int(i, "id", id);
 			cache_get_value_name_float(i, "x", ex[doorEx][0]);

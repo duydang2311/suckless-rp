@@ -70,4 +70,5 @@ build:
   - src/door
   - src/house
   - src/session
+  - src/faction
   - src/

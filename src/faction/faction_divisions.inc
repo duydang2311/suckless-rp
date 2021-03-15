@@ -18,7 +18,7 @@ hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS faction_divisions (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_datet TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED,\
 	div_order TINYINT UNSIGNED,\
 	div_name VARCHAR(32) DEFAULT '',\

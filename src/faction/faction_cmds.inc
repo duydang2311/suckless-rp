@@ -9,6 +9,29 @@ static
 	Map:m_factionRankEditOrder,
 	Map:m_factionDivEditOrder;
 
+flags:afac(ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
+CMD:afac(playerid, params) {
+	new
+		Iter:it = Faction_GetIter(),
+		string[1024] = "ID\tTen Faction";
+	if(iter_valid(it)) {
+		new fac[FactionStats];
+		for(; iter_inside(it); iter_move_next(it)) {
+			iter_get_arr(it, fac);
+			if(isnull(fac[facName])) {
+				format(string, sizeof(string), "%s\n%d\tEmpty", string, iter_get_key(it));
+			} else {
+				format(string, sizeof(string), "%s\n%d\t%s", string, iter_get_key(it), fac[facName]);
+			}
+		}
+		iter_release(it);
+	}
+	strcat(string, "\n> Tao mot faction moi.");
+	Dialog_Show(playerid, FactionListDialog, DIALOG_STYLE_TABLIST_HEADERS, "Faction Management", string, ">>", "<<");
+	return 1;
+}
+alias:afac("afaction")
+
 static faction_manage_show(playerid) {
 	if(map_valid(m_factionEditId) && map_has_key(m_factionEditId, playerid)) {
 		new id = map_get(m_factionEditId, playerid);
@@ -79,29 +102,6 @@ static faction_division_manage_show(playerid) {
 	}
 	return 0;
 }
-
-flags:afac(ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
-CMD:afac(playerid, params) {
-	new
-		Iter:it = Faction_GetIter(),
-		string[1024] = "ID\tTen Faction";
-	if(iter_valid(it)) {
-		new fac[FactionStats];
-		for(; iter_inside(it); iter_move_next(it)) {
-			iter_get_arr(it, fac);
-			if(isnull(fac[facName])) {
-				format(string, sizeof(string), "%s\n%d\tEmpty", string, iter_get_key(it));
-			} else {
-				format(string, sizeof(string), "%s\n%d\t%s", string, iter_get_key(it), fac[facName]);
-			}
-		}
-		iter_release(it);
-	}
-	strcat(string, "\n> Tao mot faction moi.");
-	Dialog_Show(playerid, FactionListDialog, DIALOG_STYLE_TABLIST_HEADERS, "Faction Management", string, ">>", "<<");
-	return 1;
-}
-alias:afac("afaction")
 
 Dialog:FactionListDialog(playerid, response, listitem, inputtext[]) {
 	if(response) {

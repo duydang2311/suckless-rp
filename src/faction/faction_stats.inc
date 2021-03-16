@@ -4,7 +4,7 @@
 
 #define faction_stats_included
 
-enum FactionStats {
+enum _:FactionStats {
 	facName[64],
 	bool:facType,
 }
@@ -25,7 +25,7 @@ stock Task:Faction_Create(bool:legal) {
 		}
 		task_set_result(t, insert_id);
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO faction_types(type) VALUES (%d)", _:legal);
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO faction_stats(type) VALUES (%d)", _:legal);
 	return t;
 }
 
@@ -56,10 +56,15 @@ stock Faction_SetName(id, const name[]) {
 	if(!map_has_key(m_factionStats, id)) {
 		return 0;
 	}
-	new fac[FactionStats];
+	new
+		fac[FactionStats],
+		query[128];
 	map_get_arr(m_factionStats, id, fac);
-	format(fac[facName], sizeof(fac[facName]), name);
+	fac[facName][0] = EOS;
+	strcat(fac[facName], name, sizeof(fac[facName]));
 	map_set_arr(m_factionStats, id, fac);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE faction_stats SET name = '%e' WHERE id = %d LIMIT 1", name, id);
+	mysql_pquery(MySQL_Connection(), query);
 	return 1;
 }
 
@@ -75,6 +80,28 @@ stock Faction_Delete(id) {
 	return 1;
 }
 
+stock Iter:Faction_GetIter(index = 0) {
+	new Iter:it = map_iter(m_factionStats, index);
+	if(iter_valid(it) && iter_inside(it)) {
+		iter_acquire(it);
+		return it;
+	}
+	return Iter:0;
+}
+
+stock Iter:Faction_GetIterByKey(key) {
+	new Iter:it = map_iter_at(m_factionStats, key);
+	if(iter_valid(it) && iter_inside(it)) {
+		iter_acquire(it);
+		return it;
+	}
+	return Iter:0;
+}
+
+stock Faction_Count() {
+	return map_size(m_factionStats);
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {
@@ -87,5 +114,15 @@ hook OnGameModeInit() {
 	name VARCHAR(64) DEFAULT '',\
 	type TINYINT UNSIGNED DEFAULT FALSE\
 	)", false);
+
+	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM faction_stats", true);
+	new rows = cache_num_rows();
+	for(new i = 0, fac[FactionStats], id; i != rows; i++) {
+		cache_get_value_name_int(i, "id", id);
+		cache_get_value_name(i, "name", fac[facName], 64);
+		cache_get_value_name_int(i, "type", fac[facType]);
+		map_set_arr(m_factionStats, id, fac);
+	}
+	cache_delete(result);
 	return 1;
 }

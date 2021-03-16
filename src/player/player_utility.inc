@@ -58,6 +58,15 @@ stock Player_SyncedStreamToPosition(playerid, Float:x, Float:y, Float:z, Float:a
 	return 1;
 }
 
+stock Player_GetFreeAttachmentSlot(playerid) {
+	for(new i = 0; i != 10; i++) {
+		if(!IsPlayerAttachedObjectSlotUsed(playerid, i)) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 forward Player_ToggleControllable(playerid, bool:toggle);
 public Player_ToggleControllable(playerid, bool:toggle) {
 	TogglePlayerControllable(playerid, toggle);

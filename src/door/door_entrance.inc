@@ -197,8 +197,8 @@ hook OnGameModeInit() {
 	doorEntranceExtraId = Session_GenerateId();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS door_entrance (\
-	created_date TIMESTAMP DEFAULT TIMESTAMP,\
-	modified_date TIMESTAM ON UPDATE TIMESTAMP,\
+	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED PRIMARY KEY,\
 	pickup_model MEDIUMINT UNSIGNED DEFAULT 0,\
 	x FLOAT(11, 4) DEFAULT 0.0000,\

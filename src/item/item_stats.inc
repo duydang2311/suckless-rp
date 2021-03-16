@@ -18,72 +18,71 @@ enum ItemStats {
 	itemAbility
 }
 
+static Map:m_itemAbility;
+
 stock Item_GetName(item_id, name[], size = sizeof(name)) {
-	inline const QueryFinished() {
-		if(cache_num_rows()) {
-			new ability;
-			cache_get_value_name_int(0, "ability", ability);
-			switch(ITEM_ABILITY:ability) {
-				case ITEM_ABILITY_GUN: {
-					ItemGun_GetName(item_id, name, size);
-				}
-				case ITEM_ABILITY_MELEE: {
-					// TODO: ItemMelee_GetName(item_id, name, size);
-				}
+	if(map_has_key(m_itemAbility, item_id)) {
+		switch(ITEM_ABILITY:map_get(m_itemAbility, item_id)) {
+			case ITEM_ABILITY_GUN: {
+				ItemGun_GetName(item_id, name, size);
+			}
+			case ITEM_ABILITY_MELEE: {
+				// TODO: ItemMelee_GetName(item_id, name, size);
 			}
 		}
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT ability FROM item_stats WHERE id = %d LIMIT 1", item_id);
 	return 1;
+}
+
+stock Item_GetModel(item_id) {
+	if(map_has_key(m_itemAbility, item_id)) {
+		switch(ITEM_ABILITY:map_get(m_itemAbility, item_id)) {
+			case ITEM_ABILITY_GUN: {
+				return ItemGun_GetModel(item_id);
+			}
+			case ITEM_ABILITY_MELEE: {
+				// TODO: ItemMelee_GetModel(item_id);
+			}
+		}
+	}
+	return 0;
 }
 
 forward Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
 public Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
-	inline const QueryFinished() {
-		if(cache_num_rows()) {
-			new ability;
-			cache_get_value_name_int(0, "ability", ability);
-			switch(ITEM_ABILITY:ability) {
-				case ITEM_ABILITY_GUN: {
-					CallLocalFunction("ItemGun_OnPlayerEquipped", "iii", playerid, _:hand_leftright, item_id);
-				}
-				case ITEM_ABILITY_MELEE: {
-					CallLocalFunction("ItemMelee_OnPlayerEquipped", "iii", playerid, _:hand_leftright, item_id);
-				}
+	if(map_has_key(m_itemAbility, item_id)) {
+		switch(ITEM_ABILITY:map_get(m_itemAbility, item_id)) {
+			case ITEM_ABILITY_GUN: {
+				print("call ItemGun_OnPlayerEquipped");
+				CallLocalFunction("ItemGun_OnPlayerEquipped", "iii", playerid, _:hand_leftright, item_id);
+			}
+			case ITEM_ABILITY_MELEE: {
+				CallLocalFunction("ItemMelee_OnPlayerEquipped", "iii", playerid, _:hand_leftright, item_id);
 			}
 		}
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT ability FROM item_stats WHERE id = %d LIMIT 1", item_id);
 	return 1;
 }
 
 forward Item_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id);
 public Item_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
-	print("Item_OnPlayerUnequipped");
-	inline const QueryFinished() {
-		printf("rows %d", cache_num_rows());
-		if(cache_num_rows()) {
-			new ability;
-			cache_get_value_name_int(0, "ability", ability);
-			printf("item ability %d", ability);
-			switch(ITEM_ABILITY:ability) {
-				case ITEM_ABILITY_GUN: {
-					print("called ItemGun_OnPlayerUnequipped");
-					CallLocalFunction("ItemGun_OnPlayerUnequipped", "iii", playerid, _:hand_leftright, item_id);
-				}
-				case ITEM_ABILITY_MELEE: {
-					CallLocalFunction("ItemMelee_OnPlayerUnequipped", "iii", playerid, _:hand_leftright, item_id);
-				}
+	if(map_has_key(m_itemAbility, item_id)) {
+		switch(ITEM_ABILITY:map_get(m_itemAbility, item_id)) {
+			case ITEM_ABILITY_GUN: {
+				CallLocalFunction("ItemGun_OnPlayerUnequipped", "iii", playerid, _:hand_leftright, item_id);
+			}
+			case ITEM_ABILITY_MELEE: {
+				CallLocalFunction("ItemMelee_OnPlayerUnequipped", "iii", playerid, _:hand_leftright, item_id);
 			}
 		}
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT ability FROM item_stats WHERE id = %d LIMIT 1", item_id);
 	return 1;
 }
 
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {
+	m_itemAbility = map_new();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_stats (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -91,5 +90,13 @@ hook OnGameModeInit() {
 	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
 	ability TINYINT UNSIGNED DEFAULT 0\
 	)", false);
+
+	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_stats", true);
+	for(new i = 0, rows = cache_num_rows(), ability, id; i != rows; i++) {
+		cache_get_value_name_int(i, "id", id);
+		cache_get_value_name_int(i, "ability", ability);
+		map_set(m_itemAbility, id, ability);
+	}
+	cache_delete(result);
 	return 1;
 }

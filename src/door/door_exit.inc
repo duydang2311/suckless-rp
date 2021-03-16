@@ -172,8 +172,8 @@ hook OnGameModeInit() {
 	doorExitExtraId = Session_GenerateId();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS door_exit (\
-	created_date TIMESTAMP DEFAULT TIMESTAMP,\
-	modified_date TIMESTAM ON UPDATE TIMESTAMP,\
+	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
 	x FLOAT(11, 4) DEFAULT 0.0000,\
 	y FLOAT(11, 4) DEFAULT 0.0000,\

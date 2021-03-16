@@ -16,5 +16,6 @@
 
 #include <mysql>
 
+#include "./inventory_attachments.inc"
 #include "./inventory_stats.inc"
 #include "./inventory_cmds.inc"

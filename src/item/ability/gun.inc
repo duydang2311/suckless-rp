@@ -55,8 +55,17 @@ stock ItemGun_GetName(item_id, name[], size = sizeof(name)) {
 	return 1;
 }
 
+stock ItemGun_GetModel(item_id) {
+	new Weapon:weapon = ItemGun_GetWeapon(item_id);
+	if(weapon == Weapon:-1) {
+		return 0;
+	}
+	return Weapon_GetModel(weapon);
+}
+
 forward ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
 public ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
+	print("ItemGun_OnPlayerEquipped");
 	if(map_valid(m_weaponGun) && map_has_key(m_weaponGun, item_id)) {
 		new stats[ItemAbilityGunStats];
 		map_get_arr(m_weaponGun, item_id, stats);
@@ -69,7 +78,6 @@ public ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 				}
 			}
 			MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT ammo FROM item_ability_gun WHERE id = %d LIMIT 1", item_id);
-
 		}
 	}
 	return 1;

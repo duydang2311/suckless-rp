@@ -48,6 +48,12 @@ stock Item_GetModel(item_id) {
 	return 0;
 }
 
+forward Item_OnCreated(item_id, ability);
+public Item_OnCreated(item_id, ability) {
+	map_set(m_itemAbility, item_id, ability);
+	return 1;
+}
+
 forward Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
 public Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 	if(map_has_key(m_itemAbility, item_id)) {

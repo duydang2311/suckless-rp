@@ -40,9 +40,10 @@ stock Task:ItemGun_Create(Weapon:weapon, Float:damage, ammo = 0) {
 			m_weaponGun = map_new();
 		}
 		map_set_arr(m_weaponGun, insert_id, stats);
+		CallLocalFunction("Item_OnCreated", "ii", insert_id, _:ITEM_ABILITY_GUN);
 		task_set_result(t, insert_id);
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability) VALUES (%d)", _:ITEM_ABILITY:ITEM_ABILITY_GUN);
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability) VALUES (%d)", _:ITEM_ABILITY_GUN);
 	return t;
 }
 

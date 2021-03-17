@@ -128,25 +128,13 @@ stock Inventory_SetAttachment(item_id, Float:offx, Float:offy, Float:offz, Float
 #include <YSI_Coding\y_hooks>
 
 hook Inventory_OnItemAdded(playerid, item_id) {
-	new slot = Player_GetFreeAttachmentSlot(playerid);
-	if(slot == -1) {
-		inline const QueryFinished() {
-			if(cache_num_rows()) {
-				new bool:attached;
-				cache_get_value_name_int(0, "attached", attached);
-				if(attached) {
-					Inventory_DetachItem(playerid, item_id);
-				}
-			}
-		}
-		MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT attached FROM inventory_attachments WHERE item_id = %d LIMIT 1", item_id);
-		return 1;
-	}
 	inline const QueryFinished() {
+		printf("Inventory_OnItemAdded %d %d finished", playerid, item_id);
 		if(cache_num_rows()) {
 			new bool:attached;
 			cache_get_value_name_int(0, "attached", attached);
 			if(attached) {
+				new slot = Player_GetFreeAttachmentSlot(playerid);
 				if(slot == -1) {
 					Inventory_DetachItem(playerid, item_id);
 				} else {
@@ -179,6 +167,7 @@ hook Inventory_OnItemAdded(playerid, item_id) {
 		}
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM inventory_attachments WHERE item_id = %d LIMIT 1", item_id);
+	printf("Inventory_OnItemAdded %d %d", playerid, item_id);
 	return 1;
 }
 

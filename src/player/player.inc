@@ -29,5 +29,16 @@
 #include "./player_auth.inc"
 #include "./player_stats.inc"
 #include "./player_spawn.inc"
+#include "./player_hand_attach.inc"
 #include "./player_hands.inc"
 #include "./player_death.inc"
+#include "./player_hand_cmds.inc"
+
+#include <YSI_Coding\y_hooks>
+
+hook OnPlayerDisconnect(playerid, reason) {
+	for(new i = 0; i != 10; i++) {
+		RemovePlayerAttachedObject(playerid, i);
+	}
+	return 1;
+}

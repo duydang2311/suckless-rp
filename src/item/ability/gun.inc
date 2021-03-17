@@ -30,7 +30,7 @@ stock Task:ItemGun_Create(Weapon:weapon, Float:damage, ammo = 0) {
 			insert_id = cache_insert_id(),
 			stats[ItemAbilityGunStats],
 			query[150];
-		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_ability_gun (id, weapon, ammo, damage) VALUES (%d, %d, %d, %.4f)", insert_id, _:weapon, ammo, damage);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_gun (id, weapon, ammo, damage) VALUES (%d, %d, %d, %.4f)", insert_id, _:weapon, ammo, damage);
 		mysql_pquery(MySQL_Connection(), query);
 
 		stats[itemWeapon] = weapon;
@@ -78,7 +78,7 @@ public ItemGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 					Weapon_SetPlayerArmed(playerid, stats[itemWeapon], ammo);
 				}
 			}
-			MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT ammo FROM item_ability_gun WHERE id = %d LIMIT 1", item_id);
+			MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT ammo FROM item_gun WHERE id = %d LIMIT 1", item_id);
 		}
 	}
 	return 1;
@@ -95,7 +95,7 @@ public ItemGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
 				ammo = Weapon_GetAmmo(playerid, weapon),
 				query[128];
 			printf("weapon ammo %d", ammo);
-			mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE item_ability_gun SET ammo = %d WHERE id = %d LIMIT 1", ammo, item_id);
+			mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE item_gun SET ammo = %d WHERE id = %d LIMIT 1", ammo, item_id);
 			mysql_pquery(MySQL_Connection(), query);
 			Weapon_Reset(playerid);
 		}
@@ -107,7 +107,7 @@ public ItemGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
 
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
-	"CREATE TABLE IF NOT EXISTS item_ability_gun (\
+	"CREATE TABLE IF NOT EXISTS item_gun (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED PRIMARY KEY,\

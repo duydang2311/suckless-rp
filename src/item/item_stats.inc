@@ -59,7 +59,6 @@ public Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 	if(map_has_key(m_itemAbility, item_id)) {
 		switch(ITEM_ABILITY:map_get(m_itemAbility, item_id)) {
 			case ITEM_ABILITY_GUN: {
-				print("call ItemGun_OnPlayerEquipped");
 				CallLocalFunction("ItemGun_OnPlayerEquipped", "iii", playerid, _:hand_leftright, item_id);
 			}
 			case ITEM_ABILITY_MELEE: {

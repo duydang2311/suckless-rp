@@ -77,11 +77,13 @@ stock Iter:Inventory_GetIter(playerid, index = 0) {
 
 stock Inventory_RemoveItemByIter(playerid, Iter:it) {
 	if(iter_valid(it)) {
-		new query[128];
-		mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM inventory WHERE item_id = %d LIMIT 1", iter_get(it));
+		new
+			query[128],
+			id = iter_get(it);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM inventory WHERE item_id = %d LIMIT 1", id);
 		mysql_pquery(MySQL_Connection(), query);
-		CallLocalFunction("Inventory_OnItemRemoved", "ii", playerid, iter_get(it));
 		iter_erase(it);
+		CallLocalFunction("Inventory_OnItemRemoved", "ii", playerid, id);
 	}
 	return 1;
 }

@@ -4,45 +4,94 @@
 
 #define item_ability_melee_included
 
-enum ItemAbilityMeleeStats {
-	Weapon:itemWeapon,
-	Float:itemDamage,
-	Float:itemReliability,
+enum _:ItemMeleeStats {
+	Weapon:iMeleeWeapon,
+	Float:iMeleeDamage,
+	Float:iMeleeReliability,
 }
 
-static Map:m_weaponMelee;
+static Map:m_itemMelee;
 
-stock Task:Item_CreateMelee(Weapon:weapon, Float:damage) {
+stock Task:ItemMelee_Create(Weapon:weapon, Float:damage) {
 	new Task:t = task_new();
 	task_detach();
 
 	inline const QueryFinished() {
 		new
 			insert_id = cache_insert_id(),
-			stats[ItemAbilityGunStats],
-			name[32 + 1],
+			stats[ItemMeleeStats],
 			query[150];
 
-		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_ability_gun (id, weapon, damage) VALUES (%d, %d, %.4f)", insert_id, model, damage);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_melee (id, weapon, damage) VALUES (%d, %d, %.4f)", insert_id, _:weapon, damage);
 		mysql_pquery(MySQL_Connection(), query);
-		stats[itemWeapon] = weapon;
-		stats[itemDamage] = damage;
-		stats[itemReliability] = 1.0;
-		if(!map_valid(m_weaponMelee)) {
-			m_weaponMelee = map_new();
+		stats[iMeleeWeapon] = weapon;
+		stats[iMeleeDamage] = damage;
+		stats[iMeleeReliability] = 1.0;
+		if(!map_valid(m_itemMelee)) {
+			m_itemMelee = map_new();
 		}
-		map_set(m_weaponMelee, insert_id, stats);
+		map_set_arr(m_itemMelee, insert_id, stats);
 		task_set_result(t, insert_id);
+		CallLocalFunction("Item_OnCreated", "ii", insert_id, _:ITEM_ABILITY_MELEE);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability) VALUES (%d)", _:ITEM_ABILITY:ITEM_ABILITY_MELEE);
 	return t;
+}
+
+stock Weapon:ItemMelee_GetWeapon(item_id) {
+	if(!map_valid(m_itemMelee) || !map_has_key(m_itemMelee, item_id)) {
+		return Weapon:-1;
+	}
+	new stats[ItemMeleeStats];
+	map_get_arr(m_itemMelee, item_id, stats);
+	return stats[iMeleeWeapon];
+}
+
+stock ItemMelee_GetName(item_id, name[], size = sizeof(name)) {
+	new Weapon:weapon = ItemMelee_GetWeapon(item_id);
+	if(weapon == Weapon:-1) {
+		return 0;
+	}
+	Weapon_GetName(weapon, name, size);
+	return 1;
+}
+
+stock ItemMelee_GetModel(item_id) {
+	new Weapon:weapon = ItemMelee_GetWeapon(item_id);
+	if(weapon == Weapon:-1) {
+		return 0;
+	}
+	return Weapon_GetModel(weapon);
+}
+
+forward ItemMelee_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
+public ItemMelee_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
+	if(map_valid(m_itemMelee) && map_has_key(m_itemMelee, item_id)) {
+		new stats[ItemAbilityGunStats];
+		map_get_arr(m_itemMelee, item_id, stats);
+		if(hand_leftright) {
+			Weapon_SetPlayerArmed(playerid, stats[iMeleeWeapon], 1);
+		}
+	}
+	return 1;
+}
+
+forward ItemMelee_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id);
+public ItemMelee_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
+	if(hand_leftright) {
+		new Weapon:weapon = ItemMelee_GetWeapon(item_id); // this function already checks for map valid
+		if(weapon != Weapon:-1) {
+			Weapon_Reset(playerid);
+		}
+	}
+	return 1;
 }
 
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
-	"CREATE TABLE IF NOT EXISTS item_ability_melee (\
+	"CREATE TABLE IF NOT EXISTS item_melee (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED PRIMARY KEY,\

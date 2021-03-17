@@ -42,8 +42,8 @@ stock Player_Spawn(playerid) {
 		TogglePlayerControllable(playerid, false);
 		SetCameraBehindPlayer(playerid);
 
-		CallLocalFunction("Player_OnSpawn", "i", playerid);
 		SetPreciseTimer("Player_ToggleControllable", 1000, false, "ii", playerid, true);
+		CallLocalFunction("Player_OnSpawn", "i", playerid);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_spawn WHERE id = %d LIMIT 1", Player_GetId(playerid));
 	return 1;

@@ -54,3 +54,9 @@ HOOK__ OnGameModeInit() {
 	print("INFO: Connected to database server successfully.");
 	return 1;
 }
+
+hook OnGameModeExit() {
+	mysql_close(mysql_conn);
+	mysql_conn = MySQL:MYSQL_INVALID_HANDLE;
+	return 1;
+}

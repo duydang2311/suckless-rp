@@ -92,6 +92,10 @@ stock Weapon_GetModel(Weapon:weapon) {
 	return arr_weaponStats[weapon][weaponModel];
 }
 
+stock Weapon_IsGun(Weapon:weapon) {
+	return arr_weaponStats[weapon][isGun];
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnGameModeInit() {

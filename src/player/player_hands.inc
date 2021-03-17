@@ -18,9 +18,10 @@ stock Player_EquipItem(playerid, hand_index, item_id) {
 		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hands (player_id, item_id, hand_index) VALUES (%d, %d, %d)", Player_GetId(playerid), item_id, hand_index);
 		mysql_pquery(MySQL_Connection(), query);
 
-		CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, hand_index, item_id);
 		Inventory_RemoveItemByIter(playerid, inv_it);
 		iter_release(inv_it);
+		CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, hand_index, item_id);
+		CallLocalFunction("Player_OnItemEquipped", "iii", playerid, hand_index, item_id);
 	}
 	return 0;
 }
@@ -35,6 +36,7 @@ stock Player_UnequipItem(playerid, hand_index) {
 	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM player_hands WHERE player_id = %d AND hand_index = %d", Player_GetId(playerid), hand_index);
 	mysql_pquery(MySQL_Connection(), query);
 	CallLocalFunction("Item_OnPlayerUnequipped", "iii", playerid, hand_index, playerHands[playerid][hand_index]);
+	CallLocalFunction("Player_OnItemUnequipped", "iii", playerid, hand_index, playerHands[playerid][hand_index]);
 	playerHands[playerid][hand_index] = -1;
 	return 1;
 }
@@ -50,8 +52,6 @@ stock Player_GetFreeHand(playerid) {
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnSpawn(playerid) {
-	print("player_hands.inc");
-
 	inline const QueryFinished() {
 		new rows = cache_num_rows();
 		if(rows) {
@@ -60,6 +60,7 @@ hook Player_OnSpawn(playerid) {
 				cache_get_value_name_int(i, "hand_index", index);
 				cache_get_value_name_int(i, "item_id", playerHands[playerid][index]);
 				CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, index, playerHands[playerid][index]);
+				CallLocalFunction("Player_OnItemEquipped", "iii", playerid, index, playerHands[playerid][index]);
 			}
 		}
 	}

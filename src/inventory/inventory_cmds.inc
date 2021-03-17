@@ -103,7 +103,6 @@ Dialog:InventoryAttachDialog(playerid, response, listitem, inputtext[]) {
 
 Dialog:InventoryAttachBoneSetup(playerid, response, listitem, inputtext[]) {
 	if(response) {
-		printf("condition %d", map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid));
 		if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
 			new bone = (listitem < 4) ? listitem + 1 : listitem + 3;
 			task_unblock(1);
@@ -157,7 +156,7 @@ Dialog:InventoryAttachAction(playerid, response, listitem, inputtext[]) {
 #include <YSI_Coding\y_hooks>
 
 hook OnPlayerEditAttachedObj(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ) {
-	if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
+	if(response && map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
 		new
 			id = map_get(m_selectedItemId, playerid),
 			slot = Inventory_GetAttachSlot(playerid, id);

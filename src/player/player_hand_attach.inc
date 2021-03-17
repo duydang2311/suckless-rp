@@ -57,7 +57,6 @@ stock Player_UpdateHandAttach(playerid, hand_index, item_id, Float:fOffsetX, Flo
 
 forward Player_OnItemEquipped(playerid, hand_index, item_id);
 public Player_OnItemEquipped(playerid, hand_index, item_id) {
-	printf("onitemequipped %d %d %d", playerid, hand_index, item_id);
 	Player_AttachItemToHand(playerid, hand_index, item_id);
 	return 1;
 }

@@ -13,7 +13,6 @@ public Inventory_OnItemAdded(playerid, item_id) {
 
 forward Inventory_OnItemRemoved(playerid, item_id);
 public Inventory_OnItemRemoved(playerid, item_id) {
-	print("?");
 	return 1;
 }
 

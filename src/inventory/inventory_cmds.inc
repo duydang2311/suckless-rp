@@ -6,15 +6,59 @@
 
 static Map:m_selectedItemId;
 
+static item_group_root_show(playerid) {
+	new
+		Iter:it = Inventory_GetIter(playerid),
+		name[64],
+		string[512] = "ID\tTen vat pham";
+	if(!iter_valid(it)) {
+		return 0;
+	}
+	for(; iter_inside(it); iter_move_next(it)) {
+		Item_GetName(iter_get(it), name);
+		format(string, sizeof(string), "%s\n%d\t%s (%s)", string, iter_get(it), name, (Inventory_IsAttached(playerid, iter_get(it)) ? "Da gan" : "Chua gan"));
+	}
+	iter_release(it);
+	strcat(string, "\n"E_COLOR_FADE2"> Chon nhom ban muon dua vat pham da chon vao.");
+	Dialog_Show(playerid, InventoryItemGroupRoot, DIALOG_STYLE_TABLIST_HEADERS, "Inventory Item Group | Select Root", string, ">>", "<<");
+	return 1;
+}
+
+static item_group_members_show(playerid, group_id) {
+	new
+		Iter:it = Item_GetGroupIter(group_id),
+		name[32],
+		string[512] = "ID\tTen vat pham";
+	Item_GetName(group_id, name);
+	format(string, sizeof(string), "%s\n"E_COLOR_GREEN"%d\t%s", string, group_id, name);
+	if(iter_valid(it)) {
+		for(; iter_inside(it); iter_move_next(it)) {
+			Item_GetName(iter_get(it), name);
+			format(string, sizeof(string), "%s\n%d\t%s", string, iter_get(it), name);
+		}
+	}
+	if(!map_valid(m_selectedItemId)) {
+		m_selectedItemId = map_new();
+	}
+	map_set(m_selectedItemId, playerid, group_id);
+	Dialog_Show(playerid, InventoryItemGroupTake, DIALOG_STYLE_TABLIST_HEADERS, "Inventory Item Group | Take", string, "Lay", "<<");
+	return 1;
+}
+
 CMD:inv(playerid) {
 	new
 		Iter:it = Inventory_GetIter(playerid),
 		name[64],
 		string[512] = "ID\tTen vat pham";
 	if(iter_valid(it)) {
-		for(; iter_inside(it); iter_move_next(it)) {
-			Item_GetName(iter_get(it), name);
-			format(string, sizeof(string), "%s\n%d\t%s", string, iter_get(it), name);
+		for(new id; iter_inside(it); iter_move_next(it)) {
+			id = iter_get(it);
+			Item_GetName(id, name);
+			if(Item_HasGroup(id)) {
+				format(string, sizeof(string), "%s\n"E_COLOR_GREEN"%d\t"E_COLOR_GREEN"%s", string, id, name);
+			} else {
+				format(string, sizeof(string), "%s\n%d\t%s", string, id, name);
+			}
 		}
 		iter_release(it);
 	}
@@ -56,8 +100,14 @@ Dialog:InventoryDialog(playerid, response, listitem, inputtext[]) {
 			if(hand != -1) {
 				new Iter:it = Inventory_GetIter(playerid, listitem);
 				if(iter_valid(it)) {
-					Player_EquipItem(playerid, hand, iter_get(it));
+					new id = iter_get(it);
 					iter_release(it);
+					if(Item_HasGroup(id)) {
+						item_group_members_show(playerid, id);
+						return 1;
+					} else {
+						Player_EquipItem(playerid, hand, id);
+					}
 				}
 			}
 		} else {
@@ -65,6 +115,23 @@ Dialog:InventoryDialog(playerid, response, listitem, inputtext[]) {
 		}
 		PC_EmulateCommand(playerid, "/inv");
 	}
+	return 1;
+}
+
+CMD:groupitem(playerid) {
+	new
+		Iter:it = Inventory_GetIter(playerid),
+		name[64],
+		string[512] = "ID\tTen vat pham";
+	if(iter_valid(it)) {
+		for(; iter_inside(it); iter_move_next(it)) {
+			Item_GetName(iter_get(it), name);
+			format(string, sizeof(string), "%s\n%d\t%s (%s)", string, iter_get(it), name, (Inventory_IsAttached(playerid, iter_get(it)) ? "Da gan" : "Chua gan"));
+		}
+		iter_release(it);
+	}
+	strcat(string, "\n"E_COLOR_FADE2"> Chon vat pham ban muon dua vao nhom.");
+	Dialog_Show(playerid, InventoryItemGroupMember, DIALOG_STYLE_TABLIST_HEADERS, "Inventory Item Group | Select Member", string, ">>", "Dong");
 	return 1;
 }
 
@@ -119,6 +186,7 @@ Dialog:InventoryAttachBoneSetup(playerid, response, listitem, inputtext[]) {
 		map_remove(m_selectedItemId, playerid);
 		if(!map_size(m_selectedItemId)) {
 			map_delete(m_selectedItemId);
+			m_selectedItemId = Map:-1;
 		}
 	}
 	PC_EmulateCommand(playerid, "/attachinv");
@@ -147,9 +215,97 @@ Dialog:InventoryAttachAction(playerid, response, listitem, inputtext[]) {
 		map_remove(m_selectedItemId, playerid);
 		if(!map_size(m_selectedItemId)) {
 			map_delete(m_selectedItemId);
+			m_selectedItemId = Map:-1;
 		}
 	}
 	PC_EmulateCommand(playerid, "/attachinv");
+	return 1;
+}
+
+Dialog:InventoryItemGroupMember(playerid, response, listitem, inputtext[]) {
+	if(response) {
+		new size = Inventory_GetSize(playerid);
+		if(listitem == size) {
+			PC_EmulateCommand(playerid, "/groupitem");
+			return 1;
+		}
+
+		new Iter:it = Inventory_GetIter(playerid, listitem);
+		if(!iter_valid(it)) {
+			return 0;
+		}
+		if(!map_valid(m_selectedItemId)) {
+			m_selectedItemId = map_new();
+		}
+		map_set(m_selectedItemId, playerid, iter_get(it));
+		iter_release(it);
+		item_group_root_show(playerid);
+	}
+	return 1;
+}
+
+Dialog:InventoryItemGroupRoot(playerid, response, listitem, inputtext[]) {
+	if(response) {
+		new size = Inventory_GetSize(playerid);
+		if(listitem == size) {
+			item_group_root_show(playerid);
+			return 1;
+		}
+		if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
+			new
+				id = map_get(m_selectedItemId, playerid),
+				Iter:it = Inventory_GetIter(playerid, listitem);
+			if(iter_valid(it)) {
+				new select_id = iter_get(it);
+				iter_release(it);
+				if(id == select_id) {
+					item_group_root_show(playerid);
+					return 1;
+				}
+				Item_AddToGroupItem(id, select_id);
+				Inventory_RemoveItem(playerid, id);
+			}
+		}
+	}
+	if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
+		map_remove(m_selectedItemId, playerid);
+		if(!map_size(m_selectedItemId)) {
+			map_delete(m_selectedItemId);
+			m_selectedItemId = Map:-1;
+		}
+	}
+	PC_EmulateCommand(playerid, "/groupitem");
+	return 1;
+}
+
+Dialog:InventoryItemGroupTake(playerid, response, listitem, inputtext[]) {
+	if(response) {
+		if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
+			if(!listitem) {
+				Player_Msg(playerid, COLOR_RED, "Ban khong the lay vat pham dang lam chu the cua group.");
+				item_group_members_show(playerid, map_get(m_selectedItemId, playerid));
+				return 1;
+			}
+
+			new
+				group_id = map_get(m_selectedItemId, playerid),
+				Iter:it = Item_GetGroupIter(group_id, listitem - 1);
+			if(iter_valid(it)) {
+				new id = iter_get(it);
+				iter_release(it);
+				Item_RemoveFromGroupItem(id, group_id);
+				Inventory_AddItem(playerid, id);
+			}
+		}
+	}
+	if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
+		map_remove(m_selectedItemId, playerid);
+		if(!map_size(m_selectedItemId)) {
+			map_delete(m_selectedItemId);
+			m_selectedItemId = Map:-1;
+		}
+	}
+	PC_EmulateCommand(playerid, "/inv");
 	return 1;
 }
 
@@ -167,6 +323,7 @@ hook OnPlayerEditAttachedObj(playerid, response, index, modelid, boneid, Float:f
 				map_remove(m_selectedItemId, playerid);
 				if(!map_size(m_selectedItemId)) {
 					map_delete(m_selectedItemId);
+					m_selectedItemId = Map:-1;
 				}
 			}
 			PC_EmulateCommand(playerid, "/attachinv");

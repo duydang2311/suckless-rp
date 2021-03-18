@@ -198,6 +198,7 @@ Dialog:FactionManage(playerid, response, listitem, inputtext[]) {
 			map_remove(m_factionEditId, playerid);
 			if(!map_size(m_factionEditId)) {
 				map_delete(m_factionEditId);
+				m_factionEditId = Map:-1;
 			}
 		}
 	}
@@ -277,6 +278,7 @@ Dialog:FactionRankActionList(playerid, response, listitem, inputtext[]) {
 		map_remove(m_factionRankEditOrder, playerid);
 		if(!map_size(m_factionRankEditOrder)) {
 			map_delete(m_factionRankEditOrder);
+			m_factionRankEditOrder = Map:-1;
 		}
 	}
 	faction_rank_manage_show(playerid);
@@ -297,6 +299,7 @@ Dialog:FactionRankNameEdit(playerid, response, listitem, inputtext[]) {
 		map_remove(m_factionRankEditOrder, playerid);
 		if(!map_size(m_factionRankEditOrder)) {
 			map_delete(m_factionRankEditOrder);
+			m_factionRankEditOrder = Map:-1;
 		}
 	}
 	faction_rank_manage_show(playerid);
@@ -338,6 +341,7 @@ Dialog:FactionDivisionAdd(playerid, response, listitem, inputtext[]) {
 		map_remove(m_factionDivEditOrder, playerid);
 		if(!map_size(m_factionDivEditOrder)) {
 			map_delete(m_factionDivEditOrder);
+			m_factionDivEditOrder = Map:-1;
 		}
 	}
 	faction_division_manage_show(playerid);
@@ -362,6 +366,7 @@ Dialog:FactionDivActionList(playerid, response, listitem, inputtext[]) {
 		map_remove(m_factionDivEditOrder, playerid);
 		if(!map_size(m_factionDivEditOrder)) {
 			map_delete(m_factionDivEditOrder);
+			m_factionDivEditOrder = Map:-1;
 		}
 	}
 	faction_division_manage_show(playerid);
@@ -383,6 +388,7 @@ Dialog:FactionDivisionNameEdit(playerid, response, listitem, inputtext[]) {
 		map_remove(m_factionDivEditOrder, playerid);
 		if(!map_size(m_factionDivEditOrder)) {
 			map_delete(m_factionDivEditOrder);
+			m_factionDivEditOrder = Map:-1;
 		}
 	}
 	faction_division_manage_show(playerid);

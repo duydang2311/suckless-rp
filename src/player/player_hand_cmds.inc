@@ -61,6 +61,7 @@ hook OnPlayerEditAttachedObj(playerid, response, index, modelid, boneid, Float:f
 		map_remove(m_selectedHandIndex, playerid);
 		if(!map_size(m_selectedHandIndex)) {
 			map_delete(m_selectedHandIndex);
+			m_selectedHandIndex = Map:-1;
 		}
 	}
 	return 1;

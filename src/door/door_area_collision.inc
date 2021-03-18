@@ -51,6 +51,7 @@ hook OnPlayerLeaveDynArea(playerid, areaid) {
 			map_remove(m_playerEnDoorId, playerid);
 			if(!map_size(m_playerEnDoorId)) {
 				map_delete(m_playerEnDoorId);
+				m_playerEnDoorId = Map:-1;
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;
@@ -59,6 +60,7 @@ hook OnPlayerLeaveDynArea(playerid, areaid) {
 			map_remove(m_playerExDoorId, playerid);
 			if(!map_size(m_playerExDoorId)) {
 				map_delete(m_playerExDoorId);
+				m_playerExDoorId = Map:-1;
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;

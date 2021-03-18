@@ -118,7 +118,7 @@ hook OnGameModeInit() {
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
 
-	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_ability_gun", true);
+	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_gun", true);
 
 	new rows = cache_num_rows();
 	if(rows) {

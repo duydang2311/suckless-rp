@@ -171,15 +171,12 @@ Dialog:InventoryAttachDialog(playerid, response, listitem, inputtext[]) {
 Dialog:InventoryAttachBoneSetup(playerid, response, listitem, inputtext[]) {
 	if(response) {
 		if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
-			new bone = (listitem < 4) ? listitem + 1 : listitem + 3;
+			new
+				id = map_get(m_selectedItemId, playerid),
+				bone = (listitem < 4) ? listitem + 1 : listitem + 3;
 			task_unblock(1);
-			await Inventory_InsertAttachment(map_get(m_selectedItemId, playerid), bone);
-			new slot = Player_GetFreeAttachmentSlot(playerid);
-			if(slot == -1) {
-				Player_Msg(playerid, COLOR_RED, "Ban da gan qua nhieu vat pham len co the.");
-			} else {
-				await Inventory_AttachItem(playerid, slot, map_get(m_selectedItemId, playerid));
-			}
+			await Inventory_InsertAttachment(id, bone);
+			Player_Msg(playerid, COLOR_GREEN, "Du lieu gan vat pham da duoc tao, hay thu gan len nguoi lai.");
 		}
 	}
 	if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
@@ -312,22 +309,21 @@ Dialog:InventoryItemGroupTake(playerid, response, listitem, inputtext[]) {
 #include <YSI_Coding\y_hooks>
 
 hook OnPlayerEditAttachedObj(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ) {
-	if(response && map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
-		new
-			id = map_get(m_selectedItemId, playerid),
-			slot = Inventory_GetAttachSlot(playerid, id);
-		if(slot == index) {
+	if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
+		new id = map_get(m_selectedItemId, playerid);
+		if(response) {
 			Inventory_SetAttachment(id, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
-			SetPlayerAttachedObject(playerid, slot, Item_GetModel(id), boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
-			if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
-				map_remove(m_selectedItemId, playerid);
-				if(!map_size(m_selectedItemId)) {
-					map_delete(m_selectedItemId);
-					m_selectedItemId = Map:-1;
-				}
-			}
-			PC_EmulateCommand(playerid, "/attachinv");
+			SetPlayerAttachedObject(playerid, index, Item_GetModel(id), boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
+		} else {
+			Inventory_AttachItem(playerid, index, id);
 		}
+		map_remove(m_selectedItemId, playerid);
+		if(!map_size(m_selectedItemId)) {
+			map_delete(m_selectedItemId);
+			m_selectedItemId = Map:-1;
+		}
+		PC_EmulateCommand(playerid, "/attachinv");
+		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;
 }

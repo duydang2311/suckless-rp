@@ -20,5 +20,6 @@
 #include "./item_stats.inc"
 #include "./ability/gun.inc"
 #include "./ability/melee.inc"
+#include "./ability/backpack.inc"
 #include "./item_group.inc"
 #include "./item_admin_cmds.inc"

@@ -12,11 +12,11 @@ CMD:agiveweap(playerid, params[]) {
 
 	if(Weapon_IsGun(Weapon:weapon)) {
 		task_unblock(1);
-		new itemid = await ItemGun_Create(Weapon:weapon, damage, ammo);
+		new itemid = await IGun_Create(Weapon:weapon, damage, ammo);
 		Inventory_AddItem(targetid, itemid);
 	} else {
 		task_unblock(1);
-		new itemid = await ItemMelee_Create(Weapon:weapon, damage);
+		new itemid = await IMelee_Create(Weapon:weapon, damage);
 		Inventory_AddItem(targetid, itemid);
 	}
 	return 1;

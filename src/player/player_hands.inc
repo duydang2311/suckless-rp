@@ -53,15 +53,13 @@ stock Player_GetFreeHand(playerid) {
 
 hook Player_OnSpawn(playerid) {
 	inline const QueryFinished() {
-		new rows = cache_num_rows();
-		if(rows) {
-			new index;
-			for(new i = 0; i != rows; i++) {
-				cache_get_value_name_int(i, "hand_index", index);
-				cache_get_value_name_int(i, "item_id", playerHands[playerid][index]);
-				CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, index, playerHands[playerid][index]);
-				CallLocalFunction("Player_OnItemEquipped", "iii", playerid, index, playerHands[playerid][index]);
-			}
+		new index;
+		for(new i = 0, rows = cache_num_rows(); i != rows; i++) {
+			cache_get_value_name_int(i, "hand_index", index);
+			cache_get_value_name_int(i, "item_id", playerHands[playerid][index]);
+			CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, index, playerHands[playerid][index]);
+			CallLocalFunction("Player_OnItemEquipped", "iii", playerid, index, playerHands[playerid][index]);
+			printf("called Player_OnItemEquipped %d %d %d", playerid, index, playerHands[playerid][index]);
 		}
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_hands WHERE player_id = %d", Player_GetId(playerid));

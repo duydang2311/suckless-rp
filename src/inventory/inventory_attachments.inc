@@ -99,7 +99,7 @@ stock Task:Inventory_InsertAttachment(item_id, bone) {
 	new Task:t = task_new();
 	task_detach();
 	inline const QueryFinished() {
-		task_set_result(t, 1);
+		task_set_result(t, cache_affected_rows());
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO inventory_attachments(item_id, bone) VALUES (%d, %d) ON DUPLICATE KEY UPDATE bone = VALUES(bone)", item_id, bone);
 	return t;
@@ -129,7 +129,6 @@ stock Inventory_SetAttachment(item_id, Float:offx, Float:offy, Float:offz, Float
 
 hook Inventory_OnItemAdded(playerid, item_id) {
 	inline const QueryFinished() {
-		printf("Inventory_OnItemAdded %d %d finished", playerid, item_id);
 		if(cache_num_rows()) {
 			new bool:attached;
 			cache_get_value_name_int(0, "attached", attached);
@@ -158,16 +157,27 @@ hook Inventory_OnItemAdded(playerid, item_id) {
 					cache_get_value_name_float(0, "scale_x", att[attScale][0]);
 					cache_get_value_name_float(0, "scale_y", att[attScale][1]);
 					cache_get_value_name_float(0, "scale_z", att[attScale][2]);
-					stats[attSlot] = slot;
-					stats[attItemId] = item_id;
-					linked_list_add_arr(ll, stats);
 					SetPlayerAttachedObject(playerid, slot, Item_GetModel(item_id), att[attBone], att[attOffset][0], att[attOffset][1], att[attOffset][2], att[attRot][0], att[attRot][1], att[attRot][2], att[attScale][0], att[attScale][1], att[attScale][2]);
+
+					new bool:exists = false;
+					for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
+						iter_get_arr(it, stats);
+						if(stats[attItemId] == item_id) {
+							iter_set_cell(it, attSlot, slot);
+							exists = true;
+							break;
+						}
+					}
+					if(!exists) {
+						stats[attSlot] = slot;
+						stats[attItemId] = item_id;
+						linked_list_add_arr(ll, stats);
+					}
 				}
 			}
 		}
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM inventory_attachments WHERE item_id = %d LIMIT 1", item_id);
-	printf("Inventory_OnItemAdded %d %d", playerid, item_id);
 	return 1;
 }
 

@@ -28,8 +28,9 @@ stock Inventory_AddItem(playerid, item_id) {
 	new query[128];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO inventory (player_id, item_id) VALUES (%d, %d)", Player_GetId(playerid), item_id);
 	mysql_pquery(MySQL_Connection(), query);
-	CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, item_id);
 	linked_list_add(ll, item_id);
+	printf("Inventory_AddItem: player %d, item_id %d, size %d", playerid, item_id, linked_list_size(ll));
+	CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, item_id);
 	return 1;
 }
 
@@ -40,8 +41,9 @@ stock Inventory_RemoveItem(playerid, item_id) {
 				new query[128];
 				mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM inventory WHERE item_id = %d LIMIT 1", item_id);
 				mysql_pquery(MySQL_Connection(), query);
-				CallLocalFunction("Inventory_OnItemRemoved", "ii", playerid, item_id);
 				iter_erase(it);
+				printf("Inventory_RemoveItem: player %d, item_id %d, size %d", playerid, item_id, linked_list_size(LinkedList:map_get(m_inventory, playerid)));
+				CallLocalFunction("Inventory_OnItemRemoved", "ii", playerid, item_id);
 				return 1;
 			}
 		}
@@ -82,6 +84,7 @@ stock Inventory_RemoveItemByIter(playerid, Iter:it) {
 		mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM inventory WHERE item_id = %d LIMIT 1", id);
 		mysql_pquery(MySQL_Connection(), query);
 		iter_erase(it);
+		printf("Inventory_RemoveItem: player %d, item_id %d, size %d", playerid, id, linked_list_size(LinkedList:map_get(m_inventory, playerid)));
 		CallLocalFunction("Inventory_OnItemRemoved", "ii", playerid, id);
 	}
 	return 1;

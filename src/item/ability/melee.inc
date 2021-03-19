@@ -1,8 +1,8 @@
-#if defined item_ability_melee_included
+#if defined item_melee_included
 	#endinput
 #endif
 
-#define item_ability_melee_included
+#define item_melee_included
 
 enum _:ItemMeleeStats {
 	Weapon:iMeleeWeapon,
@@ -12,7 +12,7 @@ enum _:ItemMeleeStats {
 
 static Map:m_itemMelee;
 
-stock Task:ItemMelee_Create(Weapon:weapon, Float:damage) {
+stock Task:IMelee_Create(Weapon:weapon, Float:damage) {
 	new Task:t = task_new();
 	task_detach();
 
@@ -32,13 +32,13 @@ stock Task:ItemMelee_Create(Weapon:weapon, Float:damage) {
 		}
 		map_set_arr(m_itemMelee, insert_id, stats);
 		task_set_result(t, insert_id);
-		CallLocalFunction("Item_OnCreated", "ii", insert_id, _:ITEM_ABILITY_MELEE);
+		CallLocalFunction("Item_OnCreated", "ii", insert_id, iAbilityMelee);
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability) VALUES (%d)", _:ITEM_ABILITY:ITEM_ABILITY_MELEE);
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability) VALUES (%d)", _:ITEM_ABILITY:iAbilityMelee);
 	return t;
 }
 
-stock Weapon:ItemMelee_GetWeapon(item_id) {
+stock Weapon:IMelee_GetWeapon(item_id) {
 	if(!map_valid(m_itemMelee) || !map_has_key(m_itemMelee, item_id)) {
 		return Weapon:-1;
 	}
@@ -47,8 +47,8 @@ stock Weapon:ItemMelee_GetWeapon(item_id) {
 	return stats[iMeleeWeapon];
 }
 
-stock ItemMelee_GetName(item_id, name[], size = sizeof(name)) {
-	new Weapon:weapon = ItemMelee_GetWeapon(item_id);
+stock IMelee_GetName(item_id, name[], size = sizeof(name)) {
+	new Weapon:weapon = IMelee_GetWeapon(item_id);
 	if(weapon == Weapon:-1) {
 		return 0;
 	}
@@ -56,18 +56,18 @@ stock ItemMelee_GetName(item_id, name[], size = sizeof(name)) {
 	return 1;
 }
 
-stock ItemMelee_GetModel(item_id) {
-	new Weapon:weapon = ItemMelee_GetWeapon(item_id);
+stock IMelee_GetModel(item_id) {
+	new Weapon:weapon = IMelee_GetWeapon(item_id);
 	if(weapon == Weapon:-1) {
 		return 0;
 	}
 	return Weapon_GetModel(weapon);
 }
 
-forward ItemMelee_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
-public ItemMelee_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
+forward IMelee_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
+public IMelee_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 	if(map_valid(m_itemMelee) && map_has_key(m_itemMelee, item_id)) {
-		new stats[ItemAbilityGunStats];
+		new stats[ItemGunStats];
 		map_get_arr(m_itemMelee, item_id, stats);
 		if(hand_leftright) {
 			Weapon_SetPlayerArmed(playerid, stats[iMeleeWeapon], 1);
@@ -76,10 +76,10 @@ public ItemMelee_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 	return 1;
 }
 
-forward ItemMelee_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id);
-public ItemMelee_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
+forward IMelee_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id);
+public IMelee_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
 	if(hand_leftright) {
-		new Weapon:weapon = ItemMelee_GetWeapon(item_id); // this function already checks for map valid
+		new Weapon:weapon = IMelee_GetWeapon(item_id); // this function already checks for map valid
 		if(weapon != Weapon:-1) {
 			Weapon_Reset(playerid);
 		}

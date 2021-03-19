@@ -11,6 +11,7 @@ stock Task:Player_AttachItemToHand(playerid, hand_index, slot, item_id) {
 	task_detach();
 
 	inline const QueryFinished() {
+		printf("Player_AttachItemToHand query finished, rows %d", cache_num_rows());
 		playerHandAttachSlot[playerid][hand_index] = slot;
 		if(cache_num_rows()) {
 			new
@@ -36,6 +37,7 @@ stock Task:Player_AttachItemToHand(playerid, hand_index, slot, item_id) {
 		task_set_result(t, 1);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_hand_attachments WHERE player_id = %d AND hand_index = %d AND item_id = %d LIMIT 1", Player_GetId(playerid), hand_index, item_id);
+	print("Player_AttachItemToHand send query");
 	return t;
 }
 
@@ -45,8 +47,9 @@ stock Player_GetHandAttachSlot(playerid, hand_index) {
 
 stock Player_UpdateHandAttach(playerid, hand_index, item_id, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ) {
 	new query[384];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE player_hand_attachments SET offset_x = %.4f, offset_y = %.4f, offset_z = %.4f, rot_x = %.4f, rot_y = %.4f, rot_z = %.4f, scale_x = %.4f, scale_y = %.4f, scale_z = %.4f WHERE player_id = %d AND hand_index = %d AND item_id = %d LIMIT 1", fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ, playerid, hand_index, item_id);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE player_hand_attachments SET offset_x = %.4f, offset_y = %.4f, offset_z = %.4f, rot_x = %.4f, rot_y = %.4f, rot_z = %.4f, scale_x = %.4f, scale_y = %.4f, scale_z = %.4f WHERE player_id = %d AND hand_index = %d AND item_id = %d LIMIT 1", fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ, Player_GetId(playerid), hand_index, item_id);
 	mysql_pquery(MySQL_Connection(), query);
+	print(query);
 	return 1;
 }
 

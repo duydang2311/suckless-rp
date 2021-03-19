@@ -98,6 +98,20 @@ stock Item_GetCapacity(id) {
 	return 0;
 }
 
+stock Item_GetFreeCapacity(id) {
+	if(!map_has_key(m_itemStats, id)) {
+		return 0;
+	}
+	new stats[ItemStats];
+	map_get_arr(m_itemStats, id, stats);
+	switch(stats[iAbility]) {
+		case iAbilityBackpack: {
+			return IBackpack_GetFreeCapacity(id);
+		}
+	}
+	return 0;
+}
+
 stock Item_GetOccupiedSpace(id) {
 	if(!map_has_key(m_itemStats, id)) {
 		return 0;
@@ -170,7 +184,7 @@ hook OnGameModeInit() {
 		cache_get_value_name_int(i, "id", id);
 		cache_get_value_name_int(i, "ability", stats[iAbility]);
 		cache_get_value_name_int(i, "occupied_space", stats[iOccupiedSpace]);
-		cache_get_value_name_float(i, "reliablity", stats[iReliability]);
+		cache_get_value_name_float(i, "reliability", stats[iReliability]);
 		map_set_arr(m_itemStats, id, stats);
 	}
 	cache_delete(result);

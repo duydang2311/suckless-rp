@@ -39,3 +39,11 @@
 #include <faction>
 
 main() {}
+
+forward pp_on_error(source[], message[], error_level:level, &retval);
+public pp_on_error(source[], message[], error_level:level, &retval) {
+	print(source);
+	print(message);
+	printf("%d", _:level);
+	return 1;
+}

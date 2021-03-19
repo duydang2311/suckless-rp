@@ -20,6 +20,31 @@ enum _:ItemStats {
 
 static Map:m_itemStats;
 
+stock Item_Delete(id) {
+	if(!map_has_key(m_itemStats, id)) {
+		return 0;
+	}
+	new
+		query[128],
+		stats[ItemStats];
+	map_get_arr(m_itemStats, id, stats);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM item_stats WHERE id = %d LIMIT 1", id);
+	mysql_pquery(MySQL_Connection(), query);
+	switch(stats[iAbility]) {
+		case iAbilityGun: {
+			CallLocalFunction("IGun_OnDeleted", "i", id);
+		}
+		case iAbilityMelee: {
+			// TODO: CallLocalFunction("IMelee_OnDeleted", "i", id);
+		}
+		case iAbilityBackpack: {
+			CallLocalFunction("IBackpack_OnDeleted", "i", id);
+		}
+	}
+	map_remove(m_itemStats, id);
+	return 1;
+}
+
 stock Item_GetName(item_id, name[], size = sizeof(name)) {
 	if(map_has_key(m_itemStats, item_id)) {
 		new stats[ItemStats];
@@ -29,27 +54,57 @@ stock Item_GetName(item_id, name[], size = sizeof(name)) {
 				IGun_GetName(item_id, name, size);
 			}
 			case iAbilityMelee: {
-				// TODO: ItemMelee_GetName(item_id, name, size);
+				// TODO: IMelee_GetName(item_id, name, size);
+			}
+			case iAbilityBackpack: {
+				name[0] = EOS;
+				strcat(name, "Backpack", size);
 			}
 		}
 	}
 	return 1;
 }
 
-stock Item_GetModel(item_id) {
-	if(map_has_key(m_itemStats, item_id)) {
+stock Item_GetModel(id) {
+	if(map_has_key(m_itemStats, id)) {
 		new stats[ItemStats];
-		map_get_arr(m_itemStats, item_id, stats);
+		map_get_arr(m_itemStats, id, stats);
 		switch(stats[iAbility]) {
 			case iAbilityGun: {
-				return IGun_GetModel(item_id);
+				return IGun_GetModel(id);
 			}
 			case iAbilityMelee: {
-				// TODO: ItemMelee_GetModel(item_id);
+				// TODO: IMelee_GetModel(id);
+			}
+			case iAbilityBackpack: {
+				return IBackpack_GetModel(id);
 			}
 		}
 	}
 	return 0;
+}
+
+stock Item_GetCapacity(id) {
+	if(!map_has_key(m_itemStats, id)) {
+		return 0;
+	}
+	new stats[ItemStats];
+	map_get_arr(m_itemStats, id, stats);
+	switch(stats[iAbility]) {
+		case iAbilityBackpack: {
+			return IBackpack_GetCapacity(id);
+		}
+	}
+	return 0;
+}
+
+stock Item_GetOccupiedSpace(id) {
+	if(!map_has_key(m_itemStats, id)) {
+		return 0;
+	}
+	new stats[ItemStats];
+	map_get_arr(m_itemStats, id, stats);
+	return stats[iOccupiedSpace];
 }
 
 forward Item_OnCreated(item_id, ability, Float:reliability, occupied_space);
@@ -72,7 +127,7 @@ public Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 				CallLocalFunction("IGun_OnPlayerEquipped", "iii", playerid, _:hand_leftright, item_id);
 			}
 			case iAbilityMelee: {
-				CallLocalFunction("ItemMelee_OnPlayerEquipped", "iii", playerid, _:hand_leftright, item_id);
+				CallLocalFunction("IMelee_OnPlayerEquipped", "iii", playerid, _:hand_leftright, item_id);
 			}
 		}
 	}
@@ -89,7 +144,7 @@ public Item_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
 				CallLocalFunction("IGun_OnPlayerUnequipped", "iii", playerid, _:hand_leftright, item_id);
 			}
 			case iAbilityMelee: {
-				CallLocalFunction("ItemMelee_OnPlayerUnequipped", "iii", playerid, _:hand_leftright, item_id);
+				CallLocalFunction("IMelee_OnPlayerUnequipped", "iii", playerid, _:hand_leftright, item_id);
 			}
 		}
 	}

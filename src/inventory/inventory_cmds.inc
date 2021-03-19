@@ -259,6 +259,14 @@ Dialog:InventoryItemGroupRoot(playerid, response, listitem, inputtext[]) {
 					item_group_root_show(playerid);
 					return 1;
 				}
+
+				new capacity = Item_GetFreeCapacity(select_id);
+				if(capacity < 0 || Item_GetOccupiedSpace(id) > capacity) {
+					Player_Msg(playerid, COLOR_YELLOW, "Vat pham duoc chon lam Root khong du suc chua vat pham Member.");
+					item_group_root_show(playerid);
+					return 1;
+				}
+
 				Item_AddToGroupItem(id, select_id);
 				Inventory_RemoveItem(playerid, id);
 			}

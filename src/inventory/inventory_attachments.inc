@@ -56,6 +56,7 @@ stock Task:Inventory_AttachItem(playerid, slot, item_id) {
 		}
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM inventory_attachments WHERE item_id = %d LIMIT 1", item_id);
+	task_set_error_ms(t, amx_err_exit, 2000);
 	return t;
 }
 

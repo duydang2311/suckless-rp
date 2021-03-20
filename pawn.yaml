@@ -24,6 +24,8 @@ local: true
 runtime:
   version: 0.3.DL-R1
   mode: server
+  plugins:
+    - FCNPC-DL
   rcon_password: password
   port: 7777
   hostname: SA-MP Server
@@ -59,7 +61,7 @@ runtime:
   cookielogging: false
   output: true
   extra:
-    useartwork: "1"
+    useartwork: 1
 build:
   name: ""
   includes:
@@ -74,3 +76,4 @@ build:
   - src/session
   - src/faction
   - src/
+  - libraries/

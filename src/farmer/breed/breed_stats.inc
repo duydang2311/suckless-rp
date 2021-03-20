@@ -1,8 +1,8 @@
-#if defined farmer_breed_stats_included
+#if defined breed_stats_included
 	#endinput
 #endif
 
-#define farmer_breed_stats_included
+#define breed_stats_included
 
 enum _:BreedAnimalSpecies {
 	anmlCow,
@@ -11,7 +11,7 @@ enum _:BreedAnimalSpecies {
 }
 
 enum _:BreedAnimalStats {
-	anmlId,
+	anmlNPCId,
 	anmlSpecies,
 	anmlBreederId,
 	Float:anmlMaturity,
@@ -19,27 +19,40 @@ enum _:BreedAnimalStats {
 	Float:anmlThirst
 }
 
-static
-	Iterator:it_animals<MAX_BREED_ANIMALS>,
-	LinkedList:ll_animals;
+static Map:m_animals;
 
 stock Breed_GetAnimalSpeciesName(species, name[], size = sizeof(name)) {
 	name[0] = EOS;
 	switch(species) {
 		case anmlCow: {
-			strcat(name, "Cow");
+			strcat(name, "Cow", size);
 			return 1;
 		}
 		case anmlPig: {
-			strcat(name, "Pig");
+			strcat(name, "Pig", size);
 			return 1;
 		}
 		case anmlChicken: {
-			strcat(name, "Chicken");
+			strcat(name, "Chicken", size);
 			return 1;
 		}
 	}
-	strcat(name, "Animal");
+	strcat(name, "Animal", size);
+	return 0;
+}
+
+stock Breed_GetAnimalSpeciesModel(species) {
+	switch(species) {
+		case anmlCow: {
+			return 20001;
+		}
+		case anmlPig: {
+			return 20002;
+		}
+		case anmlChicken: {
+			return 20003;
+		}
+	}
 	return 0;
 }
 
@@ -53,24 +66,28 @@ stock Task:Breed_CreateAnimal(species) {
 				name[48],
 				id = cache_insert_id();
 			Breed_GetAnimalSpeciesName(species, name);
-			format(name, sizeof(name), "%s\#%d", name, id);
-			new id = FCNPC_Create(name);
-			if(id == INVALID_PLAYER_ID) {
-				return -1;
+			format(name, sizeof(name), "%s_%d", name, id);
+			new npcid = FCNPC_Create(name);
+			if(npcid == INVALID_PLAYER_ID) {
+				task_set_result(t, -1);
+			} else {
+				new stats[BreedAnimalStats];
+				stats[anmlNPCId] = npcid;
+				stats[anmlSpecies] = species;
+				stats[anmlMaturity] = 0.0;
+				stats[anmlHunger] = 0.3;
+				stats[anmlThirst] = 0.3;
+				if(!map_valid(m_animals)) {
+					m_animals = map_new();
+				}
+				map_set_arr(m_animals, id, stats);
+				Breed_LifeCycle(npcid);
+				FCNPC_Spawn(npcid, Breed_GetAnimalSpeciesModel(species), 0.0, 0.0, 2.0);
+				task_set_result(t, id);
 			}
-			new stats[BreedAnimalStats];
-			stats[anmlId] = id;
-			stats[anmlSpecies] = species;
-			stats[anmlMaturity] = 0.0;
-			stats[anmlHunger] = 0.3;
-			stats[anmlThirst] = 0.3;
-			if(!linked_list_valid(ll_animals)) {
-				ll_animals = linked_list_new();
-			}
-			linked_list_add_arr(ll_animals, id);
-			task_set_result(t, id);
+		} else {
+			task_set_result(t, -1);
 		}
-		task_set_result(t, -1);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO breed_stats(species) VALUES (%d)", species);
 	task_set_error_ms(t, amx_err_exit, 3000);
@@ -78,33 +95,31 @@ stock Task:Breed_CreateAnimal(species) {
 }
 
 stock Breed_RemoveAnimal(id) {
-	if(!linked_list_valid(ll_animals)) {
+	if(!map_valid(m_animals)) {
 		return 0;
 	}
-	for(new Iter:it = linked_list_iter(ll_animals), stats[BreedAnimalStats]; iter_inside(it); iter_move_next(it)) {
-		iter_get_arr(it, stats);
-		if(stats[anmlId] == id) {
-			new query[128];
-			iter_erase(it);
-			mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM breed_stats WHERE id = %d LIMIT 1", id);
-			mysql_pquery(MySQL_Connection(), query);
-			return 1;
-		}
+	if(map_has_key(m_animals, id)) {
+		new stats[BreedAnimalStats];
+		FCNPC_Destroy(stats[anmlNPCId]);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM breed_stats WHERE id = %d LIMIT 1", id);
+		mysql_pquery(MySQL_Connection(), query);
+		map_remove(m_animals, id);
+		return 1;
 	}
 	return 0;
 }
 
-stock Breed_HasAnimal(id) {
-	if(!linked_list_valid(ll_animals)) {
-		return 0;
+stock Breed_HasId(id) {
+	return (map_valid(m_animals) && map_has_key(m_animals, id));
+}
+
+stock Breed_GetNPCId(id) {
+	if(!map_valid(m_animals) || !map_has_key(m_animals, id)) {
+		return -1;
 	}
-	for(new Iter:it = linked_list_iter(ll_animals), stats[BreedAnimalStats]; iter_inside(it); iter_move_next(it)) {
-		iter_get_arr(it, stats);
-		if(stats[anmlId] == id) {
-			return 1;
-		}
-	}
-	return 0;
+	new stats[BreedAnimalStats];
+	map_get_arr(m_animals, id, stats);
+	return stats[anmlNPCId];
 }
 
 #include <YSI_Coding\y_hooks>
@@ -124,22 +139,23 @@ hook OnGameModeInit() {
 	)", false);
 
 	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM breed_stats", true);
-	for(new i = 0, rows = cache_num_rows(), stats[BreedAnimalStats], name[48], index; i != rows; i++) {
-		cache_get_value_name_int(i, "id", stats[anmlId]);
+	for(new i = 0, rows = cache_num_rows(), stats[BreedAnimalStats], id, name[48]; i != rows; i++) {
+		cache_get_value_name_int(i, "id", id);
 		cache_get_value_name_int(i, "species", stats[anmlSpecies]);
 		cache_get_value_name_int(i, "breeder_id", stats[anmlBreederId]);
 		cache_get_value_name_float(i, "maturity", stats[anmlMaturity]);
 		cache_get_value_name_float(i, "hunger", stats[anmlHunger]);
 		cache_get_value_name_float(i, "thirst", stats[anmlThirst]);
 		Breed_GetAnimalSpeciesName(stats[anmlSpecies], name);
-		format(name, sizeof(name), "%s\#%d", name, stats[anmlId]);
-		new id = FCNPC_Create(name);
-		if(id != INVALID_PLAYER_ID) {
-			if(!linked_list_valid(ll_animals)) {
-				ll_animals = linked_list_new();
+		format(name, sizeof(name), "%s_%d", name, id);
+		stats[anmlNPCId] = FCNPC_Create(name);
+		if(stats[anmlNPCId] != INVALID_PLAYER_ID) {
+			if(!map_valid(m_animals)) {
+				m_animals = map_new();
 			}
-			linked_list_add(ll_animals, stats);
+			map_set_arr(m_animals, id, stats);
 		}
 	}
+	cache_delete(result);
 	return 1;
 }

@@ -4,6 +4,8 @@
 
 #define farmer_employee_included
 
+static Map:m_farmerEmployees;
+
 stock Farmer_HasEmployee(id) {
 	return (map_valid(m_farmerEmployees) && map_has_key(m_farmerEmployees, id));
 }
@@ -19,7 +21,7 @@ stock Farmer_AddEmployee(id) {
 	return 1;
 }
 
-stock Farmer_AddEmployee(id) {
+stock Farmer_DeleteEmployee(id) {
 	if(!map_valid(m_farmerEmployees)) {
 		return 0;
 	}

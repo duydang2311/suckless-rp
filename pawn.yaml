@@ -20,12 +20,13 @@ dependencies:
 - katursis/Pawn.CMD:3.3.3
 - AGraber/pawn-plus-mysql:1.0.3
 - samp-incognito/samp-streamer-plugin:v2.9.4
+- Pottus/ColAndreas:1.5.0
 local: true
 runtime:
   version: 0.3.DL-R1
   mode: server
   plugins:
-    - FCNPC-DL
+  - FCNPC-DL
   rcon_password: password
   port: 7777
   hostname: SA-MP Server
@@ -40,7 +41,7 @@ runtime:
   rcon: false
   logqueries: false
   sleep: 5
-  maxnpc: 0
+  maxnpc: 100
   stream_rate: 1000
   stream_distance: 200
   onfoot_rate: 30
@@ -61,7 +62,7 @@ runtime:
   cookielogging: false
   output: true
   extra:
-    useartwork: 1
+    useartwork: "1"
 build:
   name: ""
   includes:
@@ -75,5 +76,6 @@ build:
   - src/house
   - src/session
   - src/faction
+  - src/farmer
   - src/
   - libraries/

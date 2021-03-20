@@ -68,6 +68,14 @@ CMD:adestroyvehicle(playerid, params[]) {
 }
 alias:adestroyvehicle("adesveh", "adesv", "adestroyveh")
 
+CMD:askin(playerid, params[]) {
+	extract params -> new model; else {
+		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /askin [model]");
+	}
+	SetPlayerSkin(playerid, model);
+	return 1;
+}
+
 public OnPlayerCommandReceived(playerid, cmd[], params[], flags) {
     if(flags && !(flags & Admin_GetFlags(playerid))) {
 		Player_Msg(playerid, COLOR_RED, "Lenh khong ton tai.");

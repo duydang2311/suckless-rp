@@ -7,6 +7,7 @@
 *.lst
 *.asm
 
+
 # Vendor directory for dependencies
 dependencies/
 gamemodes/
@@ -19,6 +20,8 @@ pawn.lock
 #
 # Server/gamemode related files
 #
+*.dff
+*.txd
 
 # compiled settings file
 # keep `samp.json` file on version control

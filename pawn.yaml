@@ -58,6 +58,8 @@ runtime:
   conncookies: true
   cookielogging: false
   output: true
+  extra:
+    useartwork: "1"
 build:
   name: ""
   includes:

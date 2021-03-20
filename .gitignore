@@ -13,6 +13,7 @@ dependencies/
 gamemodes/
 filterscripts/
 
+
 # Dependency versions lockfile
 pawn.lock
 
@@ -22,6 +23,7 @@ pawn.lock
 #
 *.dff
 *.txd
+*.cadb
 
 # compiled settings file
 # keep `samp.json` file on version control

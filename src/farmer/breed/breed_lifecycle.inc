@@ -68,7 +68,8 @@ static RandomPointInPolygon(const Float:points[],&Float:tx,&Float:ty,maxpoints =
 
 forward Breed_Move(id);
 public Breed_Move(id) {
-	if(!Breed_HasId(id)) {
+	new npcid = Breed_GetNPCId(id);
+	if(npcid == -1) {
 		return 0;
 	}
 	new
@@ -77,26 +78,26 @@ public Breed_Move(id) {
 		Float:z;
 	RandomPointInPolygon(breedAreaPoints, x, y);
 	CA_FindZ_For2DCoord(x, y, z);
-	FCNPC_GoTo(Breed_GetNPCId(id), x, y, z, .speed = FCNPC_MOVE_SPEED_WALK);
+	FCNPC_GoTo(npcid, x, y, z, .speed = FCNPC_MOVE_SPEED_WALK);
 	return 1;
 }
 
 stock Breed_LifeCycle(id) {
-	if(!Breed_HasId(id)) {
+	new npcid = Breed_GetNPCId(id);
+	if(npcid == -1) {
 		return 0;
 	}
-	new npcid = Breed_GetNPCId(id);
 	if(!map_valid(m_npcAnimalId)) {
 		m_npcAnimalId = map_new();
 	}
 	map_set(m_npcAnimalId, npcid, id);
-	Breed_Move(npcid);
+	Breed_Move(id);
 	return 1;
 }
 
 public FCNPC_OnReachDestination(npcid) {
 	if(map_has_key(m_npcAnimalId, npcid)) {
-		SetPreciseTimer("Breed_Move", 200, false, "i", map_get(m_npcAnimalId, npcid));
+		SetPreciseTimer("Breed_Move", 1000, false, "i", map_get(m_npcAnimalId, npcid));
 	}
 	return 1;
 }
@@ -105,5 +106,12 @@ public FCNPC_OnReachDestination(npcid) {
 
 hook OnGameModeInit() {
 	CA_Init();
+	return 1;
+}
+
+hook OnGameModeExit() {
+	if(map_valid(m_npcAnimalId)) {
+		map_delete(m_npcAnimalId);
+	}
 	return 1;
 }

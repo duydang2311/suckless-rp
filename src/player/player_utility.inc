@@ -58,7 +58,7 @@ stock Player_SyncedStreamToPosition(playerid, Float:x, Float:y, Float:z, Float:a
 	return 1;
 }
 
-stock Player_GetFreeAttachmentSlot(playerid, bool:use = true) {
+stock Player_GetFreeAttachmentSlot(playerid, bool:use = false) {
 	for(new i = 0; i != 10; i++) {
 		if(!IsPlayerAttachedObjectSlotUsed(playerid, i)) {
 			if(use) {

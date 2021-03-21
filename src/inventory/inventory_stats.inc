@@ -117,6 +117,7 @@ hook Player_OnSpawn(playerid) {
 				cache_get_value_name_int(i, "item_id", id);
 				linked_list_add(ll, id);
 				CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, id);
+				printf("Inventory_OnItemAdded(%d, %d)", playerid, id);
 			}
 		}
 	}

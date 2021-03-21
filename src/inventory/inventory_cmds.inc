@@ -146,7 +146,7 @@ Dialog:InventoryAttachDialog(playerid, response, listitem, inputtext[]) {
 			}
 			map_set(m_selectedItemId, playerid, id);
 			if(Inventory_IsAttached(playerid, id)) {
-				Dialog_Show(playerid, InventoryAttachAction, DIALOG_STYLE_LIST, "Inventory Attachment | Action", "Thao vat pham\nChinh sua vi tri", ">>", "Dong");
+				Dialog_Show(playerid, InventoryAttachAction, DIALOG_STYLE_LIST, "Inventory Attachment | Action", "Thao vat pham\nChinh sua vi tri\nDieu chinh bodypart", ">>", "Dong");
 			} else {
 				new slot = Player_GetFreeAttachmentSlot(playerid);
 				if(slot == -1) {
@@ -158,9 +158,9 @@ Dialog:InventoryAttachDialog(playerid, response, listitem, inputtext[]) {
 				if(task_await(Inventory_AttachItem(playerid, slot, id))) {
 					PC_EmulateCommand(playerid, "/attachinv");
 				} else {
-					Player_Msg(playerid, COLOR_YELLOW, "[!]: He thong chua co du lieu de gan vat pham vi day la lan dau tien ban gan vat pham nay len nguoi.");
-					Player_Msg(playerid, COLOR_YELLOW, "[!]: Hay tien hanh thiet lap thong tin de gan vat pham bang cach chon vi tri ban muon gan len co the.");
-					Dialog_Show(playerid, InventoryAttachBoneSetup, DIALOG_STYLE_LIST, "Inventory Attachment | Bone Setup", "Than\nDau\nBap tay trai\nBap tay phai\nDui trai\nDui phai\nChan trai\nChan phai\nBap chan trai\nBap chan phai\nCang tay trai\nCang tay phai\nVai trai\nVai phai\nCo\nHam", ">>", "<<");
+					Player_Msg(playerid, COLOR_YELLOW, "[!]: He thong chua co du lieu Bodypart de gan vat pham vi day la lan dau tien ban gan vat pham nay len nguoi.");
+					Player_Msg(playerid, COLOR_YELLOW, "[!]: Hay tien hanh thiet lap Bodypart de gan vat pham bang cach chon vi tri ban muon gan len co the.");
+					Dialog_Show(playerid, InventoryAttachBoneSetup, DIALOG_STYLE_LIST, "Inventory Attachment | Bodypart Setup", "Than\nDau\nBap tay trai\nBap tay phai\nDui trai\nDui phai\nChan trai\nChan phai\nBap chan trai\nBap chan phai\nCang tay trai\nCang tay phai\nVai trai\nVai phai\nCo\nHam", ">>", "<<");
 				}
 			}
 		}
@@ -176,7 +176,7 @@ Dialog:InventoryAttachBoneSetup(playerid, response, listitem, inputtext[]) {
 				bone = (listitem < 4) ? listitem + 1 : listitem + 3;
 			task_unblock(1);
 			await Inventory_InsertAttachment(id, bone);
-			Player_Msg(playerid, COLOR_GREEN, "Du lieu gan vat pham da duoc tao, hay thu gan len nguoi lai.");
+			Player_Msg(playerid, COLOR_GREEN, "Bodypart gan vat pham da duoc tao, hay thu gan len nguoi lai.");
 		}
 	}
 	if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
@@ -204,6 +204,11 @@ Dialog:InventoryAttachAction(playerid, response, listitem, inputtext[]) {
 						EditAttachedObject(playerid, slot);
 						return 1;
 					}
+				}
+				case 2: {
+					Inventory_DetachItem(playerid, id);
+					Dialog_Show(playerid, InventoryAttachBoneSetup, DIALOG_STYLE_LIST, "Inventory Attachment | Bone Setup", "Than\nDau\nBap tay trai\nBap tay phai\nDui trai\nDui phai\nChan trai\nChan phai\nBap chan trai\nBap chan phai\nCang tay trai\nCang tay phai\nVai trai\nVai phai\nCo\nHam", ">>", "<<");
+					return 1;
 				}
 			}
 		}

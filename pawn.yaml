@@ -29,12 +29,12 @@ runtime:
   - FCNPC-DL
   rcon_password: password
   port: 7777
-  hostname: SA-MP Server
-  maxplayers: 50
-  language: ""
-  mapname: San Andreas
+  hostname: Sunday Development
+  maxplayers: 200
+  language: "Vietnamese"
+  mapname: Los Santos
   weburl: www.sa-mp.com
-  gamemodetext: Unknown
+  gamemodetext: sunday-dev
   announce: true
   lanmode: false
   query: true
@@ -62,7 +62,7 @@ runtime:
   cookielogging: false
   output: true
   extra:
-    useartwork: "1"
+    useartwork: 1
 build:
   name: ""
   includes:

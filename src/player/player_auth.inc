@@ -75,6 +75,7 @@ Dialog:Auth_LoginDialog(playerid, response, listitem, inputtext[]) {
 		inline const QueryFinished() {
 			inline const Checked(bool:same) {
 				if(same) {
+					print("login successs");
 					Player_Login(playerid);
 				} else {
 					Dialog_Show(playerid, Auth_LoginDialog, DIALOG_STYLE_PASSWORD, "Player | Login", sprintf("Tai khoan '%s' da duoc dang ky.\n> Nhap mat khau de tien hanh dang nhap.\n\nMat khau khong dung, hay thu lai.", name), "Dang nhap", "<<");
@@ -85,6 +86,7 @@ Dialog:Auth_LoginDialog(playerid, response, listitem, inputtext[]) {
 				new hash[BCRYPT_HASH_LENGTH];
 				cache_get_value_name(0, "hash", hash);
 				BCrypt_CheckInline(password, hash, using inline Checked);
+				print("check bcrypt");
 			} else {
 				Dialog_Show(playerid, Auth_LoginDialog, DIALOG_STYLE_PASSWORD, "Player | Login", sprintf("Tai khoan '%s' da duoc dang ky.\n> Nhap mat khau de tien hanh dang nhap.\n\nDang nhap that bai, hay thu lai.", name), "Dang nhap", "<<");
 			}
@@ -152,6 +154,10 @@ Dialog:Auth_NameRequestDialog(playerid, response, listitem, inputtext[]) {
 #include <YSI_Coding\y_hooks>
 
 hook OnPlayerConnect(playerid) {
+	if(IsPlayerNPC(playerid)) {
+		printf("%d is npc yes", playerid);
+		return 1;
+	}
 	new
 		name[MAX_PLAYER_NAME + 1],
 		query[128];

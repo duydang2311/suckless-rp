@@ -190,3 +190,11 @@ hook OnGameModeInit() {
 	cache_delete(result);
 	return 1;
 }
+
+hook OnGameModeExit() {
+	if(map_valid(m_itemStats)) {
+		map_delete(m_itemStats);
+		m_itemStats = Map:-1;
+	}
+	return 1;
+}

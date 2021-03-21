@@ -50,6 +50,9 @@ hook Player_OnSpawn(playerid) {
 hook OnPlayerDisconnect(playerid) {
 	if(map_valid(m_adminFlags) && map_has_key(m_adminFlags, playerid)) {
 		map_remove(m_adminFlags, playerid);
+		if(!map_size(m_adminFlags)) {
+			map_delete(m_adminFlags);
+		}
 	}
 	return 1;
 }

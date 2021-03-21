@@ -10,7 +10,7 @@ enum _:ItemMeleeStats {
 	Float:iMeleeReliability,
 }
 
-static Map:m_itemMelee;
+static Map:m_meleeStats;
 
 stock Task:IMelee_Create(Weapon:weapon, Float:damage) {
 	new Task:t = task_new();
@@ -27,10 +27,10 @@ stock Task:IMelee_Create(Weapon:weapon, Float:damage) {
 		stats[iMeleeWeapon] = weapon;
 		stats[iMeleeDamage] = damage;
 		stats[iMeleeReliability] = 1.0;
-		if(!map_valid(m_itemMelee)) {
-			m_itemMelee = map_new();
+		if(!map_valid(m_meleeStats)) {
+			m_meleeStats = map_new();
 		}
-		map_set_arr(m_itemMelee, insert_id, stats);
+		map_set_arr(m_meleeStats, insert_id, stats);
 		task_set_result(t, insert_id);
 		CallLocalFunction("Item_OnCreated", "ii", insert_id, iAbilityMelee);
 	}
@@ -39,11 +39,11 @@ stock Task:IMelee_Create(Weapon:weapon, Float:damage) {
 }
 
 stock Weapon:IMelee_GetWeapon(item_id) {
-	if(!map_valid(m_itemMelee) || !map_has_key(m_itemMelee, item_id)) {
+	if(!map_valid(m_meleeStats) || !map_has_key(m_meleeStats, item_id)) {
 		return Weapon:-1;
 	}
 	new stats[ItemMeleeStats];
-	map_get_arr(m_itemMelee, item_id, stats);
+	map_get_arr(m_meleeStats, item_id, stats);
 	return stats[iMeleeWeapon];
 }
 
@@ -66,9 +66,9 @@ stock IMelee_GetModel(item_id) {
 
 forward IMelee_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
 public IMelee_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
-	if(map_valid(m_itemMelee) && map_has_key(m_itemMelee, item_id)) {
+	if(map_valid(m_meleeStats) && map_has_key(m_meleeStats, item_id)) {
 		new stats[ItemGunStats];
-		map_get_arr(m_itemMelee, item_id, stats);
+		map_get_arr(m_meleeStats, item_id, stats);
 		if(hand_leftright) {
 			Weapon_SetPlayerArmed(playerid, stats[iMeleeWeapon], 1);
 		}
@@ -100,5 +100,13 @@ hook OnGameModeInit() {
 	reliability FLOAT(11, 4) DEFAULT 1.0000,\
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
+	return 1;
+}
+
+hook OnGameModeExit() {
+	if(map_valid(m_meleeStats)) {
+		map_delete_deep(m_meleeStats);
+		m_meleeStats = Map:-1;
+	}
 	return 1;
 }

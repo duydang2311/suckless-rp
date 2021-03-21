@@ -142,3 +142,11 @@ hook OnGameModeInit() {
 	printf("INFO: Loaded %d item with gun ability.", rows);
 	return 1;
 }
+
+hook OnGameModeExit() {
+	if(map_valid(m_gunStats)) {
+		map_delete(m_gunStats);
+		m_gunStats = Map:-1;
+	}
+	return 1;
+}

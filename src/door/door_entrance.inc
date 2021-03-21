@@ -18,8 +18,8 @@ enum _:DoorEntranceAddons {
 	doorEnAreaId
 }
 
-static Map:m_doorEntrance;
-static Map:m_doorEntranceAddons;
+static Map:m_doorEntrance,
+	Map:m_doorEntranceAddons;
 
 stock Door_SetEntrance(id, Float:x, Float:y, Float:z, Float:a, int, vw, pickupModel = 0) {
 	if(!Door_Valid(id)) {
@@ -231,5 +231,17 @@ hook OnGameModeInit() {
 		}
 	}
 	cache_delete(result);
+	return 1;
+}
+
+hook OnGameModeExit() {
+	if(map_valid(m_doorEntrance)) {
+		map_delete(m_doorEntrance);
+		m_doorEntrance = Map:-1;
+	}
+	if(map_valid(m_doorEntranceAddons)) {
+		map_delete(m_doorEntranceAddons);
+		m_doorEntranceAddons = Map:-1;
+	}
 	return 1;
 }

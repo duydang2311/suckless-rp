@@ -206,3 +206,15 @@ hook OnGameModeInit() {
 	cache_delete(result);
 	return 1;
 }
+
+hook OnGameModeExit() {
+	if(map_valid(m_doorExit)) {
+		map_delete(m_doorExit);
+		m_doorExit = Map:-1;
+	}
+	if(map_valid(m_doorExitAddons)) {
+		map_delete(m_doorExitAddons);
+		m_doorExitAddons = Map:-1;
+	}
+	return 1;
+}

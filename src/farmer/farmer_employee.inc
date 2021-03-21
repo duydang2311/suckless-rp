@@ -60,3 +60,22 @@ hook OnGameModeInit() {
 	)", false);
 	return 1;
 }
+
+hook OnPlayerDisconnect(playerid, reason) {
+	if(map_valid(m_farmerEmployees) && map_has_key(m_farmerEmployees, Player_GetId(playerid))) {
+		map_remove(m_farmerEmployees, Player_GetId(playerid));
+		if(!map_size(m_farmerEmployees)) {
+			map_delete(m_farmerEmployees);
+			m_farmerEmployees = Map:-1;
+		}
+	}
+	return 1;
+}
+
+hook OnGameModeExit() {
+	if(map_valid(m_farmerEmployees)) {
+		map_delete(m_farmerEmployees);
+		m_farmerEmployees = Map:-1;
+	}
+	return 1;
+}

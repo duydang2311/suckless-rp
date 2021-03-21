@@ -192,6 +192,7 @@ hook OnGameModeExit() {
 				FCNPC_Destroy(stats[anmlNPCId]);
 			}
 		}
+		map_delete(m_animals);
 	}
-	map_delete(m_animals);
+	return 1;
 }

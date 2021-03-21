@@ -130,3 +130,11 @@ hook OnGameModeInit() {
 	}
 	return 1;
 }
+
+hook OnGameModeExit() {
+	if(map_valid(m_factionRanks)) {
+		map_delete(m_factionRanks);
+		m_factionRanks = Map:-1;
+	}
+	return 1;
+}

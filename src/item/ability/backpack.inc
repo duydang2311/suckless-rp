@@ -104,3 +104,11 @@ hook OnGameModeInit() {
 	cache_delete(result);
 	return 1;
 }
+
+hook OnGameModeExit() {
+	if(map_valid(m_backpackStats)) {
+		map_delete(m_backpackStats);
+		m_backpackStats = Map:-1;
+	}
+	return 1;
+}

@@ -86,3 +86,11 @@ hook OnGameModeInit() {
 	cache_delete(result);
 	return 1;
 }
+
+hook OnGameModeExit() {
+	if(map_valid(m_groupRoot)) {
+		map_delete_deep(m_groupRoot);
+		m_groupRoot = Map:-1;
+	}
+	return 1;
+}

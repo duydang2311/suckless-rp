@@ -153,6 +153,13 @@ hook Player_OnSpawn(playerid) {
 	return 1;
 }
 
+hook OnPlayerDisconnect(playerid, reason) {
+	if(map_valid(m_playerStats) && map_has_key(m_playerStats, playerid)) {
+		map_remove(m_playerStats, playerid);
+	}
+	return 1;
+}
+
 hook OnGameModeInit() {
 	m_playerStats = map_new();
 	mysql_query(MySQL_Connection(),
@@ -168,5 +175,13 @@ hook OnGameModeInit() {
 	level TINYINT UNSIGNED DEFAULT 1,\
 	FOREIGN KEY (id) REFERENCES player_auth(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
+	return 1;
+}
+
+hook OnGameModeExit() {
+	if(map_valid(m_playerStats)) {
+		map_delete(m_playerStats);
+		m_playerStats = Map:-1;
+	}
 	return 1;
 }

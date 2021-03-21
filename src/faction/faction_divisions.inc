@@ -130,3 +130,11 @@ hook OnGameModeInit() {
 	}
 	return 1;
 }
+
+hook OnGameModeExit() {
+	if(map_valid(m_factionDivisions)) {
+		map_delete(m_factionDivisions);
+		m_factionDivisions = Map:-1;
+	}
+	return 1;
+}

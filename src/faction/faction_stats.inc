@@ -126,3 +126,11 @@ hook OnGameModeInit() {
 	cache_delete(result);
 	return 1;
 }
+
+hook OnGameModeExit() {
+	if(map_valid(m_factionStats)) {
+		map_delete(m_factionStats);
+		m_factionStats = Map:-1;
+	}
+	return 1;
+}

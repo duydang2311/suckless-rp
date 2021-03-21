@@ -167,6 +167,21 @@ hook OnPlayerConnect(playerid) {
 	return 1;
 }
 
+hook OnPlayerDisconnect(playerid) {
+	if(map_valid(m_playerId) && map_has_key(m_playerId, playerid)) {
+		map_remove(m_playerId, playerid);
+	}
+	return 1;
+}
+
+hook OnGameModeExit() {
+	if(map_valid(m_playerId)) {
+		map_delete(m_playerId);
+		m_playerId = Map:-1;
+	}
+	return 1;
+}
+
 hook OnGameModeInit() {
 	m_playerId = map_new();
 	mysql_query(MySQL_Connection(),

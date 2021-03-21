@@ -112,6 +112,7 @@ hook OnGameModeInit() {
 hook OnGameModeExit() {
 	if(map_valid(m_npcAnimalId)) {
 		map_delete(m_npcAnimalId);
+		m_npcAnimalId = Map:-1;
 	}
 	return 1;
 }

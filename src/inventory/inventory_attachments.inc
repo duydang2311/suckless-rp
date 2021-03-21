@@ -220,3 +220,10 @@ hook OnGameModeInit() {
 	)", false);
 	return 1;
 }
+
+hook OnPlayerDisconnect(playerid, reason) {
+	if(map_valid(m_inventoryAttachment) && map_has_key(m_inventoryAttachment, playerid)) {
+		map_remove_deep(m_inventoryAttachment, playerid);
+	}
+	return 1;
+}

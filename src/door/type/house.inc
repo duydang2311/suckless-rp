@@ -50,3 +50,11 @@ hook OnGameModeInit() {
 	cache_delete(result);
 	return 1;
 }
+
+hook OnGameModeExit() {
+	if(map_valid(m_doorHouseId)) {
+		map_delete(m_doorHouseId);
+		m_doorHouseId = Map:-1;
+	}
+	return 1;
+}

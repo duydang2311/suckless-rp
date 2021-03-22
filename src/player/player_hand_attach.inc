@@ -28,16 +28,17 @@ stock Task:Player_AttachItemToHand(playerid, hand_index, slot, item_id) {
 			cache_get_value_name_float(0, "scale_y", scale[1]);
 			cache_get_value_name_float(0, "scale_z", scale[2]);
 			SetPlayerAttachedObject(playerid, slot, Item_GetModel(item_id), 5 + hand_index, offset[0], offset[1], offset[2], rot[0], rot[1], rot[2], scale[0], scale[1], scale[2]);
+			task_set_result(t, 1);
 		} else {
 			new query[150];
 			mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hand_attachments(player_id, hand_index, item_id) VALUES (%d, %d, %d)", Player_GetId(playerid), hand_index, item_id);
 			mysql_pquery(MySQL_Connection(), query);
 			SetPlayerAttachedObject(playerid, slot, Item_GetModel(item_id), 5 + hand_index);
+			task_set_result(t, 0);
 		}
-		task_set_result(t, 1);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_hand_attachments WHERE player_id = %d AND hand_index = %d AND item_id = %d LIMIT 1", Player_GetId(playerid), hand_index, item_id);
-	print("Player_AttachItemToHand send query");
+	task_set_result_ms(t, 0, 2000);
 	return t;
 }
 

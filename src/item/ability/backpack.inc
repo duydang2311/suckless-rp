@@ -16,20 +16,24 @@ stock Task:IBackpack_Create(model, capacity, Float:reliability = 1.0, occupied_s
 	task_detach();
 
 	inline const QueryFinished() {
-		new
-			insert_id = cache_insert_id(),
-			stats[ItemBackpackStats],
-			query[150];
-		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_backpack(id, model, capacity) VALUES (%d, %d, %d)", insert_id, model, capacity);
-		mysql_pquery(MySQL_Connection(), query);
+		new insert_id = -1;
+		if(cache_affected_rows()) {
+			new
+				stats[ItemBackpackStats],
+				query[150];
+			insert_id = cache_insert_id();
+			mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_backpack(id, model, capacity) VALUES (%d, %d, %d)", insert_id, model, capacity);
+			mysql_pquery(MySQL_Connection(), query);
 
-		stats[iBpModel] = model;
-		stats[iBpCapacity] = capacity;
-		map_set_arr(m_backpackStats, insert_id, stats);
-		CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityBackpack, reliability, occupied_space);
+			stats[iBpModel] = model;
+			stats[iBpCapacity] = capacity;
+			map_set_arr(m_backpackStats, insert_id, stats);
+			CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityBackpack, reliability, occupied_space);
+		}
 		task_set_result(t, insert_id);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", iAbilityBackpack, reliability, occupied_space);
+	task_set_result_ms(t, -1, 2000);
 	return t;
 }
 

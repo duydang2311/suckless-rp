@@ -31,7 +31,7 @@ runtime:
   port: 7777
   hostname: Sunday Development
   maxplayers: 200
-  language: "Vietnamese"
+  language: Vietnamese
   mapname: Los Santos
   weburl: www.sa-mp.com
   gamemodetext: sunday-dev
@@ -62,7 +62,7 @@ runtime:
   cookielogging: false
   output: true
   extra:
-    useartwork: 1
+    useartwork: "1"
 build:
   name: ""
   includes:

@@ -25,6 +25,7 @@ stock Task:House_Create() {
 		task_set_result(t, id);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO house_stats VALUES ()");
+	task_set_result_ms(t, -1, 2000);
 	return t;
 }
 

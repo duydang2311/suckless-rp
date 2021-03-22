@@ -41,6 +41,7 @@ plugins/
 announce
 samp03svr
 samp-npc
+fcnpc-crash*.txt
 
 # logs
 logs/

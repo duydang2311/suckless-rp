@@ -17,24 +17,27 @@ stock Task:IMelee_Create(Weapon:weapon, Float:damage) {
 	task_detach();
 
 	inline const QueryFinished() {
-		new
-			insert_id = cache_insert_id(),
-			stats[ItemMeleeStats],
-			query[150];
+		new insert_id = -1;
+		if(cache_affected_rows()) {
+			new
+				stats[ItemMeleeStats],
+				query[150];
 
-		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_melee (id, weapon, damage) VALUES (%d, %d, %.4f)", insert_id, _:weapon, damage);
-		mysql_pquery(MySQL_Connection(), query);
-		stats[iMeleeWeapon] = weapon;
-		stats[iMeleeDamage] = damage;
-		stats[iMeleeReliability] = 1.0;
-		if(!map_valid(m_meleeStats)) {
-			m_meleeStats = map_new();
+			mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_melee (id, weapon, damage) VALUES (%d, %d, %.4f)", insert_id, _:weapon, damage);
+			mysql_pquery(MySQL_Connection(), query);
+			stats[iMeleeWeapon] = weapon;
+			stats[iMeleeDamage] = damage;
+			stats[iMeleeReliability] = 1.0;
+			if(!map_valid(m_meleeStats)) {
+				m_meleeStats = map_new();
+			}
+			map_set_arr(m_meleeStats, insert_id, stats);
+			CallLocalFunction("Item_OnCreated", "ii", insert_id, iAbilityMelee);
 		}
-		map_set_arr(m_meleeStats, insert_id, stats);
 		task_set_result(t, insert_id);
-		CallLocalFunction("Item_OnCreated", "ii", insert_id, iAbilityMelee);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability) VALUES (%d)", _:ITEM_ABILITY:iAbilityMelee);
+	task_set_result_ms(t, -1, 2000);
 	return t;
 }
 

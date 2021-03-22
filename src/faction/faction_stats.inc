@@ -26,6 +26,7 @@ stock Task:Faction_Create(bool:legal) {
 		task_set_result(t, insert_id);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO faction_stats(type) VALUES (%d)", _:legal);
+	task_set_result_ms(t, -1, 2000);
 	return t;
 }
 

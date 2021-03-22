@@ -41,6 +41,7 @@ stock Task:Door_Create(DoorType:type = DOOR_TYPE_NONE) {
 		}
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO door_stats (type) VALUES (%d)", _:type);
+	task_set_result_ms(t, -1, 2000);
 	return t;
 }
 

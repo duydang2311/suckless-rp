@@ -56,7 +56,7 @@ stock Task:Inventory_AttachItem(playerid, slot, item_id) {
 		}
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM inventory_attachments WHERE item_id = %d LIMIT 1", item_id);
-	task_set_error_ms(t, amx_err_exit, 2000);
+	task_set_result_ms(t, -1, 2000);
 	return t;
 }
 
@@ -103,6 +103,7 @@ stock Task:Inventory_InsertAttachment(item_id, bone) {
 		task_set_result(t, cache_affected_rows());
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO inventory_attachments(item_id, bone) VALUES (%d, %d) ON DUPLICATE KEY UPDATE bone = VALUES(bone), offset_x = DEFAULT(offset_x), offset_y = DEFAULT(offset_y), offset_z = DEFAULT(offset_z), rot_x = DEFAULT(rot_x), rot_y = DEFAULT(rot_y), rot_z = DEFAULT(rot_z), scale_x = DEFAULT(scale_x), scale_y = DEFAULT(scale_y), scale_z = DEFAULT(scale_z)", item_id, bone);
+	task_set_result_ms(t, -1, 2000);
 	return t;
 }
 

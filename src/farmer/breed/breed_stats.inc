@@ -90,7 +90,7 @@ stock Task:Breed_CreateAnimal(species) {
 		}
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO breed_stats(species) VALUES (%d)", species);
-	task_set_error_ms(t, amx_err_exit, 3000);
+	task_set_result_ms(t, -1, 2000);
 	return t;
 }
 
@@ -120,6 +120,15 @@ stock Breed_GetNPCId(id) {
 	new stats[BreedAnimalStats];
 	map_get_arr(m_animals, id, stats);
 	return stats[anmlNPCId];
+}
+
+stock Breed_GetSpecies(id) {
+	if(!map_valid(m_animals) || !map_has_key(m_animals, id)) {
+		return -1;
+	}
+	new stats[BreedAnimalStats];
+	map_get_arr(m_animals, id, stats);
+	return stats[anmlSpecies];
 }
 
 forward Breed_InitAnimal(id);

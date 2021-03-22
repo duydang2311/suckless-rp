@@ -68,14 +68,25 @@ CMD:adestroyvehicle(playerid, params[]) {
 }
 alias:adestroyvehicle("adesveh", "adesv", "adestroyveh")
 
+flags:askin(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
 CMD:askin(playerid, params[]) {
 	extract params -> new model; else {
 		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /askin [model]");
+		return 1;
 	}
 	SetPlayerSkin(playerid, model);
 	return 1;
 }
 
+flags:aaction(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
+CMD:aaction(playerid, params[]) {
+	extract params -> new action; else {
+		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /aaction [special action]");
+		return 1;
+	}
+	SetPlayerSpecialAction(playerid, action);
+	return 1;
+}
 public OnPlayerCommandReceived(playerid, cmd[], params[], flags) {
     if(flags && !(flags & Admin_GetFlags(playerid))) {
 		Player_Msg(playerid, COLOR_RED, "Lenh khong ton tai.");

@@ -25,23 +25,27 @@ stock Task:IGun_Create(Weapon:weapon, Float:damage, stock_ammo = 0, Float:reliab
 	task_detach();
 
 	inline const QueryFinished() {
-		new
-			insert_id = cache_insert_id(),
-			stats[ItemGunStats],
-			query[150];
-		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_gun (id, weapon, ammo, damage) VALUES (%d, %d, %d, %.4f)", insert_id, _:weapon, stock_ammo, damage);
-		mysql_pquery(MySQL_Connection(), query);
+		new insert_id = -1;
+		if(cache_affected_rows()) {
+			new
+				stats[ItemGunStats],
+				query[150];
+			insert_id = cache_insert_id();
+			mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_gun (id, weapon, ammo, damage) VALUES (%d, %d, %d, %.4f)", insert_id, _:weapon, stock_ammo, damage);
+			mysql_pquery(MySQL_Connection(), query);
 
-		stats[iGunWeapon] = weapon;
-		stats[iGunDamage] = damage;
-		if(!map_valid(m_gunStats)) {
-			m_gunStats = map_new();
+			stats[iGunWeapon] = weapon;
+			stats[iGunDamage] = damage;
+			if(!map_valid(m_gunStats)) {
+				m_gunStats = map_new();
+			}
+			map_set_arr(m_gunStats, insert_id, stats);
+			CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityGun, reliability, occupied_space);
 		}
-		map_set_arr(m_gunStats, insert_id, stats);
-		CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityGun, reliability, occupied_space);
 		task_set_result(t, insert_id);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", iAbilityGun, reliability, occupied_space);
+	task_set_result_ms(t, -1, 2000);
 	return t;
 }
 

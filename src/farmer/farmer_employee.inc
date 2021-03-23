@@ -38,7 +38,7 @@ stock Farmer_DeleteEmployee(id) {
 
 #include <YSI_Coding\y_hooks>
 
-hook Player_OnSpawn(playerid) {
+hook Player_OnStatsLoaded(playerid) {
 	inline const QueryFinished() {
 		if(cache_num_rows()) {
 			if(!map_valid(m_farmerEmployees)) {

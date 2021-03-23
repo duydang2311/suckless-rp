@@ -27,6 +27,9 @@ stock Task:IBackpack_Create(model, capacity, Float:reliability = 1.0, occupied_s
 
 			stats[iBpModel] = model;
 			stats[iBpCapacity] = capacity;
+			if(!map_valid(m_backpackStats)) {
+				m_backpackStats = map_new();
+			}
 			map_set_arr(m_backpackStats, insert_id, stats);
 			CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityBackpack, reliability, occupied_space);
 		}
@@ -38,7 +41,7 @@ stock Task:IBackpack_Create(model, capacity, Float:reliability = 1.0, occupied_s
 }
 
 stock IBackpack_GetCapacity(id) {
-	if(!map_has_key(m_backpackStats, id)) {
+	if(!map_valid(m_backpackStats) || !map_has_key(m_backpackStats, id)) {
 		return 0;
 	}
 	new stats[ItemBackpackStats];
@@ -47,7 +50,7 @@ stock IBackpack_GetCapacity(id) {
 }
 
 stock IBackpack_GetFreeCapacity(id) {
-	if(!map_has_key(m_backpackStats, id)) {
+	if(!map_valid(m_backpackStats) || !map_has_key(m_backpackStats, id)) {
 		return 0;
 	}
 
@@ -67,7 +70,7 @@ stock IBackpack_GetFreeCapacity(id) {
 }
 
 stock IBackpack_GetModel(id) {
-	if(!map_has_key(m_backpackStats, id)) {
+	if(!map_valid(m_backpackStats) || !map_has_key(m_backpackStats, id)) {
 		return 0;
 	}
 	new
@@ -78,16 +81,17 @@ stock IBackpack_GetModel(id) {
 
 forward IBackpack_OnDeleted(id);
 public IBackpack_OnDeleted(id) {
-	if(map_has_key(m_backpackStats, id)) {
+	if(map_valid(m_backpackStats) && map_has_key(m_backpackStats, id)) {
 		map_remove(m_backpackStats, id);
+		if(!map_size(m_backpackStats)) {
+			map_delete(m_backpackStats);
+			m_backpackStats = Map:-1;
+		}
 	}
 	return 1;
 }
 
-#include <YSI_Coding\y_hooks>
-
-hook OnGameModeInit() {
-	m_backpackStats = map_new();
+hook OnGameModeInit@4() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_backpack (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -99,17 +103,24 @@ hook OnGameModeInit() {
 	)", false);
 
 	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_backpack", true);
-	for(new i = 0, rows = cache_num_rows(), stats[ItemBackpackStats], id; i != rows; i++) {
-		cache_get_value_name_int(i, "id", id);
-		cache_get_value_name_int(i, "model", stats[iBpModel]);
-		cache_get_value_name_int(i, "capacity", stats[iBpCapacity]);
-		map_set_arr(m_backpackStats, id, stats);
+	new rows = cache_num_rows();
+	if(rows) {
+		for(new i = 0, stats[ItemBackpackStats], id; i != rows; i++) {
+			cache_get_value_name_int(i, "id", id);
+			cache_get_value_name_int(i, "model", stats[iBpModel]);
+			cache_get_value_name_int(i, "capacity", stats[iBpCapacity]);
+			if(!map_valid(m_backpackStats)) {
+				m_backpackStats = map_new();
+			}
+			map_set_arr(m_backpackStats, id, stats);
+		}
 	}
 	cache_delete(result);
+	printf("INFO: Loaded %d backpack items.", rows);
 	return 1;
 }
 
-hook OnGameModeExit() {
+hook OnGameModeExit@4() {
 	if(map_valid(m_backpackStats)) {
 		map_delete(m_backpackStats);
 		m_backpackStats = Map:-1;

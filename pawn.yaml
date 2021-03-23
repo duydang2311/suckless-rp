@@ -5,6 +5,7 @@ entry: src/main.pwn
 output: gamemodes/main.amx
 dependencies:
 - sampctl/samp-stdlib
+- Zeex/samp-plugin-crashdetect:v4.20
 - pawn-lang/YSI-Includes@5.x
 - IllidanS4/PawnPlus:v1.3.2
 - pBlueG/SA-MP-MySQL:R41-4
@@ -78,3 +79,8 @@ build:
   - src/farmer
   - src/
   - libraries/
+  args:
+    - "-d3"
+    - "-;+"
+    - "-(+"
+    - "-Z+"

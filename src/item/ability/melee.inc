@@ -90,9 +90,7 @@ public IMelee_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
 	return 1;
 }
 
-#include <YSI_Coding\y_hooks>
-
-hook OnGameModeInit() {
+hook OnGameModeInit@3() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_melee (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -106,7 +104,7 @@ hook OnGameModeInit() {
 	return 1;
 }
 
-hook OnGameModeExit() {
+hook OnGameModeExit@3() {
 	if(map_valid(m_meleeStats)) {
 		map_delete_deep(m_meleeStats);
 		m_meleeStats = Map:-1;

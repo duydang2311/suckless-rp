@@ -12,6 +12,9 @@ stock Item_AddToGroupItem(id, group_id) {
 		LinkedList:ll;
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_group(group_id, member_id) VALUES (%d, %d) ON DUPLICATE KEY UPDATE group_id = VALUES(group_id)", group_id, id);
 	mysql_pquery(MySQL_Connection(), query);
+	if(!map_valid(m_groupRoot)) {
+		m_groupRoot = map_new();
+	}
 	if(!map_has_key(m_groupRoot, group_id)) {
 		ll = linked_list_new();
 		map_set(m_groupRoot, group_id, ll);
@@ -23,7 +26,7 @@ stock Item_AddToGroupItem(id, group_id) {
 }
 
 stock Item_RemoveFromGroupItem(member_id, group_id) {
-	if(!map_has_key(m_groupRoot, group_id)) {
+	if(!map_valid(m_groupRoot) || !map_has_key(m_groupRoot, group_id)) {
 		return 0;
 	}
 
@@ -45,7 +48,7 @@ stock Item_RemoveFromGroupItem(member_id, group_id) {
 }
 
 stock Iter:Item_GetGroupIter(group_id, index = 0) {
-	if(!map_has_key(m_groupRoot, group_id)) {
+	if(!map_valid(m_groupRoot) || !map_has_key(m_groupRoot, group_id)) {
 		return Iter:-1;
 	}
 	new Iter:it = linked_list_iter(LinkedList:map_get(m_groupRoot, group_id), index);
@@ -54,13 +57,10 @@ stock Iter:Item_GetGroupIter(group_id, index = 0) {
 }
 
 stock Item_HasGroup(group_id) {
-	return _:map_has_key(m_groupRoot, group_id);
+	return (map_valid(m_groupRoot) && map_has_key(m_groupRoot, group_id));
 }
 
-#include <YSI_Coding\y_hooks>
-
-hook OnGameModeInit() {
-	m_groupRoot = map_new();
+hook OnGameModeInit@1() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_group (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -75,6 +75,9 @@ hook OnGameModeInit() {
 	for(new i = 0, rows = cache_num_rows(), group_id, member_id, LinkedList:ll; i != rows; i++) {
 		cache_get_value_name_int(i, "group_id", group_id);
 		cache_get_value_name_int(i, "member_id", member_id);
+		if(!map_valid(m_groupRoot)) {
+			m_groupRoot = map_new();
+		}
 		if(!map_has_key(m_groupRoot, group_id)) {
 			ll = linked_list_new();
 			map_set(m_groupRoot, group_id, ll);
@@ -87,7 +90,7 @@ hook OnGameModeInit() {
 	return 1;
 }
 
-hook OnGameModeExit() {
+hook OnGameModeExit@1() {
 	if(map_valid(m_groupRoot)) {
 		map_delete_deep(m_groupRoot);
 		m_groupRoot = Map:-1;

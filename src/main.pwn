@@ -45,6 +45,6 @@ forward pp_on_error(source[], message[], error_level:level, &retval);
 public pp_on_error(source[], message[], error_level:level, &retval) {
 	print(source);
 	print(message);
-	printf("%d", _:level);
+	printf("%d %d", _:level, retval);
 	return 1;
 }

@@ -143,6 +143,7 @@ hook Player_OnSpawn(playerid) {
 			SetPlayerScore(playerid, stats[pLevel]);
 
 			map_set_arr(m_playerStats, playerid, stats);
+			CallLocalFunction("Player_OnStatsLoaded", "i", playerid);
 		} else {
 			Player_Msg(playerid, COLOR_YELLOW, "Nhan vat cua ban chua duoc setup, hay tien hanh setup nhan vat ngay bay gio.");
 			Player_SetupStats(playerid);

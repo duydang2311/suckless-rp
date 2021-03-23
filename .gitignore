@@ -21,8 +21,6 @@ pawn.lock
 #
 # Server/gamemode related files
 #
-*.dff
-*.txd
 *.cadb
 
 # compiled settings file

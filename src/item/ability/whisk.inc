@@ -38,9 +38,7 @@ stock IWhisk_GetModel() {
 	return 2901;
 }
 
-#include <YSI_Coding\y_hooks>
-
-hook OnGameModeInit() {
+hook OnGameModeInit@5() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_whisk (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -50,13 +48,17 @@ hook OnGameModeInit() {
 	)", false);
 
 	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_whisk", true);
-	for(new i = 0, rows = cache_num_rows(), id; i != rows; i++) {
-		cache_get_value_name_int(i, "id", id);
-		if(!map_valid(m_whiskStats)) {
-			m_whiskStats = map_new();
+	new rows = cache_num_rows();
+	if(rows) {
+		for(new i = 0, id; i != rows; i++) {
+			cache_get_value_name_int(i, "id", id);
+			if(!map_valid(m_whiskStats)) {
+				m_whiskStats = map_new();
+			}
+			map_set(m_whiskStats, id, 1);
 		}
-		map_set(m_whiskStats, id, 1);
 	}
 	cache_delete(result);
+	printf("INFO: Loaded %d whisk items.", rows);
 	return 1;
 }

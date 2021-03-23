@@ -99,7 +99,7 @@ stock Inventory_GetSize(playerid) {
 
 #include <YSI_Coding\y_hooks>
 
-hook Player_OnSpawn(playerid) {
+hook Player_OnStatsLoaded(playerid) {
 	print("inventory_stats.inc");
 	inline const QueryFinished() {
 		new rows = cache_num_rows();

@@ -20,6 +20,7 @@
 #include <chrono>
 #include <samp-precise-timers>
 #include <skintags>
+#include <ColAndreas>
 
 #include <config/colors>
 
@@ -29,10 +30,12 @@
 #include "./player_auth.inc"
 #include "./player_stats.inc"
 #include "./player_spawn.inc"
-#include "./player_hand_attach.inc"
-#include "./player_hands.inc"
+#include "./hand/player_hand_attach.inc"
+#include "./hand/player_hands.inc"
 #include "./player_death.inc"
-#include "./player_hand_cmds.inc"
+
+#include "./hand/player_hand_key.inc"
+#include "./hand/player_hand_cmds.inc"
 
 #include <YSI_Coding\y_hooks>
 

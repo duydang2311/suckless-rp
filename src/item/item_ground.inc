@@ -21,7 +21,7 @@ stock IGround_Update(id, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz
 	}
 
 	new
-		stats[ItemGroundStats] = {-1, -1},
+		stats[ItemGroundStats] = {-1, Text3D:-1},
 		name[64],
 		query[512];
 	if(!map_valid(m_iGroundStats)) {
@@ -32,7 +32,7 @@ stock IGround_Update(id, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz
 		if(stats[iGrObjectId] != -1) {
 			DestroyDynamicObject(stats[iGrObjectId]);
 		}
-		if(stats[iGrTextLabelId] != -1) {
+		if(stats[iGrTextLabelId] != Text3D:-1) {
 			DestroyDynamic3DTextLabel(stats[iGrTextLabelId]);
 		}
 	}
@@ -65,9 +65,7 @@ stock IGround_Delete(id) {
 	return 1;
 }
 
-#include <YSI_Coding\y_hooks>
-
-hook OnGameModeExit() {
+hook OnGameModeExit@6() {
 	if(map_valid(m_iGroundStats)) {
 		map_delete(m_iGroundStats);
 		m_iGroundStats = Map:-1;
@@ -75,7 +73,7 @@ hook OnGameModeExit() {
 	return 1;
 }
 
-hook OnGameModeInit() {
+hook OnGameModeInit@6() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_ground (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\

@@ -26,7 +26,7 @@ stock Item_Has(id) {
 }
 
 stock Item_Delete(id) {
-	if(!map_has_key(m_itemStats, id)) {
+	if(!map_valid(m_itemStats) && map_has_key(m_itemStats, id)) {
 		return 0;
 	}
 	new
@@ -47,11 +47,15 @@ stock Item_Delete(id) {
 		}
 	}
 	map_remove(m_itemStats, id);
+	if(!map_size(m_itemStats)) {
+		map_delete(m_itemStats);
+		m_itemStats = Map:-1;
+	}
 	return 1;
 }
 
 stock Item_GetName(item_id, name[], size = sizeof(name)) {
-	if(map_has_key(m_itemStats, item_id)) {
+	if(map_valid(m_itemStats) && map_has_key(m_itemStats, item_id)) {
 		new stats[ItemStats];
 		map_get_arr(m_itemStats, item_id, stats);
 		switch(stats[iAbility]) {
@@ -75,7 +79,7 @@ stock Item_GetName(item_id, name[], size = sizeof(name)) {
 }
 
 stock Item_GetModel(id) {
-	if(map_has_key(m_itemStats, id)) {
+	if(map_valid(m_itemStats) && map_has_key(m_itemStats, id)) {
 		new stats[ItemStats];
 		map_get_arr(m_itemStats, id, stats);
 		switch(stats[iAbility]) {
@@ -89,7 +93,7 @@ stock Item_GetModel(id) {
 				return IBackpack_GetModel(id);
 			}
 			case iAbilityWhisk: {
-				return IWhisk_GetModel(id);
+				return IWhisk_GetModel();
 			}
 		}
 	}
@@ -97,7 +101,7 @@ stock Item_GetModel(id) {
 }
 
 stock Item_GetCapacity(id) {
-	if(!map_has_key(m_itemStats, id)) {
+	if(!map_valid(m_itemStats) || !map_has_key(m_itemStats, id)) {
 		return 0;
 	}
 	new stats[ItemStats];
@@ -111,7 +115,7 @@ stock Item_GetCapacity(id) {
 }
 
 stock Item_GetFreeCapacity(id) {
-	if(!map_has_key(m_itemStats, id)) {
+	if(!map_valid(m_itemStats) || !map_has_key(m_itemStats, id)) {
 		return 0;
 	}
 	new stats[ItemStats];
@@ -125,7 +129,7 @@ stock Item_GetFreeCapacity(id) {
 }
 
 stock Item_GetOccupiedSpace(id) {
-	if(!map_has_key(m_itemStats, id)) {
+	if(!map_valid(m_itemStats) || !map_has_key(m_itemStats, id)) {
 		return 0;
 	}
 	new stats[ItemStats];
@@ -139,13 +143,16 @@ public Item_OnCreated(item_id, ability, Float:reliability, occupied_space) {
 	stats[iAbility] = ability;
 	stats[iReliability] = reliability;
 	stats[iOccupiedSpace] = occupied_space;
+	if(!map_valid(m_itemStats)) {
+		m_itemStats = map_new();
+	}
 	map_set_arr(m_itemStats, item_id, stats);
 	return 1;
 }
 
 forward Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
 public Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
-	if(map_has_key(m_itemStats, item_id)) {
+	if(map_valid(m_itemStats) && map_has_key(m_itemStats, item_id)) {
 		new stats[ItemStats];
 		map_get_arr(m_itemStats, item_id, stats);
 		switch(stats[iAbility]) {
@@ -162,7 +169,7 @@ public Item_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 
 forward Item_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id);
 public Item_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
-	if(map_has_key(m_itemStats, item_id)) {
+	if(map_valid(m_itemStats) && map_has_key(m_itemStats, item_id)) {
 		new stats[ItemStats];
 		map_get_arr(m_itemStats, item_id, stats);
 		switch(stats[iAbility]) {
@@ -177,10 +184,7 @@ public Item_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
 	return 1;
 }
 
-#include <YSI_Coding\y_hooks>
-
-hook OnGameModeInit() {
-	m_itemStats = map_new();
+hook OnGameModeInit@0() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_stats (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -197,13 +201,16 @@ hook OnGameModeInit() {
 		cache_get_value_name_int(i, "ability", stats[iAbility]);
 		cache_get_value_name_int(i, "occupied_space", stats[iOccupiedSpace]);
 		cache_get_value_name_float(i, "reliability", stats[iReliability]);
+		if(!map_valid(m_itemStats)) {
+			m_itemStats = map_new();
+		}
 		map_set_arr(m_itemStats, id, stats);
 	}
 	cache_delete(result);
 	return 1;
 }
 
-hook OnGameModeExit() {
+hook OnGameModeExit@0() {
 	if(map_valid(m_itemStats)) {
 		map_delete(m_itemStats);
 		m_itemStats = Map:-1;

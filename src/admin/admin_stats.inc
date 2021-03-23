@@ -23,7 +23,7 @@ stock Admin_SetFlags(playerid, flags) {
 
 #include <YSI_Coding\y_hooks>
 
-hook Player_OnSpawn(playerid) {
+hook Player_OnStatsLoaded(playerid) {
 	print("admin_stats.inc");
 	inline const QueryFinished() {
 		if(cache_num_rows()) {

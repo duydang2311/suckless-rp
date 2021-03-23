@@ -12,7 +12,7 @@ enum _:ItemGunStats {
 static Map:m_gunStats;
 
 stock Weapon:IGun_GetWeapon(item_id) {
-	if(map_has_key(m_gunStats, item_id)) {
+	if(map_valid(m_gunStats) && map_has_key(m_gunStats, item_id)) {
 		new stats[ItemGunStats];
 		map_get_arr(m_gunStats, item_id, stats);
 		return stats[iGunWeapon];
@@ -68,15 +68,19 @@ stock IGun_GetModel(item_id) {
 
 forward IGun_OnDeleted(id);
 public IGun_OnDeleted(id) {
-	if(map_has_key(m_gunStats, id)) {
+	if(map_valid(m_gunStats) && map_has_key(m_gunStats, id)) {
 		map_remove(m_gunStats, id);
+		if(!map_size(m_gunStats)) {
+			map_delete(m_gunStats);
+			m_gunStats = Map:-1;
+		}
 	}
 	return 1;
 }
 
 forward IGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id);
 public IGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
-	if(map_has_key(m_gunStats, item_id)) {
+	if(map_valid(m_gunStats) && map_has_key(m_gunStats, item_id)) {
 		new stats[ItemGunStats];
 		map_get_arr(m_gunStats, item_id, stats);
 		if(hand_leftright) {
@@ -109,10 +113,7 @@ public IGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
 	return 1;
 }
 
-#include <YSI_Coding\y_hooks>
-
-hook OnGameModeInit() {
-	m_gunStats = map_new();
+hook OnGameModeInit@2() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_gun (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -138,16 +139,18 @@ hook OnGameModeInit() {
 			cache_get_value_name_int(i, "weapon", iWeapon);
 			cache_get_value_name_float(i, "damage", stats[iGunDamage]);
 			stats[iGunWeapon] = Weapon:iWeapon;
-
+			if(!map_valid(m_gunStats)) {
+				m_gunStats = map_new();
+			}
 			map_set_arr(m_gunStats, item_id, stats);
 		}
 	}
 	cache_delete(result);
-	printf("INFO: Loaded %d item with gun ability.", rows);
+	printf("INFO: Loaded %d gun items.", rows);
 	return 1;
 }
 
-hook OnGameModeExit() {
+hook OnGameModeExit@2() {
 	if(map_valid(m_gunStats)) {
 		map_delete(m_gunStats);
 		m_gunStats = Map:-1;

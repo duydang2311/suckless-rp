@@ -1,0 +1,7 @@
+enum (<<= 1) {
+	ADMIN_FLAGS_1 = 1,
+	ADMIN_FLAGS_2,
+	ADMIN_FLAGS_3,
+	ADMIN_FLAGS_4,
+	ADMIN_FLAGS_5
+}

@@ -7,22 +7,16 @@
 static playerHands[MAX_PLAYERS][2] = {{-1, -1}, ...};
 
 stock Player_EquipItem(playerid, hand_index, item_id) {
-	if(playerHands[playerid][hand_index] != -1) {
+	if(playerHands[playerid][hand_index] != -1 || !Item_Has(item_id)) {
 		return 0;
 	}
 
-	new Iter:inv_it = Inventory_GetIterByItem(playerid, item_id);
-	if(iter_valid(inv_it)) {
-		playerHands[playerid][hand_index] = item_id;
-		new query[128];
-		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hands (player_id, item_id, hand_index) VALUES (%d, %d, %d)", Player_GetId(playerid), item_id, hand_index);
-		mysql_pquery(MySQL_Connection(), query);
-
-		Inventory_RemoveItemByIter(playerid, inv_it);
-		iter_release(inv_it);
-		CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, hand_index, item_id);
-		CallLocalFunction("Player_OnItemEquipped", "iii", playerid, hand_index, item_id);
-	}
+	new query[128];
+	playerHands[playerid][hand_index] = item_id;
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hands (player_id, item_id, hand_index) VALUES (%d, %d, %d)", Player_GetId(playerid), item_id, hand_index);
+	mysql_pquery(MySQL_Connection(), query);
+	CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, hand_index, item_id);
+	CallLocalFunction("Player_OnItemEquipped", "iii", playerid, hand_index, item_id);
 	return 0;
 }
 
@@ -32,7 +26,6 @@ stock Player_UnequipItem(playerid, hand_index) {
 	}
 
 	new query[128];
-	Inventory_AddItem(playerid, playerHands[playerid][hand_index]);
 	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM player_hands WHERE player_id = %d AND hand_index = %d", Player_GetId(playerid), hand_index);
 	mysql_pquery(MySQL_Connection(), query);
 	CallLocalFunction("Item_OnPlayerUnequipped", "iii", playerid, hand_index, playerHands[playerid][hand_index]);

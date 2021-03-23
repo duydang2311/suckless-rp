@@ -12,6 +12,7 @@
 #include <YSI_Extra\y_inline_mysql>
 
 #include <config/colors>
+#include <config/cmd_flags>
 
 #include <mysql>
 

@@ -106,12 +106,21 @@ Dialog:InventoryDialog(playerid, response, listitem, inputtext[]) {
 						item_group_members_show(playerid, id);
 						return 1;
 					} else {
+						Inventory_RemoveItemByIter(playerid, it);
 						Player_EquipItem(playerid, hand, id);
 					}
 				}
 			}
 		} else {
-			Player_UnequipItem(playerid, listitem - size);
+			new id = Player_GetHandItemId(playerid, listitem - size);
+			if(id != -1) {
+				if(Item_GetOccupiedSpace(id) > 1) {
+					Player_Msg(playerid, COLOR_YELLOW, "Day la loai vat pham khong the bo vao Inventory, hay mang no hoac vut no xuong dat (nhan N khi cam tren tay).");
+				} else {
+					Inventory_AddItem(playerid, id);
+					Player_UnequipItem(playerid, listitem - size);
+				}
+			}
 		}
 		PC_EmulateCommand(playerid, "/inv");
 	}

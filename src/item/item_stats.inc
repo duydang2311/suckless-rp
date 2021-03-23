@@ -9,7 +9,8 @@ const Float:MAX_ITEM_RELIABILITY = 1.0;
 enum _:ItemAbility {
 	iAbilityGun,
 	iAbilityMelee,
-	iAbilityBackpack
+	iAbilityBackpack,
+	iAbilityWhisk
 }
 
 enum _:ItemStats {
@@ -19,6 +20,10 @@ enum _:ItemStats {
 }
 
 static Map:m_itemStats;
+
+stock Item_Has(id) {
+	return (map_valid(m_itemStats) && map_has_key(m_itemStats, id));
+}
 
 stock Item_Delete(id) {
 	if(!map_has_key(m_itemStats, id)) {
@@ -60,6 +65,10 @@ stock Item_GetName(item_id, name[], size = sizeof(name)) {
 				name[0] = EOS;
 				strcat(name, "Backpack", size);
 			}
+			case iAbilityWhisk: {
+				name[0] = EOS;
+				strcat(name, "Whisk", size);
+			}
 		}
 	}
 	return 1;
@@ -78,6 +87,9 @@ stock Item_GetModel(id) {
 			}
 			case iAbilityBackpack: {
 				return IBackpack_GetModel(id);
+			}
+			case iAbilityWhisk: {
+				return IWhisk_GetModel(id);
 			}
 		}
 	}

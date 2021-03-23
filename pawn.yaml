@@ -18,7 +18,6 @@ dependencies:
 - bmisiak/samp-precise-timers:v2.0.2
 - Crayder/Skin-Tags
 - katursis/Pawn.CMD:3.3.3
-- AGraber/pawn-plus-mysql:1.0.3
 - samp-incognito/samp-streamer-plugin:v2.9.4
 - Pottus/ColAndreas:1.5.0
 local: true

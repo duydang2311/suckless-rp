@@ -6,16 +6,80 @@
 
 enum _:ItemGroundStats {
 	iGrObjectId,
-	iGrTextLabelId
+	Text3D:iGrTextLabelId
+}
+
+static Map:m_iGroundStats;
+
+stock IGround_Has(id) {
+	return (map_valid(m_iGroundStats) && map_has_key(m_iGroundStats, id));
+}
+
+stock IGround_Update(id, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz, int = 0, vw = 0) {
+	if(!Item_Has(id)) {
+		return 0;
+	}
+
+	new
+		stats[ItemGroundStats] = {-1, -1},
+		name[64],
+		query[512];
+	if(!map_valid(m_iGroundStats)) {
+		m_iGroundStats = map_new();
+	}
+	if(map_has_key(m_iGroundStats, id)) {
+		map_get_arr(m_iGroundStats, id, stats);
+		if(stats[iGrObjectId] != -1) {
+			DestroyDynamicObject(stats[iGrObjectId]);
+		}
+		if(stats[iGrTextLabelId] != -1) {
+			DestroyDynamic3DTextLabel(stats[iGrTextLabelId]);
+		}
+	}
+	Item_GetName(id, name);
+	stats[iGrObjectId] = CreateDynamicObject(Item_GetModel(id), x, y, z, rx, ry, rz, vw, int);
+	stats[iGrTextLabelId] = CreateDynamic3DTextLabel(name, COLOR_YELLOW, x, y, z, 10.0, .worldid = vw, .interiorid = int);
+	map_set_arr(m_iGroundStats, id, stats);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_ground(id, pos_x, pos_y, pos_z, rot_x, rot_y, rot_z, interior, vw) VALUES (%d, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %d, %d) ON DUPLICATE KEY UPDATE pos_x = VALUES(pos_x), pos_y = VALUES(pos_y), pos_z = VALUES(pos_z), rot_x = VALUES(rot_x), rot_y = VALUES(rot_y), rot_z = VALUES(rot_z), interior = VALUES(interior), vw = VALUES(vw)", id, x, y, z, rx, ry, rz, int, vw);
+	mysql_pquery(MySQL_Connection(), query);
+	return 1;
+}
+
+stock IGround_Delete(id) {
+	if(!map_valid(m_iGroundStats) || !map_has_key(m_iGroundStats, id)) {
+		return 0;
+	}
+	new
+		stats[ItemGroundStats],
+		query[128];
+	map_get_arr(m_iGroundStats, id, stats);
+	DestroyDynamicObject(stats[iGrObjectId]);
+	DestroyDynamic3DTextLabel(stats[iGrTextLabelId]);
+	map_remove(m_iGroundStats, id);
+	if(!map_size(m_iGroundStats)) {
+		map_delete(m_iGroundStats);
+		m_iGroundStats = Map:-1;
+	}
+	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM item_ground WHERE id = %d LIMIT 1", id);
+	mysql_pquery(MySQL_Connection(), query);
+	return 1;
 }
 
 #include <YSI_Coding\y_hooks>
+
+hook OnGameModeExit() {
+	if(map_valid(m_iGroundStats)) {
+		map_delete(m_iGroundStats);
+		m_iGroundStats = Map:-1;
+	}
+	return 1;
+}
 
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_ground (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAM ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED PRIMARY KEY,\
 	pos_x FLOAT (11, 4) DEFAULT 0.0000,\
 	pos_y FLOAT (11, 4) DEFAULT 0.0000,\
@@ -43,10 +107,10 @@ hook OnGameModeInit() {
 		Item_GetName(id, name);
 		stats[iGrObjectId] = CreateDynamicObject(Item_GetModel(id), pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], vw, int);
 		stats[iGrTextLabelId] = CreateDynamic3DTextLabel(name, COLOR_YELLOW, pos[0], pos[1], pos[2], 10.0, .worldid = vw, .interiorid = int);
-		if(!map_valid(m_itemGroundStats)) {
-			m_itemGroundStats = map_new();
+		if(!map_valid(m_iGroundStats)) {
+			m_iGroundStats = map_new();
 		}
-		map_set_arr(m_itemGroundStats, id, stats);
+		map_set_arr(m_iGroundStats, id, stats);
 	}
 	cache_delete(result);
 	return 1;

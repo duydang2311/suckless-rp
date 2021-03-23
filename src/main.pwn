@@ -30,8 +30,8 @@
 
 #include <mysql>
 #include <item>
-#include <weapon>
 #include <inventory>
+#include <weapon>
 #include <player>
 #include <admin>
 #include <door>

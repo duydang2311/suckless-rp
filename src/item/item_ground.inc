@@ -11,6 +11,40 @@ enum _:ItemGroundStats {
 
 static Map:m_iGroundStats;
 
+stock Float:CompressRotation(Float:rotation){
+	return (rotation - floatround(rotation/360.0,floatround_floor)*360.0);
+}
+
+static get_rotation_for_2point_3d(Float:x,Float:y,Float:z,Float:tx,Float:ty,Float:tz,&Float:rx,&Float:rz){
+	new Float:radius = VectorSize(tx-x,ty-y,tz-z);
+	if(radius <= 0.0) return 0;
+	rx = CompressRotation(-(acos((tz-z)/radius)-90.0));
+	rz = CompressRotation(atan2(ty-y,tx-x)-90.0);
+	return 1;
+}
+
+stock get_point_in_front_2d(Float:x,Float:y,Float:rz,Float:radius,&Float:tx,&Float:ty){
+	tx = x - (radius * floatsin(rz,degrees));
+	ty = y + (radius * floatcos(rz,degrees));
+}
+
+static get_ground_rotation(Float:x,Float:y,Float:size,&Float:rx,&Float:ry){
+	new Float:tpx1,Float:tpy1,Float:tpz1,
+		Float:tpx2,Float:tpy2,Float:tpz2,
+		Float:tmp;
+	get_point_in_front_2d(x,y,0.0,size,tpx1,tpy1);
+	get_point_in_front_2d(x,y,180.0,size,tpx2,tpy2);
+	CA_FindZ_For2DCoord(tpx1,tpy1,tpz1);
+	CA_FindZ_For2DCoord(tpx2,tpy2,tpz2);
+	get_rotation_for_2point_3d(tpx1,tpy1,tpz1,tpx2,tpy2,tpz2,rx,tmp);
+
+	get_point_in_front_2d(x,y,90.0,size,tpx1,tpy1);
+	get_point_in_front_2d(x,y,270.0,size,tpx2,tpy2);
+	CA_FindZ_For2DCoord(tpx1,tpy1,tpz1);
+	CA_FindZ_For2DCoord(tpx2,tpy2,tpz2);
+	get_rotation_for_2point_3d(tpx1,tpy1,tpz1,tpx2,tpy2,tpz2,ry,tmp);
+}
+
 stock IGround_Has(id) {
 	return (map_valid(m_iGroundStats) && map_has_key(m_iGroundStats, id));
 }
@@ -43,6 +77,19 @@ stock IGround_Update(id, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_ground(id, pos_x, pos_y, pos_z, rot_x, rot_y, rot_z, interior, vw) VALUES (%d, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %d, %d) ON DUPLICATE KEY UPDATE pos_x = VALUES(pos_x), pos_y = VALUES(pos_y), pos_z = VALUES(pos_z), rot_x = VALUES(rot_x), rot_y = VALUES(rot_y), rot_z = VALUES(rot_z), interior = VALUES(interior), vw = VALUES(vw)", id, x, y, z, rx, ry, rz, int, vw);
 	mysql_pquery(MySQL_Connection(), query);
 	return 1;
+}
+
+stock IGround_CAUpdate(id, Float:x, Float:y, Float:rz, int = 0, vw = 0) {
+	if(!Item_Has(id)) {
+		return 0;
+	}
+
+	new Float:z,
+		Float:rx,
+		Float:ry;
+	get_ground_rotation(x, y, -1.0, rx, ry);
+	CA_FindZ_For2DCoord(x, y, z);
+	return IGround_Update(id, x, y, z, rx, ry, rz, int, vw);
 }
 
 stock IGround_Delete(id) {

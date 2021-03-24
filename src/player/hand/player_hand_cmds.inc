@@ -4,7 +4,41 @@
 
 #define player_hand_cmds_included
 
-static Map:m_selectedHandIndex;
+static
+	Map:m_selectedHandIndex,
+	Map:m_ability;
+
+CMD:aeditcarry(playerid, params[]) {
+	extract params -> new ability; else {
+		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /aeditcarry [item ability]");
+		return 1;
+	}
+
+	if(!Item_HasAbility(ability)) {
+		Player_Msg(playerid, COLOR_FADE2, "Item Ability vua nhap khong hop le.");
+		return 1;
+	}
+
+	new slot = Player_GetFreeAttachmentSlot(playerid, true);
+	if(slot == -1) {
+		Player_Msg(playerid, COLOR_FADE2, "Khong con du slot de gan vat pham.");
+		return 1;
+	}
+
+	new model = Item_GetModelByAbility(ability);
+	if(model == 0) {
+		Player_Msg(playerid, COLOR_FADE2, "Item co Ability hien tai chua ho tro 'Carry'.");
+		return 1;
+	}
+	if(!map_valid(m_ability)) {
+		m_ability = map_new();
+	}
+	map_set(m_ability, playerid, ability);
+	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
+	SetPlayerAttachedObject(playerid, slot, model, 1);
+	EditAttachedObject(playerid, slot);
+	return 1;
+}
 
 CMD:attachhand(playerid) {
 	new
@@ -71,6 +105,18 @@ hook OnPlayerEditAttachedObj(playerid, response, index, modelid, boneid, Float:f
 			map_delete(m_selectedHandIndex);
 			m_selectedHandIndex = Map:-1;
 		}
+		return Y_HOOKS_BREAK_RETURN_1;
+	} else if(map_valid(m_ability) && map_has_key(m_ability, playerid)) {
+		if(response) {
+			Item_UpdateCarryAttachment(map_get(m_ability, playerid), fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ);
+		}
+		map_remove(m_ability, playerid);
+		if(!map_size(m_ability)) {
+			map_delete(m_ability);
+			m_ability = Map:-1;
+		}
+		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+		RemovePlayerAttachedObject(playerid, index);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

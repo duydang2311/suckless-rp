@@ -27,3 +27,4 @@
 #include "./ability/whisk.inc"
 #include "./item_ground.inc"
 #include "./item_cmds.inc"
+#include "./item_carry_attach.inc"

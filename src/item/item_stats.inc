@@ -10,7 +10,8 @@ enum _:ItemAbility {
 	iAbilityGun,
 	iAbilityMelee,
 	iAbilityBackpack,
-	iAbilityWhisk
+	iAbilityWhisk,
+	iAbilitySize
 }
 
 enum _:ItemStats {
@@ -135,6 +136,28 @@ stock Item_GetOccupiedSpace(id) {
 	new stats[ItemStats];
 	map_get_arr(m_itemStats, id, stats);
 	return stats[iOccupiedSpace];
+}
+
+stock Item_GetAbility(id) {
+	if(!map_valid(m_itemStats) || !map_has_key(m_itemStats, id)) {
+		return 0;
+	}
+	new stats[ItemStats];
+	map_get_arr(m_itemStats, id, stats);
+	return stats[iAbility];
+}
+
+stock Item_HasAbility(ability) {
+	return (ability >= 0 && ability < iAbilitySize);
+}
+
+stock Item_GetModelByAbility(ability) {
+	switch(ability) {
+		case iAbilityWhisk: {
+			return IWhisk_GetModel();
+		}
+	}
+	return 0;
 }
 
 forward Item_OnCreated(item_id, ability, Float:reliability, occupied_space);

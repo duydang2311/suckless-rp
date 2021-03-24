@@ -25,19 +25,47 @@ stock Player_CarryItem(playerid, id) {
 		return 0;
 	}
 
-	new
-		stats[CarryStats],
-		query[128];
-	stats[crItemId] = id;
-	stats[crAttachSlot] = slot;
-	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
-	SetPlayerAttachedObject(playerid, slot, Item_GetModel(id), 1);
-	if(!map_valid(m_carryStats)) {
-		m_carryStats = map_new();
+	inline const QueryFinished() {
+		new
+			stats[CarryStats],
+			query[128];
+		stats[crItemId] = id;
+		stats[crAttachSlot] = slot;
+
+		if(cache_num_rows()) {
+			new
+				Float:offset_x,
+				Float:offset_y,
+				Float:offset_z,
+				Float:rot_x,
+				Float:rot_y,
+				Float:rot_z,
+				Float:scale_x,
+				Float:scale_y,
+				Float:scale_z;
+			cache_get_value_name_float(0, "offset_x", offset_x);
+			cache_get_value_name_float(0, "offset_y", offset_y);
+			cache_get_value_name_float(0, "offset_z", offset_z);
+			cache_get_value_name_float(0, "rot_x", rot_x);
+			cache_get_value_name_float(0, "rot_y", rot_y);
+			cache_get_value_name_float(0, "rot_z", rot_z);
+			cache_get_value_name_float(0, "scale_x", scale_x);
+			cache_get_value_name_float(0, "scale_y", scale_y);
+			cache_get_value_name_float(0, "scale_z", scale_z);
+			SetPlayerAttachedObject(playerid, slot, Item_GetModel(id), 1, offset_x, offset_y, offset_z, rot_x, rot_y, rot_z, scale_x, scale_y, scale_z);
+		} else {
+			SetPlayerAttachedObject(playerid, slot, Item_GetModel(id), 1);
+		}
+
+		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
+		if(!map_valid(m_carryStats)) {
+			m_carryStats = map_new();
+		}
+		map_set_arr(m_carryStats, playerid, stats);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hand_carry(id, item_id) VALUES (%d, %d)", Player_GetId(playerid), id);
+		mysql_pquery(MySQL_Connection(), query);
 	}
-	map_set_arr(m_carryStats, playerid, stats);
-	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hand_carry(id, item_id) VALUES (%d, %d)", Player_GetId(playerid), id);
-	mysql_pquery(MySQL_Connection(), query);
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM item_carry_attach WHERE ability = %d LIMIT 1", Item_GetAbility(id));
 	return 1;
 }
 

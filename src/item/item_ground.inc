@@ -9,7 +9,9 @@ enum _:ItemGroundStats {
 	Text3D:iGrTextLabelId
 }
 
-static Map:m_iGroundStats;
+static
+	Map:m_iGroundStats,
+	streamerExtraId;
 
 stock Float:CompressRotation(Float:rotation){
 	return (rotation - floatround(rotation/360.0,floatround_floor)*360.0);
@@ -73,23 +75,28 @@ stock IGround_Update(id, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz
 	Item_GetName(id, name);
 	stats[iGrObjectId] = CreateDynamicObject(Item_GetModel(id), x, y, z, rx, ry, rz, vw, int);
 	stats[iGrTextLabelId] = CreateDynamic3DTextLabel(name, COLOR_YELLOW, x, y, z, 10.0, .worldid = vw, .interiorid = int);
+	Streamer_SetIntData(STREAMER_TYPE_OBJECT, stats[iGrObjectId], E_STREAMER_EXTRA_ID, streamerExtraId);
 	map_set_arr(m_iGroundStats, id, stats);
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_ground(id, pos_x, pos_y, pos_z, rot_x, rot_y, rot_z, interior, vw) VALUES (%d, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %d, %d) ON DUPLICATE KEY UPDATE pos_x = VALUES(pos_x), pos_y = VALUES(pos_y), pos_z = VALUES(pos_z), rot_x = VALUES(rot_x), rot_y = VALUES(rot_y), rot_z = VALUES(rot_z), interior = VALUES(interior), vw = VALUES(vw)", id, x, y, z, rx, ry, rz, int, vw);
 	mysql_pquery(MySQL_Connection(), query);
 	return 1;
 }
 
-stock IGround_CAUpdate(id, Float:x, Float:y, Float:rz, int = 0, vw = 0) {
+stock IGround_CAUpdate(id, Float:x, Float:y, Float:rz, int = 0, vw = 0, Float:dist_shift = 0.0) {
 	if(!Item_Has(id)) {
 		return 0;
 	}
 
-	new Float:z,
+	new
+		Float:tx,
+		Float:ty,
+		Float:z,
 		Float:rx,
 		Float:ry;
-	get_ground_rotation(x, y, -1.0, rx, ry);
-	CA_FindZ_For2DCoord(x, y, z);
-	return IGround_Update(id, x, y, z, rx, ry, rz, int, vw);
+	get_point_in_front_2d(x, y, rz, dist_shift, tx, ty);
+	get_ground_rotation(tx, ty, -1.5, rx, ry);
+	CA_FindZ_For2DCoord(tx, ty, z);
+	return IGround_Update(id, tx, ty, z, rx, ry, rz, int, vw);
 }
 
 stock IGround_Delete(id) {
@@ -112,6 +119,20 @@ stock IGround_Delete(id) {
 	return 1;
 }
 
+stock IGround_GetStreamerExtraId() {
+	return streamerExtraId;
+}
+
+stock IGround_GetByObjectId(objectid) {
+	for(new Iter:it = map_iter(m_iGroundStats), stats[ItemGroundStats]; iter_inside(it); iter_move_next(it)) {
+		iter_get_arr(it, stats);
+		if(stats[iGrObjectId] == objectid) {
+			return iter_get_key(it);
+		}
+	}
+	return -1;
+}
+
 hook OnGameModeExit@6() {
 	if(map_valid(m_iGroundStats)) {
 		map_delete(m_iGroundStats);
@@ -121,6 +142,7 @@ hook OnGameModeExit@6() {
 }
 
 hook OnGameModeInit@6() {
+	streamerExtraId = Session_GenerateId();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_ground (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -152,6 +174,7 @@ hook OnGameModeInit@6() {
 		Item_GetName(id, name);
 		stats[iGrObjectId] = CreateDynamicObject(Item_GetModel(id), pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], vw, int);
 		stats[iGrTextLabelId] = CreateDynamic3DTextLabel(name, COLOR_YELLOW, pos[0], pos[1], pos[2], 10.0, .worldid = vw, .interiorid = int);
+		Streamer_SetIntData(STREAMER_TYPE_OBJECT, stats[iGrObjectId], E_STREAMER_EXTRA_ID, streamerExtraId);
 		if(!map_valid(m_iGroundStats)) {
 			m_iGroundStats = map_new();
 		}

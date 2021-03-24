@@ -9,6 +9,8 @@ enum _:CarryStats {
 	crAttachSlot
 }
 
+static Map:m_carryStats;
+
 stock Player_CarryItem(playerid, id) {
 	if(map_valid(m_carryStats) && map_has_key(m_carryStats, playerid)) {
 		return 0;
@@ -34,12 +36,21 @@ stock Player_CarryItem(playerid, id) {
 		m_carryStats = map_new();
 	}
 	map_set_arr(m_carryStats, playerid, stats);
-	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hand_carry(id, item_id) VALUES (%d, %d)", playerid, id);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hand_carry(id, item_id) VALUES (%d, %d)", Player_GetId(playerid), id);
 	mysql_pquery(MySQL_Connection(), query);
 	return 1;
 }
 
-stock Player_StopCarry(playerid) {
+stock Player_GetCarryingItem(playerid) {
+	if(!map_valid(m_carryStats) || !map_has_key(m_carryStats, playerid)) {
+		return -1;
+	}
+	new stats[CarryStats];
+	map_get_arr(m_carryStats, playerid, stats);
+	return stats[crItemId];
+}
+
+stock Player_StopCarrying(playerid) {
 	if(!map_valid(m_carryStats) || !map_has_key(m_carryStats, playerid)) {
 		return 0;
 	}
@@ -49,7 +60,8 @@ stock Player_StopCarry(playerid) {
 		query[128];
 	map_get_arr(m_carryStats, playerid, stats);
 	RemovePlayerAttachedObject(playerid, stats[crAttachSlot]);
-	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM player_hand_carry WHERE id = %d LIMIT 1", playerid);
+	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM player_hand_carry WHERE id = %d LIMIT 1", Player_GetId(playerid));
 	mysql_pquery(MySQL_Connection(), query);
 	map_remove(m_carryStats, playerid);
 	if(!map_size(m_carryStats)) {
@@ -82,11 +94,12 @@ hook Player_OnStatsLoaded(playerid) {
 					Float:angle,
 					query[128];
 				cache_get_value_name_int(0, "item_id", item_id);
-				mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM player_hand_carry WHERE id = %d LIMIT 1", playerid);
+				mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM player_hand_carry WHERE id = %d LIMIT 1", Player_GetId(playerid));
 				mysql_pquery(MySQL_Connection(), query);
 				GetPlayerPos(playerid, x, y, angle);
 				GetPlayerFacingAngle(playerid, angle);
-				IGround_CAUpdate(item_id, x, y, angle, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid));
+				IGround_CAUpdate(item_id, x, y, angle, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), 1.5);
+				Player_Msg(playerid, COLOR_LIGHTYELLOW, "Nhan vat cua ban da gan qua nhieu vat pham nen vat pham o trang thai 'Carry' se bi vut xuong dat.");
 			}
 		}
 	}

@@ -17,6 +17,7 @@
 #include <config/cmd_flags>
 
 #include <mysql>
+#include <session>
 
 #include "./item_stats.inc"
 #include "./item_group.inc"

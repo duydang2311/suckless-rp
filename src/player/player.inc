@@ -30,8 +30,9 @@
 #include "./player_auth.inc"
 #include "./player_stats.inc"
 #include "./player_spawn.inc"
-#include "./hand/player_hand_attach.inc"
 #include "./hand/player_hands.inc"
+#include "./hand/player_hand_attach.inc"
+#include "./hand/player_hand_carry.inc"
 #include "./player_death.inc"
 
 #include "./hand/player_hand_key.inc"

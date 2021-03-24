@@ -57,23 +57,22 @@ CMD:agivewhisk(playerid, params[]) {
 		return 1;
 	}
 
-	new hand = Player_GetFreeHand(targetid);
-	if(hand == -1) {
-		Player_Msg(playerid, COLOR_YELLOW, "Nguoi choi khong co cho trong tren tay de mang item Whisk.");
+	if(Player_GetHandItemId(playerid, 0) != -1 || Player_GetHandItemId(playerid, 1) != -1 || Player_GetCarryingItem(playerid) != -1) {
+		Player_Msg(playerid, COLOR_YELLOW, "Nguoi choi khong duoc cam vat pham nao tren tay.");
 		return 1;
 	}
 	task_unblock(1);
 	new id = await IWhisk_Create();
 	if(id == -1) {
-		Player_Msg(playerid, COLOR_RED, "ERROR: Tao Item Whisk that bai.");
+		Player_Msg(playerid, COLOR_RED, "ERROR: Tao item Whisk that bai.");
 		return 1;
 	}
 	new
 		string[128],
 		name[MAX_PLAYER_NAME + 1];
-	Player_EquipItem(playerid, hand, id);
+	Player_CarryItem(playerid, id);
 	GetPlayerName(playerid, name);
-	format(string, sizeof(string), "INFO: Item Whisk (ID %d) da duoc dua vao '%s' cua '%s'.", id, (hand ? "Tay phai" : "Tay trai"), name);
+	format(string, sizeof(string), "INFO: Item Whisk (ID %d) da duoc trao cho '%s' o trang thai 'Carry'.", id, name);
 	Player_Msg(playerid, COLOR_GREEN, string);
 	return 1;
 }

@@ -18,10 +18,12 @@ enum _:InventoryAttachmentStats {
 
 static Map:m_inventoryAttachment;
 
-stock Task:Inventory_AttachItem(playerid, slot, item_id) {
+forward Task:Inventory_AttachItem(playerid, slot, item_id);
+public Task:Inventory_AttachItem(playerid, slot, item_id) {
 	new Task:t = task_new();
 	task_detach();
 	inline const QueryFinished() {
+		printf("Inventory_AttachItem(%d, %d, %d) - rows %d", playerid, slot, item_id, cache_num_rows());
 		if(cache_num_rows()) {
 			new
 				att[AttachmentStats],

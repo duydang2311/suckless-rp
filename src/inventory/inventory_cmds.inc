@@ -185,7 +185,15 @@ Dialog:InventoryAttachBoneSetup(playerid, response, listitem, inputtext[]) {
 				bone = (listitem < 4) ? listitem + 1 : listitem + 3;
 			task_unblock(1);
 			await Inventory_InsertAttachment(id, bone);
-			Player_Msg(playerid, COLOR_GREEN, "Bodypart gan vat pham da duoc tao, hay thu gan len nguoi lai.");
+			new slot = Player_GetFreeAttachmentSlot(playerid);
+			if(slot == -1) {
+				Player_Msg(playerid, COLOR_YELLOW, "Co the nhan vat da het slot gan vat pham, he thong se khong tu dong gan.");
+			} else {
+				SetPreciseTimer("Inventory_AttachItem", 0, false, "iii", playerid, slot, id);
+				Player_Msg(playerid, COLOR_YELLOW, "Vat pham da duoc gan len Bodypart ban vua chon.");
+			}
+		} else {
+			PC_EmulateCommand(playerid, "/attachinv");
 		}
 	}
 	if(map_valid(m_selectedItemId) && map_has_key(m_selectedItemId, playerid)) {
@@ -195,7 +203,6 @@ Dialog:InventoryAttachBoneSetup(playerid, response, listitem, inputtext[]) {
 			m_selectedItemId = Map:-1;
 		}
 	}
-	PC_EmulateCommand(playerid, "/attachinv");
 	return 1;
 }
 

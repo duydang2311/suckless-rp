@@ -12,6 +12,7 @@
 #include <Pawn.CMD>
 #include <sscanf2>
 #include <YSI_Extra\y_inline_mysql>
+#include <samp-precise-timers>
 
 #include <config/colors>
 #include <config/cmd_flags>

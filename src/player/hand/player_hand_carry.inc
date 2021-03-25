@@ -11,7 +11,8 @@ enum _:CarryStats {
 
 static Map:m_carryStats;
 
-stock Player_CarryItem(playerid, id) {
+forward Player_CarryItem(playerid, id);
+public Player_CarryItem(playerid, id) {
 	if(map_valid(m_carryStats) && map_has_key(m_carryStats, playerid)) {
 		return 0;
 	}

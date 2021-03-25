@@ -1,5 +1,7 @@
 static LinkedList:ll_adminVehicles;
 
+static temp_object = 0;
+
 flags:aveh(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
 CMD:aveh(playerid, params[]) {
 	new
@@ -75,6 +77,21 @@ CMD:askin(playerid, params[]) {
 		return 1;
 	}
 	SetPlayerSkin(playerid, model);
+	return 1;
+}
+
+flags:aobject(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
+CMD:aobject(playerid, params[]) {
+	extract params -> new model; else {
+		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /aobject [model]");
+		return 1;
+	}
+	if(temp_object != 0) {
+		DestroyDynamicObject(temp_object);
+	}
+	new Float:pos[3];
+	GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
+	temp_object = CreateDynamicObject(model, pos[0], pos[1], pos[2], 0.0, 0.0, 0.0);
 	return 1;
 }
 

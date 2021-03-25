@@ -100,7 +100,6 @@ stock Inventory_GetSize(playerid) {
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnStatsLoaded(playerid) {
-	print("inventory_stats.inc");
 	inline const QueryFinished() {
 		new rows = cache_num_rows();
 		if(rows) {
@@ -117,7 +116,6 @@ hook Player_OnStatsLoaded(playerid) {
 				cache_get_value_name_int(i, "item_id", id);
 				linked_list_add(ll, id);
 				CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, id);
-				printf("Inventory_OnItemAdded(%d, %d)", playerid, id);
 			}
 		}
 	}

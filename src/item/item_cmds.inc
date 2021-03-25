@@ -70,7 +70,7 @@ CMD:agivewhisk(playerid, params[]) {
 	new
 		string[128],
 		name[MAX_PLAYER_NAME + 1];
-	Player_CarryItem(playerid, id);
+	SetPreciseTimer("Player_CarryItem", 0, false, "ii", targetid, id);
 	GetPlayerName(playerid, name);
 	format(string, sizeof(string), "INFO: Item Whisk (ID %d) da duoc trao cho '%s' o trang thai 'Carry'.", id, name);
 	Player_Msg(playerid, COLOR_GREEN, string);

@@ -19,6 +19,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				Float:dist;
 			GetPlayerPos(playerid, x, y, z);
 			foreach(new i : FCNPC) {
+				printf("npc %d, id %d", i, Breed_GetIdByNPCId(i));
 				if(Breed_GetIdByNPCId(i) == -1) {
 					continue;
 				}
@@ -28,10 +29,11 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 					min_dist = dist;
 				}
 			}
+			printf("closest npc %d", closest_npc);
 			if(closest_npc != INVALID_PLAYER_ID) {
 				Player_StopCarrying(playerid);
-				Breed_Eat(Breed_GetIdByNPCId(closest_npc));
 				FCNPC_SetAngleToPlayer(closest_npc, playerid);
+				Breed_Eat(Breed_GetIdByNPCId(closest_npc));
 				Item_Delete(id);
 			}
 		}

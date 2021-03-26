@@ -163,12 +163,12 @@ stock Breed_Eat(id) {
 		Float:angle;
 	GetPlayerFacingAngle(npcid, angle);
 	FCNPC_GetPosition(npcid, x, y, z);
-	Util_GetPointInFront2D(x, y, angle, 2.0, x, y);
+	Util_GetPointInFront2D(x, y, angle, 1.3, x, y);
 	FCNPC_Stop(npcid);
 	if(!map_valid(m_animalFoodObject)) {
 		m_animalFoodObject = map_new();
 	}
-	map_set(m_animalFoodObject, id, CreateDynamicObject(2901, x, y, z + 1.5, 0.0, 0.0, angle, FCNPC_GetVirtualWorld(npcid), FCNPC_GetInterior(npcid)));
+	map_set(m_animalFoodObject, id, CreateDynamicObject(2901, x, y, z, 0.0, 0.0, angle, FCNPC_GetVirtualWorld(npcid), FCNPC_GetInterior(npcid)));
 	SetPreciseTimer("Breed_EatingDone", 5000, false, "i", id);
 	return 1;
 }
@@ -210,6 +210,10 @@ public Breed_InitAnimal(id) {
 		format(name, sizeof(name), "%s_%d", name, id);
 		stats[anmlNPCId] = FCNPC_Create(name);
 		if(stats[anmlNPCId] != INVALID_PLAYER_ID) {
+			if(!map_valid(m_npcAnimalId)) {
+				m_npcAnimalId = map_new();
+			}
+			map_set(m_npcAnimalId, stats[anmlNPCId], id);
 			map_set_cell(m_animalStats, id, anmlNPCId, stats[anmlNPCId]);
 			FCNPC_Spawn(stats[anmlNPCId], Breed_GetAnimalSpeciesModel(stats[anmlSpecies]), 0.0, 0.0, 2.0);
 			Breed_LifeCycle(id);

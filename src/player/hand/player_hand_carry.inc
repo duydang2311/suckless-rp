@@ -103,6 +103,7 @@ stock Player_StopCarrying(playerid) {
 
 hook Player_OnStatsLoaded(playerid) {
 	inline const QueryFinished() {
+		printf("Hand Carry Retrieved, rows %d", cache_num_rows());
 		if(cache_num_rows()) {
 			new slot = Player_GetFreeAttachmentSlot(playerid, true);
 			if(slot != -1) {
@@ -132,7 +133,7 @@ hook Player_OnStatsLoaded(playerid) {
 			}
 		}
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_hand_carry WHERE id = %d LIMIT 1", playerid);
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_hand_carry WHERE id = %d LIMIT 1", Player_GetId(playerid));
 	return 1;
 }
 

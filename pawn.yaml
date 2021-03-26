@@ -77,6 +77,7 @@ build:
   - src/session
   - src/faction
   - src/farmer
+  - src/util
   - src/
   - libraries/
   args:

@@ -17,6 +17,8 @@
 #include <config/colors>
 #include <config/cmd_flags>
 
+#include <util>
+
 #include <mysql>
 #include <session>
 

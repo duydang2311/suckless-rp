@@ -27,7 +27,7 @@ CMD:aeditcarry(playerid, params[]) {
 
 	new model = Item_GetModelByAbility(ability);
 	if(model == 0) {
-		Player_Msg(playerid, COLOR_FADE2, "Item co Ability hien tai chua ho tro 'Carry'.");
+		Player_Msg(playerid, COLOR_FADE2, "Item co Ability da nhap hien tai chua ho tro 'Carry'.");
 		return 1;
 	}
 	if(!map_valid(m_ability)) {

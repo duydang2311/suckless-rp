@@ -19,7 +19,10 @@ enum _:BreedAnimalStats {
 	Float:anmlThirst
 }
 
-static Map:m_animals;
+static
+	Map:m_animalStats,
+	Map:m_npcAnimalId,
+	Map:m_animalFoodObject;
 
 stock Breed_GetAnimalSpeciesName(species, name[], size = sizeof(name)) {
 	name[0] = EOS;
@@ -77,10 +80,14 @@ stock Task:Breed_CreateAnimal(species) {
 				stats[anmlMaturity] = 0.0;
 				stats[anmlHunger] = 0.3;
 				stats[anmlThirst] = 0.3;
-				if(!map_valid(m_animals)) {
-					m_animals = map_new();
+				if(!map_valid(m_animalStats)) {
+					m_animalStats = map_new();
 				}
-				map_set_arr(m_animals, id, stats);
+				map_set_arr(m_animalStats, id, stats);
+				if(!map_valid(m_npcAnimalId)) {
+					m_npcAnimalId = map_new();
+				}
+				map_set(m_npcAnimalId, npcid, id);
 				FCNPC_Spawn(npcid, Breed_GetAnimalSpeciesModel(species), 0.0, 0.0, 2.0);
 				Breed_LifeCycle(id);
 				task_set_result(t, id);
@@ -95,57 +102,115 @@ stock Task:Breed_CreateAnimal(species) {
 }
 
 stock Breed_RemoveAnimal(id) {
-	if(!map_valid(m_animals)) {
+	if(!map_valid(m_animalStats)) {
 		return 0;
 	}
-	if(map_has_key(m_animals, id)) {
+	if(map_has_key(m_animalStats, id)) {
 		new stats[BreedAnimalStats];
 		FCNPC_Destroy(stats[anmlNPCId]);
 		mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM breed_stats WHERE id = %d LIMIT 1", id);
 		mysql_pquery(MySQL_Connection(), query);
-		map_remove(m_animals, id);
+		map_remove(m_animalStats, id);
+		if(!map_size(m_animalStats)) {
+			map_delete(m_animalStats);
+			m_animalStats = Map:-1;
+		}
+		if(map_has_key(m_npcAnimalId, stats[anmlNPCId])) {
+			map_remove(m_npcAnimalId);
+			if(!map_size(m_npcAnimalId)) {
+				map_delete(m_npcAnimalId);
+				m_npcAnimalId = Map:-1;
+			}
+		}
 		return 1;
 	}
 	return 0;
 }
 
 stock Breed_HasId(id) {
-	return (map_valid(m_animals) && map_has_key(m_animals, id));
+	return (map_valid(m_animalStats) && map_has_key(m_animalStats, id));
 }
 
 stock Breed_GetNPCId(id) {
-	if(!map_valid(m_animals) || !map_has_key(m_animals, id)) {
+	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
 		return -1;
 	}
 	new stats[BreedAnimalStats];
-	map_get_arr(m_animals, id, stats);
+	map_get_arr(m_animalStats, id, stats);
 	return stats[anmlNPCId];
 }
 
+stock Breed_GetIdByNPCId(npcid) {
+	if(!map_valid(m_npcAnimalId) || !map_has_key(m_npcAnimalId, npcid)) {
+		return -1;
+	}
+	return map_get(m_npcAnimalId, npcid);
+}
+
+stock Breed_Eat(id) {
+	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
+		return 0;
+	}
+	new npcid = Breed_GetNPCId(id);
+	if(npcid == -1) {
+		return 0;
+	}
+
+	new
+		Float:x,
+		Float:y,
+		Float:z,
+		Float:angle;
+	GetPlayerFacingAngle(npcid, angle);
+	FCNPC_GetPosition(npcid, x, y, z);
+	Util_GetPointInFront2D(x, y, angle, 2.0, x, y);
+	FCNPC_Stop(npcid);
+	if(!map_valid(m_animalFoodObject)) {
+		m_animalFoodObject = map_new();
+	}
+	map_set(m_animalFoodObject, id, CreateDynamicObject(2901, x, y, z + 1.5, 0.0, 0.0, angle, FCNPC_GetVirtualWorld(npcid), FCNPC_GetInterior(npcid)));
+	SetPreciseTimer("Breed_EatingDone", 5000, false, "i", id);
+	return 1;
+}
+
+forward Breed_EatingDone(id);
+public Breed_EatingDone(id) {
+	if(map_valid(m_animalFoodObject) && map_has_key(m_animalFoodObject, id)) {
+		DestroyDynamicObject(map_get(m_animalFoodObject, id));
+		map_remove(m_animalFoodObject, id);
+	}
+	if(!map_size(m_animalFoodObject)) {
+		map_delete(m_animalFoodObject);
+		m_animalFoodObject = Map:-1;
+	}
+	Breed_LifeCycle(id);
+	return 1;
+}
+
 stock Breed_GetSpecies(id) {
-	if(!map_valid(m_animals) || !map_has_key(m_animals, id)) {
+	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
 		return -1;
 	}
 	new stats[BreedAnimalStats];
-	map_get_arr(m_animals, id, stats);
+	map_get_arr(m_animalStats, id, stats);
 	return stats[anmlSpecies];
 }
 
 forward Breed_InitAnimal(id);
 public Breed_InitAnimal(id) {
-	if(!map_valid(m_animals) || !map_has_key(m_animals, id)) {
+	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
 		return 0;
 	}
 	new
 		stats[BreedAnimalStats],
 		name[48];
-	map_get_arr(m_animals, id, stats);
+	map_get_arr(m_animalStats, id, stats);
 	if(stats[anmlNPCId] == -1) {
 		Breed_GetAnimalSpeciesName(stats[anmlSpecies], name);
 		format(name, sizeof(name), "%s_%d", name, id);
 		stats[anmlNPCId] = FCNPC_Create(name);
 		if(stats[anmlNPCId] != INVALID_PLAYER_ID) {
-			map_set_cell(m_animals, id, anmlNPCId, stats[anmlNPCId]);
+			map_set_cell(m_animalStats, id, anmlNPCId, stats[anmlNPCId]);
 			FCNPC_Spawn(stats[anmlNPCId], Breed_GetAnimalSpeciesModel(stats[anmlSpecies]), 0.0, 0.0, 2.0);
 			Breed_LifeCycle(id);
 		}
@@ -172,7 +237,7 @@ hook OnGameModeInit() {
 	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM breed_stats", true);
 	new rows = cache_num_rows();
 	if(rows) {
-		m_animals = map_new();
+		m_animalStats = map_new();
 		for(new i = 0, stats[BreedAnimalStats], id, bool:field_null; i != rows; i++) {
 			cache_get_value_name_int(i, "id", id);
 			cache_get_value_name_int(i, "species", stats[anmlSpecies]);
@@ -186,7 +251,7 @@ hook OnGameModeInit() {
 			cache_get_value_name_float(i, "hunger", stats[anmlHunger]);
 			cache_get_value_name_float(i, "thirst", stats[anmlThirst]);
 			stats[anmlNPCId] = -1;
-			map_set_arr(m_animals, id, stats);
+			map_set_arr(m_animalStats, id, stats);
 			SetPreciseTimer("Breed_InitAnimal", 1000, false, "i", id);
 		}
 	}
@@ -195,13 +260,13 @@ hook OnGameModeInit() {
 }
 
 hook OnGameModeExit() {
-	if(map_valid(m_animals)) {
-		for(new Iter:it = map_iter(m_animals), stats[BreedAnimalStats]; iter_inside(it); iter_move_next(it)) {
+	if(map_valid(m_animalStats)) {
+		for(new Iter:it = map_iter(m_animalStats), stats[BreedAnimalStats]; iter_inside(it); iter_move_next(it)) {
 			if(stats[anmlNPCId] != -1) {
 				FCNPC_Destroy(stats[anmlNPCId]);
 			}
 		}
-		map_delete(m_animals);
+		map_delete(m_animalStats);
 	}
 	return 1;
 }

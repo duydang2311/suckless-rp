@@ -4,8 +4,6 @@
 
 #define breed_lifecycle_included
 
-static Map:m_npcAnimalId;
-
 static Float:breedAreaPoints[] = {
 	8.8366, 37.1001,
 	18.7342, 66.6058,
@@ -87,17 +85,14 @@ stock Breed_LifeCycle(id) {
 	if(npcid == -1) {
 		return 0;
 	}
-	if(!map_valid(m_npcAnimalId)) {
-		m_npcAnimalId = map_new();
-	}
-	map_set(m_npcAnimalId, npcid, id);
 	Breed_Move(id);
 	return 1;
 }
 
 public FCNPC_OnReachDestination(npcid) {
-	if(map_has_key(m_npcAnimalId, npcid)) {
-		SetPreciseTimer("Breed_Move", 1000, false, "i", map_get(m_npcAnimalId, npcid));
+	new id = Breed_GetIdByNPCId(npcid);
+	if(id != -1) {
+		SetPreciseTimer("Breed_Move", 1000, false, "i", id);
 	}
 	return 1;
 }
@@ -106,13 +101,5 @@ public FCNPC_OnReachDestination(npcid) {
 
 hook OnGameModeInit() {
 	CA_Init();
-	return 1;
-}
-
-hook OnGameModeExit() {
-	if(map_valid(m_npcAnimalId)) {
-		map_delete(m_npcAnimalId);
-		m_npcAnimalId = Map:-1;
-	}
 	return 1;
 }

@@ -5,9 +5,10 @@
 #define breed_stats_included
 
 enum _:BreedAnimalSpecies {
-	anmlCow,
-	anmlPig,
-	anmlChicken
+	anmlCow1,
+	anmlCow2,
+	anmlCow3,
+	anmlCow4
 }
 
 enum _:BreedAnimalStats {
@@ -24,19 +25,25 @@ static
 	Map:m_npcAnimalId,
 	Map:m_animalFoodObject;
 
+forward Breed_FinishEating(id);
+public Breed_FinishEating(id) {
+	if(map_valid(m_animalFoodObject) && map_has_key(m_animalFoodObject, id)) {
+		DestroyDynamicObject(map_get(m_animalFoodObject, id));
+		map_remove(m_animalFoodObject, id);
+	}
+	if(!map_size(m_animalFoodObject)) {
+		map_delete(m_animalFoodObject);
+		m_animalFoodObject = Map:-1;
+	}
+	Breed_LifeCycle(id);
+	return 1;
+}
+
 stock Breed_GetAnimalSpeciesName(species, name[], size = sizeof(name)) {
 	name[0] = EOS;
 	switch(species) {
-		case anmlCow: {
+		case anmlCow1, anmlCow2, anmlCow3, anmlCow4: {
 			strcat(name, "Cow", size);
-			return 1;
-		}
-		case anmlPig: {
-			strcat(name, "Pig", size);
-			return 1;
-		}
-		case anmlChicken: {
-			strcat(name, "Chicken", size);
 			return 1;
 		}
 	}
@@ -46,14 +53,17 @@ stock Breed_GetAnimalSpeciesName(species, name[], size = sizeof(name)) {
 
 stock Breed_GetAnimalSpeciesModel(species) {
 	switch(species) {
-		case anmlCow: {
+		case anmlCow1: {
 			return 20001;
 		}
-		case anmlPig: {
+		case anmlCow2: {
 			return 20002;
 		}
-		case anmlChicken: {
+		case anmlCow3: {
 			return 20003;
+		}
+		case anmlCow4: {
+			return 20004;
 		}
 	}
 	return 0;
@@ -163,28 +173,21 @@ stock Breed_Eat(id) {
 		Float:angle;
 	GetPlayerFacingAngle(npcid, angle);
 	FCNPC_GetPosition(npcid, x, y, z);
-	Util_GetPointInFront2D(x, y, angle, 1.3, x, y);
+	Util_GetPointInFront2D(x, y, angle, 1.1, x, y);
 	FCNPC_Stop(npcid);
 	if(!map_valid(m_animalFoodObject)) {
 		m_animalFoodObject = map_new();
 	}
 	map_set(m_animalFoodObject, id, CreateDynamicObject(2901, x, y, z, 0.0, 0.0, angle, FCNPC_GetVirtualWorld(npcid), FCNPC_GetInterior(npcid)));
-	SetPreciseTimer("Breed_EatingDone", 5000, false, "i", id);
+	SetPreciseTimer("Breed_FinishEating", 5000, false, "i", id);
 	return 1;
 }
 
-forward Breed_EatingDone(id);
-public Breed_EatingDone(id) {
-	if(map_valid(m_animalFoodObject) && map_has_key(m_animalFoodObject, id)) {
-		DestroyDynamicObject(map_get(m_animalFoodObject, id));
-		map_remove(m_animalFoodObject, id);
+stock Breed_GetFoodObjectId(id) {
+	if(!map_valid(m_animalFoodObject) || !map_has_key(m_animalFoodObject, id)) {
+		return -1;
 	}
-	if(!map_size(m_animalFoodObject)) {
-		map_delete(m_animalFoodObject);
-		m_animalFoodObject = Map:-1;
-	}
-	Breed_LifeCycle(id);
-	return 1;
+	return map_get(m_animalFoodObject, id);
 }
 
 stock Breed_GetSpecies(id) {

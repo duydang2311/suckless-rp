@@ -11,18 +11,13 @@ enum _:CarryStats {
 
 static Map:m_carryStats;
 
-forward Player_CarryItem(playerid, id);
-public Player_CarryItem(playerid, id) {
+forward Player_CarryItem(playerid, id, slot);
+public Player_CarryItem(playerid, id, slot) {
 	if(map_valid(m_carryStats) && map_has_key(m_carryStats, playerid)) {
 		return 0;
 	}
 
 	if(!Item_Has(id)) {
-		return 0;
-	}
-
-	new slot = Player_GetFreeAttachmentSlot(playerid, true);
-	if(slot == -1) {
 		return 0;
 	}
 
@@ -63,7 +58,7 @@ public Player_CarryItem(playerid, id) {
 			m_carryStats = map_new();
 		}
 		map_set_arr(m_carryStats, playerid, stats);
-		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hand_carry(id, item_id) VALUES (%d, %d)", Player_GetId(playerid), id);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hand_carry(id, item_id) VALUES (%d, %d) ON DUPLICATE KEY UPDATE item_id = VALUES(item_id)", Player_GetId(playerid), id);
 		mysql_pquery(MySQL_Connection(), query);
 	}
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM item_carry_attach WHERE ability = %d LIMIT 1", Item_GetAbility(id));
@@ -105,17 +100,11 @@ hook Player_OnStatsLoaded(playerid) {
 	inline const QueryFinished() {
 		printf("Hand Carry Retrieved, rows %d", cache_num_rows());
 		if(cache_num_rows()) {
-			new slot = Player_GetFreeAttachmentSlot(playerid, true);
+			new slot = Player_GetFreeAttachmentSlot(playerid);
 			if(slot != -1) {
-				new stats[CarryStats];
-				cache_get_value_name_int(0, "item_id", stats[crItemId]);
-				stats[crAttachSlot] = slot;
-				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
-				SetPlayerAttachedObject(playerid, slot, Item_GetModel(stats[crItemId]), 1);
-				if(!map_valid(m_carryStats)) {
-					m_carryStats = map_new();
-				}
-				map_set_arr(m_carryStats, playerid, stats);
+				new id;
+				cache_get_value_name_int(0, "item_id", id);
+				Player_CarryItem(playerid, id, slot);
 			} else {
 				new
 					item_id,

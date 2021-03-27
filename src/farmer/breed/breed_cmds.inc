@@ -5,6 +5,6 @@
 #define breed_cmds
 
 CMD:anml(playerid) {
-	Breed_CreateAnimal(random(3));
+	Breed_CreateAnimal(random(4));
 	return 1;
 }

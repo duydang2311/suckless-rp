@@ -1,5 +1,4 @@
-AddCharModel(2, 20001, "cow.dff", "cow.txd");
-AddCharModel(2, 20002, "pig.dff", "pig.txd");
-AddCharModel(9, 20003, "chicken.dff", "chicken.txd");
-AddSimpleModel(-1, 1946, -2000, "sneaker.dff", "sneaker.txd");
-AddSimpleModel(-1, 1946, -2001, "sneaker2.dff", "sneaker2.txd");
+AddCharModel(2, 20001, "cow.dff", "cow_1.txd");
+AddCharModel(2, 20002, "cow.dff", "cow_2.txd");
+AddCharModel(2, 20003, "cow.dff", "cow_3.txd");
+AddCharModel(2, 20004, "cow.dff", "cow_4.txd");

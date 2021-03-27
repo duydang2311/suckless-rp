@@ -61,6 +61,12 @@ CMD:agivewhisk(playerid, params[]) {
 		Player_Msg(playerid, COLOR_YELLOW, "Nguoi choi khong duoc cam vat pham nao tren tay.");
 		return 1;
 	}
+
+	new slot = Player_GetFreeAttachmentSlot(targetid, true);
+	if(slot == -1) {
+		Player_Msg(playerid, COLOR_FADE2, "Nguoi choi khong con slot gan vat pham.");
+		return 0;
+	}
 	task_unblock(1);
 	new id = await IWhisk_Create();
 	if(id == -1) {
@@ -70,7 +76,7 @@ CMD:agivewhisk(playerid, params[]) {
 	new
 		string[128],
 		name[MAX_PLAYER_NAME + 1];
-	SetPreciseTimer("Player_CarryItem", 0, false, "ii", targetid, id);
+	SetPreciseTimer("Player_CarryItem", 0, false, "iii", targetid, id, slot);
 	GetPlayerName(playerid, name);
 	format(string, sizeof(string), "INFO: Item Whisk (ID %d) da duoc trao cho '%s' o trang thai 'Carry'.", id, name);
 	Player_Msg(playerid, COLOR_GREEN, string);

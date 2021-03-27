@@ -58,7 +58,12 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 							if(Player_GetHandItemId(playerid, 0) != -1 || Player_GetHandItemId(playerid, 1) != -1) {
 								continue;
 							}
-							Player_CarryItem(playerid, id);
+							new slot = Player_GetFreeAttachmentSlot(playerid);
+							if(slot == -1) {
+								Player_Msg(playerid, COLOR_FADE2, "Ban khong con slot gan vat pham, hay an bot vat pham tren nguoi truoc.");
+								return Y_HOOKS_BREAK_RETURN_1;
+							}
+							Player_CarryItem(playerid, id, slot);
 						} else {
 							Player_EquipItem(playerid, hand, id);
 						}

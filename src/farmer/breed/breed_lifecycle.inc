@@ -70,6 +70,12 @@ public Breed_Move(id) {
 	if(npcid == -1) {
 		return 0;
 	}
+
+	Breed_UpdateHunger(id, -0.005);
+	if(Breed_GetHunger(id) < -0.5) {
+		Breed_RemoveAnimal(id);
+		return 1;
+	}
 	new
 		Float:x,
 		Float:y,

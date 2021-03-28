@@ -5,10 +5,10 @@
 #define breed_stats_included
 
 enum _:BreedAnimalSpecies {
-	anmlCow1,
-	anmlCow2,
-	anmlCow3,
-	anmlCow4
+	anmlDiaryCow_1,
+	anmlBrownCow_1,
+	anmlDiaryCow_2,
+	anmlBrownCow_2
 }
 
 enum _:BreedAnimalStats {
@@ -30,20 +30,53 @@ public Breed_FinishEating(id) {
 	if(map_valid(m_animalFoodObject) && map_has_key(m_animalFoodObject, id)) {
 		DestroyDynamicObject(map_get(m_animalFoodObject, id));
 		map_remove(m_animalFoodObject, id);
+		if(!map_size(m_animalFoodObject)) {
+			map_delete(m_animalFoodObject);
+			m_animalFoodObject = Map:-1;
+		}
 	}
-	if(!map_size(m_animalFoodObject)) {
-		map_delete(m_animalFoodObject);
-		m_animalFoodObject = Map:-1;
+
+	if(map_valid(m_animalStats) && map_has_key(m_animalStats, id)) {
+		new stats[BreedAnimalStats];
+		map_get_arr(m_animalStats, id, stats);
+		map_set_cell(m_animalStats, id, anmlHunger, (stats[anmlHunger] + 0.33) > 1.0 ? 1.0 : stats[anmlHunger] + 0.3);
 	}
 	Breed_LifeCycle(id);
 	return 1;
 }
 
+stock Breed_UpdateHunger(id, Float:value) {
+	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
+		return 0;
+	}
+	new stats[BreedAnimalStats];
+	map_get_arr(m_animalStats, id, stats);
+	stats[anmlHunger] += value;
+	if(stats[anmlHunger] > 1.0) {
+		stats[anmlHunger] = 1.0;
+	}
+	map_set_cell(m_animalStats, id, anmlHunger, stats[anmlHunger]);
+	return 1;
+}
+
+stock Float:Breed_GetHunger(id) {
+	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
+		return 0.0;
+	}
+	new stats[BreedAnimalStats];
+	map_get_arr(m_animalStats, id, stats);
+	return stats[anmlHunger];
+}
+
 stock Breed_GetAnimalSpeciesName(species, name[], size = sizeof(name)) {
 	name[0] = EOS;
 	switch(species) {
-		case anmlCow1, anmlCow2, anmlCow3, anmlCow4: {
-			strcat(name, "Cow", size);
+		case anmlDiaryCow_1, anmlDiaryCow_2: {
+			strcat(name, "Diary_Cow", size);
+			return 1;
+		}
+		case anmlBrownCow_1, anmlBrownCow_2: {
+			strcat(name, "Brown_Cow", size);
 			return 1;
 		}
 	}
@@ -53,16 +86,16 @@ stock Breed_GetAnimalSpeciesName(species, name[], size = sizeof(name)) {
 
 stock Breed_GetAnimalSpeciesModel(species) {
 	switch(species) {
-		case anmlCow1: {
+		case anmlDiaryCow_1: {
 			return 20001;
 		}
-		case anmlCow2: {
+		case anmlBrownCow_1: {
 			return 20002;
 		}
-		case anmlCow3: {
+		case anmlDiaryCow_2: {
 			return 20003;
 		}
-		case anmlCow4: {
+		case anmlBrownCow_2: {
 			return 20004;
 		}
 	}
@@ -116,7 +149,10 @@ stock Breed_RemoveAnimal(id) {
 		return 0;
 	}
 	if(map_has_key(m_animalStats, id)) {
-		new stats[BreedAnimalStats];
+		new
+			stats[BreedAnimalStats],
+			query[128];
+		map_get_arr(m_animalStats, id, stats);
 		FCNPC_Destroy(stats[anmlNPCId]);
 		mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM breed_stats WHERE id = %d LIMIT 1", id);
 		mysql_pquery(MySQL_Connection(), query);
@@ -126,7 +162,7 @@ stock Breed_RemoveAnimal(id) {
 			m_animalStats = Map:-1;
 		}
 		if(map_has_key(m_npcAnimalId, stats[anmlNPCId])) {
-			map_remove(m_npcAnimalId);
+			map_remove(m_npcAnimalId, stats[anmlNPCId]);
 			if(!map_size(m_npcAnimalId)) {
 				map_delete(m_npcAnimalId);
 				m_npcAnimalId = Map:-1;

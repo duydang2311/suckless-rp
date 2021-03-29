@@ -41,7 +41,7 @@ public Breed_FinishEating(id) {
 		map_get_arr(m_animalStats, id, stats);
 		map_set_cell(m_animalStats, id, anmlHunger, (stats[anmlHunger] + 0.33) > 1.0 ? 1.0 : stats[anmlHunger] + 0.3);
 	}
-	Breed_LifeCycle(id);
+	Breed_Move(id);
 	return 1;
 }
 
@@ -132,8 +132,16 @@ stock Task:Breed_CreateAnimal(species) {
 				}
 				map_set(m_npcAnimalId, npcid, id);
 				FCNPC_Spawn(npcid, Breed_GetAnimalSpeciesModel(species), 0.0, 0.0, 2.0);
-				Breed_LifeCycle(id);
+				Breed_Move(id);
 				task_set_result(t, id);
+				switch(species) {
+					case anmlBrownCow_1, anmlBrownCow_2: {
+						CallLocalFunction("BrownCow_OnCreated", "i", id);
+					}
+					case anmlDiaryCow_1, anmlDiaryCow_2: {
+						CallLocalFunction("DiaryCow_OnCreated", "i", id);
+					}
+				}
 			}
 		} else {
 			task_set_result(t, -1);
@@ -166,6 +174,14 @@ stock Breed_RemoveAnimal(id) {
 			if(!map_size(m_npcAnimalId)) {
 				map_delete(m_npcAnimalId);
 				m_npcAnimalId = Map:-1;
+			}
+		}
+		switch(stats[anmlSpecies]) {
+			case anmlBrownCow_1, anmlBrownCow_2: {
+				CallLocalFunction("BrownCow_OnRemoved", "i", id);
+			}
+			case anmlDiaryCow_1, anmlDiaryCow_2: {
+				CallLocalFunction("DiaryCow_OnRemoved", "i", id);
 			}
 		}
 		return 1;
@@ -255,7 +271,7 @@ public Breed_InitAnimal(id) {
 			map_set(m_npcAnimalId, stats[anmlNPCId], id);
 			map_set_cell(m_animalStats, id, anmlNPCId, stats[anmlNPCId]);
 			FCNPC_Spawn(stats[anmlNPCId], Breed_GetAnimalSpeciesModel(stats[anmlSpecies]), 0.0, 0.0, 2.0);
-			Breed_LifeCycle(id);
+			Breed_Move(id);
 		}
 	}
 	return 1;

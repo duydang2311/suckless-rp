@@ -71,10 +71,28 @@ public Breed_Move(id) {
 		return 0;
 	}
 
+	if(Breed_GetFoodObjectId(id) != -1) {
+		return 0;
+	}
+
 	Breed_UpdateHunger(id, -0.005);
-	if(Breed_GetHunger(id) < -0.5) {
-		Breed_RemoveAnimal(id);
-		return 1;
+	new Float:hunger = Breed_GetHunger(id);
+	if(hunger < 0.0) {
+		if(hunger < -0.5) {
+			Breed_RemoveAnimal(id);
+			return 1;
+		}
+		switch(Breed_GetSpecies(id)) {
+			case anmlBrownCow_1, anmlBrownCow_2: {
+				BrownCow_UpdateQuality(id, -0.05);
+			}
+		}
+	} else {
+		switch(Breed_GetSpecies(id)) {
+			case anmlDiaryCow_1, anmlDiaryCow_2: {
+				DiaryCow_UpdateMilk(id, 0.05);
+			}
+		}
 	}
 	new
 		Float:x,
@@ -83,15 +101,6 @@ public Breed_Move(id) {
 	RandomPointInPolygon(breedAreaPoints, x, y);
 	CA_FindZ_For2DCoord(x, y, z);
 	FCNPC_GoTo(npcid, x, y, z, .speed = FCNPC_MOVE_SPEED_WALK);
-	return 1;
-}
-
-stock Breed_LifeCycle(id) {
-	new npcid = Breed_GetNPCId(id);
-	if(npcid == -1) {
-		return 0;
-	}
-	Breed_Move(id);
 	return 1;
 }
 

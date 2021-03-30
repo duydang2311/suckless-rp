@@ -8,7 +8,10 @@ enum _:SubtitleSelectStats {
 	PlayerText:subSelectHeaderTD,
 	PlayerText:subSelectItemTD,
 	PlayerText:subSelectArrowTD,
-	subSelectCallback[32]
+	subSelectCallback[32],
+	subSelectItemText[256],
+	subSelectCurrentItem,
+	subSelectItemCount
 }
 
 static Map:m_subSelectStats;
@@ -27,6 +30,17 @@ stock SubtitleSelect_Show(playerid, const header[], const item[], const callback
 		PlayerTextDrawDestroy(playerid, stats[subSelectArrowTD]);
 	}
 
+	new pos = 0;
+	stats[subSelectCallback][0] = EOS;
+	stats[subSelectItemText] = "~g~";
+	stats[subSelectCurrentItem] = 0;
+	stats[subSelectItemCount] = 1;
+	while((pos = strfind(item, "~n~", true, ++pos)) != -1) {
+		stats[subSelectItemCount]++;
+	}
+	strcat(stats[subSelectItemText], item, 256);
+	strcat(stats[subSelectCallback], callback, 32);
+
 	stats[subSelectHeaderTD] = CreatePlayerTextDraw(playerid, 100.000000, 340.000000, header);
 	PlayerTextDrawFont(playerid, stats[subSelectHeaderTD], 1);
 	PlayerTextDrawLetterSize(playerid, stats[subSelectHeaderTD], 0.200000, 0.800000);
@@ -41,7 +55,7 @@ stock SubtitleSelect_Show(playerid, const header[], const item[], const callback
 	PlayerTextDrawSetProportional(playerid, stats[subSelectHeaderTD], 1);
 	PlayerTextDrawSetSelectable(playerid, stats[subSelectHeaderTD], 0);
 
-	stats[subSelectItemTD] = CreatePlayerTextDraw(playerid, 110.000000, 355.000000, item);
+	stats[subSelectItemTD] = CreatePlayerTextDraw(playerid, 110.000000, 355.000000, stats[subSelectItemText]);
 	PlayerTextDrawFont(playerid, stats[subSelectItemTD], 1);
 	PlayerTextDrawLetterSize(playerid, stats[subSelectItemTD], 0.200000, 0.800000);
 	PlayerTextDrawTextSize(playerid, stats[subSelectItemTD], 400.000000, 250.000000);
@@ -68,8 +82,11 @@ stock SubtitleSelect_Show(playerid, const header[], const item[], const callback
 	PlayerTextDrawUseBox(playerid, stats[subSelectArrowTD], 1);
 	PlayerTextDrawSetProportional(playerid, stats[subSelectArrowTD], 1);
 	PlayerTextDrawSetSelectable(playerid, stats[subSelectArrowTD], 0);
-	stats[subSelectCallback][0] = EOS;
-	strcat(stats[subSelectCallback], callback, 32);
+
+	PlayerTextDrawShow(playerid, stats[subSelectHeaderTD]);
+	PlayerTextDrawShow(playerid, stats[subSelectItemTD]);
+	PlayerTextDrawShow(playerid, stats[subSelectArrowTD]);
+
 	map_set_arr(m_subSelectStats, playerid, stats);
 	return 1;
 }
@@ -100,17 +117,87 @@ stock SubtitleSelect_Hide(playerid) {
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	if(map_valid(m_subSelectStats) && map_has_key(m_subSelectStats, playerid)) {
 		if(newkeys & KEY_YES) { // Y -> move up
+			new
+				stats[SubtitleSelectStats];
+			map_get_arr(m_subSelectStats, playerid, stats);
+			printf("KEY_YES, %d vs %d, %s", stats[subSelectCurrentItem], 0, stats[subSelectItemText]);
+			if(stats[subSelectCurrentItem] == 0) {
+				return Y_HOOKS_BREAK_RETURN_1;
+			}
 
+			stats[subSelectCurrentItem]--;
+			new pos = strfind(stats[subSelectItemText], "~g~", true);
+			if(pos != -1) {
+				strdel(stats[subSelectItemText], pos, pos + 3);
+			}
+			pos = strfind(stats[subSelectItemText], "~w~", true);
+			if(pos != -1) {
+				strdel(stats[subSelectItemText], pos, pos + 3);
+			}
+
+			pos = 0;
+			for(new i = 0; i != stats[subSelectCurrentItem]; i++) {
+				pos = strfind(stats[subSelectItemText], "~n~", true, pos + 1);
+			}
+			strins(stats[subSelectItemText], "~g~", (pos == 0) ? pos : pos + 3, 256);
+			pos = strfind(stats[subSelectItemText], "~n~", true, pos + 1);
+			if(pos != -1) {
+				strins(stats[subSelectItemText], "~w~", pos + 3, 256);
+			}
+			map_set_arr(m_subSelectStats, playerid, stats);
+			PlayerTextDrawSetString(playerid, stats[subSelectItemTD], stats[subSelectItemText]);
+			PlayerTextDrawShow(playerid, stats[subSelectItemTD]);
 		} else if(newkeys & KEY_NO) { // N -> move down
+			new
+				stats[SubtitleSelectStats];
+			map_get_arr(m_subSelectStats, playerid, stats);
+			printf("KEY_NO, %d vs %d, %s", stats[subSelectCurrentItem], stats[subSelectItemCount] - 1, stats[subSelectItemText]);
+			if(stats[subSelectCurrentItem] == stats[subSelectItemCount] - 1) {
+				return Y_HOOKS_BREAK_RETURN_1;
+			}
 
+			stats[subSelectCurrentItem]++;
+			new pos = strfind(stats[subSelectItemText], "~g~", true);
+			if(pos != -1) {
+				strdel(stats[subSelectItemText], pos, pos + 3);
+			}
+			pos = strfind(stats[subSelectItemText], "~w~", true);
+			if(pos != -1) {
+				strdel(stats[subSelectItemText], pos, pos + 3);
+			}
+
+			pos = 0;
+			for(new i = 0; i != stats[subSelectCurrentItem]; i++) {
+				pos = strfind(stats[subSelectItemText], "~n~", true, pos + 1);
+			}
+			strins(stats[subSelectItemText], "~g~", (pos == 0) ? pos : pos + 3, 256);
+			pos = strfind(stats[subSelectItemText], "~n~", true, pos + 1);
+			if(pos != -1) {
+				strins(stats[subSelectItemText], "~w~", pos + 3, 256);
+			}
+			map_set_arr(m_subSelectStats, playerid, stats);
+			PlayerTextDrawSetString(playerid, stats[subSelectItemTD], stats[subSelectItemText]);
+			PlayerTextDrawShow(playerid, stats[subSelectItemTD]);
 		} else if(newkeys & KEY_SPRINT) { // Space -> select
-
-		} else if(newkeys & KEY_SECONDARY_ATTACK) { // Enter -> cancel
+			new
+				stats[SubtitleSelectStats];
+			map_get_arr(m_subSelectStats, playerid, stats);
+			CallLocalFunction(stats[subSelectCallback], "iii", playerid, 1, stats[subSelectCurrentItem]);
+			SubtitleSelect_Hide(playerid);
+		} else if(newkeys & KEY_SECONDARY_ATTACK && !(newkeys & KEY_YES)) { // Enter -> cancel
+			new
+				stats[SubtitleSelectStats];
+			map_get_arr(m_subSelectStats, playerid, stats);
+			CallLocalFunction(stats[subSelectCallback], "iii", playerid, 0, -1);
 			SubtitleSelect_Hide(playerid);
 		} else {
 			return 1;
 		}
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
+	return 1;
+}
+
+hook OnGameModeInit() {
 	return 1;
 }

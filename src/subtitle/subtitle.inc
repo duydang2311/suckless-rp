@@ -10,6 +10,7 @@ enum _:SubtitleType {
 }
 
 #include "./subtitle_text.inc"
+#include "./subtitle_select.inc"
 
 static Map:m_subType;
 
@@ -55,11 +56,6 @@ hook OnPlayerDisconnect(playerid, reason) {
 			case SubtitleSelect: {
 				SubtitleSelect_Hide(playerid);
 			}
-		}
-		map_remove(m_subType, playerid);
-		if(!map_size(m_subType)) {
-			map_delete(m_subType);
-			m_subType = Map:-1;
 		}
 	}
 	return 1;

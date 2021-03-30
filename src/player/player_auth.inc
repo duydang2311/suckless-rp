@@ -6,6 +6,14 @@
 
 static Map:m_playerId;
 
+forward PlayerAuth_OnDisconnected(playerid);
+public PlayerAuth_OnDisconnected(playerid) {
+	if(map_valid(m_playerId) && map_has_key(m_playerId, playerid)) {
+		map_remove(m_playerId, playerid);
+	}
+	return 1;
+}
+
 stock Player_GetId(playerid) {
 	if(map_has_key(m_playerId, playerid)) {
 		return map_get(m_playerId, playerid);
@@ -168,9 +176,7 @@ hook OnPlayerConnect(playerid) {
 }
 
 hook OnPlayerDisconnect(playerid) {
-	if(map_valid(m_playerId) && map_has_key(m_playerId, playerid)) {
-		map_remove(m_playerId, playerid);
-	}
+	SetPreciseTimer("PlayerAuth_OnDisconnected", 0, false, "i", playerid);
 	return 1;
 }
 

@@ -62,6 +62,7 @@ hook OnPlayerDisconnect(playerid, reason) {
 	GetPlayerFacingAngle(playerid, a);
 	mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE player_spawn SET x = %.4f, y = %.4f, z = %.4f, a = %.4f, interior = %d, vw = %d WHERE id = %d LIMIT 1", x, y, z, a, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), Player_GetId(playerid));
 	mysql_pquery(MySQL_Connection(), query);
+	print(query);
 	return 1;
 }
 

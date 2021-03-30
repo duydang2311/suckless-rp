@@ -124,7 +124,7 @@ hook Player_OnStatsLoaded(playerid) {
 }
 
 hook OnPlayerDisconnect(playerid, reason) {
-	if(map_has_key(m_inventory, playerid)) {
+	if(map_valid(m_inventory) && map_has_key(m_inventory, playerid)) {
 		map_remove_deep(m_inventory, playerid);
 	}
 	return 1;

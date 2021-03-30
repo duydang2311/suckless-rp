@@ -10,6 +10,7 @@
 #include <Pawn.CMD>
 
 #include <util>
+#include <subtitle>
 
 #include "./farmer_employee.inc"
 
@@ -19,3 +20,4 @@
 #include "./breed/breed_lifecycle.inc"
 #include "./breed/breed_cmds.inc"
 #include "./breed/breed_key.inc"
+#include "./breed/breed_actor.inc"

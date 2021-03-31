@@ -4,6 +4,8 @@
 
 #define subtitle_select_included
 
+#define SubtitleSelect_Show(%0,%1,%2,%3) __SubtitleSelect_Show(%0,#%1,%2,%3)
+
 enum _:SubtitleSelectStats {
 	PlayerText:subSelectHeaderTD,
 	PlayerText:subSelectItemTD,
@@ -16,7 +18,7 @@ enum _:SubtitleSelectStats {
 
 static Map:m_subSelectStats;
 
-stock SubtitleSelect_Show(playerid, const header[], const item[], const callback[]) {
+stock __SubtitleSelect_Show(playerid, const callback[], const header[], const item[]) {
 	CallLocalFunction("Subtitle_OnPreShown", "ii", playerid, SubtitleSelect);
 	if(!map_valid(m_subSelectStats)) {
 		m_subSelectStats = map_new();
@@ -28,6 +30,7 @@ stock SubtitleSelect_Show(playerid, const header[], const item[], const callback
 		PlayerTextDrawDestroy(playerid, stats[subSelectHeaderTD]);
 		PlayerTextDrawDestroy(playerid, stats[subSelectItemTD]);
 		PlayerTextDrawDestroy(playerid, stats[subSelectArrowTD]);
+		SetPreciseTimer(stats[subSelectCallback], 0, false, "iii", playerid, 0, -1);
 	}
 
 	new pos = 0;
@@ -40,6 +43,10 @@ stock SubtitleSelect_Show(playerid, const header[], const item[], const callback
 	}
 	strcat(stats[subSelectItemText], item, 256);
 	strcat(stats[subSelectCallback], callback, 32);
+	pos = strfind(item, "~n~", true, 0);
+	if(pos != -1) {
+		strins(stats[subSelectItemText], "~w~", pos + 3, 256);
+	}
 
 	stats[subSelectHeaderTD] = CreatePlayerTextDraw(playerid, 100.000000, 340.000000, header);
 	PlayerTextDrawFont(playerid, stats[subSelectHeaderTD], 1);
@@ -120,7 +127,6 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			new
 				stats[SubtitleSelectStats];
 			map_get_arr(m_subSelectStats, playerid, stats);
-			printf("KEY_YES, %d vs %d, %s", stats[subSelectCurrentItem], 0, stats[subSelectItemText]);
 			if(stats[subSelectCurrentItem] == 0) {
 				return Y_HOOKS_BREAK_RETURN_1;
 			}
@@ -151,7 +157,6 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			new
 				stats[SubtitleSelectStats];
 			map_get_arr(m_subSelectStats, playerid, stats);
-			printf("KEY_NO, %d vs %d, %s", stats[subSelectCurrentItem], stats[subSelectItemCount] - 1, stats[subSelectItemText]);
 			if(stats[subSelectCurrentItem] == stats[subSelectItemCount] - 1) {
 				return Y_HOOKS_BREAK_RETURN_1;
 			}
@@ -182,13 +187,13 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			new
 				stats[SubtitleSelectStats];
 			map_get_arr(m_subSelectStats, playerid, stats);
-			CallLocalFunction(stats[subSelectCallback], "iii", playerid, 1, stats[subSelectCurrentItem]);
+			SetPreciseTimer(stats[subSelectCallback], 0, false, "iii", playerid, 1, stats[subSelectCurrentItem]);
 			SubtitleSelect_Hide(playerid);
 		} else if(newkeys & KEY_SECONDARY_ATTACK && !(newkeys & KEY_YES)) { // Enter -> cancel
 			new
 				stats[SubtitleSelectStats];
 			map_get_arr(m_subSelectStats, playerid, stats);
-			CallLocalFunction(stats[subSelectCallback], "iii", playerid, 0, -1);
+			SetPreciseTimer(stats[subSelectCallback], 0, false, "iii", playerid, 0, -1);
 			SubtitleSelect_Hide(playerid);
 		} else {
 			return 1;

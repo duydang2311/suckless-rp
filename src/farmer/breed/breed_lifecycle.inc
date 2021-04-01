@@ -46,8 +46,6 @@ public Breed_Move(id) {
 
 #include <YSI_Coding\y_hooks>
 
-DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
-
 hook FCNPC_OnReachDest(npcid) {
 	new id = Breed_GetIdByNPCId(npcid);
 	if(id != -1 && !Breed_IsInSpawnSession(id)) {

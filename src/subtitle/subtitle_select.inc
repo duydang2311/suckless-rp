@@ -127,102 +127,62 @@ stock SubtitleSelect_Hide(playerid) {
 	return 1;
 }
 
+stock SubtitleSelect_UpdateSelect(playerid, value) {
+	new
+		stats[SubtitleSelectStats];
+	map_get_arr(m_subSelectStats, playerid, stats);
+	stats[subSelectCurrentItem] += value;
+	if(stats[subSelectCurrentItem] >= stats[subSelectItemCount] || stats[subSelectCurrentItem] < 0) {
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+
+	PlayerTextDrawDestroy(playerid, stats[subSelectArrowTD]);
+	stats[subSelectArrowTD] = CreatePlayerTextDraw(playerid, TOP_LEFT_X, TOP_LEFT_Y + 15.0000 + stats[subSelectCurrentItem] * 7.0000, "ld_beat:right");
+	PlayerTextDrawFont(playerid, stats[subSelectArrowTD], 4);
+	PlayerTextDrawLetterSize(playerid, stats[subSelectArrowTD], 0.600000, 2.000000);
+	PlayerTextDrawTextSize(playerid, stats[subSelectArrowTD], 9.000000, 9.000000);
+	PlayerTextDrawSetOutline(playerid, stats[subSelectArrowTD], 0);
+	PlayerTextDrawSetShadow(playerid, stats[subSelectArrowTD], 0);
+	PlayerTextDrawAlignment(playerid, stats[subSelectArrowTD], 1);
+	PlayerTextDrawColor(playerid, stats[subSelectArrowTD], -1);
+	PlayerTextDrawBackgroundColor(playerid, stats[subSelectArrowTD], 9109759);
+	PlayerTextDrawBoxColor(playerid, stats[subSelectArrowTD], 50);
+	PlayerTextDrawUseBox(playerid, stats[subSelectArrowTD], 1);
+	PlayerTextDrawSetProportional(playerid, stats[subSelectArrowTD], 1);
+	PlayerTextDrawSetSelectable(playerid, stats[subSelectArrowTD], 0);
+	PlayerTextDrawShow(playerid, stats[subSelectArrowTD]);
+	new pos = strfind(stats[subSelectItemText], "~g~", true);
+	if(pos != -1) {
+		strdel(stats[subSelectItemText], pos, pos + 3);
+	}
+	pos = strfind(stats[subSelectItemText], "~w~", true);
+	if(pos != -1) {
+		strdel(stats[subSelectItemText], pos, pos + 3);
+	}
+
+	pos = 0;
+	for(new i = 0; i != stats[subSelectCurrentItem]; i++) {
+		pos = strfind(stats[subSelectItemText], "~n~", true, pos + 1);
+	}
+	strins(stats[subSelectItemText], "~g~", (pos == 0) ? pos : pos + 3, 256);
+	pos = strfind(stats[subSelectItemText], "~n~", true, pos + 1);
+	if(pos != -1) {
+		strins(stats[subSelectItemText], "~w~", pos + 3, 256);
+	}
+	map_set_arr(m_subSelectStats, playerid, stats);
+	PlayerTextDrawSetString(playerid, stats[subSelectItemTD], stats[subSelectItemText]);
+	PlayerTextDrawShow(playerid, stats[subSelectItemTD]);
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	if(map_valid(m_subSelectStats) && map_has_key(m_subSelectStats, playerid)) {
 		if(newkeys & KEY_YES) { // Y -> move up
-			new
-				stats[SubtitleSelectStats];
-			map_get_arr(m_subSelectStats, playerid, stats);
-			if(stats[subSelectCurrentItem] == 0) {
-				return Y_HOOKS_BREAK_RETURN_1;
-			}
-
-			stats[subSelectCurrentItem]--;
-
-			PlayerTextDrawDestroy(playerid, stats[subSelectArrowTD]);
-			stats[subSelectArrowTD] = CreatePlayerTextDraw(playerid, TOP_LEFT_X, TOP_LEFT_Y + 15.0000 + stats[subSelectCurrentItem] * 9.0000, "ld_beat:right");
-			PlayerTextDrawFont(playerid, stats[subSelectArrowTD], 4);
-			PlayerTextDrawLetterSize(playerid, stats[subSelectArrowTD], 0.600000, 2.000000);
-			PlayerTextDrawTextSize(playerid, stats[subSelectArrowTD], 9.000000, 9.000000);
-			PlayerTextDrawSetOutline(playerid, stats[subSelectArrowTD], 0);
-			PlayerTextDrawSetShadow(playerid, stats[subSelectArrowTD], 0);
-			PlayerTextDrawAlignment(playerid, stats[subSelectArrowTD], 1);
-			PlayerTextDrawColor(playerid, stats[subSelectArrowTD], -1);
-			PlayerTextDrawBackgroundColor(playerid, stats[subSelectArrowTD], 9109759);
-			PlayerTextDrawBoxColor(playerid, stats[subSelectArrowTD], 50);
-			PlayerTextDrawUseBox(playerid, stats[subSelectArrowTD], 1);
-			PlayerTextDrawSetProportional(playerid, stats[subSelectArrowTD], 1);
-			PlayerTextDrawSetSelectable(playerid, stats[subSelectArrowTD], 0);
-			PlayerTextDrawShow(playerid, stats[subSelectArrowTD]);
-			new pos = strfind(stats[subSelectItemText], "~g~", true);
-			if(pos != -1) {
-				strdel(stats[subSelectItemText], pos, pos + 3);
-			}
-			pos = strfind(stats[subSelectItemText], "~w~", true);
-			if(pos != -1) {
-				strdel(stats[subSelectItemText], pos, pos + 3);
-			}
-
-			pos = 0;
-			for(new i = 0; i != stats[subSelectCurrentItem]; i++) {
-				pos = strfind(stats[subSelectItemText], "~n~", true, pos + 1);
-			}
-			strins(stats[subSelectItemText], "~g~", (pos == 0) ? pos : pos + 3, 256);
-			pos = strfind(stats[subSelectItemText], "~n~", true, pos + 1);
-			if(pos != -1) {
-				strins(stats[subSelectItemText], "~w~", pos + 3, 256);
-			}
-			map_set_arr(m_subSelectStats, playerid, stats);
-			PlayerTextDrawSetString(playerid, stats[subSelectItemTD], stats[subSelectItemText]);
-			PlayerTextDrawShow(playerid, stats[subSelectItemTD]);
+			SubtitleSelect_UpdateSelect(playerid, -1);
 		} else if(newkeys & KEY_NO) { // N -> move down
-			new
-				stats[SubtitleSelectStats];
-			map_get_arr(m_subSelectStats, playerid, stats);
-			if(stats[subSelectCurrentItem] == stats[subSelectItemCount] - 1) {
-				return Y_HOOKS_BREAK_RETURN_1;
-			}
-
-			stats[subSelectCurrentItem]++;
-
-			PlayerTextDrawDestroy(playerid, stats[subSelectArrowTD]);
-			stats[subSelectArrowTD] = CreatePlayerTextDraw(playerid, TOP_LEFT_X, TOP_LEFT_Y + 15.0000 + stats[subSelectCurrentItem] * 9.0000, "ld_beat:right");
-			PlayerTextDrawFont(playerid, stats[subSelectArrowTD], 4);
-			PlayerTextDrawLetterSize(playerid, stats[subSelectArrowTD], 0.600000, 2.000000);
-			PlayerTextDrawTextSize(playerid, stats[subSelectArrowTD], 9.000000, 9.000000);
-			PlayerTextDrawSetOutline(playerid, stats[subSelectArrowTD], 0);
-			PlayerTextDrawSetShadow(playerid, stats[subSelectArrowTD], 0);
-			PlayerTextDrawAlignment(playerid, stats[subSelectArrowTD], 1);
-			PlayerTextDrawColor(playerid, stats[subSelectArrowTD], -1);
-			PlayerTextDrawBackgroundColor(playerid, stats[subSelectArrowTD], 9109759);
-			PlayerTextDrawBoxColor(playerid, stats[subSelectArrowTD], 50);
-			PlayerTextDrawUseBox(playerid, stats[subSelectArrowTD], 1);
-			PlayerTextDrawSetProportional(playerid, stats[subSelectArrowTD], 1);
-			PlayerTextDrawSetSelectable(playerid, stats[subSelectArrowTD], 0);
-			PlayerTextDrawShow(playerid, stats[subSelectArrowTD]);
-			new pos = strfind(stats[subSelectItemText], "~g~", true);
-			if(pos != -1) {
-				strdel(stats[subSelectItemText], pos, pos + 3);
-			}
-			pos = strfind(stats[subSelectItemText], "~w~", true);
-			if(pos != -1) {
-				strdel(stats[subSelectItemText], pos, pos + 3);
-			}
-
-			pos = 0;
-			for(new i = 0; i != stats[subSelectCurrentItem]; i++) {
-				pos = strfind(stats[subSelectItemText], "~n~", true, pos + 1);
-			}
-			strins(stats[subSelectItemText], "~g~", (pos == 0) ? pos : pos + 3, 256);
-			pos = strfind(stats[subSelectItemText], "~n~", true, pos + 1);
-			if(pos != -1) {
-				strins(stats[subSelectItemText], "~w~", pos + 3, 256);
-			}
-			map_set_arr(m_subSelectStats, playerid, stats);
-			PlayerTextDrawSetString(playerid, stats[subSelectItemTD], stats[subSelectItemText]);
-			PlayerTextDrawShow(playerid, stats[subSelectItemTD]);
+			SubtitleSelect_UpdateSelect(playerid, 1);
 		} else if(newkeys & KEY_SPRINT) { // Space -> select
 			new
 				stats[SubtitleSelectStats];

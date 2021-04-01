@@ -11,11 +11,16 @@
 		- Duy Dang
 		- Thom
 
-	Gameplay Developer:
+	Server Developer:
 		- Duy Dang
 
 	Gameplay Designer:
 		- Thom
+		- Brian
+		- lillil
+
+	Graphic Designer:
+		- Faye
 
 	This tiny project started on Sunday 01/03/2021.
 */
@@ -27,6 +32,11 @@
 #define task_unblock(%0) \
 	task_detach(); \
 	task_yield(%0)
+
+#include <a_samp>
+#include <YSI_Coding\y_hooks>
+
+DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 
 #include <mysql>
 #include <item>

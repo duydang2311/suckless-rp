@@ -57,12 +57,13 @@ public Breed_DistanceCheckTimer(id) {
 		Float:y,
 		Float:z;
 	FCNPC_GetPosition(npcid, x, y, z);
-	if(GetPlayerDistanceFromPoint(followTarget, x, y, z) >= 2.5) {
+	if(GetPlayerDistanceFromPoint(followTarget, x, y, z) >= 1.5) {
 		new Float:angle;
 		GetPlayerPos(followTarget, x, y, z);
 		GetPlayerFacingAngle(followTarget, angle);
-		Util_GetPointInFront2D(x, y, angle, -2.0, x, y);
+		Util_GetPointInFront2D(x, y, angle, -1.0, x, y);
 		FCNPC_GoTo(npcid, x, y, z, .speed = FCNPC_MOVE_SPEED_WALK);
+		SetPlayerCheckpoint(followTarget, x, y, z, 2.0);
 		if(map_valid(m_distCheckTimer) && map_has_key(m_distCheckTimer, id)) {
 			DeletePreciseTimer(map_get(m_distCheckTimer, id));
 			map_remove(m_distCheckTimer, id);
@@ -159,8 +160,9 @@ hook FCNPC_OnReachDest(npcid) {
 			new Float:angle;
 			GetPlayerPos(followTarget, x, y, z);
 			GetPlayerFacingAngle(followTarget, angle);
-			Util_GetPointInFront2D(x, y, angle, -2.0, x, y);
+			Util_GetPointInFront2D(x, y, angle, -1.0, x, y);
 			FCNPC_GoTo(npcid, x, y, z, .speed = FCNPC_MOVE_SPEED_WALK);
+			SetPlayerCheckpoint(followTarget, x, y, z, 2.0);
 		}
 		return Y_HOOKS_BREAK_RETURN_1;
 	}

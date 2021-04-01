@@ -102,7 +102,7 @@ stock Breed_GetAnimalSpeciesModel(species) {
 	return 0;
 }
 
-stock Task:Breed_CreateAnimal(species) {
+stock Task:Breed_CreateAnimal(species, breeder_id = -1) {
 	new Task:t = task_new();
 	task_detach();
 
@@ -119,6 +119,7 @@ stock Task:Breed_CreateAnimal(species) {
 			} else {
 				new stats[BreedAnimalStats];
 				stats[anmlNPCId] = npcid;
+				stats[anmlBreederId] = breeder_id;
 				stats[anmlSpecies] = species;
 				stats[anmlMaturity] = 0.0;
 				stats[anmlHunger] = 0.3;
@@ -131,9 +132,6 @@ stock Task:Breed_CreateAnimal(species) {
 					m_npcAnimalId = map_new();
 				}
 				map_set(m_npcAnimalId, npcid, id);
-				FCNPC_Spawn(npcid, Breed_GetAnimalSpeciesModel(species), 0.0, 0.0, 2.0);
-				Breed_Move(id);
-				task_set_result(t, id);
 				switch(species) {
 					case anmlBrownCow_1, anmlBrownCow_2: {
 						CallLocalFunction("BrownCow_OnCreated", "i", id);
@@ -142,12 +140,18 @@ stock Task:Breed_CreateAnimal(species) {
 						CallLocalFunction("DiaryCow_OnCreated", "i", id);
 					}
 				}
+				SetPreciseTimer("Breed_Spawn", 0, false, "i", id);
+				task_set_result(t, id);
 			}
 		} else {
 			task_set_result(t, -1);
 		}
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO breed_stats(species) VALUES (%d)", species);
+	if(breeder_id == -1) {
+		MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO breed_stats(species) VALUES (%d)", species);
+	} else {
+		MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO breed_stats(species, breeder_id) VALUES (%d, %d)", species, breeder_id);
+	}
 	task_set_result_ms(t, -1, 2000);
 	return t;
 }
@@ -191,6 +195,16 @@ stock Breed_RemoveAnimal(id) {
 
 stock Breed_HasId(id) {
 	return (map_valid(m_animalStats) && map_has_key(m_animalStats, id));
+}
+
+stock Breed_GetBreederId(id) {
+	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
+		return -1;
+	}
+
+	new stats[BreedAnimalStats];
+	map_get_arr(m_animalStats, id, stats);
+	return stats[anmlBreederId];
 }
 
 stock Breed_GetNPCId(id) {

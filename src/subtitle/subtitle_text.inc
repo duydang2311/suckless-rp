@@ -4,9 +4,35 @@
 
 #define subtitle_text_included
 
-static Map:m_subTextTdId;
+static
+	Map:m_subTextTdId,
+	Map:m_subExpireTimer;
 
-stock SubtitleText_Show(playerid, const text[]) {
+forward SubtitleText_Hide(playerid);
+public SubtitleText_Hide(playerid) {
+	if(!map_valid(m_subTextTdId)) {
+		return 0;
+	}
+	if(!map_has_key(m_subTextTdId, playerid)) {
+		return 0;
+	}
+	if(map_valid(m_subExpireTimer) && map_has_key(m_subExpireTimer, playerid)) {
+		map_remove(m_subExpireTimer, playerid);
+		if(!map_size(m_subExpireTimer)) {
+			map_delete(m_subExpireTimer);
+			m_subExpireTimer = Map:-1;
+		}
+	}
+	PlayerTextDrawDestroy(playerid, PlayerText:map_get(m_subTextTdId, playerid));
+	map_remove(m_subTextTdId, playerid);
+	if(!map_size(m_subTextTdId)) {
+		map_delete(m_subTextTdId);
+		m_subTextTdId = Map:-1;
+	}
+	return 1;
+}
+
+stock SubtitleText_Show(playerid, const text[], duration = 3000) {
 	CallLocalFunction("Subtitle_OnPreShown", "ii", playerid, SubtitleText);
 	if(!map_valid(m_subTextTdId)) {
 		m_subTextTdId = map_new();
@@ -29,21 +55,11 @@ stock SubtitleText_Show(playerid, const text[]) {
 	PlayerTextDrawSetSelectable(playerid, td, 0);
 	PlayerTextDrawShow(playerid, td);
 	map_set(m_subTextTdId, playerid, _:td);
-	return 1;
-}
-
-stock SubtitleText_Hide(playerid) {
-	if(!map_valid(m_subTextTdId)) {
-		return 0;
+	if(!map_valid(m_subExpireTimer)) {
+		m_subExpireTimer = map_new();
+	} else if(map_has_key(m_subExpireTimer, playerid)) {
+		DeletePreciseTimer(map_get(m_subExpireTimer, playerid));
 	}
-	if(!map_has_key(m_subTextTdId, playerid)) {
-		return 0;
-	}
-	PlayerTextDrawDestroy(playerid, PlayerText:map_get(m_subTextTdId, playerid));
-	map_remove(m_subTextTdId, playerid);
-	if(!map_size(m_subTextTdId)) {
-		map_delete(m_subTextTdId);
-		m_subTextTdId = Map:-1;
-	}
+	map_set(m_subExpireTimer, playerid, SetPreciseTimer("SubtitleText_Hide", duration, false, "i", playerid));
 	return 1;
 }

@@ -5,6 +5,13 @@
 #define subtitle_select_included
 
 #define SubtitleSelect_Show(%0,%1,%2,%3) __SubtitleSelect_Show(%0,#%1,%2,%3)
+#define SubtitleSelect:%0(%1) \
+	forward __SS_%0(%1); \
+	public __SS_%0(%1)
+
+#define TOP_LEFT_X 120.0000
+#define TOP_LEFT_Y 340.0000
+// there are undefinitions at the eof to keep these defines static.
 
 enum _:SubtitleSelectStats {
 	PlayerText:subSelectHeaderTD,
@@ -42,13 +49,14 @@ stock __SubtitleSelect_Show(playerid, const callback[], const header[], const it
 		stats[subSelectItemCount]++;
 	}
 	strcat(stats[subSelectItemText], item, 256);
+	strcat(stats[subSelectCallback], "__SS_", 32);
 	strcat(stats[subSelectCallback], callback, 32);
 	pos = strfind(item, "~n~", true, 0);
 	if(pos != -1) {
 		strins(stats[subSelectItemText], "~w~", pos + 3, 256);
 	}
 
-	stats[subSelectHeaderTD] = CreatePlayerTextDraw(playerid, 100.000000, 340.000000, header);
+	stats[subSelectHeaderTD] = CreatePlayerTextDraw(playerid, TOP_LEFT_X, TOP_LEFT_Y, header);
 	PlayerTextDrawFont(playerid, stats[subSelectHeaderTD], 1);
 	PlayerTextDrawLetterSize(playerid, stats[subSelectHeaderTD], 0.200000, 0.800000);
 	PlayerTextDrawTextSize(playerid, stats[subSelectHeaderTD], 400.000000, 250.000000);
@@ -62,7 +70,7 @@ stock __SubtitleSelect_Show(playerid, const callback[], const header[], const it
 	PlayerTextDrawSetProportional(playerid, stats[subSelectHeaderTD], 1);
 	PlayerTextDrawSetSelectable(playerid, stats[subSelectHeaderTD], 0);
 
-	stats[subSelectItemTD] = CreatePlayerTextDraw(playerid, 110.000000, 355.000000, stats[subSelectItemText]);
+	stats[subSelectItemTD] = CreatePlayerTextDraw(playerid, TOP_LEFT_X + 10.0, TOP_LEFT_Y + 15.0000, stats[subSelectItemText]);
 	PlayerTextDrawFont(playerid, stats[subSelectItemTD], 1);
 	PlayerTextDrawLetterSize(playerid, stats[subSelectItemTD], 0.200000, 0.800000);
 	PlayerTextDrawTextSize(playerid, stats[subSelectItemTD], 400.000000, 250.000000);
@@ -76,7 +84,7 @@ stock __SubtitleSelect_Show(playerid, const callback[], const header[], const it
 	PlayerTextDrawSetProportional(playerid, stats[subSelectItemTD], 1);
 	PlayerTextDrawSetSelectable(playerid, stats[subSelectItemTD], 0);
 
-	stats[subSelectArrowTD] = CreatePlayerTextDraw(playerid, 100.000000, 355.000000, "ld_beat:right");
+	stats[subSelectArrowTD] = CreatePlayerTextDraw(playerid, TOP_LEFT_X, TOP_LEFT_Y + 15.0000, "ld_beat:right");
 	PlayerTextDrawFont(playerid, stats[subSelectArrowTD], 4);
 	PlayerTextDrawLetterSize(playerid, stats[subSelectArrowTD], 0.600000, 2.000000);
 	PlayerTextDrawTextSize(playerid, stats[subSelectArrowTD], 9.000000, 9.000000);
@@ -132,6 +140,22 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			}
 
 			stats[subSelectCurrentItem]--;
+
+			PlayerTextDrawDestroy(playerid, stats[subSelectArrowTD]);
+			stats[subSelectArrowTD] = CreatePlayerTextDraw(playerid, TOP_LEFT_X, TOP_LEFT_Y + 15.0000 + stats[subSelectCurrentItem] * 9.0000, "ld_beat:right");
+			PlayerTextDrawFont(playerid, stats[subSelectArrowTD], 4);
+			PlayerTextDrawLetterSize(playerid, stats[subSelectArrowTD], 0.600000, 2.000000);
+			PlayerTextDrawTextSize(playerid, stats[subSelectArrowTD], 9.000000, 9.000000);
+			PlayerTextDrawSetOutline(playerid, stats[subSelectArrowTD], 0);
+			PlayerTextDrawSetShadow(playerid, stats[subSelectArrowTD], 0);
+			PlayerTextDrawAlignment(playerid, stats[subSelectArrowTD], 1);
+			PlayerTextDrawColor(playerid, stats[subSelectArrowTD], -1);
+			PlayerTextDrawBackgroundColor(playerid, stats[subSelectArrowTD], 9109759);
+			PlayerTextDrawBoxColor(playerid, stats[subSelectArrowTD], 50);
+			PlayerTextDrawUseBox(playerid, stats[subSelectArrowTD], 1);
+			PlayerTextDrawSetProportional(playerid, stats[subSelectArrowTD], 1);
+			PlayerTextDrawSetSelectable(playerid, stats[subSelectArrowTD], 0);
+			PlayerTextDrawShow(playerid, stats[subSelectArrowTD]);
 			new pos = strfind(stats[subSelectItemText], "~g~", true);
 			if(pos != -1) {
 				strdel(stats[subSelectItemText], pos, pos + 3);
@@ -162,6 +186,22 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			}
 
 			stats[subSelectCurrentItem]++;
+
+			PlayerTextDrawDestroy(playerid, stats[subSelectArrowTD]);
+			stats[subSelectArrowTD] = CreatePlayerTextDraw(playerid, TOP_LEFT_X, TOP_LEFT_Y + 15.0000 + stats[subSelectCurrentItem] * 9.0000, "ld_beat:right");
+			PlayerTextDrawFont(playerid, stats[subSelectArrowTD], 4);
+			PlayerTextDrawLetterSize(playerid, stats[subSelectArrowTD], 0.600000, 2.000000);
+			PlayerTextDrawTextSize(playerid, stats[subSelectArrowTD], 9.000000, 9.000000);
+			PlayerTextDrawSetOutline(playerid, stats[subSelectArrowTD], 0);
+			PlayerTextDrawSetShadow(playerid, stats[subSelectArrowTD], 0);
+			PlayerTextDrawAlignment(playerid, stats[subSelectArrowTD], 1);
+			PlayerTextDrawColor(playerid, stats[subSelectArrowTD], -1);
+			PlayerTextDrawBackgroundColor(playerid, stats[subSelectArrowTD], 9109759);
+			PlayerTextDrawBoxColor(playerid, stats[subSelectArrowTD], 50);
+			PlayerTextDrawUseBox(playerid, stats[subSelectArrowTD], 1);
+			PlayerTextDrawSetProportional(playerid, stats[subSelectArrowTD], 1);
+			PlayerTextDrawSetSelectable(playerid, stats[subSelectArrowTD], 0);
+			PlayerTextDrawShow(playerid, stats[subSelectArrowTD]);
 			new pos = strfind(stats[subSelectItemText], "~g~", true);
 			if(pos != -1) {
 				strdel(stats[subSelectItemText], pos, pos + 3);
@@ -206,3 +246,6 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 hook OnGameModeInit() {
 	return 1;
 }
+
+#undef TOP_LEFT_X
+#undef TOP_LEFT_Y

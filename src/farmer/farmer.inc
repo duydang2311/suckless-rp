@@ -23,3 +23,4 @@
 #include "./breed/breed_key.inc"
 #include "./breed/breed_actor.inc"
 #include "./breed/breed_spawn.inc"
+#include "./breed/breed_animal_interact.inc"

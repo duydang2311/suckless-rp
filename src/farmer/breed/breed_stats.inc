@@ -59,15 +59,6 @@ stock Breed_UpdateHunger(id, Float:value) {
 	return 1;
 }
 
-stock Float:Breed_GetHunger(id) {
-	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
-		return 0.0;
-	}
-	new stats[BreedAnimalStats];
-	map_get_arr(m_animalStats, id, stats);
-	return stats[anmlHunger];
-}
-
 stock Breed_GetAnimalSpeciesName(species, name[], size = sizeof(name)) {
 	name[0] = EOS;
 	switch(species) {
@@ -263,6 +254,33 @@ stock Breed_GetSpecies(id) {
 	new stats[BreedAnimalStats];
 	map_get_arr(m_animalStats, id, stats);
 	return stats[anmlSpecies];
+}
+
+stock Float:Breed_GetMaturity(id) {
+	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
+		return 0.0;
+	}
+	new stats[BreedAnimalStats];
+	map_get_arr(m_animalStats, id, stats);
+	return stats[anmlMaturity];
+}
+
+stock Float:Breed_GetHunger(id) {
+	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
+		return 0.0;
+	}
+	new stats[BreedAnimalStats];
+	map_get_arr(m_animalStats, id, stats);
+	return stats[anmlHunger];
+}
+
+stock Float:Breed_GetThirst(id) {
+	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
+		return 0.0;
+	}
+	new stats[BreedAnimalStats];
+	map_get_arr(m_animalStats, id, stats);
+	return stats[anmlThirst];
 }
 
 forward Breed_InitAnimal(id);

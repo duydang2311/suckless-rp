@@ -55,11 +55,13 @@ stock SubtitleText_Show(playerid, const text[], duration = 5000) {
 	PlayerTextDrawSetSelectable(playerid, td, 0);
 	PlayerTextDrawShow(playerid, td);
 	map_set(m_subTextTdId, playerid, _:td);
-	if(!map_valid(m_subExpireTimer)) {
-		m_subExpireTimer = map_new();
-	} else if(map_has_key(m_subExpireTimer, playerid)) {
-		DeletePreciseTimer(map_get(m_subExpireTimer, playerid));
+	if(duration >= 0) {
+		if(!map_valid(m_subExpireTimer)) {
+			m_subExpireTimer = map_new();
+		} else if(map_has_key(m_subExpireTimer, playerid)) {
+			DeletePreciseTimer(map_get(m_subExpireTimer, playerid));
+		}
+		map_set(m_subExpireTimer, playerid, SetPreciseTimer("SubtitleText_Hide", duration, false, "i", playerid));
 	}
-	map_set(m_subExpireTimer, playerid, SetPreciseTimer("SubtitleText_Hide", duration, false, "i", playerid));
 	return 1;
 }

@@ -16,6 +16,28 @@ public Inventory_OnItemRemoved(playerid, item_id) {
 	return 1;
 }
 
+forward Inventory_OnStatsRetrieved(playerid);
+public Inventory_OnStatsRetrieved(playerid) {
+	new rows = cache_num_rows();
+	if(rows) {
+		new
+			id,
+			LinkedList:ll;
+		if(!map_has_key(m_inventory, playerid)) {
+			ll = linked_list_new();
+			map_set(m_inventory, playerid, ll);
+		} else {
+			ll = LinkedList:map_get(m_inventory, playerid);
+		}
+		for(new i = 0; i != rows; i++) {
+			cache_get_value_name_int(i, "item_id", id);
+			linked_list_add(ll, id);
+			CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, id);
+		}
+	}
+	return 1;
+}
+
 stock Inventory_AddItem(playerid, item_id) {
 	new LinkedList:ll;
 	if(map_has_key(m_inventory, playerid)) {
@@ -29,7 +51,6 @@ stock Inventory_AddItem(playerid, item_id) {
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO inventory (player_id, item_id) VALUES (%d, %d)", Player_GetId(playerid), item_id);
 	mysql_pquery(MySQL_Connection(), query);
 	linked_list_add(ll, item_id);
-	printf("Inventory_AddItem: player %d, item_id %d, size %d", playerid, item_id, linked_list_size(ll));
 	CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, item_id);
 	return 1;
 }
@@ -100,26 +121,9 @@ stock Inventory_GetSize(playerid) {
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnStatsLoaded(playerid) {
-	inline const QueryFinished() {
-		new rows = cache_num_rows();
-		if(rows) {
-			new
-				id,
-				LinkedList:ll;
-			if(!map_has_key(m_inventory, playerid)) {
-				ll = linked_list_new();
-				map_set(m_inventory, playerid, ll);
-			} else {
-				ll = LinkedList:map_get(m_inventory, playerid);
-			}
-			for(new i = 0; i != rows; i++) {
-				cache_get_value_name_int(i, "item_id", id);
-				linked_list_add(ll, id);
-				CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, id);
-			}
-		}
-	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM inventory WHERE player_id = %d", Player_GetId(playerid));
+	new query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM inventory WHERE player_id = %d", Player_GetId(playerid));
+	mysql_pquery(MySQL_Connection(), query, "Inventory_OnStatsRetrieved", "i", playerid);
 	return 1;
 }
 

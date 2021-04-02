@@ -18,6 +18,58 @@ enum _:InventoryAttachmentStats {
 
 static Map:m_inventoryAttachment;
 
+forward Inventory_OnAttachRetrieved(playerid, item_id);
+public Inventory_OnAttachRetrieved(playerid, item_id) {
+	if(cache_num_rows()) {
+		new bool:attached;
+		cache_get_value_name_int(0, "attached", attached);
+		if(attached) {
+			new slot = Player_GetFreeAttachmentSlot(playerid);
+			if(slot == -1) {
+				Inventory_DetachItem(playerid, item_id);
+			} else {
+				new
+					att[AttachmentStats],
+					stats[InventoryAttachmentStats],
+					LinkedList:ll;
+				if(!map_has_key(m_inventoryAttachment, playerid)) {
+					ll = linked_list_new();
+					map_set(m_inventoryAttachment, playerid, ll);
+				} else {
+					ll = LinkedList:map_get(m_inventoryAttachment, playerid);
+				}
+				cache_get_value_name_int(0, "bone", att[attBone]);
+				cache_get_value_name_float(0, "offset_x", att[attOffset][0]);
+				cache_get_value_name_float(0, "offset_y", att[attOffset][1]);
+				cache_get_value_name_float(0, "offset_z", att[attOffset][2]);
+				cache_get_value_name_float(0, "rot_x", att[attRot][0]);
+				cache_get_value_name_float(0, "rot_y", att[attRot][1]);
+				cache_get_value_name_float(0, "rot_z", att[attRot][2]);
+				cache_get_value_name_float(0, "scale_x", att[attScale][0]);
+				cache_get_value_name_float(0, "scale_y", att[attScale][1]);
+				cache_get_value_name_float(0, "scale_z", att[attScale][2]);
+				SetPlayerAttachedObject(playerid, slot, Item_GetModel(item_id), att[attBone], att[attOffset][0], att[attOffset][1], att[attOffset][2], att[attRot][0], att[attRot][1], att[attRot][2], att[attScale][0], att[attScale][1], att[attScale][2]);
+				printf("Inventory_OnItemAdded query finished - attach item %d, model %d, slot %d", item_id, Item_GetModel(item_id), slot);
+				new bool:exists = false;
+				for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
+					iter_get_arr(it, stats);
+					if(stats[attItemId] == item_id) {
+						iter_set_cell(it, attSlot, slot);
+						exists = true;
+						break;
+					}
+				}
+				if(!exists) {
+					stats[attSlot] = slot;
+					stats[attItemId] = item_id;
+					linked_list_add_arr(ll, stats);
+				}
+			}
+		}
+	}
+	return 1;
+}
+
 forward Task:Inventory_AttachItem(playerid, slot, item_id);
 public Task:Inventory_AttachItem(playerid, slot, item_id) {
 	new Task:t = task_new();
@@ -132,56 +184,9 @@ stock Inventory_SetAttachment(item_id, Float:offx, Float:offy, Float:offz, Float
 #include <YSI_Coding\y_hooks>
 
 hook Inventory_OnItemAdded(playerid, item_id) {
-	inline const QueryFinished() {
-		if(cache_num_rows()) {
-			new bool:attached;
-			cache_get_value_name_int(0, "attached", attached);
-			if(attached) {
-				new slot = Player_GetFreeAttachmentSlot(playerid);
-				if(slot == -1) {
-					Inventory_DetachItem(playerid, item_id);
-				} else {
-					new
-						att[AttachmentStats],
-						stats[InventoryAttachmentStats],
-						LinkedList:ll;
-					if(!map_has_key(m_inventoryAttachment, playerid)) {
-						ll = linked_list_new();
-						map_set(m_inventoryAttachment, playerid, ll);
-					} else {
-						ll = LinkedList:map_get(m_inventoryAttachment, playerid);
-					}
-					cache_get_value_name_int(0, "bone", att[attBone]);
-					cache_get_value_name_float(0, "offset_x", att[attOffset][0]);
-					cache_get_value_name_float(0, "offset_y", att[attOffset][1]);
-					cache_get_value_name_float(0, "offset_z", att[attOffset][2]);
-					cache_get_value_name_float(0, "rot_x", att[attRot][0]);
-					cache_get_value_name_float(0, "rot_y", att[attRot][1]);
-					cache_get_value_name_float(0, "rot_z", att[attRot][2]);
-					cache_get_value_name_float(0, "scale_x", att[attScale][0]);
-					cache_get_value_name_float(0, "scale_y", att[attScale][1]);
-					cache_get_value_name_float(0, "scale_z", att[attScale][2]);
-					SetPlayerAttachedObject(playerid, slot, Item_GetModel(item_id), att[attBone], att[attOffset][0], att[attOffset][1], att[attOffset][2], att[attRot][0], att[attRot][1], att[attRot][2], att[attScale][0], att[attScale][1], att[attScale][2]);
-					printf("Inventory_OnItemAdded query finished - attach item %d, model %d, slot %d", item_id, Item_GetModel(item_id), slot);
-					new bool:exists = false;
-					for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
-						iter_get_arr(it, stats);
-						if(stats[attItemId] == item_id) {
-							iter_set_cell(it, attSlot, slot);
-							exists = true;
-							break;
-						}
-					}
-					if(!exists) {
-						stats[attSlot] = slot;
-						stats[attItemId] = item_id;
-						linked_list_add_arr(ll, stats);
-					}
-				}
-			}
-		}
-	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM inventory_attachments WHERE item_id = %d LIMIT 1", item_id);
+	new query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM inventory_attachments WHERE item_id = %d LIMIT 1", item_id);
+	mysql_pquery(MySQL_Connection(), query, "Inventory_OnAttachRetrieved", "ii", playerid, item_id);
 	return 1;
 }
 

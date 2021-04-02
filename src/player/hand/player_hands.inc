@@ -6,6 +6,18 @@
 
 static playerHands[MAX_PLAYERS][2] = {{-1, -1}, ...};
 
+forward Player_OnHandStatsRetrieved(playerid);
+public Player_OnHandStatsRetrieved(playerid) {
+	new index;
+	for(new i = 0, rows = cache_num_rows(); i != rows; i++) {
+		cache_get_value_name_int(i, "hand_index", index);
+		cache_get_value_name_int(i, "item_id", playerHands[playerid][index]);
+		CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, index, playerHands[playerid][index]);
+		CallLocalFunction("Player_OnItemEquipped", "iii", playerid, index, playerHands[playerid][index]);
+	}
+	return 1;
+}
+
 stock Player_EquipItem(playerid, hand_index, item_id) {
 	if(playerHands[playerid][hand_index] != -1 || !Item_Has(item_id)) {
 		return 0;
@@ -45,17 +57,9 @@ stock Player_GetFreeHand(playerid) {
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnStatsLoaded(playerid) {
-	inline const QueryFinished() {
-		new index;
-		for(new i = 0, rows = cache_num_rows(); i != rows; i++) {
-			cache_get_value_name_int(i, "hand_index", index);
-			cache_get_value_name_int(i, "item_id", playerHands[playerid][index]);
-			CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, index, playerHands[playerid][index]);
-			CallLocalFunction("Player_OnItemEquipped", "iii", playerid, index, playerHands[playerid][index]);
-			printf("called Player_OnItemEquipped %d %d %d", playerid, index, playerHands[playerid][index]);
-		}
-	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_hands WHERE player_id = %d", Player_GetId(playerid));
+	new query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM player_hands WHERE player_id = %d", Player_GetId(playerid));
+	mysql_pquery(MySQL_Connection(), query, "Player_OnHandStatsRetrieved", "i", playerid);
 	return 1;
 }
 

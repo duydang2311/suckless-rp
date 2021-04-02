@@ -6,6 +6,17 @@
 
 static Map:m_farmerEmployees;
 
+forward Farmer_OnEmployeeRetrieved(playerid);
+public Farmer_OnEmployeeRetrieved(playerid) {
+	if(cache_num_rows()) {
+		if(!map_valid(m_farmerEmployees)) {
+			m_farmerEmployees = map_new();
+		}
+		map_set(m_farmerEmployees, Player_GetId(playerid), 1);
+	}
+	return 1;
+}
+
 stock Farmer_HasEmployee(id) {
 	return (map_valid(m_farmerEmployees) && map_has_key(m_farmerEmployees, id));
 }
@@ -39,15 +50,9 @@ stock Farmer_DeleteEmployee(id) {
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnStatsLoaded(playerid) {
-	inline const QueryFinished() {
-		if(cache_num_rows()) {
-			if(!map_valid(m_farmerEmployees)) {
-				m_farmerEmployees = map_new();
-			}
-			map_set(m_farmerEmployees, Player_GetId(playerid), 1);
-		}
-	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT COUNT(*) FROM farmer_employees WHERE employee_id = %d LIMIT 1", Player_GetId(playerid));
+	new query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(*) FROM farmer_employees WHERE employee_id = %d LIMIT 1", Player_GetId(playerid));
+	mysql_pquery(MySQL_Connection(), query, "Farmer_OnEmployeeRetrieved", "i", playerid);
 	return 1;
 }
 

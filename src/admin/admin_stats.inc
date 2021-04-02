@@ -1,5 +1,18 @@
 static Map:m_adminFlags;
 
+forward Admin_OnStatsRetrieved(playerid);
+public Admin_OnStatsRetrieved(playerid) {
+	if(cache_num_rows()) {
+		new flags;
+		cache_get_value_name_int(0, "flags", flags);
+		if(!map_valid(m_adminFlags)) {
+			m_adminFlags = map_new();
+		}
+		map_set(m_adminFlags, playerid, flags);
+	}
+	return 1;
+}
+
 stock Admin_GetFlags(playerid) {
 	if(map_valid(m_adminFlags) && map_has_key(m_adminFlags, playerid)) {
 		return map_get(m_adminFlags, playerid);
@@ -25,17 +38,9 @@ stock Admin_SetFlags(playerid, flags) {
 
 hook Player_OnStatsLoaded(playerid) {
 	print("admin_stats.inc");
-	inline const QueryFinished() {
-		if(cache_num_rows()) {
-			new flags;
-			cache_get_value_name_int(0, "flags", flags);
-			if(!map_valid(m_adminFlags)) {
-				m_adminFlags = map_new();
-			}
-			map_set(m_adminFlags, playerid, flags);
-		}
-	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM admin_flags WHERE id = %d LIMIT 1", Player_GetId(playerid));
+	new query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM admin_flags WHERE id = %d LIMIT 1", Player_GetId(playerid));
+	mysql_pquery(MySQL_Connection(), query, "Admin_OnStatsRetrieved", "i", playerid);
 	return 1;
 }
 

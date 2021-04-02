@@ -11,6 +11,33 @@ enum _:CarryStats {
 
 static Map:m_carryStats;
 
+forward Player_OnCarryStatsRetrieved(playerid);
+public Player_OnCarryStatsRetrieved(playerid) {
+	if(cache_num_rows()) {
+		new slot = Player_GetFreeAttachmentSlot(playerid);
+		if(slot != -1) {
+			new id;
+			cache_get_value_name_int(0, "item_id", id);
+			Player_CarryItem(playerid, id, slot);
+		} else {
+			new
+				item_id,
+				Float:x,
+				Float:y,
+				Float:angle,
+				query[128];
+			cache_get_value_name_int(0, "item_id", item_id);
+			mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM player_hand_carry WHERE id = %d LIMIT 1", Player_GetId(playerid));
+			mysql_pquery(MySQL_Connection(), query);
+			GetPlayerPos(playerid, x, y, angle);
+			GetPlayerFacingAngle(playerid, angle);
+			IGround_CAUpdate(item_id, x, y, angle, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), 1.5);
+			Player_Msg(playerid, COLOR_LIGHTYELLOW, "Nhan vat cua ban da gan qua nhieu vat pham nen vat pham o trang thai 'Carry' se bi vut xuong dat.");
+		}
+	}
+	return 1;
+}
+
 forward Player_CarryItem(playerid, id, slot);
 public Player_CarryItem(playerid, id, slot) {
 	if(map_valid(m_carryStats) && map_has_key(m_carryStats, playerid)) {
@@ -97,32 +124,9 @@ stock Player_StopCarrying(playerid) {
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnStatsLoaded(playerid) {
-	inline const QueryFinished() {
-		printf("Hand Carry Retrieved, rows %d", cache_num_rows());
-		if(cache_num_rows()) {
-			new slot = Player_GetFreeAttachmentSlot(playerid);
-			if(slot != -1) {
-				new id;
-				cache_get_value_name_int(0, "item_id", id);
-				Player_CarryItem(playerid, id, slot);
-			} else {
-				new
-					item_id,
-					Float:x,
-					Float:y,
-					Float:angle,
-					query[128];
-				cache_get_value_name_int(0, "item_id", item_id);
-				mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM player_hand_carry WHERE id = %d LIMIT 1", Player_GetId(playerid));
-				mysql_pquery(MySQL_Connection(), query);
-				GetPlayerPos(playerid, x, y, angle);
-				GetPlayerFacingAngle(playerid, angle);
-				IGround_CAUpdate(item_id, x, y, angle, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), 1.5);
-				Player_Msg(playerid, COLOR_LIGHTYELLOW, "Nhan vat cua ban da gan qua nhieu vat pham nen vat pham o trang thai 'Carry' se bi vut xuong dat.");
-			}
-		}
-	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM player_hand_carry WHERE id = %d LIMIT 1", Player_GetId(playerid));
+	new query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM player_hand_carry WHERE id = %d LIMIT 1", Player_GetId(playerid));
+	mysql_pquery(MySQL_Connection(), query, "Player_OnCarryStatsRetrieved", "i", playerid);
 	return 1;
 }
 

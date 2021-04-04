@@ -40,7 +40,7 @@ public Inventory_OnStatsRetrieved(playerid) {
 
 stock Inventory_AddItem(playerid, item_id) {
 	new LinkedList:ll;
-	if(map_has_key(m_inventory, playerid)) {
+	if(map_valid(m_inventory) && map_has_key(m_inventory, playerid)) {
 		ll = LinkedList:map_get(m_inventory, playerid);
 	} else {
 		ll = linked_list_new();
@@ -56,7 +56,7 @@ stock Inventory_AddItem(playerid, item_id) {
 }
 
 stock Inventory_RemoveItem(playerid, item_id) {
-	if(map_has_key(m_inventory, playerid)) {
+	if(map_valid(m_inventory) && map_has_key(m_inventory, playerid)) {
 		for(new Iter:it = linked_list_iter(LinkedList:map_get(m_inventory, playerid)); iter_inside(it); iter_move_next(it)) {
 			if(iter_get(it) == item_id) {
 				new query[128];
@@ -73,7 +73,7 @@ stock Inventory_RemoveItem(playerid, item_id) {
 }
 
 stock Iter:Inventory_GetIterByItem(playerid, item_id) {
-	if(map_has_key(m_inventory, playerid)) {
+	if(map_valid(m_inventory) && map_has_key(m_inventory, playerid)) {
 		for(new Iter:it = linked_list_iter(LinkedList:map_get(m_inventory, playerid)); iter_inside(it); iter_move_next(it)) {
 			if(iter_get(it) == item_id) {
 				iter_acquire(it);
@@ -85,7 +85,7 @@ stock Iter:Inventory_GetIterByItem(playerid, item_id) {
 }
 
 stock Iter:Inventory_GetIter(playerid, index = 0) {
-	if(map_has_key(m_inventory, playerid)) {
+	if(map_valid(m_inventory) && map_has_key(m_inventory, playerid)) {
 		new LinkedList:ll = LinkedList:map_get(m_inventory, playerid);
 		if(index < linked_list_size(ll)) {
 			new
@@ -112,7 +112,7 @@ stock Inventory_RemoveItemByIter(playerid, Iter:it) {
 }
 
 stock Inventory_GetSize(playerid) {
-	if(map_has_key(m_inventory, playerid)) {
+	if(map_valid(m_inventory) && map_has_key(m_inventory, playerid)) {
 		return linked_list_size(LinkedList:map_get(m_inventory, playerid));
 	}
 	return 0;

@@ -36,8 +36,7 @@ stock SubtitleText_Show(playerid, const text[], duration = 5000) {
 	CallLocalFunction("Subtitle_OnPreShown", "ii", playerid, SubtitleText);
 	if(!map_valid(m_subTextTdId)) {
 		m_subTextTdId = map_new();
-	}
-	if(map_has_key(m_subTextTdId, playerid)) {
+	} else if(map_has_key(m_subTextTdId, playerid)) {
 		PlayerTextDrawDestroy(playerid, PlayerText:map_get(m_subTextTdId, playerid));
 	}
 	new PlayerText:td = CreatePlayerTextDraw(playerid, 320.000000, 340.000000, text);

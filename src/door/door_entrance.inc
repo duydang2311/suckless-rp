@@ -28,7 +28,7 @@ stock Door_SetEntrance(id, Float:x, Float:y, Float:z, Float:a, int, vw, pickupMo
 	new
 		query[384],
 		entrance[DoorEntrance] = {{0.0, 0.0, 0.0, 0.0}, 0, 0, 0};
-	if(map_has_key(m_doorEntrance, id)) {
+	if(map_valid(m_doorEntrance) && map_has_key(m_doorEntrance, id)) {
 		map_get_arr(m_doorEntrance, id, entrance);
 	} else {
 		entrance[doorEnPickupModel] = pickupModel;
@@ -47,7 +47,7 @@ stock Door_SetEntrance(id, Float:x, Float:y, Float:z, Float:a, int, vw, pickupMo
 }
 
 stock Door_UpdateEnAddons(id) {
-	if(!map_has_key(m_doorEntrance, id)) {
+	if(!map_valid(m_doorEntrance) || !map_has_key(m_doorEntrance, id)) {
 		return 0;
 	}
 
@@ -55,7 +55,7 @@ stock Door_UpdateEnAddons(id) {
 		entrance[DoorEntrance],
 		addon[DoorEntranceAddons] = {-1, -1};
 	map_get_arr(m_doorEntrance, id, entrance);
-	if(map_has_key(m_doorEntranceAddons, id)) {
+	if(map_valid(m_doorEntranceAddons) && map_has_key(m_doorEntranceAddons, id)) {
 		map_get_arr(m_doorEntranceAddons, id, addon);
 		if(addon[doorEnAreaId] != -1) {
 			DestroyDynamicArea(addon[doorEnAreaId]);
@@ -72,7 +72,7 @@ stock Door_UpdateEnAddons(id) {
 }
 
 stock Door_SetEnInt(id, int) {
-	if(!map_has_key(m_doorEntrance, id)) {
+	if(!map_valid(m_doorEntrance) || !map_has_key(m_doorEntrance, id)) {
 		return 0;
 	}
 	new query[128];
@@ -84,7 +84,7 @@ stock Door_SetEnInt(id, int) {
 }
 
 stock Door_SetEnVW(id, vw) {
-	if(!map_has_key(m_doorEntrance, id)) {
+	if(!map_valid(m_doorEntrance) || !map_has_key(m_doorEntrance, id)) {
 		return 0;
 	}
 	new query[128];
@@ -96,7 +96,7 @@ stock Door_SetEnVW(id, vw) {
 }
 
 stock Door_UpdateEnAddonsInt(id, int) {
-	if(map_has_key(m_doorEntranceAddons, id)) {
+	if(map_valid(m_doorEntranceAddons) && map_has_key(m_doorEntranceAddons, id)) {
 		new addon[DoorEntranceAddons];
 		map_get_arr(m_doorEntranceAddons, id, addon);
 		if(addon[doorEnAreaId] != -1) {
@@ -110,7 +110,7 @@ stock Door_UpdateEnAddonsInt(id, int) {
 }
 
 stock Door_UpdateEnAddonsVW(id, vw) {
-	if(map_has_key(m_doorEntranceAddons, id)) {
+	if(map_valid(m_doorEntranceAddons) && map_has_key(m_doorEntranceAddons, id)) {
 		new addon[DoorEntranceAddons];
 		map_get_arr(m_doorEntranceAddons, id, addon);
 		if(addon[doorEnAreaId] != -1) {
@@ -124,9 +124,9 @@ stock Door_UpdateEnAddonsVW(id, vw) {
 }
 
 stock Door_SetEnPickupModel(id, model) {
-	if(map_has_key(m_doorEntrance, id)) {
+	if(map_valid(m_doorEntrance) && map_has_key(m_doorEntrance, id)) {
 		map_set_cell(m_doorEntrance, id, _:doorEnPickupModel, model);
-		if(map_has_key(m_doorEntranceAddons, id)) {
+		if(map_valid(m_doorEntranceAddons) && map_has_key(m_doorEntranceAddons, id)) {
 			new addon[DoorEntranceAddons];
 			map_get_arr(m_doorEntranceAddons, id, addon);
 			if(addon[doorEnPickupId] != -1) {
@@ -142,7 +142,7 @@ stock Door_SetEnPickupModel(id, model) {
 }
 
 stock Door_StreamPlayerToEntrance(id, playerid) {
-	if(!map_has_key(m_doorEntrance, id)) {
+	if(!map_valid(m_doorEntrance) || !map_has_key(m_doorEntrance, id)) {
 		return 0;
 	}
 
@@ -173,10 +173,10 @@ stock Door_GetEntranceExtraId() {
 #include <YSI_Coding\y_hooks>
 
 hook Door_OnDeleted(id) {
-	if(map_has_key(m_doorEntrance, id)) {
+	if(map_valid(m_doorEntrance) && map_has_key(m_doorEntrance, id)) {
 		map_remove(m_doorEntrance, id);
 	}
-	if(map_has_key(m_doorEntranceAddons, id)) {
+	if(map_valid(m_doorEntranceAddons) && map_has_key(m_doorEntranceAddons, id)) {
 		new addon[DoorEntranceAddons];
 		map_get_arr(m_doorEntranceAddons, id, addon);
 

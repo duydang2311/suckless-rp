@@ -12,6 +12,9 @@ public DiaryCow_OnCreated(id) {
 		m_milk = map_new();
 	}
 	map_set(m_milk, id, 0.0);
+	new query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO diary_cow_stats (id) VALUES (%d)", id);
+	mysql_pquery(MySQL_Connection(), query);
 	return 1;
 }
 
@@ -45,5 +48,18 @@ stock DiaryCow_UpdateMilk(id, Float:value) {
 		milk = 0.0;
 	}
 	map_set(m_milk, id, milk);
+	return 1;
+}
+
+#include <YSI_Coding\y_hooks>
+
+hook OnGameModeInit() {
+	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS diary_cow_stats(\
+	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	id INT UNSIGNED PRIMARY KEY,\
+	milk FLOAT(11, 4) DEFAULT 0.0000,\
+	FOREIGN KEY (id) REFERENCES breed_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
+	)", false);
 	return 1;
 }

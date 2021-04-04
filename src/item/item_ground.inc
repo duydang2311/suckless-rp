@@ -57,8 +57,7 @@ stock IGround_Update(id, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz
 		query[512];
 	if(!map_valid(m_iGroundStats)) {
 		m_iGroundStats = map_new();
-	}
-	if(map_has_key(m_iGroundStats, id)) {
+	} else if(map_has_key(m_iGroundStats, id)) {
 		map_get_arr(m_iGroundStats, id, stats);
 		if(stats[iGrObjectId] != -1) {
 			DestroyDynamicObject(stats[iGrObjectId]);

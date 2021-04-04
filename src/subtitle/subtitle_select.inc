@@ -27,12 +27,10 @@ static Map:m_subSelectStats;
 
 stock __SubtitleSelect_Show(playerid, const callback[], const header[], const item[]) {
 	CallLocalFunction("Subtitle_OnPreShown", "ii", playerid, SubtitleSelect);
+	new stats[SubtitleSelectStats];
 	if(!map_valid(m_subSelectStats)) {
 		m_subSelectStats = map_new();
-	}
-
-	new stats[SubtitleSelectStats];
-	if(map_has_key(m_subSelectStats, playerid)) {
+	} else if(map_has_key(m_subSelectStats, playerid)) {
 		map_get_arr(m_subSelectStats, playerid, stats);
 		PlayerTextDrawDestroy(playerid, stats[subSelectHeaderTD]);
 		PlayerTextDrawDestroy(playerid, stats[subSelectItemTD]);

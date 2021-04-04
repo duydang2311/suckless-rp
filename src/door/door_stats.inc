@@ -21,7 +21,7 @@ enum doorStats {
 static Map:m_doorStats;
 
 stock Door_Valid(id) {
-	return map_has_key(m_doorStats, id);
+	return (map_valid(m_doorStats) && map_has_key(m_doorStats, id));
 }
 
 stock Task:Door_Create(DoorType:type = DOOR_TYPE_NONE) {
@@ -46,7 +46,7 @@ stock Task:Door_Create(DoorType:type = DOOR_TYPE_NONE) {
 }
 
 stock Door_Delete(id) {
-	if(!map_has_key(m_doorStats, id)) {
+	if(!map_valid(m_doorStats) || !map_has_key(m_doorStats, id)) {
 		return 0;
 	}
 	new query[128];
@@ -57,7 +57,7 @@ stock Door_Delete(id) {
 }
 
 stock bool:Door_GetLocked(id) {
-	if(!map_has_key(m_doorStats, id)) {
+	if(!map_valid(m_doorStats) || !map_has_key(m_doorStats, id)) {
 		return false;
 	}
 	new stats[doorStats];
@@ -66,7 +66,7 @@ stock bool:Door_GetLocked(id) {
 }
 
 stock bool:Door_GetVehicleAllowed(id) {
-	if(!map_has_key(m_doorStats, id)) {
+	if(!map_valid(m_doorStats) || !map_has_key(m_doorStats, id)) {
 		return false;
 	}
 	new stats[doorStats];
@@ -75,7 +75,7 @@ stock bool:Door_GetVehicleAllowed(id) {
 }
 
 stock bool:Door_GetStreamingSync(id) {
-	if(!map_has_key(m_doorStats, id)) {
+	if(!map_valid(m_doorStats) || !map_has_key(m_doorStats, id)) {
 		return false;
 	}
 	new stats[doorStats];
@@ -84,7 +84,7 @@ stock bool:Door_GetStreamingSync(id) {
 }
 
 stock Door_SetLocked(id, bool:locked) {
-	if(!map_has_key(m_doorStats, id) || Door_GetLocked(id) == locked) {
+	if(!map_valid(m_doorStats) || !map_has_key(m_doorStats, id) || Door_GetLocked(id) == locked) {
 		return 0;
 	}
 	new query[128];
@@ -94,7 +94,7 @@ stock Door_SetLocked(id, bool:locked) {
 }
 
 stock Door_SetVehicleAllowed(id, bool:allowed) {
-	if(!map_has_key(m_doorStats, id) || Door_GetVehicleAllowed(id) == allowed) {
+	if(!map_valid(m_doorStats) || !map_has_key(m_doorStats, id) || Door_GetVehicleAllowed(id) == allowed) {
 		return 0;
 	}
 	new query[128];
@@ -104,7 +104,7 @@ stock Door_SetVehicleAllowed(id, bool:allowed) {
 }
 
 stock Door_SetStreamingSync(id, bool:sync) {
-	if(!map_has_key(m_doorStats, id) || Door_GetStreamingSync(id) == sync) {
+	if(!map_valid(m_doorStats) || !map_has_key(m_doorStats, id) || Door_GetStreamingSync(id) == sync) {
 		return 0;
 	}
 	new query[128];
@@ -122,7 +122,7 @@ stock Door_GetIdByAreaId(areaid) {
 }
 
 stock DoorType:Door_GetType(id) {
-	if(map_has_key(m_doorStats, id)) {
+	if(map_valid(m_doorStats) && map_has_key(m_doorStats, id)) {
 		new stats[doorStats];
 		map_get_arr(m_doorStats, id, stats);
 		return stats[doorType];
@@ -131,7 +131,7 @@ stock DoorType:Door_GetType(id) {
 }
 
 stock Door_SetType(id, DoorType:type) {
-	if(map_has_key(m_doorStats, id)) {
+	if(map_valid(m_doorStats) && map_has_key(m_doorStats, id)) {
 		new query[128];
 		map_set_cell(m_doorStats, id, _:doorType, _:type);
 		mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE door_stats SET type = %d WHERE id = %d LIMIT 1", _:type, id);

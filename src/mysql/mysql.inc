@@ -7,6 +7,7 @@
 #include <a_samp>
 #include <a_mysql>
 #include <env>
+#include <samp-precise-timers>
 
 static MySQL:mysql_conn = MySQL:MYSQL_INVALID_HANDLE;
 
@@ -15,9 +16,17 @@ stock MySQL:MySQL_Connection() {
 }
 
 public OnQueryError(errorid, const error[], const callback[], const query[], MySQL:handle) {
-	print(error);
-	print(callback);
-	print(query);
+	printf("ERR: Source - OnQueryError [errorid: %d]", errorid);
+	printf("ERR: Description - %s", error);
+	printf("ERR: Callback - %s", callback);
+	printf("ERR: Query - %s", query);
+	return 1;
+}
+
+forward MySQL_OnGameModeExit();
+public MySQL_OnGameModeExit() {
+	mysql_close(mysql_conn);
+	mysql_conn = MySQL:MYSQL_INVALID_HANDLE;
 	return 1;
 }
 
@@ -56,7 +65,6 @@ HOOK__ OnGameModeInit() {
 }
 
 hook OnGameModeExit() {
-	mysql_close(mysql_conn);
-	mysql_conn = MySQL:MYSQL_INVALID_HANDLE;
+	SetPreciseTimer("MySQL_OnGameModeExit", 0, false);
 	return 1;
 }

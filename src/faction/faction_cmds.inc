@@ -193,13 +193,11 @@ Dialog:FactionManage(playerid, response, listitem, inputtext[]) {
 			}
 		}
 	}
-	if(map_valid(m_factionEditId)) {
-		if(map_has_key(m_factionEditId, playerid)) {
-			map_remove(m_factionEditId, playerid);
-			if(!map_size(m_factionEditId)) {
-				map_delete(m_factionEditId);
-				m_factionEditId = Map:-1;
-			}
+	if(map_valid(m_factionEditId) && map_has_key(m_factionEditId, playerid)) {
+		map_remove(m_factionEditId, playerid);
+		if(!map_size(m_factionEditId)) {
+			map_delete(m_factionEditId);
+			m_factionEditId = Map:-1;
 		}
 	}
 	PC_EmulateCommand(playerid, "/afac");

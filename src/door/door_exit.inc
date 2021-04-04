@@ -40,7 +40,7 @@ stock Door_SetExit(id, Float:x, Float:y, Float:z, Float:a, int, vw) {
 }
 
 stock Door_SetExInt(id, int) {
-	if(!map_has_key(m_doorExit, id)) {
+	if(!map_valid(m_doorExit) || !map_has_key(m_doorExit, id)) {
 		return 0;
 	}
 	new query[128];
@@ -52,7 +52,7 @@ stock Door_SetExInt(id, int) {
 }
 
 stock Door_SetExVW(id, vw) {
-	if(!map_has_key(m_doorExit, id)) {
+	if(!map_valid(m_doorExit) || !map_has_key(m_doorExit, id)) {
 		return 0;
 	}
 	new query[128];
@@ -64,7 +64,7 @@ stock Door_SetExVW(id, vw) {
 }
 
 stock Door_UpdateExAddons(id) {
-	if(!map_has_key(m_doorExit, id)) {
+	if(!map_valid(m_doorExit) || !map_has_key(m_doorExit, id)) {
 		return 0;
 	}
 
@@ -72,7 +72,7 @@ stock Door_UpdateExAddons(id) {
 		ex[DoorExit],
 		addon[DoorExitAddons] = {-1, -1};
 	map_get_arr(m_doorExit, id, ex);
-	if(map_has_key(m_doorExitAddons, id)) {
+	if(map_valid(m_doorExitAddons) && map_has_key(m_doorExitAddons, id)) {
 		map_get_arr(m_doorExitAddons, id, addon);
 		if(addon[doorExAreaId] != -1) {
 			DestroyDynamicArea(addon[doorExAreaId]);
@@ -89,7 +89,7 @@ stock Door_UpdateExAddons(id) {
 }
 
 stock Door_UpdateExAddonsInt(id, int) {
-	if(map_has_key(m_doorExitAddons, id)) {
+	if(map_valid(m_doorExitAddons) && map_has_key(m_doorExitAddons, id)) {
 		new addon[DoorExitAddons];
 		map_get_arr(m_doorExitAddons, id, addon);
 		if(addon[doorExAreaId] != -1) {
@@ -103,7 +103,7 @@ stock Door_UpdateExAddonsInt(id, int) {
 }
 
 stock Door_UpdateExAddonsVW(id, vw) {
-	if(map_has_key(m_doorExitAddons, id)) {
+	if(map_valid(m_doorExitAddons) && map_has_key(m_doorExitAddons, id)) {
 		new addon[DoorExitAddons];
 		map_get_arr(m_doorExitAddons, id, addon);
 		if(addon[doorExAreaId] != -1) {
@@ -117,7 +117,7 @@ stock Door_UpdateExAddonsVW(id, vw) {
 }
 
 stock Door_StreamPlayerToExit(id, playerid) {
-	if(!map_has_key(m_doorExit, id)) {
+	if(!map_valid(m_doorExit) || !map_has_key(m_doorExit, id)) {
 		return 0;
 	}
 
@@ -148,10 +148,10 @@ stock Door_GetExitExtraId() {
 #include <YSI_Coding\y_hooks>
 
 hook Door_OnDeleted(id) {
-	if(map_has_key(m_doorExit, id)) {
+	if(map_valid(m_doorExit) && map_has_key(m_doorExit, id)) {
 		map_remove(m_doorExit, id);
 	}
-	if(map_has_key(m_doorExitAddons, id)) {
+	if(map_valid(m_doorExitAddons) && map_has_key(m_doorExitAddons, id)) {
 		new addon[DoorExitAddons];
 		map_get_arr(m_doorExitAddons, id, addon);
 

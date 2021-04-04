@@ -14,14 +14,14 @@ enum _:PlayerStats {
 static Map:m_playerStats;
 
 stock Player_GetStats(playerid, stats[PlayerStats]) {
-	if(map_has_key(m_playerStats, playerid)) {
+	if(map_valid(m_playerStats) && map_has_key(m_playerStats, playerid)) {
 		return map_get_arr_safe(m_playerStats, playerid, stats);
 	}
 	return 0;
 }
 
 stock Player_GetSkin(playerid) {
-	if(map_has_key(m_playerStats, playerid)) {
+	if(map_valid(m_playerStats) && map_has_key(m_playerStats, playerid)) {
 		new stats[PlayerStats];
 		map_get_arr(m_playerStats, playerid, stats);
 		return stats[pSkin];
@@ -30,7 +30,7 @@ stock Player_GetSkin(playerid) {
 }
 
 stock Player_GetLevel(playerid) {
-	if(map_has_key(m_playerStats, playerid)) {
+	if(map_valid(m_playerStats) && map_has_key(m_playerStats, playerid)) {
 		new stats[PlayerStats];
 		map_get_arr(m_playerStats, playerid, stats);
 		return stats[pLevel];
@@ -110,7 +110,7 @@ Dialog:StatsSetupBirthday(playerid, response, listitem, inputtext[]) {
 		}
 		MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO player_stats (id, skin, birthday, gender) VALUES (%d, %d, '%e', %d)", Player_GetId(playerid), stats[pSkin], time, stats[pGender]);
 	} else {
-		if(map_has_key(m_playerStats, playerid)) {
+		if(map_valid(m_playerStats) && map_has_key(m_playerStats, playerid)) {
 			map_remove(m_playerStats, playerid);
 		}
 		Dialog_Show(playerid, StatsSetupSkin, DIALOG_STYLE_INPUT, "Stats Setup | Skin", "Ban dang trong qua trinh setup thong tin nhan vat.\n> Nhap ID trang phuc cho nhan vat cua ban.\n\nGioi tinh cua nhan vat se tu dong duoc xac dinh dua tren trang phuc ban nhap.", ">>", "<<");

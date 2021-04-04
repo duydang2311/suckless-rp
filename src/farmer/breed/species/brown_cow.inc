@@ -12,6 +12,9 @@ public BrownCow_OnCreated(id) {
 		m_quality = map_new();
 	}
 	map_set(m_quality, id, 1.0);
+	new query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO brown_cow_stats (id) VALUES (%d)", id);
+	mysql_pquery(MySQL_Connection(), query);
 	return 1;
 }
 
@@ -45,5 +48,18 @@ stock BrownCow_UpdateQuality(id, Float:value) {
 		quality = 0.0;
 	}
 	map_set(m_quality, id, quality);
+	return 1;
+}
+
+#include <YSI_Coding\y_hooks>
+
+hook OnGameModeInit() {
+	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS brown_cow_stats(\
+	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	id INT UNSIGNED PRIMARY KEY,\
+	quality FLOAT(11, 4) DEFAULT 1.0000,\
+	FOREIGN KEY (id) REFERENCES breed_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
+	)", false);
 	return 1;
 }

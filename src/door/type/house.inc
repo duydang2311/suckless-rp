@@ -7,7 +7,7 @@
 static Map:m_doorHouseId;
 
 stock Door_GetHouseId(id) {
-	if(!map_has_key(m_doorHouseId, id)) {
+	if(!map_valid(m_doorHouseId) || !map_has_key(m_doorHouseId, id)) {
 		return -1;
 	}
 	return map_get(m_doorHouseId, id);

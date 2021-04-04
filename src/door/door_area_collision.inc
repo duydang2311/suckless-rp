@@ -9,19 +9,15 @@ static
 	Map:m_playerExDoorId;
 
 stock Door_GetPlayerEntranceDoorId(playerid) {
-	if(map_valid(m_playerEnDoorId)) {
-		if(map_has_key(m_playerEnDoorId, playerid)) {
-			return map_get(m_playerEnDoorId, playerid);
-		}
+	if(map_valid(m_playerEnDoorId) && map_has_key(m_playerEnDoorId, playerid)) {
+		return map_get(m_playerEnDoorId, playerid);
 	}
 	return -1;
 }
 
 stock Door_GetPlayerExitDoorId(playerid) {
-	if(map_valid(m_playerExDoorId)) {
-		if(map_has_key(m_playerExDoorId, playerid)) {
-			return map_get(m_playerExDoorId, playerid);
-		}
+	if(map_valid(m_playerExDoorId) && map_has_key(m_playerExDoorId, playerid)) {
+		return map_get(m_playerExDoorId, playerid);
 	}
 	return -1;
 }

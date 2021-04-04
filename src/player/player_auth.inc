@@ -15,14 +15,14 @@ public PlayerAuth_OnDisconnected(playerid) {
 }
 
 stock Player_GetId(playerid) {
-	if(map_has_key(m_playerId, playerid)) {
+	if(map_valid(m_playerId) && map_has_key(m_playerId, playerid)) {
 		return map_get(m_playerId, playerid);
 	}
 	return -1;
 }
 
 stock Player_RequestAuthName(playerid) {
-	if(map_has_key(m_playerId, playerid)) {
+	if(map_valid(m_playerId) && map_has_key(m_playerId, playerid)) {
 		map_remove(m_playerId, playerid);
 	}
 	Dialog_Show(playerid, Auth_NameRequestDialog, DIALOG_STYLE_INPUT, "Player | Name Request", "> Nhap mot ten nguoi choi ban muon dang nhap/dang ky.", "Tiep tuc", "Ngat ket noi");

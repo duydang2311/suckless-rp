@@ -352,10 +352,15 @@ hook OnGameModeInit() {
 
 hook OnGameModeExit() {
 	if(map_valid(m_animalStats)) {
+		new query[172];
 		for(new Iter:it = map_iter(m_animalStats), stats[BreedAnimalStats]; iter_inside(it); iter_move_next(it)) {
+			iter_get_arr(it, stats);
 			if(stats[anmlNPCId] != -1) {
 				FCNPC_Destroy(stats[anmlNPCId]);
 			}
+			mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE breed_stats SET maturity = %.2f, hunger = %.2f, thirst = %.2f WHERE id = %d LIMIT 1", stats[anmlMaturity], stats[anmlHunger], stats[anmlThirst], iter_get_key(it));
+			mysql_query(MySQL_Connection(), query, false);
+			print(query);
 		}
 		map_delete(m_animalStats);
 	}

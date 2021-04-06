@@ -27,12 +27,6 @@ SubtitleSelect:BreedAnimalInteractMenu(playerid, response, listitem) {
 				}
 				SubtitleText_Show(playerid, string);
 			}
-			case 1: {
-
-			}
-			case 2: {
-
-			}
 		}
 	}
 	Breed_Move(id);
@@ -67,7 +61,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		FCNPC_SetAngleToPlayer(npcid, playerid);
 		Breed_GetAnimalSpeciesName(Breed_GetSpecies(id), name);
 		format(string, sizeof(string), "~g~%s (%d): ~w~??", name, id);
-		SubtitleSelect_Show(playerid, BreedAnimalInteractMenu, string, "Tinh trang suc khoe nhu nao?~n~Theo tao di lam thit~n~Theo tao di lay sua");
+		SubtitleSelect_Show(playerid, BreedAnimalInteractMenu, string, "Tinh trang suc khoe nhu nao?");
 		if(!map_valid(m_breedId)) {
 			m_breedId = map_new();
 		}

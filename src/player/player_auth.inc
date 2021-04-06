@@ -21,6 +21,17 @@ stock Player_GetId(playerid) {
 	return -1;
 }
 
+stock Player_GetById(id) {
+	if(map_valid(m_playerId)) {
+		foreach(new i : Player) {
+			if(map_has_key(m_playerId, i) && map_get(m_playerId, i) == id) {
+				return i;
+			}
+		}
+	}
+	return -1;
+}
+
 stock Player_RequestAuthName(playerid) {
 	if(map_valid(m_playerId) && map_has_key(m_playerId, playerid)) {
 		map_remove(m_playerId, playerid);

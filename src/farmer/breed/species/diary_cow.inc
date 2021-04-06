@@ -6,18 +6,6 @@
 
 static Map:m_milk;
 
-forward DiaryCow_OnCreated(id);
-public DiaryCow_OnCreated(id) {
-	if(!map_valid(m_milk)) {
-		m_milk = map_new();
-	}
-	map_set(m_milk, id, 0.0);
-	new query[128];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO diary_cow_stats (id) VALUES (%d)", id);
-	mysql_pquery(MySQL_Connection(), query);
-	return 1;
-}
-
 forward DiaryCow_OnRemoved(id);
 public DiaryCow_OnRemoved(id) {
 	if(map_valid(m_milk) && map_has_key(m_milk, id)) {
@@ -52,6 +40,21 @@ stock DiaryCow_UpdateMilk(id, Float:value) {
 }
 
 #include <YSI_Coding\y_hooks>
+
+hook Breed_OnCreated(id) {
+	switch(Breed_GetSpecies(id)) {
+		case anmlDiaryCow_1, anmlDiaryCow_2: {
+			if(!map_valid(m_milk)) {
+				m_milk = map_new();
+			}
+			map_set(m_milk, id, 0.0);
+			new query[128];
+			mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO diary_cow_stats (id) VALUES (%d)", id);
+			mysql_pquery(MySQL_Connection(), query);
+		}
+	}
+	return 1;
+}
 
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS diary_cow_stats(\

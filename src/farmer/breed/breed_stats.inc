@@ -123,14 +123,7 @@ stock Task:Breed_CreateAnimal(species, breeder_id = -1) {
 					m_npcAnimalId = map_new();
 				}
 				map_set(m_npcAnimalId, npcid, id);
-				switch(species) {
-					case anmlBrownCow_1, anmlBrownCow_2: {
-						CallLocalFunction("BrownCow_OnCreated", "i", id);
-					}
-					case anmlDiaryCow_1, anmlDiaryCow_2: {
-						CallLocalFunction("DiaryCow_OnCreated", "i", id);
-					}
-				}
+				SetPreciseTimer("Breed_OnCreated", 0, false, "i", id);
 				SetPreciseTimer("Breed_Spawn", 0, false, "i", id);
 				task_set_result(t, id);
 			}

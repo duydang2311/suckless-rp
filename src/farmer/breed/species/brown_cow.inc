@@ -6,18 +6,6 @@
 
 static Map:m_quality;
 
-forward BrownCow_OnCreated(id);
-public BrownCow_OnCreated(id) {
-	if(!map_valid(m_quality)) {
-		m_quality = map_new();
-	}
-	map_set(m_quality, id, 1.0);
-	new query[128];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO brown_cow_stats (id) VALUES (%d)", id);
-	mysql_pquery(MySQL_Connection(), query);
-	return 1;
-}
-
 forward BrownCow_OnRemoved(id);
 public BrownCow_OnRemoved(id) {
 	if(map_valid(m_quality) && map_has_key(m_quality, id)) {
@@ -52,6 +40,21 @@ stock BrownCow_UpdateQuality(id, Float:value) {
 }
 
 #include <YSI_Coding\y_hooks>
+
+hook Breed_OnCreated(id) {
+	switch(Breed_GetSpecies(id)) {
+		case anmlBrownCow_1, anmlBrownCow_2: {
+			if(!map_valid(m_quality)) {
+				m_quality = map_new();
+			}
+			map_set(m_quality, id, 1.0);
+			new query[128];
+			mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO brown_cow_stats (id) VALUES (%d)", id);
+			mysql_pquery(MySQL_Connection(), query);
+		}
+	}
+	return 1;
+}
 
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS brown_cow_stats(\

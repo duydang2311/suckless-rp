@@ -11,6 +11,11 @@ CMD:agiveweap(playerid, params[]) {
 		return 1;
 	}
 
+	if(!Player_IsStatsLoaded(targetid)) {
+		Player_Msg(playerid, COLOR_FADE2, "Nguoi choi chua ket noi.");
+		return 1;
+	}
+
 	new
 		id,
 		name[MAX_PLAYER_NAME + 1],
@@ -38,6 +43,11 @@ CMD:agivebp(playerid, params[]) {
 		return 1;
 	}
 
+	if(!Player_IsStatsLoaded(targetid)) {
+		Player_Msg(playerid, COLOR_FADE2, "Nguoi choi chua ket noi.");
+		return 1;
+	}
+
 	task_unblock(1);
 	new id = await IBackpack_Create(model, capacity);
 	new
@@ -57,7 +67,12 @@ CMD:agivewhisk(playerid, params[]) {
 		return 1;
 	}
 
-	if(Player_GetHandItemId(playerid, 0) != -1 || Player_GetHandItemId(playerid, 1) != -1 || Player_GetCarryingItem(playerid) != -1) {
+	if(!Player_IsStatsLoaded(targetid)) {
+		Player_Msg(playerid, COLOR_FADE2, "Nguoi choi chua ket noi.");
+		return 1;
+	}
+
+	if(Player_GetHandItemId(targetid, 0) != -1 || Player_GetHandItemId(targetid, 1) != -1 || Player_GetCarryingItem(targetid) != -1) {
 		Player_Msg(playerid, COLOR_YELLOW, "Nguoi choi khong duoc cam vat pham nao tren tay.");
 		return 1;
 	}
@@ -77,7 +92,7 @@ CMD:agivewhisk(playerid, params[]) {
 		string[128],
 		name[MAX_PLAYER_NAME + 1];
 	SetPreciseTimer("Player_CarryItem", 0, false, "iii", targetid, id, slot);
-	GetPlayerName(playerid, name);
+	GetPlayerName(targetid, name);
 	format(string, sizeof(string), "INFO: Item Whisk (ID %d) da duoc trao cho '%s' o trang thai 'Carry'.", id, name);
 	Player_Msg(playerid, COLOR_GREEN, string);
 	return 1;

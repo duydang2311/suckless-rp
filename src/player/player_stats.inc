@@ -44,6 +44,10 @@ stock Player_SetupStats(playerid) {
 	return 1;
 }
 
+stock Player_IsStatsLoaded(playerid) {
+	return (map_valid(m_playerStats) && map_has_key(m_playerStats, playerid));
+}
+
 Dialog:StatsSetupSkin(playerid, response, listitem, inputtext[]) {
 	if(response) {
 		extract inputtext -> new model; else {

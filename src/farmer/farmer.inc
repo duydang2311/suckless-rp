@@ -26,3 +26,4 @@
 #include "./breed/breed_spawn.inc"
 #include "./breed/breed_animal_interact.inc"
 #include "./breed/breed_nametag.inc"
+#include "./breed/breed_on_trunk.inc"

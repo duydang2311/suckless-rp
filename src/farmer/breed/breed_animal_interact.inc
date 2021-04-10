@@ -26,10 +26,19 @@ SubtitleSelect:BreedAnimalInteractMenu(playerid, response, listitem) {
 					}
 				}
 				SubtitleText_Show(playerid, string);
+				Breed_Move(id);
+			}
+			case 1: { // Dan di theo
+				new
+					string[128],
+					name[32];
+				Breed_Follow(id, playerid);
+				Breed_GetAnimalSpeciesName(Breed_GetSpecies(id), name);
+				format(string, sizeof(string), "~y~%s (%d) ~w~dang di theo ban.", name, id);
+				SubtitleText_Show(playerid, string);
 			}
 		}
 	}
-	Breed_Move(id);
 	map_remove(m_breedId, playerid);
 	if(!map_size(m_breedId)) {
 		map_delete(m_breedId);
@@ -61,7 +70,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		FCNPC_SetAngleToPlayer(npcid, playerid);
 		Breed_GetAnimalSpeciesName(Breed_GetSpecies(id), name);
 		format(string, sizeof(string), "~g~%s (%d): ~w~??", name, id);
-		SubtitleSelect_Show(playerid, BreedAnimalInteractMenu, string, "Tinh trang suc khoe nhu nao?");
+		SubtitleSelect_Show(playerid, BreedAnimalInteractMenu, string, "Xem tinh trang suc khoe~n~Dan di theo");
 		if(!map_valid(m_breedId)) {
 			m_breedId = map_new();
 		}

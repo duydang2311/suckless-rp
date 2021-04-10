@@ -35,6 +35,7 @@
 
 #include <a_samp>
 #include <YSI_Coding\y_hooks>
+#include <ColAndreas>
 
 DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 
@@ -56,5 +57,10 @@ public pp_on_error(source[], message[], error_level:level, &retval) {
 	print(source);
 	print(message);
 	printf("%d %d", _:level, retval);
+	return 1;
+}
+
+hook OnGameModeInit() {
+	CA_Init();
 	return 1;
 }

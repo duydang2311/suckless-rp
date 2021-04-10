@@ -54,8 +54,3 @@ hook FCNPC_OnReachDest(npcid) {
 	}
 	return 1;
 }
-
-hook OnGameModeInit() {
-	CA_Init();
-	return 1;
-}

@@ -29,6 +29,10 @@ public Breed_Spawn(id) {
 	return 1;
 }
 
+stock Breed_IsInSpawnSession(id) {
+	return (map_valid(m_inSpawnSession) && map_has_key(m_inSpawnSession, id));
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {

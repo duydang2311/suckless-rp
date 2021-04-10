@@ -48,7 +48,7 @@ public Breed_Move(id) {
 
 hook FCNPC_OnReachDest(npcid) {
 	new id = Breed_GetIdByNPCId(npcid);
-	if(id != -1 && !Breed_IsInSpawnSession(id)) {
+	if(id != -1 && Breed_GetFollowingPlayer(id) == -1) {
 		SetPreciseTimer("Breed_Move", 1000, false, "i", id);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}

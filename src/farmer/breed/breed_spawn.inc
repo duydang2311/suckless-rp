@@ -73,8 +73,8 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	return 1;
 }
 
-hook Breed_OnFollowingUpdate(id) {
-	if(map_valid(m_inSpawnSession) && map_has_key(m_inSpawnSession, id)) {
+hook Breed_OnFollowingUpdate(id, bool:moving) {
+	if(moving && map_valid(m_inSpawnSession) && map_has_key(m_inSpawnSession, id)) {
 		new
 			followTarget = Breed_GetFollowingPlayer(id),
 			npcid = Breed_GetNPCId(id);

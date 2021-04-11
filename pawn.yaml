@@ -79,6 +79,7 @@ build:
   - src/farmer
   - src/subtitle
   - src/util
+  - src/vehicle
   - src/
   - libraries/
   args:

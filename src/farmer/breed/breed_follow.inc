@@ -117,6 +117,7 @@ hook FCNPC_OnReachDest(npcid) {
 				m_distCheckTimer = map_new();
 			}
 			map_set(m_distCheckTimer, id, SetPreciseTimer("Breed_DistanceCheckTimer", 500, true, "i", id));
+			CallLocalFunction("Breed_OnFollowingUpdate", "ii", id, 0);
 			return Y_HOOKS_BREAK_RETURN_1;
 		}
 		new Float:angle;
@@ -124,7 +125,7 @@ hook FCNPC_OnReachDest(npcid) {
 		GetPlayerFacingAngle(followId, angle);
 		Util_GetPointInFront2D(x, y, angle, -1.0, x, y);
 		FCNPC_GoTo(npcid, x, y, z, .speed = FCNPC_MOVE_SPEED_WALK);
-		CallLocalFunction("Breed_OnFollowingUpdate", "i", id);
+		CallLocalFunction("Breed_OnFollowingUpdate", "ii", id, 1);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

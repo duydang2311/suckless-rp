@@ -6,7 +6,7 @@
 
 static
 	storageActor,
-	sellingActor;
+	sellingActor[2];
 
 SubtitleSelect:BreedStorageMenu(playerid, response, listitem) {
 	if(response) {
@@ -46,9 +46,9 @@ SubtitleSelect:BreedSellingMenu(playerid, response, listitem) {
 							}
 
 							new
-								price = Breed_GetMaturity(id) * 120 + Breed_GetQuality * 100,
+								Float:price = Breed_GetMaturity(id) * 120 + BrownCow_GetQuality(id) * 100,
 								string[128];
-							format(string, sizeof(string), "Ban nhan duoc ~y~%d~g~$~w~ tu so tien ban duoc vat nuoi.", price);
+							format(string, sizeof(string), "Ban nhan duoc ~y~%d~g~$~w~ tu so tien ban duoc vat nuoi.", floatround(price));
 							SubtitleText_Show(playerid, string);
 							Breed_Remove(id);
 							return 1;
@@ -65,15 +65,13 @@ SubtitleSelect:BreedSellingMenu(playerid, response, listitem) {
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	if(newkeys & KEY_YES) {
-		switch(GetPlayerTargetActor(playerid)) {
-			case storageActor: {
-				SubtitleSelect_Show(playerid, BreedStorageMenu, "~g~Nong dan: ~w~Ban muon gi?", "Nuoi bo thit~n~Nuoi bo sua");
-				return Y_HOOKS_BREAK_RETURN_1;
-			}
-			case sellingActor[0], sellingActor[1]: {
-				SubtitleSelect_Show(playerid, BreedSellingMenu, "~y~Nong dan: ~w~Ban muon gi?", "Ban bo");
-				return Y_HOOKS_BREAK_RETURN_1;
-			}
+		new target = GetPlayerTargetActor(playerid);
+		if(target == storageActor) {
+			SubtitleSelect_Show(playerid, BreedStorageMenu, "~g~Nong dan: ~w~Ban muon gi?", "Nuoi bo thit~n~Nuoi bo sua");
+			return Y_HOOKS_BREAK_RETURN_1;
+		} else if(target == sellingActor[0] || target == sellingActor[1]) {
+			SubtitleSelect_Show(playerid, BreedSellingMenu, "~y~Nong dan: ~w~Ban muon gi?", "Ban bo");
+			return Y_HOOKS_BREAK_RETURN_1;
 		}
 	}
 	return 1;

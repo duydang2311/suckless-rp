@@ -55,11 +55,11 @@ main() {}
 
 forward pp_on_error(source[], message[], error_level:level, &retval);
 public pp_on_error(source[], message[], error_level:level, &retval) {
-	print("ERROR: pp_on_error detected", source);
-	printf("SOURCE: %s", source); 
+	print("ERROR: pp_on_error detected");
+	printf("SOURCE: %s", source);
 	printf("MESSAGE: %s", message);
 	printf("LEVEL: %d", _:level);
-	printf("RETVAL: %d", retval);	
+	printf("RETVAL: %d", retval);
 	return 1;
 }
 

@@ -6,18 +6,6 @@
 
 static Map:m_quality;
 
-forward BrownCow_OnRemoved(id);
-public BrownCow_OnRemoved(id) {
-	if(map_valid(m_quality) && map_has_key(m_quality, id)) {
-		map_remove(m_quality, id);
-		if(!map_size(m_quality)) {
-			map_delete(m_quality);
-			m_quality = Map:-1;
-		}
-	}
-	return 1;
-}
-
 stock Float:BrownCow_GetQuality(id) {
 	if(!map_valid(m_quality) || !map_has_key(m_quality, id)) {
 		return 0.0;
@@ -51,6 +39,17 @@ hook Breed_OnCreated(id) {
 			new query[128];
 			mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO brown_cow_stats (id) VALUES (%d)", id);
 			mysql_pquery(MySQL_Connection(), query);
+		}
+	}
+	return 1;
+}
+
+hook Breed_OnRemoved(id) {
+	if(map_valid(m_quality) && map_has_key(m_quality, id)) {
+		map_remove(m_quality, id);
+		if(!map_size(m_quality)) {
+			map_delete(m_quality);
+			m_quality = Map:-1;
 		}
 	}
 	return 1;

@@ -140,7 +140,7 @@ stock Task:Breed_CreateAnimal(species, breeder_id = -1) {
 	return t;
 }
 
-stock Breed_RemoveAnimal(id) {
+stock Breed_Remove(id) {
 	if(!map_valid(m_animalStats)) {
 		return 0;
 	}
@@ -164,14 +164,7 @@ stock Breed_RemoveAnimal(id) {
 				m_npcAnimalId = Map:-1;
 			}
 		}
-		switch(stats[anmlSpecies]) {
-			case anmlBrownCow_1, anmlBrownCow_2: {
-				CallLocalFunction("BrownCow_OnRemoved", "i", id);
-			}
-			case anmlDiaryCow_1, anmlDiaryCow_2: {
-				CallLocalFunction("DiaryCow_OnRemoved", "i", id);
-			}
-		}
+		CallLocalFunction("Breed_OnRemoved", "i", id);
 		return 1;
 	}
 	return 0;

@@ -103,6 +103,11 @@ stock Breed_StopFollowing(id) {
 
 #include <YSI_Coding\y_hooks>
 
+hook Breed_OnRemoved(id) {
+	Breed_StopFollowing(id);
+	return 1;
+}
+
 hook FCNPC_OnReachDest(npcid) {
 	new id = Breed_GetIdByNPCId(npcid);
 	if(id != -1 && map_valid(m_followPlayerId) && map_has_key(m_followPlayerId, id)) {

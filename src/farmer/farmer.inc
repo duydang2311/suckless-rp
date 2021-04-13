@@ -24,6 +24,5 @@
 #include "./breed/breed_actor.inc"
 #include "./breed/breed_follow.inc"
 #include "./breed/breed_spawn.inc"
-#include "./breed/breed_animal_interact.inc"
 #include "./breed/breed_nametag.inc"
-#include "./breed/breed_on_trunk.inc"
+#include "./breed/breed_trunk.inc"

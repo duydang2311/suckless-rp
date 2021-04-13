@@ -6,18 +6,6 @@
 
 static Map:m_milk;
 
-forward DiaryCow_OnRemoved(id);
-public DiaryCow_OnRemoved(id) {
-	if(map_valid(m_milk) && map_has_key(m_milk, id)) {
-		map_remove(m_milk, id);
-		if(!map_size(m_milk)) {
-			map_delete(m_milk);
-			m_milk = Map:-1;
-		}
-	}
-	return 1;
-}
-
 stock Float:DiaryCow_GetMilk(id) {
 	if(!map_valid(m_milk) || !map_has_key(m_milk, id)) {
 		return 0.0;
@@ -51,6 +39,17 @@ hook Breed_OnCreated(id) {
 			new query[128];
 			mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO diary_cow_stats (id) VALUES (%d)", id);
 			mysql_pquery(MySQL_Connection(), query);
+		}
+	}
+	return 1;
+}
+
+hook Breed_OnRemoved(id) {
+	if(map_valid(m_milk) && map_has_key(m_milk, id)) {
+		map_remove(m_milk, id);
+		if(!map_size(m_milk)) {
+			map_delete(m_milk);
+			m_milk = Map:-1;
 		}
 	}
 	return 1;

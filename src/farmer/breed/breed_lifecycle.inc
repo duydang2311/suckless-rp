@@ -19,7 +19,7 @@ public Breed_Move(id) {
 	new Float:hunger = Breed_GetHunger(id);
 	if(hunger < 0.0) {
 		if(hunger < -0.5) {
-			Breed_RemoveAnimal(id);
+			Breed_Remove(id);
 			return 1;
 		}
 		switch(Breed_GetSpecies(id)) {

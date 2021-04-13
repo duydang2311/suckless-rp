@@ -72,6 +72,10 @@ public Breed_OnTrunkZAngleUpdate(id) {
 	return 1;
 }
 
+stock Breed_IsOnTrunk(id) {
+	return (map_valid(m_breedTrunkStats) && map_has_key(m_breedTrunkStats, id));
+}
+
 stock Breed_PutOnTrunk(id, vehicleid) {
 	if(!IsValidVehicle(vehicleid)) {
 		return 0;
@@ -100,6 +104,41 @@ stock Breed_PutOnTrunk(id, vehicleid) {
 	return 1;
 }
 
+stock Breed_RemoveFromTrunk(id) {
+	if(!map_valid(m_breedTrunkStats) || !map_has_key(m_breedTrunkStats, id)) {
+		return 0;
+	}
+
+	new
+		stats[BreedTrunkStats],
+		npcid;
+	map_get_arr(m_breedTrunkStats, id, stats);
+	npcid = Breed_GetNPCId(id);
+	if(npcid != -1 && IsValidVehicle(stats[breedOnVehicleId])) {
+		new
+			Float:x,
+			Float:y,
+			Float:z,
+			Float:size[3],
+			Float:angle;
+		GetVehiclePos(stats[breedOnVehicleId], x, y, z);
+		GetVehicleZAngle(stats[breedOnVehicleId], angle);
+		GetVehicleModelInfo(GetVehicleModel(stats[breedOnVehicleId]), VEHICLE_MODEL_INFO_SIZE, size[0], size[1], size[2]);
+		Util_GetPointInFront2D(x, y, angle, -(size[1] / 2.0), x, y);
+		CA_FindZ_For2DCoord(x, y, z);
+		FCNPC_StopSurfing(npcid);
+		FCNPC_SetPosition(npcid, x, y, z);
+		FCNPC_SetAngle(npcid, angle);
+	}
+	DeletePreciseTimer(stats[breedZAngleTimer]);
+	map_remove(m_breedTrunkStats, id);
+	if(!map_size(m_breedTrunkStats)) {
+		map_delete(m_breedTrunkStats);
+		m_breedTrunkStats = Map:-1;
+	}
+	return 1;
+}
+
 stock Breed_GetBreedOnVehicleTrunk(vehicleid) {
 	new Iter:it = Breed_GetNPCIter();
 	if(iter_valid(it)) {
@@ -113,6 +152,11 @@ stock Breed_GetBreedOnVehicleTrunk(vehicleid) {
 }
 
 #include <YSI_Coding\y_hooks>
+
+hook Breed_OnRemoved(id) {
+	Breed_RemoveFromTrunk(id);
+	return 1;
+}
 
 hook Breed_OnFollowingUpdate(id, bool:moving) {
 	if(!moving && !Breed_IsInSpawnSession(id)) {

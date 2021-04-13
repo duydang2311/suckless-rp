@@ -23,14 +23,24 @@ SubtitleSelect:BreedTrunkSelect(playerid, response, listitem) {
 		return 1;
 	}
 
+	new data[SelectData];
+	map_get_arr(m_selectData, playerid, data);
 	if(response) {
 		if(listitem == 0) {
-			new data[SelectData];
-			map_get_arr(m_selectData, playerid, data);
-			Breed_StopFollowing(data[sd_breedId]);
-			Breed_PutOnTrunk(data[sd_breedId], data[sd_vehicleId]);
+			new string[128];
+			Vehicle_GetName(data[sd_vehicleId], string);
+			if(Breed_GetBreedOnVehicleTrunk(data[sd_vehicleId]) == -1) {
+				new name[32];
+				Breed_GetAnimalSpeciesName(Breed_GetSpecies(data[sd_breedId]), name));
+				format(string, sizeof(string), "Vat nuoi ~y~%s (%d)~w~ da duoc dua len phuong tien ~y~%s~w~.", name, data[sd_breedId], string);
+				Breed_PutOnTrunk(data[sd_breedId], data[sd_vehicleId]);
+			} else {
+				format(string, sizeof(string), "Phuong tien ~y~%s~w~ da chua mot vat nuoi khac.", string);
+			}
+			SubtitleText_Show(playerid, string);
 		}
 	}
+	Breed_StopFollowing(data[sd_breedId]);
 	map_remove(m_selectData, playerid);
 	if(!map_size(m_selectData)) {
 		map_delete(m_selectData);
@@ -88,6 +98,18 @@ stock Breed_PutOnTrunk(id, vehicleid) {
 	}
 	map_set_arr(m_breedTrunkStats, id, stats);
 	return 1;
+}
+
+stock Breed_GetBreedOnVehicleTrunk(vehicleid) {
+	new Iter:it = Breed_GetNPCIter();
+	if(iter_valid(it)) {
+		for(; iter_inside(it); iter_move_next(it)) {
+			if(FCNPC_GetSurfingVehicle(iter_get_key(it)) == vehicleid) {
+				return iter_get(it);
+			}
+		}
+	}
+	return -1;
 }
 
 #include <YSI_Coding\y_hooks>

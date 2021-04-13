@@ -285,6 +285,15 @@ stock Iter:Breed_GetIter(index = 0) {
 	return it;
 }
 
+stock Iter:Breed_GetNPCIter(index = 0) {
+	new Iter:it = Iter:-1;
+	if(map_valid(m_npcAnimalId)) {
+		it = map_iter(m_npcAnimalId, index);
+		iter_acquire(it);
+	}
+	return it;
+}
+
 forward Breed_InitAnimal(id);
 public Breed_InitAnimal(id) {
 	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {

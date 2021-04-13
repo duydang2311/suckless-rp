@@ -4,9 +4,11 @@
 
 #define breed_actor_included
 
-static breedActor;
+static
+	storageActor,
+	sellingActor;
 
-SubtitleSelect:BreedActorMenu(playerid, response, listitem) {
+SubtitleSelect:BreedStorageMenu(playerid, response, listitem) {
 	if(response) {
 		new id = -1;
 		switch(listitem) {
@@ -29,17 +31,57 @@ SubtitleSelect:BreedActorMenu(playerid, response, listitem) {
 	return 1;
 }
 
+SubtitleSelect:BreedSellingMenu(playerid, response, listitem) {
+	if(response) {
+		switch(listitem) {
+			case 0: { //Ban bo
+				new Iter:it = Breed_GetIter();
+				if(iter_valid(it) && iter_release(it)) {
+					for(new id; iter_inside(it); iter_move_next(it)) {
+						id = iter_get_key(it);
+						if(Breed_GetFollowingPlayer(id) == playerid) {
+							if(Breed_GetMaturity(id) < 0.5) {
+								SubtitleText_Show(playerid, "Vat nuoi chua truong thanh.");
+								return 1;
+							}
+
+							new
+								price = Breed_GetMaturity(id) * 120 + Breed_GetQuality * 100,
+								string[128];
+							format(string, sizeof(string), "Ban nhan duoc ~y~%d~g~$~w~ tu so tien ban duoc vat nuoi.", price);
+							SubtitleText_Show(playerid, string);
+							Breed_Remove(id);
+							return 1;
+						}
+					}
+				}
+			}
+		}
+ 	}
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
-	if(newkeys & KEY_YES && GetPlayerTargetActor(playerid) == breedActor) {
-		SubtitleSelect_Show(playerid, BreedActorMenu, "~g~Nong dan: ~w~Toi co the giup gi cho ban?", "Nuoi bo thit~n~Nuoi bo sua");
-		return Y_HOOKS_BREAK_RETURN_1;
+	if(newkeys & KEY_YES) {
+		switch(GetPlayerTargetActor(playerid)) {
+			case storageActor: {
+				SubtitleSelect_Show(playerid, BreedStorageMenu, "~g~Nong dan: ~w~Ban muon gi?", "Nuoi bo thit~n~Nuoi bo sua");
+				return Y_HOOKS_BREAK_RETURN_1;
+			}
+			case sellingActor[0], sellingActor[1]: {
+				SubtitleSelect_Show(playerid, BreedSellingMenu, "~y~Nong dan: ~w~Ban muon gi?", "Ban bo");
+				return Y_HOOKS_BREAK_RETURN_1;
+			}
+		}
 	}
 	return 1;
 }
 
 hook OnGameModeInit() {
-	breedActor = CreateActor(239, -12.9521, 47.8490, 3.1172, 251.8990);
+	storageActor = CreateActor(239, -12.9521, 47.8490, 3.1172, 251.8990);
+	sellingActor[0] = CreateActor(239, 1022.8801, -316.0418, 73.9889, 180.8697);
+	sellingActor[1] = CreateActor(239, 1048.6515, -316.6358, 73.9922, 179.4911);
 	return 1;
 }

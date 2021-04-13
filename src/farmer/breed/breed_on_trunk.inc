@@ -31,7 +31,7 @@ SubtitleSelect:BreedTrunkSelect(playerid, response, listitem) {
 			Vehicle_GetName(data[sd_vehicleId], string);
 			if(Breed_GetBreedOnVehicleTrunk(data[sd_vehicleId]) == -1) {
 				new name[32];
-				Breed_GetAnimalSpeciesName(Breed_GetSpecies(data[sd_breedId]), name));
+				Breed_GetAnimalSpeciesName(Breed_GetSpecies(data[sd_breedId]), name);
 				format(string, sizeof(string), "Vat nuoi ~y~%s (%d)~w~ da duoc dua len phuong tien ~y~%s~w~.", name, data[sd_breedId], string);
 				Breed_PutOnTrunk(data[sd_breedId], data[sd_vehicleId]);
 			} else {

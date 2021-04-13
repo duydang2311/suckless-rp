@@ -209,6 +209,10 @@ stock Breed_Eat(id) {
 		return 0;
 	}
 
+	if(map_valid(m_animalFoodObject) && map_has_key(m_animalFoodObject, id)) {
+		return 0;
+	}
+
 	new
 		Float:x,
 		Float:y,
@@ -249,6 +253,20 @@ stock Float:Breed_GetMaturity(id) {
 	new stats[BreedAnimalStats];
 	map_get_arr(m_animalStats, id, stats);
 	return stats[anmlMaturity];
+}
+
+stock Breed_UpdateMaturity(id, Float:value) {
+	if(!map_valid(m_animalStats) || !map_has_key(m_animalStats, id)) {
+		return 0;
+	}
+	new stats[BreedAnimalStats];
+	map_get_arr(m_animalStats, id, stats);
+	stats[anmlMaturity] += value;
+	if(stats[anmlMaturity] > 1.0) {
+		stats[anmlMaturity] = 1.0;
+	}
+	map_set_cell(m_animalStats, id, anmlMaturity, stats[anmlMaturity]);
+	return 1;
 }
 
 stock Float:Breed_GetHunger(id) {

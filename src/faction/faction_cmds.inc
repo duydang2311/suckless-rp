@@ -14,7 +14,7 @@ CMD:afac(playerid, params) {
 	new
 		Iter:it = Faction_GetIter(),
 		string[1024] = "ID\tTen Faction";
-	if(iter_valid(it)) {
+	if(iter_valid(it) && iter_release(it)) {
 		new fac[FactionStats];
 		for(; iter_inside(it); iter_move_next(it)) {
 			iter_get_arr(it, fac);
@@ -24,7 +24,6 @@ CMD:afac(playerid, params) {
 				format(string, sizeof(string), "%s\n%d\t%s", string, iter_get_key(it), fac[facName]);
 			}
 		}
-		iter_release(it);
 	}
 	strcat(string, "\n> Tao mot faction moi.");
 	Dialog_Show(playerid, FactionListDialog, DIALOG_STYLE_TABLIST_HEADERS, "Faction Management", string, ">>", "<<");
@@ -40,16 +39,17 @@ static faction_manage_show(playerid) {
 				Iter:it = Iter:Faction_GetIterByKey(id),
 				fac[FactionStats],
 				string[128];
-			iter_get_arr(it, fac);
-			format(string, sizeof(string),
-			"Name: %s\n\
-			Type: %s\n\
-			Ranks\n\
-			Divisions",
-			fac[facName],
-			fac[facType] ? "Legal" : "Illegal");
-			Dialog_Show(playerid, FactionManage, DIALOG_STYLE_LIST, "Faction Manage", string, ">>", "<<");
-			iter_release(it);
+			if(iter_valid(it) && iter_release(it)) {
+				iter_get_arr(it, fac);
+				format(string, sizeof(string),
+				"Name: %s\n\
+				Type: %s\n\
+				Ranks\n\
+				Divisions",
+				fac[facName],
+				fac[facType] ? "Legal" : "Illegal");
+				Dialog_Show(playerid, FactionManage, DIALOG_STYLE_LIST, "Faction Manage", string, ">>", "<<");
+			}
 		}
 	} else {
 		PC_EmulateCommand(playerid, "/afac");
@@ -110,7 +110,7 @@ Dialog:FactionListDialog(playerid, response, listitem, inputtext[]) {
 			Dialog_Show(playerid, FactionTypeDialog, DIALOG_STYLE_LIST, "Faction Management | Create", "Legal\nIllegal\n> Chon loai faction ban muon tao.", ">>", "<<");
 		} else {
 			new Iter:it = Faction_GetIter(listitem);
-			if(iter_valid(it)) {
+			if(iter_valid(it) && iter_release(it)) {
 				new
 					fac[FactionStats],
 					string[128];
@@ -167,17 +167,18 @@ Dialog:FactionManage(playerid, response, listitem, inputtext[]) {
 							Iter:it = Iter:Faction_GetIterByKey(id),
 							fac[FactionStats],
 							string[128];
-						iter_get_arr(it, fac);
-						format(string, sizeof(string),
-						"Name: %s\n\
-						Type: %s\n\
-						Ranks\n\
-						Divisions",
-						fac[facName],
-						fac[facType] ? "Legal" : "Illegal");
-						Dialog_Show(playerid, FactionManage, DIALOG_STYLE_LIST, "Faction Manage", string, ">>", "<<");
-						iter_release(it);
-						return 1;
+						if(iter_valid(it) && iter_release(it)) {
+							iter_get_arr(it, fac);
+							format(string, sizeof(string),
+							"Name: %s\n\
+							Type: %s\n\
+							Ranks\n\
+							Divisions",
+							fac[facName],
+							fac[facType] ? "Legal" : "Illegal");
+							Dialog_Show(playerid, FactionManage, DIALOG_STYLE_LIST, "Faction Manage", string, ">>", "<<");
+							return 1;
+						}
 					}
 				}
 			}

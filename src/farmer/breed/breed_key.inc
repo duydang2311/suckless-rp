@@ -26,7 +26,17 @@ SubtitleSelect:BreedSS(playerid, response, listitem) {
 					}
 				}
 				SubtitleText_Show(playerid, string);
-				Breed_Move(id);
+				new npcid = Breed_GetNPCId(id);
+				if(npcid != -1) {
+					new
+						Float:x,
+						Float:y,
+						Float:z;
+					FCNPC_GetPosition(npcid, x, y, z);
+					if(Breed_IsPointInArea(x, y, z)) {
+						Breed_Move(id);
+					}
+				}
 			}
 			case 1: { // Dan di theo
 				new
@@ -39,7 +49,17 @@ SubtitleSelect:BreedSS(playerid, response, listitem) {
 			}
 		}
 	} else {
-		Breed_Move(id);
+		new npcid = Breed_GetNPCId(id);
+		if(npcid != -1) {
+			new
+				Float:x,
+				Float:y,
+				Float:z;
+			FCNPC_GetPosition(npcid, x, y, z);
+			if(Breed_IsPointInArea(x, y, z)) {
+				Breed_Move(id);
+			}
+		}
 	}
 	map_remove(m_breedId, playerid);
 	if(!map_size(m_breedId)) {
@@ -131,7 +151,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		if(followTarget == -1) {
 			new item_id = Player_GetCarryingItem(playerid);
 			if(item_id != -1 && Item_GetAbility(item_id) == iAbilityWhisk) {
-				if(Breed_Eat(Breed_GetIdByNPCId(id))) {
+				if(Breed_Eat(id)) {
 					Player_StopCarrying(playerid);
 					Item_Delete(item_id);
 				}

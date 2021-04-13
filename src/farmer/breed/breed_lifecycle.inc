@@ -28,6 +28,7 @@ public Breed_Move(id) {
 			}
 		}
 	} else {
+		Breed_UpdateMaturity(id, 0.02 + hunger * 0.2);
 		switch(Breed_GetSpecies(id)) {
 			case anmlDiaryCow_1, anmlDiaryCow_2: {
 				DiaryCow_UpdateMilk(id, 0.05);

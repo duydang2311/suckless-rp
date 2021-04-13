@@ -28,7 +28,7 @@ SubtitleSelect:BreedTrunkSelect(playerid, response, listitem) {
 	if(response) {
 		if(listitem == 0) {
 			new string[128];
-			Vehicle_GetName(data[sd_vehicleId], string);
+			Vehicle_GetName(GetVehicleModel(data[sd_vehicleId]), string);
 			if(Breed_GetBreedOnVehicleTrunk(data[sd_vehicleId]) == -1) {
 				new name[32];
 				Breed_GetAnimalSpeciesName(Breed_GetSpecies(data[sd_breedId]), name);
@@ -141,7 +141,7 @@ stock Breed_RemoveFromTrunk(id) {
 
 stock Breed_GetBreedOnVehicleTrunk(vehicleid) {
 	new Iter:it = Breed_GetNPCIter();
-	if(iter_valid(it)) {
+	if(iter_valid(it) && iter_release(it)) {
 		for(; iter_inside(it); iter_move_next(it)) {
 			if(FCNPC_GetSurfingVehicle(iter_get_key(it)) == vehicleid) {
 				return iter_get(it);

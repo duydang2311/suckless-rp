@@ -55,6 +55,7 @@ SubtitleSelect:BreedSellingMenu(playerid, response, listitem) {
 						}
 					}
 				}
+				SubtitleText_Show(playerid, "Ban khong dan theo vat nuoi nao de ban.");
 			}
 		}
  	}

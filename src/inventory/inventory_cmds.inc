@@ -14,11 +14,11 @@ static item_group_root_show(playerid) {
 	if(!iter_valid(it)) {
 		return 0;
 	}
+	iter_release(it);
 	for(; iter_inside(it); iter_move_next(it)) {
 		Item_GetName(iter_get(it), name);
 		format(string, sizeof(string), "%s\n%d\t%s (%s)", string, iter_get(it), name, (Inventory_IsAttached(playerid, iter_get(it)) ? "Da gan" : "Chua gan"));
 	}
-	iter_release(it);
 	strcat(string, "\n"E_COLOR_FADE2"> Chon nhom ban muon dua vat pham da chon vao.");
 	Dialog_Show(playerid, InventoryItemGroupRoot, DIALOG_STYLE_TABLIST_HEADERS, "Inventory Item Group | Select Root", string, ">>", "<<");
 	return 1;
@@ -50,7 +50,7 @@ CMD:inv(playerid) {
 		Iter:it = Inventory_GetIter(playerid),
 		name[64],
 		string[512] = "ID\tTen vat pham";
-	if(iter_valid(it)) {
+	if(iter_valid(it) && iter_release(it)) {
 		for(new id; iter_inside(it); iter_move_next(it)) {
 			id = iter_get(it);
 			Item_GetName(id, name);
@@ -60,7 +60,6 @@ CMD:inv(playerid) {
 				format(string, sizeof(string), "%s\n%d\t%s", string, id, name);
 			}
 		}
-		iter_release(it);
 	}
 
 	for(new i = 0, id = 0; i != 2; i++) {
@@ -81,12 +80,11 @@ CMD:attachinv(playerid) {
 		Iter:it = Inventory_GetIter(playerid),
 		name[64],
 		string[512] = "ID\tTen vat pham";
-	if(iter_valid(it)) {
+	if(iter_valid(it) && iter_release(it)) {
 		for(; iter_inside(it); iter_move_next(it)) {
 			Item_GetName(iter_get(it), name);
 			format(string, sizeof(string), "%s\n%d\t%s (%s)", string, iter_get(it), name, (Inventory_IsAttached(playerid, iter_get(it)) ? "Da gan" : "Chua gan"));
 		}
-		iter_release(it);
 	}
 	Dialog_Show(playerid, InventoryAttachDialog, DIALOG_STYLE_TABLIST_HEADERS, "Inventory Attachment", string, ">>", "Dong");
 	return 1;
@@ -99,9 +97,8 @@ Dialog:InventoryDialog(playerid, response, listitem, inputtext[]) {
 			new hand = Player_GetFreeHand(playerid);
 			if(hand != -1) {
 				new Iter:it = Inventory_GetIter(playerid, listitem);
-				if(iter_valid(it)) {
+				if(iter_valid(it) && iter_release(it)) {
 					new id = iter_get(it);
-					iter_release(it);
 					if(Item_HasGroup(id)) {
 						item_group_members_show(playerid, id);
 						return 1;
@@ -132,12 +129,11 @@ CMD:groupitem(playerid) {
 		Iter:it = Inventory_GetIter(playerid),
 		name[64],
 		string[512] = "ID\tTen vat pham";
-	if(iter_valid(it)) {
+	if(iter_valid(it) && iter_release(it)) {
 		for(; iter_inside(it); iter_move_next(it)) {
 			Item_GetName(iter_get(it), name);
 			format(string, sizeof(string), "%s\n%d\t%s (%s)", string, iter_get(it), name, (Inventory_IsAttached(playerid, iter_get(it)) ? "Da gan" : "Chua gan"));
 		}
-		iter_release(it);
 	}
 	strcat(string, "\n"E_COLOR_FADE2"> Chon vat pham ban muon dua vao nhom.");
 	Dialog_Show(playerid, InventoryItemGroupMember, DIALOG_STYLE_TABLIST_HEADERS, "Inventory Item Group | Select Member", string, ">>", "Dong");
@@ -147,9 +143,8 @@ CMD:groupitem(playerid) {
 Dialog:InventoryAttachDialog(playerid, response, listitem, inputtext[]) {
 	if(response) {
 		new Iter:it = Inventory_GetIter(playerid, listitem);
-		if(iter_valid(it)) {
+		if(iter_valid(it) && iter_release(it)) {
 			new id = iter_get(it);
-			iter_release(it);
 			if(!map_valid(m_selectedItemId)) {
 				m_selectedItemId = map_new();
 			}
@@ -252,11 +247,11 @@ Dialog:InventoryItemGroupMember(playerid, response, listitem, inputtext[]) {
 		if(!iter_valid(it)) {
 			return 0;
 		}
+		iter_release(it);
 		if(!map_valid(m_selectedItemId)) {
 			m_selectedItemId = map_new();
 		}
 		map_set(m_selectedItemId, playerid, iter_get(it));
-		iter_release(it);
 		item_group_root_show(playerid);
 	}
 	return 1;
@@ -273,9 +268,8 @@ Dialog:InventoryItemGroupRoot(playerid, response, listitem, inputtext[]) {
 			new
 				id = map_get(m_selectedItemId, playerid),
 				Iter:it = Inventory_GetIter(playerid, listitem);
-			if(iter_valid(it)) {
+			if(iter_valid(it) && iter_release(it)) {
 				new select_id = iter_get(it);
-				iter_release(it);
 				if(id == select_id) {
 					item_group_root_show(playerid);
 					return 1;

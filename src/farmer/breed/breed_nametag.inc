@@ -76,7 +76,7 @@ hook OnPlayerDisconnect(playerid, reason) {
 
 hook Player_OnStatsLoaded(playerid) {
 	new Iter:it = Breed_GetIter();
-	if(iter_valid(it)) {
+	if(iter_valid(it) && iter_release(it)) {
 		new
 			stats[BreedAnimalStats],
 			id = Player_GetId(playerid);
@@ -88,7 +88,6 @@ hook Player_OnStatsLoaded(playerid) {
 				}
 			}
 		}
-		iter_release(it);
 	}
 	return 1;
 }

@@ -4,13 +4,18 @@
 
 #define phone_stats_included
 
+enum _:PhoneModel {
+	LS_Telefornica
+}
+
 enum _:ItemPhoneStats {
+	iPhoneModel,
 	Float:iPhonePower
 }
 
 static Map:m_phoneStats;
 
-stock Task:IPhone_Create(Float:power = 1.0, Float:reliability = 1.0, occupieed_space = 1) {
+stock Task:IPhone_Create(model, Float:power = 1.0, Float:reliability = 1.0, occupieed_space = 1) {
 	new Task:t = task_new();
 	task_detach();
 
@@ -21,7 +26,7 @@ stock Task:IPhone_Create(Float:power = 1.0, Float:reliability = 1.0, occupieed_s
 				stats[ItemPhoneStats],
 				query[150];
 			insert_id = cache_insert_id();
-			mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_phone (id, ) VALUES (%d, %d, %.4f)", insert_id, power);
+			mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_phone (id, model, power) VALUES (%d, %d, %.4f)", insert_id, model, power);
 			mysql_pquery(MySQL_Connection(), query);
 
 			stats[iPhonePower] = power;
@@ -43,6 +48,7 @@ hook OnGameModeInit@8() {
 		created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 		modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 		id INT UNSIGNED PRIMARY KEY,\
+		model TINYINT UNSIGNED DEFAULT 0,\
 		power FLOAT(11, 4) DEFAULT 1.0000,\
 		FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);

@@ -5,4 +5,4 @@
 #define item_phone_included
 
 #include "./ability/phone/phone_stats.inc"
-#include "./ability/phone/phone_td.inc"
+#include "./ability/phone/phone_interface.inc"

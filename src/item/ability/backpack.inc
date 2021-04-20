@@ -127,3 +127,22 @@ hook OnGameModeExit@4() {
 	}
 	return 1;
 }
+
+#include <YSI_Coding\y_hooks>
+
+hook Item_OnModelGetAttempt(id, &model) {
+	if(Item_GetAbility(id) == iAbilityBackpack) {
+		model = IBackpack_GetModel(id);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
+
+hook Item_OnNameGetAttempt(id, name[], size) {
+	if(Item_GetAbility(id) == iAbilityBackpack) {
+		name[0] = EOS;
+		strcat(name, "Backpack", size);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}

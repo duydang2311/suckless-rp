@@ -30,14 +30,11 @@
 #include "./player_auth.inc"
 #include "./player_stats.inc"
 #include "./player_spawn.inc"
-#include "./hand/player_hands.inc"
-#include "./hand/player_hand_attach.inc"
-#include "./hand/player_hand_carry.inc"
+#include "./hand/hand.inc"
+#include "./phone/phone.inc"
+
 #include "./player_death.inc"
 
-#include "./hand/player_hand_key.inc"
-#include "./hand/player_hand_cmds.inc"
-#include "./player_phone.inc"
 
 #include <YSI_Coding\y_hooks>
 

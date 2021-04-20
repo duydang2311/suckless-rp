@@ -157,3 +157,21 @@ hook OnGameModeExit@2() {
 	}
 	return 1;
 }
+
+#include <YSI_Coding\y_hooks>
+
+hook Item_OnModelGetAttempt(id, &model) {
+	if(Item_GetAbility(id) == iAbilityGun) {
+		model = IGun_GetModel(id);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
+
+hook Item_OnNameGetAttempt(id, name[], size) {
+	if(Item_GetAbility(id) == iAbilityGun) {
+		IGun_GetName(id, name, size);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}

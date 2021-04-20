@@ -39,6 +39,7 @@
 
 DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 DEFINE_HOOK_REPLACEMENT__(IPhoneBody, IPB);
+DEFINE_HOOK_REPLACEMENT__(IPhoneUI, IPUI);
 
 #include <mysql>
 #include <vehicle>

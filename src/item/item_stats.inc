@@ -57,47 +57,17 @@ stock Item_Delete(id) {
 }
 
 stock Item_GetName(item_id, name[], size = sizeof(name)) {
-	if(map_valid(m_itemStats) && map_has_key(m_itemStats, item_id)) {
-		new stats[ItemStats];
-		map_get_arr(m_itemStats, item_id, stats);
-		switch(stats[iAbility]) {
-			case iAbilityGun: {
-				IGun_GetName(item_id, name, size);
-			}
-			case iAbilityMelee: {
-				// TODO: IMelee_GetName(item_id, name, size);
-			}
-			case iAbilityBackpack: {
-				name[0] = EOS;
-				strcat(name, "Backpack", size);
-			}
-			case iAbilityWhisk: {
-				name[0] = EOS;
-				strcat(name, "Whisk", size);
-			}
-		}
+	if(Item_Has(item_id)) {
+		CallLocalFunction("Item_OnNameGetAttempt", "iii", item_id, ref(name), size);
 	}
 	return 1;
 }
 
 stock Item_GetModel(id) {
 	if(map_valid(m_itemStats) && map_has_key(m_itemStats, id)) {
-		new stats[ItemStats];
-		map_get_arr(m_itemStats, id, stats);
-		switch(stats[iAbility]) {
-			case iAbilityGun: {
-				return IGun_GetModel(id);
-			}
-			case iAbilityMelee: {
-				// TODO: IMelee_GetModel(id);
-			}
-			case iAbilityBackpack: {
-				return IBackpack_GetModel(id);
-			}
-			case iAbilityWhisk: {
-				return IWhisk_GetModel();
-			}
-		}
+		new model = 0;
+		CallLocalFunction("Item_OnModelGetAttempt", "ii", id, ref(model));
+		return model;
 	}
 	return 0;
 }

@@ -38,6 +38,7 @@
 #include <ColAndreas>
 
 DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
+DEFINE_HOOK_REPLACEMENT__(IPhoneBody, IPB);
 
 #include <mysql>
 #include <vehicle>

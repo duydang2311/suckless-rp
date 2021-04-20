@@ -37,6 +37,7 @@
 
 #include "./hand/player_hand_key.inc"
 #include "./hand/player_hand_cmds.inc"
+#include "./player_phone.inc"
 
 #include <YSI_Coding\y_hooks>
 

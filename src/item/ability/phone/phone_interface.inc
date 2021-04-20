@@ -12,9 +12,9 @@ enum _:InterfaceStats {
 
 static Map:m_interfaceStats;
 
-stock iPhone_InitInterface(id, Float:x, Float:y) {
+stock IPhone_InitInterface(id, Float:x, Float:y) {
 	if(map_valid(m_interfaceStats) && map_has_key(m_interfaceStats, id)) {
-		iPhone_TerminateInterface(id);
+		IPhone_TerminateInterface(id);
 	}
 	if(!map_valid(m_interfaceStats)) {
 		m_interfaceStats = map_new();
@@ -24,20 +24,20 @@ stock iPhone_InitInterface(id, Float:x, Float:y) {
 	stats[ifaceOn] = false;
 	stats[ifaceX] = x;
 	stats[ifaceY] = y;
-	CallLocalFunction("iPhone_OnInterfaceInit", "i", id);
+	CallLocalFunction("IPhone_OnInterfaceInit", "i", id);
 	map_set_arr(m_interfaceStats, id, stats);
 	return 1;
 }
 
-stock iPhone_ShowInterface(id) {
+stock IPhone_ShowInterface(id) {
 
 }
 
-stock iPhone_TerminateInterface() {
+stock IPhone_TerminateInterface() {
 
 }
 
-stock iPhone_GetInterfacePos(id, &Float:x, &Float:y) {
+stock IPhone_GetInterfacePos(id, &Float:x, &Float:y) {
 	if(!map_valid(m_interfaceStats) || !map_has_key(m_interfaceStats, id)) {
 		return 0;
 	}

@@ -5,7 +5,7 @@
 #define phone_stats_included
 
 enum _:PhoneModel {
-	LS_Telefornica
+	Classic_Nokia
 }
 
 enum _:ItemPhoneStats {
@@ -30,6 +30,7 @@ stock Task:IPhone_Create(model, Float:power = 1.0, Float:reliability = 1.0, occu
 			mysql_pquery(MySQL_Connection(), query);
 
 			stats[iPhonePower] = power;
+			stats[iPhoneModel] = model;
 			if(!map_valid(m_phoneStats)) {
 				m_phoneStats = map_new();
 			}
@@ -41,6 +42,15 @@ stock Task:IPhone_Create(model, Float:power = 1.0, Float:reliability = 1.0, occu
 	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", iAbilityPhone, reliability, occupied_space);
 	task_set_result_ms(t, -1, 2000);
 	return t;
+}
+
+stock iPhone_GetModel(id) {
+	if(!map_valid(m_phoneStats) || !map_has_key(m_phoneStats, id)) {
+		return -1;
+	}
+	new stats[ItemPhoneStats];
+	map_get_arr(m_phoneStats, id, stats);
+	return stats[iPhoneModel];
 }
 
 hook OnGameModeInit@8() {

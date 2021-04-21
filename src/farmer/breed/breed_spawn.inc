@@ -9,9 +9,6 @@ static const Float:BreedSpawnPos[][4] = {
 	{-9.7621, 54.7767, 3.1172, 250.0000}
 };
 
-static
-	Map:m_inSpawnSession;
-
 forward Breed_Spawn(id);
 public Breed_Spawn(id) {
 	new npcid = Breed_GetNPCId(id);
@@ -22,17 +19,10 @@ public Breed_Spawn(id) {
 	new rand = random(2);
 	FCNPC_Spawn(npcid, Breed_GetAnimalSpeciesModel(Breed_GetSpecies(id)), BreedSpawnPos[rand][0], BreedSpawnPos[rand][1], BreedSpawnPos[rand][2]);
 	FCNPC_SetAngle(npcid, BreedSpawnPos[rand][3]);
-	if(!map_valid(m_inSpawnSession)) {
-		m_inSpawnSession = map_new();
-	}
-	map_set(m_inSpawnSession, id, -1);
 	return 1;
 }
 
-stock Breed_IsInSpawnSession(id) {
-	return (map_valid(m_inSpawnSession) && map_has_key(m_inSpawnSession, id));
-}
-
+/*
 #include <YSI_Coding\y_hooks>
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
@@ -107,3 +97,4 @@ hook Breed_OnFollowingUpdate(id, bool:moving) {
 	}
 	return 1;
 }
+*/

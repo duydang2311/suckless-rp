@@ -159,7 +159,7 @@ hook Breed_OnRemoved(id) {
 }
 
 hook Breed_OnFollowingUpdate(id, bool:moving) {
-	if(!moving && !Breed_IsInSpawnSession(id)) {
+	if(!moving) {
 		new playerid = Breed_GetFollowingPlayer(id);
 		if(playerid != -1) {
 			new

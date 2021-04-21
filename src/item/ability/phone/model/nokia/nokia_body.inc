@@ -9,7 +9,7 @@ static const
 	COLUMN = 3,
 	Float:ANCHOR_START_OFFSET_X = 70.0000,
 	Float:ANCHOR_START_OFFSET_Y = 130.0000,
-	Float:BUTTON_OFFSET_X = 15.0000,
+	Float:BUTTON_OFFSET_X = 25.0000,
 	Float:BUTTON_OFFSET_Y = 12.0000,
 	Float:FINGER_SIZE = 10.0000;
 
@@ -25,7 +25,7 @@ stock Nokia_GetOffset(index, &Float:x, &Float:y) {
 	}
 
 	x = ANCHOR_START_OFFSET_X + BUTTON_OFFSET_X * (index % COLUMN);
-	y = ANCHOR_START_OFFSET_Y + BUTTON_OFFSET_Y * (floatround(float(index) / float(COLUMN), floatround_ceil));
+	y = ANCHOR_START_OFFSET_Y + BUTTON_OFFSET_Y * (floatround(float(index) / float(COLUMN), floatround_floor));
 	return 1;
 }
 
@@ -40,8 +40,8 @@ stock Nokia_GetSize(index, &Float:size) {
 
 #include <YSI_Coding\y_hooks>
 
-hook IPB_ValidateIndex(model, &index) {
-	if(model == Nokia) {
+hook IPB_ValidateIndex(id, &index) {
+	if(IPhone_GetModel(id) == Nokia) {
 		if(!Nokia_HasIndex(index)) {
 			index = -1;
 		}
@@ -50,8 +50,8 @@ hook IPB_ValidateIndex(model, &index) {
 	return 1;
 }
 
-hook IPB_CalculateUp(model, &index) {
-	if(model == Nokia) {
+hook IPB_CalculateUp(id, &index) {
+	if(IPhone_GetModel(id) == Nokia) {
 		if(index == 0) {
 			index = -1;
 		} else {
@@ -65,8 +65,8 @@ hook IPB_CalculateUp(model, &index) {
 	return 1;
 }
 
-hook IPB_CalculateDown(model, &index) {
-	if(model == Nokia) {
+hook IPB_CalculateDown(id, &index) {
+	if(IPhone_GetModel(id) == Nokia) {
 		if(index == (ROW * COLUMN - 1)) {
 			index = -1;
 		} else {
@@ -80,8 +80,8 @@ hook IPB_CalculateDown(model, &index) {
 	return 1;
 }
 
-hook IPB_GetButtonStats(model, index, &Float:x, &Float:y, &Float:size, &bool:result) {
-	if(model == Nokia) {
+hook IPB_GetButtonStats(id, index, &Float:x, &Float:y, &Float:size, &bool:result) {
+	if(IPhone_GetModel(id) == Nokia) {
 		if(!Nokia_HasIndex(index)) {
 			result = false;
 		} else {

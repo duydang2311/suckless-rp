@@ -71,6 +71,22 @@ hook OnGameModeInit@8() {
 		phone_state TINYINT UNSIGNED DEFAULT 0,\
 		FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
+
+	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_phone", true);
+	new rows = cache_num_rows();
+	for(new i = 0, stats[ItemPhoneStats], id; i != rows; i++) {
+		cache_get_value_name_int(i, "id", id);
+		cache_get_value_name_int(i, "model", stats[iPhoneModel]);
+		cache_get_value_name_int(i, "phone_state", stats[iPhoneState]);
+		cache_get_value_name_float(i, "power", stats[iPhonePower]);
+
+		if(!map_valid(m_phoneStats)) {
+			m_phoneStats = map_new();
+		}
+		map_set_arr(m_phoneStats, id, stats);
+	}
+	cache_delete(result);
+	printf("INFO: Loaded %d phone items.", rows);
 	return 1;
 }
 

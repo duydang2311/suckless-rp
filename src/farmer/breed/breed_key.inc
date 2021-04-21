@@ -182,6 +182,12 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			if(Breed_IsPointInArea(x, y, z)) {
 				Breed_Move(id);
 			}
+			new
+				string[128],
+				name[32];
+			Breed_GetAnimalSpeciesName(Breed_GetSpecies(id), name);
+			format(string, sizeof(string), "~y~%s (%d)~w~ da ngung di theo ban.", name, id);
+			SubtitleText_Show(playerid, string);
 			return Y_HOOKS_BREAK_RETURN_1;
 		}
 	}

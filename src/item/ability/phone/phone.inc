@@ -5,6 +5,13 @@
 #define item_phone_included
 
 #include "./ability/phone/model/model.inc"
+#include "./ability/phone/app/app.inc"
 #include "./ability/phone/phone_stats.inc"
 #include "./ability/phone/phone_finger.inc"
 #include "./ability/phone/phone_ui.inc"
+
+#include <YSI_Coding\y_hooks>
+
+hook OnGameModeInit() {
+	return 1;
+}

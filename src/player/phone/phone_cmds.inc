@@ -10,8 +10,9 @@ CMD:phone(playerid) {
 	for(new i = 1, item; i != -1; i--) {
 		item = Player_GetHandItemId(playerid, i);
 		if(item != -1 && IPhone_Has(item)) {
-			IPhone_ShowUIForPlayer(item, playerid, 320.0, 240.0);
-			IPFinger_Init(playerid, IPhone_GetModel(item));
+			TogglePlayerControllable(playerid, false);
+			IPhone_ShowUIForPlayer(item, playerid, 470.0, 230.0);
+			IPFinger_Init(playerid, item);
 			if(!map_valid(m_phoneItemId)) {
 				m_phoneItemId = map_new();
 			}
@@ -26,6 +27,11 @@ CMD:phone(playerid) {
 
 hook OnPlayerUpdate(playerid) {
 	if(map_valid(m_phoneItemId) && map_has_key(m_phoneItemId, playerid)) {
+		static last = 0;
+		if((GetTickCount() - last) < 100) {
+			return 1;
+		}
+
 		new item = map_get(m_phoneItemId, playerid);
 		if(!IPhone_Has(item)) {
 			map_remove(m_phoneItemId, playerid);
@@ -41,13 +47,35 @@ hook OnPlayerUpdate(playerid) {
 			lr;
 		GetPlayerKeys(playerid, keys, ud, lr);
 		if(lr == KEY_LEFT) {
-			IPFinger_MoveLeft(playerid, IPhone_GetModel(item));
+			IPFinger_MoveLeft(playerid, item);
 		} else if(lr == KEY_RIGHT) {
-			IPFinger_MoveRight(playerid, IPhone_GetModel(item));
+			IPFinger_MoveRight(playerid, item);
 		} else if(ud == KEY_UP) {
-			IPFinger_MoveUp(playerid, IPhone_GetModel(item));
+			IPFinger_MoveUp(playerid, item);
 		} else if(ud == KEY_DOWN) {
-			IPFinger_MoveDown(playerid, IPhone_GetModel(item));
+			IPFinger_MoveDown(playerid, item);
+		}
+		last = GetTickCount();
+	}
+	return 1;
+}
+
+hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
+	if(map_valid(m_phoneItemId) && map_has_key(m_phoneItemId, playerid)) {
+		new id = map_get(m_phoneItemId, playerid);
+		if(newkeys & KEY_SPRINT) { // Space -> select
+			printf("current finger index : %d", IPFinger_GetCurrentIndex(playerid, id));
+			return Y_HOOKS_BREAK_RETURN_1;
+		} else if(newkeys & KEY_SECONDARY_ATTACK) { // Enter -> cancel
+			IPhone_HideUIForPlayer(map_get(m_phoneItemId, playerid), playerid);
+			IPFinger_Hide(playerid, id);
+			TogglePlayerControllable(playerid, true);
+			map_remove(m_phoneItemId, playerid);
+			if(!map_size(m_phoneItemId)) {
+				map_delete(m_phoneItemId);
+				m_phoneItemId = Map:-1;
+			}
+			return Y_HOOKS_BREAK_RETURN_1;
 		}
 	}
 	return 1;

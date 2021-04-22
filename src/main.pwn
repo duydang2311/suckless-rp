@@ -38,9 +38,9 @@
 #include <ColAndreas>
 
 DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
-DEFINE_HOOK_REPLACEMENT__(IPhoneBody, IPB);
-DEFINE_HOOK_REPLACEMENT__(IPhoneUI, IPUI);
-DEFINE_HOOK_REPLACEMENT__(IPApp, IPA);
+// DEFINE_HOOK_REPLACEMENT__(IPModel, IPM);
+// DEFINE_HOOK_REPLACEMENT__(IPhoneUI, IPUI);
+// DEFINE_HOOK_REPLACEMENT__(IPApp, IPA);
 
 #include <mysql>
 #include <vehicle>

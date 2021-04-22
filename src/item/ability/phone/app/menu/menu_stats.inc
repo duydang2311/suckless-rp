@@ -40,12 +40,27 @@ stock AppMenu_Has(id) {
 	return (map_valid(m_menuStats) && map_has_key(m_menuStats, id));
 }
 
+stock Iter:AppMenu_GetStatsIter(id, index = 0) {
+	new Iter:it = Iter:-1;
+	if(AppMenu_Has(id)) {
+		new LinkedList:ll = LinkedList:map_get(m_menuStats, id);
+		it = linked_list_iter(ll, index);
+		iter_acquire(it);
+	}
+	return it;
+}
+
 #include <YSI_Coding\y_hooks>
+
+hook IPA_OnEnsureRequest() {
+	IPApp_Ensure(AppMenu, "App Menu", "app_sprites:setting", false);
+	return 1;
+}
 
 hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 	if(app == AppMenu) {
 		new query[128];
-		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM phone_external_apps WHERE id = %d", id);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM phone_external_apps WHERE id = %d ORDER BY id ASC", id);
 		mysql_pquery(MySQL_Connection(), query, "AppMenu_OnAppsRetrieved", "ii", id, _:result);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -62,9 +77,9 @@ hook OnGameModeInit() {
 	)", false);
 
 	new
-		Cache:result = mysql_query(MySQL_Connection(), "SELECT COUNT(*) exists FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='phone_external_apps' AND index_name='unique_phone_app'", true),
+		Cache:result = mysql_query(MySQL_Connection(), "SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='phone_external_apps' AND index_name='unique_phone_app'", true),
 		count;
-	cache_get_value_name_int(0, "exists", count);
+	cache_get_value_name_int(0, "COUNT(*)", count);
 	if(!count) {
 		mysql_query(MySQL_Connection(), "CREATE UNIQUE INDEX unique_phone_app ON phone_external_apps(id, app)", false);
 	}

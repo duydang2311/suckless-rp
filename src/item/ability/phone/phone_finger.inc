@@ -33,7 +33,7 @@ stock IPFinger_MoveLeft(playerid, id) {
 	map_arr_get_arr(m_fingerStats, key, stats);
 	if(stats[fingerBodyFocus]) {
 		stats[fingerIndex]--;
-		CallLocalFunction("IPhoneBody_ValidateIndex", "ii", id, ref(stats[fingerIndex]));
+		CallLocalFunction("IPM_ValidateIndex", "ii", id, ref(stats[fingerIndex]));
 		if(stats[fingerIndex] != -1) {
 			map_arr_set_cell(m_fingerStats, key, fingerIndex, stats[fingerIndex]);
 		}
@@ -56,7 +56,7 @@ stock IPFinger_MoveRight(playerid, id) {
 	map_arr_get_arr(m_fingerStats, key, stats);
 	if(stats[fingerBodyFocus]) {
 		stats[fingerIndex]++;
-		CallLocalFunction("IPhoneBody_ValidateIndex", "ii", id, ref(stats[fingerIndex]));
+		CallLocalFunction("IPM_ValidateIndex", "ii", id, ref(stats[fingerIndex]));
 		if(stats[fingerIndex] != -1) {
 			map_arr_set_cell(m_fingerStats, key, fingerIndex, stats[fingerIndex]);
 		}
@@ -78,7 +78,7 @@ stock IPFinger_MoveUp(playerid, id) {
 	new stats[FingerStats];
 	map_arr_get_arr(m_fingerStats, key, stats);
 	if(stats[fingerBodyFocus]) {
-		CallLocalFunction("IPhoneBody_CalculateUp", "ii", id, ref(stats[fingerIndex]));
+		CallLocalFunction("IPM_CalculateUp", "ii", id, ref(stats[fingerIndex]));
 		if(stats[fingerIndex] != -1) {
 			map_arr_set_cell(m_fingerStats, key, fingerIndex, stats[fingerIndex]);
 		}
@@ -100,7 +100,7 @@ stock IPFinger_MoveDown(playerid, id) {
 	new stats[FingerStats];
 	map_arr_get_arr(m_fingerStats, key, stats);
 	if(stats[fingerBodyFocus]) {
-		CallLocalFunction("IPhoneBody_CalculateDown", "ii", id, ref(stats[fingerIndex]));
+		CallLocalFunction("IPM_CalculateDown", "ii", id, ref(stats[fingerIndex]));
 		if(stats[fingerIndex] != -1) {
 			map_arr_set_cell(m_fingerStats, key, fingerIndex, stats[fingerIndex]);
 		}
@@ -109,12 +109,6 @@ stock IPFinger_MoveDown(playerid, id) {
 
 	}
 	return stats[fingerIndex];
-}
-
-stock IPFinger_GetDisplayStats(id, index, &Float:x, &Float:y, &Float:size) {
-	new result;
-	CallLocalFunction("IPhoneBody_GetButtonStats", "iifffi", id, index, ref(_:x), ref(_:y), ref(_:size), ref(result));
-	return result;
 }
 
 stock IPFinger_GetCurrentIndex(playerid, id) {
@@ -170,7 +164,7 @@ stock IPFinger_Init(playerid, id, index = 0) {
 		Float:anc_y,
 		Float:size;
 	IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
-	IPFinger_GetDisplayStats(id, index, x, y, size);
+	IPModel_GetBodyOffset(id, index, x, y, size);
 	stats[fingerIndex] = 0;
 	stats[fingerBodyFocus] = true;
 	stats[fingerTd] = IPFinger_CreateTextDraw(playerid, anc_x + x, anc_y + y, size);
@@ -196,7 +190,7 @@ stock IPFinger_UpdateTextDraw(playerid, id) {
 		Float:size;
 	map_arr_get_arr(m_fingerStats, key, stats);
 	IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
-	IPFinger_GetDisplayStats(id, stats[fingerIndex], x, y, size);
+	IPModel_GetBodyOffset(id, stats[fingerIndex], x, y, size);
 	PlayerTextDrawDestroy(playerid, stats[fingerTd]);
 	stats[fingerTd] = IPFinger_CreateTextDraw(playerid, anc_x + x, anc_y + y, size);
 	PlayerTextDrawShow(playerid, stats[fingerTd]);

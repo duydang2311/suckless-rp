@@ -4,7 +4,9 @@
 
 #define app_stats_included
 
-const APP_NAME_SIZE = 32;
+const
+	APP_NAME_SIZE = 32,
+	APP_SPRITE_SIZE = 64;
 
 enum _:App {
 	AppMenu,
@@ -14,6 +16,7 @@ enum _:App {
 
 enum _:AppStats {
 	appName[APP_NAME_SIZE],
+	appSprite[APP_SPRITE_SIZE],
 	bool:appExternal
 }
 
@@ -41,7 +44,17 @@ stock IPApp_GetName(app, name[], size = sizeof(name)) {
 	}
 
 	name[0] = EOS;
-	strcat(name, appStats[app][appName]);
+	strcat(name, appStats[app][appName], size);
+	return 1;
+}
+
+stock IPApp_GetSprite(app, sprite[], size = sizeof(sprite)) {
+	if(!IPApp_Has(app)) {
+		return 0;
+	}
+
+	sprite[0] = EOS;
+	strcat(sprite, appStats[app][appSprite], size);
 	return 1;
 }
 
@@ -54,7 +67,7 @@ stock Task:IPApp_InitStats(id, app) {
 		Task:t = task_new(),
 		Task:t_result = task_new();
 	task_set_result_ms(t_result, 0, 2000);
-	CallLocalFunction("IPApp_OnStatsInitAttempt", "iii", id, app, t_result);
+	CallLocalFunction("IPA_OnStatsInitAttempt", "iii", id, app, t_result);
 	task_yield(t);
 	task_set_result(t, task_await(t_result));
 	return Task:0;
@@ -65,7 +78,21 @@ stock IPApp_ShowUIForPlayer(id, app, playerid) {
 		return 0;
 	}
 
-	CallLocalFunction("IPApp_OnUIShowAttempt", "iii", id, app, playerid);
+	new result = 0;
+	CallLocalFunction("IPA_OnUIShowAttempt", "iiii", id, app, playerid, ref(result));
+	return result;
+}
+
+stock IPApp_Ensure(app, const name[], const sprite[], bool:external = true) {
+	new query[384];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO app_stats (app, name, sprite, external) VALUES (%d, '%e', '%e', %d) ON DUPLICATE KEY UPDATE name = VALUES(name), sprite = VALUES(sprite), external = VALUES(external)", app, name, sprite, external);
+	new Cache:result = mysql_query(MySQL_Connection(), query, true);
+	if(cache_affected_rows()) {
+		printf("INFO: Ensured phone application: {%d, '%s', '%s', '%s'}.", app, name, sprite, (external) ? "External" : "Built in");
+	} else {
+		printf("INFO: Failed to ensure phone application: {%d, '%s', '%s', '%s'}, try checking the query.", app, name, sprite, (external) ? "External" : "Built in");
+	}
+	cache_delete(result); // set use_cache to true will perform blocking query? i guess.
 	return 1;
 }
 
@@ -77,14 +104,17 @@ hook OnGameModeInit() {
 		modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 		app TINYINT UNSIGNED PRIMARY KEY,\
 		name VARCHAR(32) DEFAULT '',\
+		sprite VARCHAR(64) DEFAULT '',\
 		external BOOLEAN DEFAULT TRUE\
 	)", false);
 
+	CallLocalFunction("IPA_OnEnsureRequest", "");
 	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM app_stats", true);
 	new rows = cache_num_rows();
 	for(new i = 0, app; i != rows; i++) {
 		cache_get_value_name_int(i, "app", app);
 		cache_get_value_name(i, "name", appStats[app][appName], APP_NAME_SIZE);
+		cache_get_value_name(i, "sprite", appStats[app][appSprite], APP_SPRITE_SIZE);
 		cache_get_value_name_int(i, "external", appStats[app][appExternal]);
 	}
 	cache_delete(result);

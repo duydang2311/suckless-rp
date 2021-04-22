@@ -19,12 +19,34 @@ enum _:AppStats {
 
 static appStats[App][AppStats];
 
-stock IPApp_IsExternal(app) {
-	return external[app];
+stock IPApp_Has(app) {
+	return (app >= 0 && app < sizeof(appStats));
 }
 
-stock Task:IPApp_Init(id, app) {
-	if(!IPhone_Has(id)) {
+stock IPApp_GetSize() {
+	return sizeof(appStats);
+}
+
+stock IPApp_IsExternal(app) {
+	if(!IPApp_Has(app)) {
+		return 0;
+	}
+
+	return appStats[app][appExternal];
+}
+
+stock IPApp_GetName(app, name[], size = sizeof(name)) {
+	if(!IPApp_Has(app)) {
+		return 0;
+	}
+
+	name[0] = EOS;
+	strcat(name, appStats[app][appName]);
+	return 1;
+}
+
+stock Task:IPApp_InitStats(id, app) {
+	if(!IPhone_Has(id) || !IPApp_Has(app)) {
 		return 0;
 	}
 
@@ -32,10 +54,19 @@ stock Task:IPApp_Init(id, app) {
 		Task:t = task_new(),
 		Task:t_result = task_new();
 	task_set_result_ms(t_result, 0, 2000);
-	CallLocalFunction("IPApp_OnInitAttempt", "iii", id, app, t_result);
+	CallLocalFunction("IPApp_OnStatsInitAttempt", "iii", id, app, t_result);
 	task_yield(t);
 	task_set_result(t, task_await(t_result));
 	return Task:0;
+}
+
+stock IPApp_ShowUIForPlayer(id, app, playerid) {
+	if(!IPhone_Has(id) || !IPApp_Has(app) || !AppMenu_Has(id)) {
+		return 0;
+	}
+
+	CallLocalFunction("IPApp_OnUIShowAttempt", "iii", id, app, playerid);
+	return 1;
 }
 
 #include <YSI_Coding\y_hooks>
@@ -48,5 +79,15 @@ hook OnGameModeInit() {
 		name VARCHAR(32) DEFAULT '',\
 		external BOOLEAN DEFAULT TRUE\
 	)", false);
+
+	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM app_stats", true);
+	new rows = cache_num_rows();
+	for(new i = 0, app; i != rows; i++) {
+		cache_get_value_name_int(i, "app", app);
+		cache_get_value_name(i, "name", appStats[app][appName], APP_NAME_SIZE);
+		cache_get_value_name_int(i, "external", appStats[app][appExternal]);
+	}
+	cache_delete(result);
+	printf("INFO: Loaded %d phone application stats.", rows);
 	return 1;
 }

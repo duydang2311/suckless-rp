@@ -77,8 +77,8 @@ hook OnGameModeInit() {
 	)", false);
 
 	new
-		Cache:result = mysql_query(MySQL_Connection(), "SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='phone_external_apps' AND index_name='unique_phone_app'", true),
-		count;
+		Cache:result = mysql_query(MySQL_Connection(), "SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='phone_external_apps' AND index_name='unique_phone_app'", true);
+	new count = 0;
 	cache_get_value_name_int(0, "COUNT(*)", count);
 	if(!count) {
 		mysql_query(MySQL_Connection(), "CREATE UNIQUE INDEX unique_phone_app ON phone_external_apps(id, app)", false);

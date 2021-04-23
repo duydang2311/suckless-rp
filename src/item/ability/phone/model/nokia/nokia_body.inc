@@ -30,8 +30,6 @@ stock Nokia_GetButtonOffset(index, &Float:x, &Float:y) {
 
 	x = BUTTON_START_OFFSET_X + BUTTON_MARGIN_X * (index % COLUMN);
 	y = BUTTON_START_OFFSET_Y + BUTTON_MARGIN_Y * (floatround(float(index) / float(COLUMN), floatround_floor));
-	// x = SCREEN_OFFSET_MIN_X + BUTTON_MARGIN_X * (index % COLUMN);
-	// y = SCREEN_OFFSET_MIN_Y + BUTTON_MARGIN_Y * (floatround(float(index) / float(COLUMN), floatround_floor));
 	return 1;
 }
 

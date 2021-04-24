@@ -11,7 +11,7 @@ CMD:phone(playerid) {
 		item = Player_GetHandItemId(playerid, i);
 		if(item != -1 && IPhone_Has(item)) {
 			TogglePlayerControllable(playerid, false);
-			IPhone_ShowUIForPlayer(item, playerid, 470.0, 230.0);
+			IPhone_ShowUIForPlayer(item, playerid, RandomFloat(200.0, 470.0), RandomFloat(150.0, 230.0));
 			IPFinger_Init(playerid, item);
 			if(!map_valid(m_phoneItemId)) {
 				m_phoneItemId = map_new();

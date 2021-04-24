@@ -29,10 +29,12 @@ public AppMenu_OnAppsRetrieved(id, Task:result) {
 	for(new i = 0, app; i != rows; i++) {
 		cache_get_value_name_int(i, "app", app);
 		linked_list_add(ll, app);
+		printf("menu stats add external app %d", app);
 	}
 	if(task_valid(result)) {
 		task_set_result(result, rows);
 	}
+	printf("AppMenu_OnAppsRetrieved rows %d", rows);
 	return 1;
 }
 
@@ -59,6 +61,7 @@ hook IPA_OnEnsureRequest() {
 
 hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 	if(app == AppMenu) {
+		printf("IPA_OnStatsInitAttempt id %d, app %d, result %d", id, app, _:result);
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM phone_external_apps WHERE id = %d ORDER BY id ASC", id);
 		mysql_pquery(MySQL_Connection(), query, "AppMenu_OnAppsRetrieved", "ii", id, _:result);

@@ -60,16 +60,21 @@ stock IPApp_GetSprite(app, sprite[], size = sizeof(sprite)) {
 
 stock Task:IPApp_InitStats(id, app) {
 	if(!IPhone_Has(id) || !IPApp_Has(app)) {
-		return 0;
+		return Task:0;
 	}
+	printf("IPApp_InitStats id %d, app %d", id, app);
 
 	new
 		Task:t = task_new(),
 		Task:t_result = task_new();
+	task_keep(t); // remember to manually delete the task by task_delete
 	task_set_result_ms(t_result, 0, 2000);
-	CallLocalFunction("IPA_OnStatsInitAttempt", "iii", id, app, t_result);
+	CallLocalFunction("IPA_OnStatsInitAttempt", "iii", id, app, _:t_result);
+	task_detach();
 	task_yield(t);
-	task_set_result(t, task_await(t_result));
+	new result = await t_result;
+	task_set_result(t, result);
+	task_delete(t); // manually delete the task because task_keep was used earlier
 	return Task:0;
 }
 

@@ -4,9 +4,10 @@
 
 #define app_menu_ui_included
 
-static const
-	Float:MARGIN_X = 10.0000,
-	Float:MARGIN_Y = 10.0000;
+static enum _:Key {
+	ItemId,
+	PlayerId
+}
 
 static Map:m_uiTd;
 
@@ -49,17 +50,39 @@ hook IPA_OnUIShowAttempt(id, app, playerid, &result) {
 				new
 					Float:anc_x,
 					Float:anc_y,
+					Float:margin_x,
+					Float:margin_y,
 					row = 3,
 					col = 3,
-					Float:size;
+					Float:size,
+					key[Key];
 				IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
-				size = ((scr_max[0] - scr_min[0]) - MARGIN_X * col) / col;
-				for(new cnt = 0, PlayerText:sprite_td, PlayerText:name_td, Float:x, Float:y; iter_inside(it); iter_move_next(it)) {
+				size = 15.0;
+				margin_x = ((scr_max[0] - scr_min[0]) - size * col) / col;
+				margin_y = ((scr_max[1] - scr_min[1]) - size * row) / row;
+				key[ItemId] = id;
+				key[PlayerId] = playerid;
+				for(new cnt = 0, PlayerText:sprite_td, PlayerText:name_td, Float:x, Float:y, LinkedList:ll; iter_inside(it); iter_move_next(it)) {
 					// overiding app variable because it's no longer used after comparison with AppMenu
-					app = iter_get(it);
-					x = anc_x + scr_min[0] + MARGIN_X * (cnt % col);
-					y = (anc_y + scr_min[1]) + MARGIN_Y * (floatround(float(cnt) / float(col), floatround_floor));
-					AppMenu_CreateAppTd(app, playerid, x, y, size, sprite_td, name_td);
+					for(new j = 0; j != 4; j++) {
+						app = iter_get(it);
+						x = anc_x + scr_min[0] + (margin_x + size) * (cnt % col);
+						y = (anc_y + scr_min[1]) + (margin_y + size) * (floatround(float(cnt) / float(col), floatround_floor));
+						AppMenu_CreateAppTd(app, playerid, x, y, size, sprite_td, name_td);
+						PlayerTextDrawShow(playerid, sprite_td);
+						if(!map_valid(m_uiTd)) {
+							m_uiTd = map_new();
+						}
+						if(!map_has_arr_key(m_uiTd, key)) {
+							ll = linked_list_new();
+							map_arr_set(m_uiTd, key, ll);
+						} else {
+							ll = LinkedList:map_arr_get(m_uiTd, key);
+						}
+						linked_list_add(ll, _:sprite_td);
+						cnt++;
+						printf("menu ui created textdraw for app %d", app);
+					}
 				}
 			}
 		}

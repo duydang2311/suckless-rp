@@ -4,4 +4,4 @@
 
 #define player_phone_included
 
-#include ".\player\phone\phone_cmds.inc"
+#include "./player/phone/phone_cmds.inc"

@@ -38,13 +38,13 @@ public AppMenu_OnAppsRetrieved(id, Task:result) {
 	return 1;
 }
 
-stock AppMenu_Has(id) {
+stock AppMenu_HasStats(id) {
 	return (map_valid(m_menuStats) && map_has_key(m_menuStats, id));
 }
 
 stock Iter:AppMenu_GetStatsIter(id, index = 0) {
 	new Iter:it = Iter:-1;
-	if(AppMenu_Has(id)) {
+	if(AppMenu_HasStats(id)) {
 		new LinkedList:ll = LinkedList:map_get(m_menuStats, id);
 		it = linked_list_iter(ll, index);
 		iter_acquire(it);
@@ -66,6 +66,27 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM phone_external_apps WHERE id = %d ORDER BY id ASC", id);
 		mysql_pquery(MySQL_Connection(), query, "AppMenu_OnAppsRetrieved", "ii", id, _:result);
 		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
+
+hook IPA_OnStatsTermnAttempt(id, app) {
+	if(app == AppMenu) {
+		if(AppMenu_HasStats(id)) {
+			map_remove_deep(m_menuStats, id);
+			if(!map_size(m_menuStats)) {
+				map_delete(m_menuStats);
+				m_menuStats = Map:-1;
+			}
+		}
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
+
+hook IPA_OnAppsGetAttempt(id, bool:arr[], size) {
+	if(AppMenu < size && AppMenu_HasStats(id)) {
+		arr[AppMenu] = true;
 	}
 	return 1;
 }

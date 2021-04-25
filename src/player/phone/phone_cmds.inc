@@ -69,7 +69,15 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			printf("current finger index : %d", IPFinger_GetCurrentIndex(playerid, id));
 			return Y_HOOKS_BREAK_RETURN_1;
 		} else if(newkeys & KEY_SECONDARY_ATTACK) { // Enter -> cancel
-			IPhone_HideUIForPlayer(map_get(m_phoneItemId, playerid), playerid);
+			new bool:active[App] = {false, ...};
+			IPApp_GetActiveApps(id, active);
+			for(new i = 0; i != sizeof(active); i++) {
+				if(active[i]) {
+					IPApp_TerminateStats(id, i);
+				}
+			}
+			IPApp_HideUIForPlayer(id, playerid);
+			IPhone_HideUIForPlayer(id, playerid);
 			IPFinger_Hide(playerid, id);
 			TogglePlayerControllable(playerid, true);
 			map_remove(m_phoneItemId, playerid);

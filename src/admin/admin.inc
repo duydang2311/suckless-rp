@@ -16,5 +16,5 @@
 
 #include <mysql>
 
-#include ".\admin_stats.inc"
-#include ".\admin_cmds.inc"
+#include "./admin_stats.inc"
+#include "./admin_cmds.inc"

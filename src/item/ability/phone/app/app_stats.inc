@@ -62,7 +62,6 @@ stock Task:IPApp_InitStats(id, app) {
 	if(!IPhone_Has(id) || !IPApp_Has(app)) {
 		return Task:0;
 	}
-	printf("IPApp_InitStats id %d, app %d", id, app);
 
 	new
 		Task:t = task_new(),
@@ -79,7 +78,7 @@ stock Task:IPApp_InitStats(id, app) {
 }
 
 stock IPApp_ShowUIForPlayer(id, app, playerid) {
-	if(!IPhone_Has(id) || !IPApp_Has(app) || !AppMenu_Has(id)) {
+	if(!IPhone_Has(id) || !IPApp_Has(app)) {
 		return 0;
 	}
 
@@ -89,13 +88,32 @@ stock IPApp_ShowUIForPlayer(id, app, playerid) {
 }
 
 stock IPApp_TerminateStats(id, app) {
+	if(!IPhone_Has(id) || !IPApp_Has(app)) {
+		return 0;
+	}
+
+	printf("IPApp_TerminateStats id %d, app %d", id, app);
+	CallLocalFunction("IPA_OnStatsTermnAttempt", "ii", id, app);
 	return 1;
 }
 
-stock IPApp_HideUIForPlayer(id, app, playerid) {
+stock IPApp_HideUIForPlayer(id, playerid) {
+	if(!IPhone_Has(id)) {
+		return 0;
+	}
+
+	printf("IPApp_HideUIForPlayer id %d, playerid %d", id, playerid);
+	CallLocalFunction("IPA_OnUIHideAttempt", "ii", id, playerid);
 	return 1;
 }
 
+stock IPApp_GetActiveApps(id, bool:arr[], size = sizeof(arr)) {
+	for(new i = 0; i != size; i++) {
+		arr[i] = false;
+	}
+	CallLocalFunction("IPA_OnAppsGetAttempt", "iii", id, ref(arr), size);
+	return 1;
+}
 
 stock IPApp_Ensure(app, const name[], const sprite[], bool:external = true) {
 	new query[384];
@@ -106,7 +124,7 @@ stock IPApp_Ensure(app, const name[], const sprite[], bool:external = true) {
 	} else {
 		printf("INFO: Failed to ensure phone application: {%d, '%s', '%s', '%s'}, try checking the query.", app, name, sprite, (external) ? "External" : "Built in");
 	}
-	cache_delete(result); // set use_cache to true will perform blocking query? i guess.
+	cache_delete(result); // set use_cache to true will perform blocking query? i guess
 	return 1;
 }
 

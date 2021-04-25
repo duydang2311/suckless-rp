@@ -23,18 +23,18 @@
 #include <skintags>
 #include <ColAndreas>
 
-#include <config\colors>
+#include <config/colors>
 
 #include <mysql>
 
-#include ".\player_utility.inc"
-#include ".\player_auth.inc"
-#include ".\player_stats.inc"
-#include ".\player_spawn.inc"
-#include ".\hand\hand.inc"
-#include ".\phone\phone.inc"
+#include "./player_utility.inc"
+#include "./player_auth.inc"
+#include "./player_stats.inc"
+#include "./player_spawn.inc"
+#include "./hand/hand.inc"
+#include "./phone/phone.inc"
 
-#include ".\player_death.inc"
+#include "./player_death.inc"
 
 
 #include <YSI_Coding\y_hooks>

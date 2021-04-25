@@ -16,8 +16,6 @@ public AppMenu_OnAppsRetrieved(id, Task:result) {
 	}
 	map_set(m_menuStats, id, _:ll);
 
-	new rows = cache_num_rows();
-
 	for(new app = 0, j = IPApp_GetSize(); app != j; app++) {
 		if(app == AppMenu) {
 			continue;
@@ -26,6 +24,8 @@ public AppMenu_OnAppsRetrieved(id, Task:result) {
 			linked_list_add(ll, app);
 		}
 	}
+
+	new rows = cache_num_rows();
 	for(new i = 0, app; i != rows; i++) {
 		cache_get_value_name_int(i, "app", app);
 		linked_list_add(ll, app);

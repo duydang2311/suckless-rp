@@ -11,8 +11,8 @@
 #include <PawnPlus>
 #include <easyDialog>
 
-#include "./faction_stats.inc"
-#include "./faction_ranks.inc"
-#include "./faction_divisions.inc"
-#include "./faction_members.inc"
-#include "./faction_cmds.inc"
+#include ".\faction_stats.inc"
+#include ".\faction_ranks.inc"
+#include ".\faction_divisions.inc"
+#include ".\faction_members.inc"
+#include ".\faction_cmds.inc"

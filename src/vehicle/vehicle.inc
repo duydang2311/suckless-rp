@@ -6,4 +6,4 @@
 
 #include <a_samp>
 
-#include "./vehicle_name.inc"
+#include ".\vehicle_name.inc"

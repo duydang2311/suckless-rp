@@ -20,5 +20,5 @@ stock IPModel_GetScreenOffset(id, &Float:min_x, &Float:min_y, &Float:max_x, &Flo
 	return result;
 }
 
-#include "./ability/phone/model/nokia/nokia_body.inc"
+#include ".\ability\phone\model\nokia\nokia_body.inc"
 #include ".\ability\phone\model\nokia\nokia_ui.inc"

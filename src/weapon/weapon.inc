@@ -6,4 +6,4 @@
 
 #include <a_samp>
 
-#include "./weapon_stats.inc"
+#include ".\weapon_stats.inc"

@@ -12,10 +12,10 @@
 #include <easyDialog>
 #include <YSI_Extra\y_inline_mysql>
 
-#include <config/colors>
+#include <config\colors>
 
 #include <mysql>
 
-#include "./inventory_attachments.inc"
-#include "./inventory_stats.inc"
-#include "./inventory_cmds.inc"
+#include ".\inventory_attachments.inc"
+#include ".\inventory_stats.inc"
+#include ".\inventory_cmds.inc"

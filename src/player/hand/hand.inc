@@ -4,10 +4,10 @@
 
 #define hand_included
 
-#include "./player/hand/hand_attach.inc"
-#include "./player/hand/hand_carry.inc"
-#include "./player/hand/hand_key.inc"
-#include "./player/hand/hand_cmds.inc"
+#include ".\player\hand\hand_attach.inc"
+#include ".\player\hand\hand_carry.inc"
+#include ".\player\hand\hand_key.inc"
+#include ".\player\hand\hand_cmds.inc"
 
 static playerHands[MAX_PLAYERS][2] = {{-1, -1}, ...};
 

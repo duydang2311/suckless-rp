@@ -9,8 +9,8 @@ enum _:SubtitleType {
 	SubtitleSelect
 }
 
-#include "./subtitle_text.inc"
-#include "./subtitle_select.inc"
+#include ".\subtitle_text.inc"
+#include ".\subtitle_select.inc"
 
 static Map:m_subType;
 

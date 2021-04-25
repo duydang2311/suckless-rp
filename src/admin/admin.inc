@@ -11,10 +11,10 @@
 #include <YSI_Coding\y_inline>
 #include <YSI_Extra\y_inline_mysql>
 
-#include <config/colors>
-#include <config/cmd_flags>
+#include <config\colors>
+#include <config\cmd_flags>
 
 #include <mysql>
 
-#include "./admin_stats.inc"
-#include "./admin_cmds.inc"
+#include ".\admin_stats.inc"
+#include ".\admin_cmds.inc"

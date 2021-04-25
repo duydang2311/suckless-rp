@@ -10,9 +10,10 @@ CMD:phone(playerid) {
 	for(new i = 1, item; i != -1; i--) {
 		item = Player_GetHandItemId(playerid, i);
 		if(item != -1 && IPhone_Has(item)) {
-			TogglePlayerControllable(playerid, false);
+			// TogglePlayerControllable(playerid, false);
 			IPhone_ShowUIForPlayer(item, playerid, RandomFloat(200.0, 470.0), RandomFloat(150.0, 230.0));
 			IPFinger_Init(playerid, item);
+			SelectTextDraw(playerid, 0x115599FF);
 			if(!map_valid(m_phoneItemId)) {
 				m_phoneItemId = map_new();
 			}
@@ -50,7 +51,8 @@ hook OnPlayerUpdate(playerid) {
 			IPFinger_MoveLeft(playerid, item);
 		} else if(lr == KEY_RIGHT) {
 			IPFinger_MoveRight(playerid, item);
-		} else if(ud == KEY_UP) {
+		}
+		if(ud == KEY_UP) {
 			IPFinger_MoveUp(playerid, item);
 		} else if(ud == KEY_DOWN) {
 			IPFinger_MoveDown(playerid, item);

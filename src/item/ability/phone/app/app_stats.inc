@@ -88,6 +88,15 @@ stock IPApp_ShowUIForPlayer(id, app, playerid) {
 	return result;
 }
 
+stock IPApp_TerminateStats(id, app) {
+	return 1;
+}
+
+stock IPApp_HideUIForPlayer(id, app, playerid) {
+	return 1;
+}
+
+
 stock IPApp_Ensure(app, const name[], const sprite[], bool:external = true) {
 	new query[384];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO app_stats (app, name, sprite, external) VALUES (%d, '%e', '%e', %d) ON DUPLICATE KEY UPDATE name = VALUES(name), sprite = VALUES(sprite), external = VALUES(external)", app, name, sprite, external);

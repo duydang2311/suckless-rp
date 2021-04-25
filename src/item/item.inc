@@ -14,23 +14,23 @@
 #include <YSI_Extra\y_inline_mysql>
 #include <samp-precise-timers>
 
-#include <config/colors>
-#include <config/cmd_flags>
+#include <config\colors>
+#include <config\cmd_flags>
 
 #include <util>
 
 #include <mysql>
 #include <session>
 
-#include "./item_stats.inc"
-#include "./item_group.inc"
+#include ".\item_stats.inc"
+#include ".\item_group.inc"
 
-#include "./ability/gun.inc"
-#include "./ability/melee.inc"
-#include "./ability/backpack.inc"
-#include "./ability/whisk.inc"
-#include "/ability/phone/phone.inc"
+#include ".\ability\gun.inc"
+#include ".\ability\melee.inc"
+#include ".\ability\backpack.inc"
+#include ".\ability\whisk.inc"
+#include "\ability\phone\phone.inc"
 
-#include "./item_ground.inc"
-#include "./item_cmds.inc"
-#include "./item_carry_attach.inc"
+#include ".\item_ground.inc"
+#include ".\item_cmds.inc"
+#include ".\item_carry_attach.inc"

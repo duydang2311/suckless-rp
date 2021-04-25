@@ -12,11 +12,9 @@ stock IPhone_ShowUIForPlayer(id, playerid, Float:x, Float:y) {
 	CallLocalFunction("IPUI_OnShowAttempt", "iiff", id, playerid, x, y);
 	task_detach();
 	task_yield(1);
-	new result = await IPApp_InitStats(id, AppMenu);
-	if(result) {
-		IPApp_ShowUIForPlayer(id, AppMenu, playerid);
-	}
-	return 1; // useless returning value anyway because this function has asynchronous process
+	await IPApp_InitStats(id, AppMenu);
+	IPApp_ShowUIForPlayer(id, AppMenu, playerid);
+	return 1;
 }
 
 stock IPhone_GetUIAnchor(id, playerid, &Float:x, &Float:y) {

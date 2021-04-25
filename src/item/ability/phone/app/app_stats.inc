@@ -11,7 +11,7 @@ const
 enum _:App {
 	AppMenu,
 	AppStore,
-	AppNow
+	AppSunGo
 }
 
 enum _:AppStats {
@@ -58,7 +58,7 @@ stock IPApp_GetSprite(app, sprite[], size = sizeof(sprite)) {
 	return 1;
 }
 
-stock Task:IPApp_InitStats(id, app) {
+stock Task:IPApp_InitStatsAsync(id, app) {
 	if(!IPhone_Has(id) || !IPApp_Has(app)) {
 		return Task:0;
 	}
@@ -77,14 +77,22 @@ stock Task:IPApp_InitStats(id, app) {
 	return Task:0;
 }
 
+stock IPApp_InitStats(id, app) {
+	if(!IPhone_Has(id) || !IPApp_Has(app)) {
+		return 0;
+	}
+
+	CallLocalFunction("IPA_OnStatsInitAttempt", "iii", id, app, _:-1);
+	return 1;
+}
+
 stock IPApp_ShowUIForPlayer(id, app, playerid) {
 	if(!IPhone_Has(id) || !IPApp_Has(app)) {
 		return 0;
 	}
 
-	new result = 0;
-	CallLocalFunction("IPA_OnUIShowAttempt", "iiii", id, app, playerid, ref(result));
-	return result;
+	CallLocalFunction("IPA_OnUIShowAttempt", "iiii", id, app, playerid);
+	return 1;
 }
 
 stock IPApp_TerminateStats(id, app) {
@@ -122,7 +130,7 @@ stock IPApp_Ensure(app, const name[], const sprite[], bool:external = true) {
 	if(cache_affected_rows()) {
 		printf("INFO: Ensured phone application: {%d, '%s', '%s', '%s'}.", app, name, sprite, (external) ? "External" : "Built in");
 	} else {
-		printf("INFO: Failed to ensure phone application: {%d, '%s', '%s', '%s'}, try checking the query.", app, name, sprite, (external) ? "External" : "Built in");
+		printf("INFO: Ensured update phone application: {%d, '%s', '%s', '%s'}, nothing to update.", app, name, sprite, (external) ? "External" : "Built in");
 	}
 	cache_delete(result); // set use_cache to true will perform blocking query? i guess
 	return 1;

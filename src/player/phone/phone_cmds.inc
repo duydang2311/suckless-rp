@@ -12,6 +12,9 @@ CMD:phone(playerid) {
 		if(item != -1 && IPhone_Has(item)) {
 			// TogglePlayerControllable(playerid, false);
 			IPhone_ShowUIForPlayer(item, playerid, RandomFloat(200.0, 470.0), RandomFloat(150.0, 230.0));
+			task_unblock(1);
+			await IPApp_InitStatsAsync(item, AppMenu);
+			IPApp_ShowUIForPlayer(item, AppMenu, playerid);
 			IPFinger_Init(playerid, item);
 			SelectTextDraw(playerid, 0x115599FF);
 			if(!map_valid(m_phoneItemId)) {

@@ -6,5 +6,5 @@
 
 #include ".\ability\phone\app\app_stats.inc"
 #include ".\ability\phone\app\menu\menu.inc"
-#include ".\ability\phone\app\store\app_store.inc"
-#include ".\ability\phone\app\now\app_now.inc"
+#include ".\ability\phone\app\store\store.inc"
+#include ".\ability\phone\app\sungo\sungo.inc"

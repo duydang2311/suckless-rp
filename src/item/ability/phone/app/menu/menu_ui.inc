@@ -59,7 +59,7 @@ stock AppMenu_CreateAppTd(app, playerid, Float:x, Float:y, Float:size, &PlayerTe
 
 #include <YSI_Coding\y_hooks>
 
-hook IPA_OnUIShowAttempt(id, app, playerid, &result) {
+hook IPA_OnUIShowAttempt(id, app, playerid) {
 	if(!IPhone_Has(id) || !IPApp_Has(app)) {
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -161,7 +161,7 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 					if(iter_valid(app_it) && iter_release(app_it)) {
 						new app = iter_get(app_it);
 						task_unblock(Y_HOOKS_BREAK_RETURN_1);
-						await IPApp_InitStats(id, app);
+						IPApp_InitStats(id, app);
 						IPApp_HideUIForPlayer(id, playerid);
 						IPApp_ShowUIForPlayer(id, app, playerid);
 					}

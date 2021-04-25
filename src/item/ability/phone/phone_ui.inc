@@ -10,10 +10,6 @@ stock IPhone_ShowUIForPlayer(id, playerid, Float:x, Float:y) {
 	}
 
 	CallLocalFunction("IPUI_OnShowAttempt", "iiff", id, playerid, x, y);
-	task_detach();
-	task_yield(1);
-	await IPApp_InitStats(id, AppMenu);
-	IPApp_ShowUIForPlayer(id, AppMenu, playerid);
 	return 1;
 }
 

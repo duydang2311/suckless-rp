@@ -13,8 +13,11 @@ static
 	Map:m_uiStats,
 	Map:m_uiItemId;
 
-stock AppMenu_HasUI(const key[], size = sizeof(key)) {
-	return (map_valid(m_uiStats) && map_has_arr_key(m_uiStats, key, size));
+stock AppMenu_HasUI(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	return (map_valid(m_uiStats) && map_has_arr_key(m_uiStats, key));
 }
 
 stock AppMenu_CreateAppTd(app, playerid, Float:x, Float:y, Float:size, &PlayerText:sprite_td, &PlayerText:name_td) {
@@ -119,9 +122,6 @@ hook IPA_OnUIShowAttempt(id, app, playerid, &result) {
 }
 
 hook IPA_OnUIHideAttempt(id, playerid) {
-	new key[Key];
-	key[ItemId] = id;
-	key[PlayerId] = playerid;
 	if(map_valid(m_uiItemId) && map_has_key(m_uiItemId, playerid)) {
 		map_remove(m_uiItemId, playerid);
 		if(!map_size(m_uiItemId)) {
@@ -129,7 +129,10 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 			m_uiItemId = Map:-1;
 		}
 	}
-	if(AppMenu_HasUI(key)) {
+	if(AppMenu_HasUI(id, playerid)) {
+		new key[Key];
+		key[ItemId] = id;
+		key[PlayerId] = playerid;
 		new LinkedList:ll = LinkedList:map_arr_get(m_uiStats, key);
 		for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
 			PlayerTextDrawDestroy(playerid, PlayerText:iter_get(it));
@@ -146,18 +149,21 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 
 hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 	if(map_valid(m_uiItemId) && map_has_key(m_uiItemId, playerid)) {
-		new key[Key];
-		key[ItemId] = map_get(m_uiItemId, playerid);
-		key[PlayerId] = playerid;
-		if(AppMenu_HasUI(key)) {
+		new id = map_get(m_uiItemId, playerid);
+		if(AppMenu_HasUI(id, playerid)) {
+			new key[Key];
+			key[ItemId] = id;
+			key[PlayerId] = playerid;
 			new LinkedList:ll = LinkedList:map_arr_get(m_uiStats, key);
 			for(new Iter:it = linked_list_iter(ll), index = 0; iter_inside(it); iter_move_next(it), index++) {
 				if(PlayerText:iter_get(it) == playertextid) {
-					it = AppMenu_GetStatsIter(key[ItemId], index);
-					if(iter_valid(it) && iter_release(it)) {
-						new name[APP_NAME_SIZE];
-						IPApp_GetName(iter_get(it), name);
-						printf("selected index %d, app %s", index, name);
+					new Iter:app_it = AppMenu_GetStatsIter(id, index);
+					if(iter_valid(app_it) && iter_release(app_it)) {
+						new app = iter_get(app_it);
+						task_unblock(Y_HOOKS_BREAK_RETURN_1);
+						await IPApp_InitStats(id, app);
+						IPApp_HideUIForPlayer(id, playerid);
+						IPApp_ShowUIForPlayer(id, app, playerid);
 					}
 					return Y_HOOKS_BREAK_RETURN_1;
 				}

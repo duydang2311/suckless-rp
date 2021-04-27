@@ -10,8 +10,8 @@ static enum _:Key {
 }
 
 static
-	Map:m_uiStats,
-	Map:m_uiItemId;
+	Map:m_uiStats, // { {Key}: [PlayerText:value, ...] }
+	Map:m_uiItemId; // { playerid: item_id }
 
 stock AppMenu_HasUI(id, playerid) {
 	new key[Key];
@@ -20,7 +20,36 @@ stock AppMenu_HasUI(id, playerid) {
 	return (map_valid(m_uiStats) && map_has_arr_key(m_uiStats, key));
 }
 
-stock AppMenu_CreateAppTd(app, playerid, Float:x, Float:y, Float:size, &PlayerText:sprite_td, &PlayerText:name_td) {
+stock AppMenu_DestroyUI(id, playerid) {
+	if(map_valid(m_uiItemId) && map_has_key(m_uiItemId, playerid)) {
+		map_remove(m_uiItemId, playerid);
+		if(!map_size(m_uiItemId)) {
+			map_delete(m_uiItemId);
+			m_uiItemId = Map:-1;
+		}
+	}
+
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!map_valid(m_uiStats) || !map_has_arr_key(m_uiStats, key)) {
+		return 0;
+	}
+
+	new LinkedList:ll = LinkedList:map_arr_get(m_uiStats, key);
+	for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
+		PlayerTextDrawDestroy(playerid, PlayerText:iter_get(it));
+	}
+	map_arr_remove_deep(m_uiStats, key);
+	if(!map_size(m_uiStats)) {
+		map_delete(m_uiStats);
+		m_uiStats = Map:-1;
+	}
+	return 1;
+}
+
+
+stock AppMenu_CreateAppTd(playerid, app, Float:x, Float:y, Float:size, &PlayerText:sprite_td, &PlayerText:name_td) {
 	new sprite[APP_SPRITE_SIZE],
 		name[APP_NAME_SIZE];
 	IPApp_GetSprite(app, sprite);
@@ -57,6 +86,65 @@ stock AppMenu_CreateAppTd(app, playerid, Float:x, Float:y, Float:size, &PlayerTe
 	return 1;
 }
 
+stock AppMenu_UpdateAppList(id, playerid) {
+	if(!AppMenu_HasStats(id)) {
+		return 1;
+	}
+
+	AppMenu_DestroyUI(id, playerid);
+
+	new index_offset = AppStore_GetIndexOffset(id);
+	new
+		Iter:it = AppMenu_GetAppListIter(id, index_offset),
+		LinkedList:ll = linked_list_new(),
+		key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!map_valid(m_uiStats)) {
+		m_uiStats = map_new();
+	}
+	map_arr_set(m_uiStats, key, ll);
+	if(iter_valid(it) && iter_release(it)) {
+		const
+			row = 3,
+			col = 3,
+			Float:size = 15.0;
+		new
+			Float:scr_min[2],
+			Float:scr_max[2];
+		if(IPModel_GetScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
+			scr_min[1] += 2.0;
+			scr_max[1] -= 16.0; // decrease max y to leave some space for name td
+			new
+				Float:anc_x,
+				Float:anc_y,
+				Float:gap_x,
+				Float:gap_y;
+			IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
+			gap_x = ((scr_max[0] - scr_min[0]) - size * col) / (col - 1); // if we have col columns, then we have (col - 1) gaps between columns
+			gap_y = ((scr_max[1] - scr_min[1]) - (size + 2.0) * row) / (row - 1); // same as above for rows
+			key[ItemId] = id;
+			key[PlayerId] = playerid;
+			for(new cnt = 0, app, PlayerText:sprite_td, PlayerText:name_td, Float:x, Float:y; iter_inside(it) && cnt != 6; iter_move_next(it), cnt++) {
+				// overiding app variable because it's no longer used after comparison with AppMenu
+				app = iter_get(it);
+				x = anc_x + scr_min[0] + (gap_x + size) * (cnt % col);
+				y = (anc_y + scr_min[1]) + (gap_y + size) * (floatround(float(cnt) / float(col), floatround_floor));
+				AppMenu_CreateAppTd(playerid, app, x, y, size, sprite_td, name_td);
+				PlayerTextDrawShow(playerid, sprite_td);
+				PlayerTextDrawShow(playerid, name_td);
+				linked_list_add(ll, _:sprite_td);
+				linked_list_add(ll, _:name_td);
+			}
+			if(!map_valid(m_uiItemId)) {
+				m_uiItemId = map_new();
+			}
+			map_set(m_uiItemId, playerid, id);
+		}
+	}
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnUIShowAttempt(id, app, playerid) {
@@ -65,85 +153,14 @@ hook IPA_OnUIShowAttempt(id, app, playerid) {
 	}
 
 	if(app == AppMenu) {
-		new Iter:it = AppMenu_GetStatsIter(id);
-		if(iter_valid(it) && iter_release(it)) {
-			new
-				Float:scr_min[2],
-				Float:scr_max[2];
-			if(IPModel_GetScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
-				scr_min[1] += 2.0;
-				scr_max[1] -= 16.0; // decrease max y to leave some space for name td
-				new
-					Float:anc_x,
-					Float:anc_y,
-					Float:gap_x,
-					Float:gap_y,
-					row = 3,
-					col = 3,
-					Float:size,
-					key[Key];
-				IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
-				size = 15.0;
-				gap_x = ((scr_max[0] - scr_min[0]) - size * col) / (col - 1); // if we have col columns, then we have (col - 1) gaps between columns
-				gap_y = ((scr_max[1] - scr_min[1]) - (size + 2.0) * row) / (row - 1); // same as above for rows
-				key[ItemId] = id;
-				key[PlayerId] = playerid;
-				for(new cnt = 0, PlayerText:sprite_td, PlayerText:name_td, Float:x, Float:y, LinkedList:ll; iter_inside(it); iter_move_next(it)) {
-					// overiding app variable because it's no longer used after comparison with AppMenu
-					app = iter_get(it);
-					x = anc_x + scr_min[0] + (gap_x + size) * (cnt % col);
-					y = (anc_y + scr_min[1]) + (gap_y + size) * (floatround(float(cnt) / float(col), floatround_floor));
-					AppMenu_CreateAppTd(app, playerid, x, y, size, sprite_td, name_td);
-					PlayerTextDrawShow(playerid, sprite_td);
-					PlayerTextDrawShow(playerid, name_td);
-					if(!map_valid(m_uiStats)) {
-						m_uiStats = map_new();
-					}
-					if(!map_has_arr_key(m_uiStats, key)) {
-						ll = linked_list_new();
-						map_arr_set(m_uiStats, key, ll);
-					} else {
-						ll = LinkedList:map_arr_get(m_uiStats, key);
-					}
-					linked_list_add(ll, _:sprite_td);
-					linked_list_add(ll, _:name_td);
-					cnt++;
-					printf("menu ui created textdraw for app %d", app);
-				}
-				if(!map_valid(m_uiItemId)) {
-					m_uiItemId = map_new();
-				}
-				map_set(m_uiItemId, playerid, id);
-			}
-		}
+		AppMenu_UpdateAppList(id, playerid);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;
 }
 
 hook IPA_OnUIHideAttempt(id, playerid) {
-	if(map_valid(m_uiItemId) && map_has_key(m_uiItemId, playerid)) {
-		map_remove(m_uiItemId, playerid);
-		if(!map_size(m_uiItemId)) {
-			map_delete(m_uiItemId);
-			m_uiItemId = Map:-1;
-		}
-	}
-	if(AppMenu_HasUI(id, playerid)) {
-		new key[Key];
-		key[ItemId] = id;
-		key[PlayerId] = playerid;
-		new LinkedList:ll = LinkedList:map_arr_get(m_uiStats, key);
-		for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
-			PlayerTextDrawDestroy(playerid, PlayerText:iter_get(it));
-		}
-		map_arr_remove_deep(m_uiStats, key);
-		if(!map_size(m_uiStats)) {
-			map_delete(m_uiStats);
-			m_uiStats = Map:-1;
-		}
-		return Y_HOOKS_BREAK_RETURN_1;
-	}
+	AppMenu_DestroyUI(id, playerid);
 	return 1;
 }
 
@@ -157,7 +174,7 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 			new LinkedList:ll = LinkedList:map_arr_get(m_uiStats, key);
 			for(new Iter:it = linked_list_iter(ll), index = 0; iter_inside(it); iter_move_next(it), index++) {
 				if(PlayerText:iter_get(it) == playertextid) {
-					new Iter:app_it = AppMenu_GetStatsIter(id, index);
+					new Iter:app_it = AppMenu_GetAppListIter(id, index);
 					if(iter_valid(app_it) && iter_release(app_it)) {
 						new app = iter_get(app_it);
 						task_unblock(Y_HOOKS_BREAK_RETURN_1);

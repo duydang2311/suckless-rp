@@ -4,37 +4,45 @@
 
 #define app_menu_stats_included
 
-static Map:m_menuStats;
+static enum _:AppMenuStats {
+	appIndexOffset,
+	LinkedList:appList
+}
+
+static Map:m_menuStats; // { item_id: {AppMenuStats} }
 
 forward AppMenu_OnAppsRetrieved(id, Task:result);
 public AppMenu_OnAppsRetrieved(id, Task:result) {
-	new LinkedList:ll = linked_list_new();
+	new stats[AppMenuStats];
 	if(!map_valid(m_menuStats)) {
 		m_menuStats = map_new();
+		stats[appIndexOffset] = 0;
 	} else if(map_has_key(m_menuStats, id)) {
-		map_remove_deep(m_menuStats, id);
+		map_get_arr(m_menuStats, id, stats);
+		if(linked_list_valid(stats[appList])) {
+			linked_list_delete(stats[appList]);
+		}
 	}
-	map_set(m_menuStats, id, _:ll);
+	stats[appList] = linked_list_new();
+	map_set_arr(m_menuStats, id, stats);
 
 	for(new app = 0, j = IPApp_GetSize(); app != j; app++) {
 		if(app == AppMenu) {
 			continue;
 		}
 		if(!IPApp_IsExternal(app)) {
-			linked_list_add(ll, app);
+			linked_list_add(stats[appList], app);
 		}
 	}
 
 	new rows = cache_num_rows();
 	for(new i = 0, app; i != rows; i++) {
 		cache_get_value_name_int(i, "app", app);
-		linked_list_add(ll, app);
-		printf("menu stats add external app %d", app);
+		linked_list_add(stats[appList], app);
 	}
 	if(task_valid(result)) {
 		task_set_result(result, rows);
 	}
-	printf("AppMenu_OnAppsRetrieved rows %d", rows);
 	return 1;
 }
 
@@ -42,11 +50,25 @@ stock AppMenu_HasStats(id) {
 	return (map_valid(m_menuStats) && map_has_key(m_menuStats, id));
 }
 
-stock Iter:AppMenu_GetStatsIter(id, index = 0) {
+stock AppMenu_GetIndexOffset(id) {
+	if(!AppMenu_HasStats(id)) {
+		return 0;
+	}
+
+	new stats[AppMenuStats];
+	map_get_arr(m_menuStats, id, stats);
+	return stats[appIndexOffset];
+}
+
+stock Iter:AppMenu_GetAppListIter(id, index = 0) {
 	new Iter:it = Iter:-1;
-	if(AppMenu_HasStats(id)) {
-		new LinkedList:ll = LinkedList:map_get(m_menuStats, id);
-		it = linked_list_iter(ll, index);
+	if(!AppMenu_HasStats(id)) {
+		return it;
+	}
+	new stats[AppMenuStats];
+	map_get_arr(m_menuStats, id, stats);
+	if(linked_list_valid(stats[appList])) {
+		it = linked_list_iter(stats[appList], index);
 		iter_acquire(it);
 	}
 	return it;
@@ -61,8 +83,15 @@ hook IPA_OnEnsureRequest() {
 
 hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 	if(app == AppMenu) {
-		printf("IPA_OnStatsInitAttempt id %d, app %d, result %d", id, app, _:result);
-		new query[128];
+		new
+			query[128],
+			stats[AppMenuStats];
+		stats[appIndexOffset] = 0;
+		stats[appList] = LinkedList:-1;
+		if(!map_valid(m_menuStats)) {
+			m_menuStats = map_new();
+		}
+		map_set_arr(m_menuStats, id, stats);
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM phone_external_apps WHERE id = %d ORDER BY id ASC", id);
 		mysql_pquery(MySQL_Connection(), query, "AppMenu_OnAppsRetrieved", "ii", id, _:result);
 		return Y_HOOKS_BREAK_RETURN_1;

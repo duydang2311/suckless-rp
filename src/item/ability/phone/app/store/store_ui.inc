@@ -9,7 +9,17 @@ static enum _:Key {
 	PlayerId
 }
 
-stock AppMenu_HasUI(id, playerid) {
+static enum _:UIStats {
+
+}
+
+static Map:m_uiStats;
+
+stock AppStore_HasUI(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	return (map_valid(m_uiStats) && map_has_arr_key(m_uiStats, key));
 }
 
 #include <YSI_Coding\y_hooks>

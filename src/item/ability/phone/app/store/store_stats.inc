@@ -4,6 +4,11 @@
 
 #define app_store_stats_included
 
+static enum _:AppStoreStats {
+	appRow,
+	appColumn
+}
+
 static Map:m_storeStats;
 
 stock AppStore_HasStats(id) {
@@ -31,12 +36,13 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 	if(app == AppStore) {
 		// To save time, AppStore initiation will rely on AppMenu stats instead of retrieving phone external apps again, so no asynchronous process should be made.
 		// Note: AppStore will always rely on AppMenu stats, so never terminate AppMenu while AppStore is being used
-		new
-			Iter:it = AppMenu_GetStatsIter(id),
-			store;
-		if(iter_valid(it) && iter_release(it)) {
-
+		if(!map_valid(m_storeStats)) {
+			m_storeStats = map_new();
 		}
+		new stats[AppStoreStats];
+		stats[appRow] = 0;
+		stats[appColumn] = 0;
+		map_set_arr(m_storeStats, id, stats);
 		if(task_valid(result)) { // if AppStore initiation is called by IPApp_InitStatsAsync, just set the task result anyways to avoid undead task & memory leak
 			task_unblock(Y_HOOKS_BREAK_RETURN_1);
 			await task_ms(1);

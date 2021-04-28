@@ -9,12 +9,16 @@ static enum _:Key {
 	PlayerId
 }
 
-static enum _:UIStats {
-
+static enum _:InstallPageTextDraw {
+	PlayerText:tdAppSprite,
+	PlayerText:tdAppName,
+	PlayerText:tdAppDesc,
+	PlayerText:tdAppButton
 }
 
 static
-	Map:m_uiStats,
+	Map:m_mainPageTd,
+	Map:m_installPageTd,
 	Map:m_uiItemId;
 
 stock AppStore_HasUI(id, playerid) {
@@ -25,7 +29,7 @@ stock AppStore_HasUI(id, playerid) {
 }
 
 stock AppStore_HasUIKey(const key[], size = sizeof(key)) {
-	return (map_valid(m_uiStats) && map_has_arr_key(m_uiStats, key, size));
+	return (map_valid(m_mainPageTd) && map_has_arr_key(m_mainPageTd, key, size));
 }
 
 stock AppStore_DestroyUI(id, playerid) {
@@ -40,18 +44,28 @@ stock AppStore_DestroyUI(id, playerid) {
 	new key[Key];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
-	if(!map_valid(m_uiStats) || !map_has_arr_key(m_uiStats, key)) {
-		return 0;
+	if(map_valid(m_mainPageTd) && map_has_arr_key(m_mainPageTd, key)) {
+		new LinkedList:ll = LinkedList:map_arr_get(m_mainPageTd, key);
+		for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
+			PlayerTextDrawDestroy(playerid, PlayerText:iter_get(it));
+		}
+		map_arr_remove_deep(m_mainPageTd, key);
+		if(!map_size(m_mainPageTd)) {
+			map_delete(m_mainPageTd);
+			m_mainPageTd = Map:-1;
+		}
 	}
-
-	new LinkedList:ll = LinkedList:map_arr_get(m_uiStats, key);
-	for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
-		PlayerTextDrawDestroy(playerid, PlayerText:iter_get(it));
-	}
-	map_arr_remove_deep(m_uiStats, key);
-	if(!map_size(m_uiStats)) {
-		map_delete(m_uiStats);
-		m_uiStats = Map:-1;
+	if(map_valid(m_installPageTd) && map_has_arr_key(m_installPageTd, key)) {
+		new insTd[InstallPageTextDraw];
+		map_arr_get_arr(m_installPageTd, key, insTd);
+		for(new i = 0; i != sizeof(insTd); i++) {
+			PlayerTextDrawDestroy(playerid, PlayerText:insTd[i]);
+		}
+		map_arr_remove(m_installPageTd, key);
+		if(!map_size(m_installPageTd)) {
+			map_delete(m_installPageTd);
+			m_installPageTd = Map:-1;
+		}
 	}
 	return 1;
 }
@@ -108,10 +122,10 @@ stock AppStore_UpdateMainPage(id, playerid) {
 		key[Key];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
-	if(!map_valid(m_uiStats)) {
-		m_uiStats = map_new();
+	if(!map_valid(m_mainPageTd)) {
+		m_mainPageTd = map_new();
 	}
-	map_arr_set(m_uiStats, key, ll);
+	map_arr_set(m_mainPageTd, key, ll);
 	const
 		row = 3,
 		col = 3,
@@ -157,6 +171,74 @@ stock AppStore_UpdateMainPage(id, playerid) {
 	return 1;
 }
 
+stock AppStore_UpdateInstallPage(id, playerid, app) {
+	AppStore_DestroyUI(id, playerid);
+
+	new
+		insTd[InstallPageTextDraw],
+		Float:scr_min[2],
+		Float:scr_max[2];
+	if(IPModel_GetScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
+		scr_min[1] += 20.0;
+		scr_max[1] -= 20.0; // decrease max y to leave some space for name td
+		new
+			Float:anc_x,
+			Float:anc_y,
+			Float:x,
+			Float:y,
+			Float:range_x,
+			Float:range_y,
+			Float:size,
+			key[Key];
+		key[ItemId] = id;
+		key[PlayerId] = playerid;
+		IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
+		range_x = scr_max[0] - scr_min[0];
+		range_y = scr_max[1] - scr_min[1];
+		size = range_y / 3.0;
+		x = anc_x + scr_min[0] + (scr_max[0] - scr_min[0]) / 2.0 - size / 2.0;
+		y = anc_y + scr_min[1] - (size - 9.0) / 2.0;
+		AppStore_CreateAppTd(playerid, app, x, y, size, insTd[tdAppSprite], insTd[tdAppName]);
+		y += size + 9.0 + range_y / 3.0;
+		insTd[tdAppDesc] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y, "App description:...");
+		PlayerTextDrawFont(playerid, insTd[tdAppDesc], 3);
+		PlayerTextDrawLetterSize(playerid, insTd[tdAppDesc], 0.150000, 0.600000);
+		PlayerTextDrawTextSize(playerid, insTd[tdAppDesc], 400.000000, 9.000000);
+		PlayerTextDrawSetOutline(playerid, insTd[tdAppDesc], 1);
+		PlayerTextDrawSetShadow(playerid, insTd[tdAppDesc], 0);
+		PlayerTextDrawAlignment(playerid, insTd[tdAppDesc], 2);
+		PlayerTextDrawColor(playerid, insTd[tdAppDesc], -1);
+		PlayerTextDrawBackgroundColor(playerid, insTd[tdAppDesc], 255);
+		PlayerTextDrawBoxColor(playerid, insTd[tdAppDesc], 50);
+		PlayerTextDrawUseBox(playerid, insTd[tdAppDesc], 0);
+		PlayerTextDrawSetProportional(playerid, insTd[tdAppDesc], 1);
+		PlayerTextDrawSetSelectable(playerid, insTd[tdAppDesc], 0);
+		y += range_y / 3.0;
+		insTd[tdAppButton] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y, "Install");
+		PlayerTextDrawFont(playerid, insTd[tdAppButton], 3);
+		PlayerTextDrawLetterSize(playerid, insTd[tdAppButton], 0.150000, 0.600000);
+		PlayerTextDrawTextSize(playerid, insTd[tdAppButton], 400.000000, 9.000000);
+		PlayerTextDrawSetOutline(playerid, insTd[tdAppButton], 1);
+		PlayerTextDrawSetShadow(playerid, insTd[tdAppButton], 0);
+		PlayerTextDrawAlignment(playerid, insTd[tdAppButton], 2);
+		PlayerTextDrawColor(playerid, insTd[tdAppButton], -1);
+		PlayerTextDrawBackgroundColor(playerid, insTd[tdAppButton], 255);
+		PlayerTextDrawBoxColor(playerid, insTd[tdAppButton], 0xFFFFFFFF);
+		PlayerTextDrawUseBox(playerid, insTd[tdAppButton], 1);
+		PlayerTextDrawSetProportional(playerid, insTd[tdAppButton], 1);
+		PlayerTextDrawSetSelectable(playerid, insTd[tdAppButton], 1);
+
+		for(new i = 0; i != sizeof(insTd); i++) {
+			PlayerTextDrawShow(playerid, PlayerText:insTd[i]);
+		}
+		if(!map_valid(m_installPageTd)) {
+			m_installPageTd = map_new();
+		}
+		map_arr_set_arr(m_installPageTd, key, insTd);
+	}
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnUIShowAttempt(id, app, playerid) {
@@ -185,10 +267,10 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 	key[ItemId] = map_get(m_uiItemId, playerid);
 	key[PlayerId] = playerid;
 	if(AppStore_HasUIKey(key)) {
-		new LinkedList:ll = LinkedList:map_arr_get(m_uiStats, key);
+		new LinkedList:ll = LinkedList:map_arr_get(m_mainPageTd, key);
 		for(new Iter:it = linked_list_iter(ll), app = 0; iter_inside(it); iter_move_next(it, 2), app++) {
 			if(playertextid == PlayerText:iter_get(it)) {
-				AppStore_UpdateInstallPage(id, playerid, app);
+				AppStore_UpdateInstallPage(key[ItemId], playerid, app);
 				return Y_HOOKS_BREAK_RETURN_1;
 			}
 		}

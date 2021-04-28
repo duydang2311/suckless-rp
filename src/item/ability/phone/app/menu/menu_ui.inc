@@ -113,7 +113,7 @@ stock AppMenu_UpdateAppList(id, playerid) {
 			Float:scr_min[2],
 			Float:scr_max[2];
 		if(IPModel_GetScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
-			scr_min[1] += 2.0;
+			scr_min[1] += 12.0;
 			scr_max[1] -= 16.0; // decrease max y to leave some space for name td
 			new
 				Float:anc_x,

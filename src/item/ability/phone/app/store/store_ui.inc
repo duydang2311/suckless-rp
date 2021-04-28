@@ -138,7 +138,7 @@ stock AppStore_UpdateMainPage(id, playerid) {
 		installed[iter_get(it)] = true;
 	}
 	if(IPModel_GetScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
-		scr_min[1] += 2.0;
+		scr_min[1] += 12.0;
 		scr_max[1] -= 16.0; // decrease max y to leave some space for name td
 		new
 			Float:anc_x,
@@ -179,45 +179,76 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 		Float:scr_min[2],
 		Float:scr_max[2];
 	if(IPModel_GetScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
-		scr_min[1] += 20.0;
-		scr_max[1] -= 20.0; // decrease max y to leave some space for name td
+		scr_min[1] += 12.0;
+		scr_max[1] -= 20.0;
 		new
 			Float:anc_x,
 			Float:anc_y,
 			Float:x,
 			Float:y,
-			Float:range_x,
 			Float:range_y,
 			Float:size,
-			key[Key];
+			key[Key],
+			sprite[APP_SPRITE_SIZE],
+			name[APP_NAME_SIZE];
 		key[ItemId] = id;
 		key[PlayerId] = playerid;
+		IPApp_GetSprite(app, sprite);
+		IPApp_GetName(app, name);
 		IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
-		range_x = scr_max[0] - scr_min[0];
 		range_y = scr_max[1] - scr_min[1];
-		size = range_y / 3.0;
+		size = range_y / 5.0;
 		x = anc_x + scr_min[0] + (scr_max[0] - scr_min[0]) / 2.0 - size / 2.0;
 		y = anc_y + scr_min[1] - (size - 9.0) / 2.0;
-		AppStore_CreateAppTd(playerid, app, x, y, size, insTd[tdAppSprite], insTd[tdAppName]);
-		y += size + 9.0 + range_y / 3.0;
+
+		insTd[tdAppSprite] = CreatePlayerTextDraw(playerid, x, y, sprite);
+		PlayerTextDrawFont(playerid, insTd[tdAppSprite], 4);
+		PlayerTextDrawLetterSize(playerid, insTd[tdAppSprite], 0.00000, 0.000000);
+		PlayerTextDrawTextSize(playerid, insTd[tdAppSprite], size, size);
+		PlayerTextDrawSetOutline(playerid, insTd[tdAppSprite], 0);
+		PlayerTextDrawSetShadow(playerid, insTd[tdAppSprite], 0);
+		PlayerTextDrawAlignment(playerid, insTd[tdAppSprite], 2);
+		PlayerTextDrawColor(playerid, insTd[tdAppSprite], 0x000000FF);
+		PlayerTextDrawBackgroundColor(playerid, insTd[tdAppSprite], 255);
+		PlayerTextDrawBoxColor(playerid, insTd[tdAppSprite], 255);
+		PlayerTextDrawUseBox(playerid, insTd[tdAppSprite], 1);
+		PlayerTextDrawSetProportional(playerid, insTd[tdAppSprite], 1);
+		PlayerTextDrawSetSelectable(playerid, insTd[tdAppSprite], 1);
+
+		insTd[tdAppName] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y + size, name);
+		PlayerTextDrawFont(playerid, insTd[tdAppName], 3);
+		PlayerTextDrawLetterSize(playerid, insTd[tdAppName], 0.150000, 0.600000);
+		PlayerTextDrawTextSize(playerid, insTd[tdAppName], 400.000000, 65.000000);
+		PlayerTextDrawSetOutline(playerid, insTd[tdAppName], 1);
+		PlayerTextDrawSetShadow(playerid, insTd[tdAppName], 0);
+		PlayerTextDrawAlignment(playerid, insTd[tdAppName], 2);
+		PlayerTextDrawColor(playerid, insTd[tdAppName], -1);
+		PlayerTextDrawBackgroundColor(playerid, insTd[tdAppName], 255);
+		PlayerTextDrawBoxColor(playerid, insTd[tdAppName], 50);
+		PlayerTextDrawUseBox(playerid, insTd[tdAppName], 0);
+		PlayerTextDrawSetProportional(playerid, insTd[tdAppName], 1);
+		PlayerTextDrawSetSelectable(playerid, insTd[tdAppName], 0);
+
+		y += size / 2.0 + 9.0 + range_y / 5.0; // tdAppName and tdAppSprite occupy a total of 1/5 range_y
 		insTd[tdAppDesc] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y, "App description:...");
 		PlayerTextDrawFont(playerid, insTd[tdAppDesc], 3);
 		PlayerTextDrawLetterSize(playerid, insTd[tdAppDesc], 0.150000, 0.600000);
-		PlayerTextDrawTextSize(playerid, insTd[tdAppDesc], 400.000000, 9.000000);
+		PlayerTextDrawTextSize(playerid, insTd[tdAppDesc], 9.000000, 65.000000);
 		PlayerTextDrawSetOutline(playerid, insTd[tdAppDesc], 1);
 		PlayerTextDrawSetShadow(playerid, insTd[tdAppDesc], 0);
 		PlayerTextDrawAlignment(playerid, insTd[tdAppDesc], 2);
 		PlayerTextDrawColor(playerid, insTd[tdAppDesc], -1);
 		PlayerTextDrawBackgroundColor(playerid, insTd[tdAppDesc], 255);
 		PlayerTextDrawBoxColor(playerid, insTd[tdAppDesc], 50);
-		PlayerTextDrawUseBox(playerid, insTd[tdAppDesc], 0);
+		PlayerTextDrawUseBox(playerid, insTd[tdAppDesc], 1);
 		PlayerTextDrawSetProportional(playerid, insTd[tdAppDesc], 1);
 		PlayerTextDrawSetSelectable(playerid, insTd[tdAppDesc], 0);
-		y += range_y / 3.0;
+
+		y += range_y * 3.0 / 5.0; // tdAppDesc occupies 3/5 of range_y, tdAppButton occupies the last 1/5 of range_y
 		insTd[tdAppButton] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y, "Install");
 		PlayerTextDrawFont(playerid, insTd[tdAppButton], 3);
 		PlayerTextDrawLetterSize(playerid, insTd[tdAppButton], 0.150000, 0.600000);
-		PlayerTextDrawTextSize(playerid, insTd[tdAppButton], 400.000000, 9.000000);
+		PlayerTextDrawTextSize(playerid, insTd[tdAppButton], 4.000000, 20.000000);
 		PlayerTextDrawSetOutline(playerid, insTd[tdAppButton], 1);
 		PlayerTextDrawSetShadow(playerid, insTd[tdAppButton], 0);
 		PlayerTextDrawAlignment(playerid, insTd[tdAppButton], 2);

@@ -21,7 +21,11 @@ stock AppStore_HasUI(id, playerid) {
 	new key[Key];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
-	return ;
+	return 1;
+}
+
+stock AppStore_HasUIKey(const key[], size = sizeof(key)) {
+	return (map_valid(m_uiStats) && map_has_arr_key(m_uiStats, key, size));
 }
 
 stock AppStore_DestroyUI(id, playerid) {
@@ -173,6 +177,21 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 }
 
 hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
+	if(!map_valid(m_uiItemId) || !map_has_key(m_uiItemId, playerid)) {
+		return 1;
+	}
 
+	new key[Key];
+	key[ItemId] = map_get(m_uiItemId, playerid);
+	key[PlayerId] = playerid;
+	if(AppStore_HasUIKey(key)) {
+		new LinkedList:ll = LinkedList:map_arr_get(m_uiStats, key);
+		for(new Iter:it = linked_list_iter(ll), app = 0; iter_inside(it); iter_move_next(it, 2), app++) {
+			if(playertextid == PlayerText:iter_get(it)) {
+				AppStore_UpdateInstallPage(id, playerid, app);
+				return Y_HOOKS_BREAK_RETURN_1;
+			}
+		}
+	}
 	return 1;
 }

@@ -172,12 +172,11 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 			key[ItemId] = id;
 			key[PlayerId] = playerid;
 			new LinkedList:ll = LinkedList:map_arr_get(m_uiStats, key);
-			for(new Iter:it = linked_list_iter(ll), index = 0; iter_inside(it); iter_move_next(it), index++) {
+			for(new Iter:it = linked_list_iter(ll), index = 0; iter_inside(it); iter_move_next(it, 2), index++) {
 				if(PlayerText:iter_get(it) == playertextid) {
 					new Iter:app_it = AppMenu_GetAppListIter(id, index);
 					if(iter_valid(app_it) && iter_release(app_it)) {
 						new app = iter_get(app_it);
-						task_unblock(Y_HOOKS_BREAK_RETURN_1);
 						IPApp_InitStats(id, app);
 						IPApp_HideUIForPlayer(id, playerid);
 						IPApp_ShowUIForPlayer(id, app, playerid);

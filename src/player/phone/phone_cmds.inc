@@ -15,7 +15,7 @@ CMD:phone(playerid) {
 			task_unblock(1);
 			await IPApp_InitStatsAsync(item, AppMenu);
 			IPApp_ShowUIForPlayer(item, AppMenu, playerid);
-			IPFinger_Init(playerid, item);
+			// IPFinger_Init(playerid, item);
 			SelectTextDraw(playerid, 0x115599FF);
 			if(!map_valid(m_phoneItemId)) {
 				m_phoneItemId = map_new();

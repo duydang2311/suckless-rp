@@ -9,9 +9,7 @@ static enum _:Key {
 	PlayerId
 }
 
-static
-	Map:m_uiStats, // { {Key}: [PlayerText:value, ...] }
-	Map:m_uiItemId; // { playerid: item_id }
+static Map:m_uiStats; // { {Key}: [PlayerText:value, ...] }
 
 stock AppMenu_HasUI(id, playerid) {
 	new key[Key];
@@ -21,14 +19,6 @@ stock AppMenu_HasUI(id, playerid) {
 }
 
 stock AppMenu_DestroyUI(id, playerid) {
-	if(map_valid(m_uiItemId) && map_has_key(m_uiItemId, playerid)) {
-		map_remove(m_uiItemId, playerid);
-		if(!map_size(m_uiItemId)) {
-			map_delete(m_uiItemId);
-			m_uiItemId = Map:-1;
-		}
-	}
-
 	new key[Key];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
@@ -136,10 +126,6 @@ stock AppMenu_UpdateAppList(id, playerid) {
 				linked_list_add(ll, _:sprite_td);
 				linked_list_add(ll, _:name_td);
 			}
-			if(!map_valid(m_uiItemId)) {
-				m_uiItemId = map_new();
-			}
-			map_set(m_uiItemId, playerid, id);
 		}
 	}
 	return 1;
@@ -165,30 +151,22 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 }
 
 hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
-	if(map_valid(m_uiItemId) && map_has_key(m_uiItemId, playerid)) {
-		new id = map_get(m_uiItemId, playerid);
-		if(AppMenu_HasUI(id, playerid)) {
-			new key[Key];
-			key[ItemId] = id;
-			key[PlayerId] = playerid;
-			new LinkedList:ll = LinkedList:map_arr_get(m_uiStats, key);
-			for(new Iter:it = linked_list_iter(ll), index = 0; iter_inside(it); iter_move_next(it, 2), index++) {
-				if(PlayerText:iter_get(it) == playertextid) {
-					new Iter:app_it = AppMenu_GetAppListIter(id, index);
-					if(iter_valid(app_it) && iter_release(app_it)) {
-						new app = iter_get(app_it);
-						IPApp_InitStats(id, app);
-						IPApp_HideUIForPlayer(id, playerid);
-						IPApp_ShowUIForPlayer(id, app, playerid);
-					}
-					return Y_HOOKS_BREAK_RETURN_1;
+	new id = IPUI_GetPlayerPhone(playerid);
+	if(id != -1 && AppMenu_HasUI(id, playerid)) {
+		new key[Key];
+		key[ItemId] = id;
+		key[PlayerId] = playerid;
+		new LinkedList:ll = LinkedList:map_arr_get(m_uiStats, key);
+		for(new Iter:it = linked_list_iter(ll), index = 0; iter_inside(it); iter_move_next(it, 2), index++) {
+			if(PlayerText:iter_get(it) == playertextid) {
+				new Iter:app_it = AppMenu_GetAppListIter(id, index);
+				if(iter_valid(app_it) && iter_release(app_it)) {
+					new app = iter_get(app_it);
+					IPApp_InitStats(id, app);
+					IPApp_HideUIForPlayer(id, playerid);
+					IPApp_ShowUIForPlayer(id, app, playerid);
 				}
-			}
-		} else {
-			map_remove(m_uiItemId, playerid);
-			if(!map_size(m_uiItemId)) {
-				map_delete(m_uiItemId);
-				m_uiItemId = Map:-1;
+				return Y_HOOKS_BREAK_RETURN_1;
 			}
 		}
 	}

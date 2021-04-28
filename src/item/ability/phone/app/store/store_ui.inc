@@ -9,42 +9,45 @@ static enum _:Key {
 	PlayerId
 }
 
-static enum _:InstallPageTextDraw {
-	PlayerText:tdAppSprite,
-	PlayerText:tdAppName,
-	PlayerText:tdAppDesc,
-	PlayerText:tdAppButton
+static enum _:InstallPageStats {
+	insApp,
+	PlayerText:insAppSprite,
+	PlayerText:insAppName,
+	PlayerText:insAppDesc,
+	PlayerText:insAppButton
 }
 
 static
 	Map:m_mainPageTd,
-	Map:m_installPageTd,
-	Map:m_uiItemId;
+	Map:m_installPageStats;
 
-stock AppStore_HasUI(id, playerid) {
-	new key[Key];
-	key[ItemId] = id;
-	key[PlayerId] = playerid;
-	return 1;
-}
-
-stock AppStore_HasUIKey(const key[], size = sizeof(key)) {
+stock AppStore_HasMainPageKey(const key[], size = sizeof(key)) {
 	return (map_valid(m_mainPageTd) && map_has_arr_key(m_mainPageTd, key, size));
 }
 
-stock AppStore_DestroyUI(id, playerid) {
-	if(map_valid(m_uiItemId) && map_has_key(m_uiItemId, playerid)) {
-		map_remove(m_uiItemId, playerid);
-		if(!map_size(m_uiItemId)) {
-			map_delete(m_uiItemId);
-			m_uiItemId = Map:-1;
-		}
-	}
+stock AppStore_HasInstallPageKey(const key[], size = sizeof(key)) {
+	return (map_valid(m_installPageStats) && map_has_arr_key(m_installPageStats, key, size));
+}
 
+stock AppStore_HasMainPage(id, playerid) {
 	new key[Key];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
-	if(map_valid(m_mainPageTd) && map_has_arr_key(m_mainPageTd, key)) {
+	return AppStore_HasMainPageKey(key);
+}
+
+stock AppStore_HasInstallPage(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	return AppStore_HasInstallPageKey(key);
+}
+
+stock AppStore_DestroyUI(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(AppStore_HasMainPageKey(key)) {
 		new LinkedList:ll = LinkedList:map_arr_get(m_mainPageTd, key);
 		for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
 			PlayerTextDrawDestroy(playerid, PlayerText:iter_get(it));
@@ -55,16 +58,17 @@ stock AppStore_DestroyUI(id, playerid) {
 			m_mainPageTd = Map:-1;
 		}
 	}
-	if(map_valid(m_installPageTd) && map_has_arr_key(m_installPageTd, key)) {
-		new insTd[InstallPageTextDraw];
-		map_arr_get_arr(m_installPageTd, key, insTd);
-		for(new i = 0; i != sizeof(insTd); i++) {
-			PlayerTextDrawDestroy(playerid, PlayerText:insTd[i]);
-		}
-		map_arr_remove(m_installPageTd, key);
-		if(!map_size(m_installPageTd)) {
-			map_delete(m_installPageTd);
-			m_installPageTd = Map:-1;
+	if(AppStore_HasInstallPageKey(key)) {
+		new stats[InstallPageStats];
+		map_arr_get_arr(m_installPageStats, key, stats);
+		PlayerTextDrawDestroy(playerid, PlayerText:stats[insAppSprite]);
+		PlayerTextDrawDestroy(playerid, PlayerText:stats[insAppName]);
+		PlayerTextDrawDestroy(playerid, PlayerText:stats[insAppDesc]);
+		PlayerTextDrawDestroy(playerid, PlayerText:stats[insAppButton]);
+		map_arr_remove(m_installPageStats, key);
+		if(!map_size(m_installPageStats)) {
+			map_delete(m_installPageStats);
+			m_installPageStats = Map:-1;
 		}
 	}
 	return 1;
@@ -153,7 +157,7 @@ stock AppStore_UpdateMainPage(id, playerid) {
 		for(new i = index_offset, cnt = 0, PlayerText:sprite_td, PlayerText:name_td, Float:x, Float:y; i != 6 && i != sizeof(installed); i++, cnt++) {
 			x = anc_x + scr_min[0] + (gap_x + size) * (cnt % col);
 			y = (anc_y + scr_min[1]) + (gap_y + size) * (floatround(float(cnt) / float(col), floatround_floor));
-			if(installed[i]) {
+			if(!IPApp_IsExternal(i) || installed[i]) {
 				AppStore_CreateAppTd(playerid, i, x, y, size, sprite_td, name_td, .color = 0x000000FF);
 			} else {
 				AppStore_CreateAppTd(playerid, i, x, y, size, sprite_td, name_td, .color = 0x00000033);
@@ -163,10 +167,6 @@ stock AppStore_UpdateMainPage(id, playerid) {
 			linked_list_add(ll, _:sprite_td);
 			linked_list_add(ll, _:name_td);
 		}
-		if(!map_valid(m_uiItemId)) {
-			m_uiItemId = map_new();
-		}
-		map_set(m_uiItemId, playerid, id);
 	}
 	return 1;
 }
@@ -175,9 +175,10 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 	AppStore_DestroyUI(id, playerid);
 
 	new
-		insTd[InstallPageTextDraw],
+		stats[InstallPageStats],
 		Float:scr_min[2],
 		Float:scr_max[2];
+	stats[insApp] = app;
 	if(IPModel_GetScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
 		scr_min[1] += 12.0;
 		scr_max[1] -= 20.0;
@@ -201,71 +202,82 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 		x = anc_x + scr_min[0] + (scr_max[0] - scr_min[0]) / 2.0 - size / 2.0;
 		y = anc_y + scr_min[1] - (size - 9.0) / 2.0;
 
-		insTd[tdAppSprite] = CreatePlayerTextDraw(playerid, x, y, sprite);
-		PlayerTextDrawFont(playerid, insTd[tdAppSprite], 4);
-		PlayerTextDrawLetterSize(playerid, insTd[tdAppSprite], 0.00000, 0.000000);
-		PlayerTextDrawTextSize(playerid, insTd[tdAppSprite], size, size);
-		PlayerTextDrawSetOutline(playerid, insTd[tdAppSprite], 0);
-		PlayerTextDrawSetShadow(playerid, insTd[tdAppSprite], 0);
-		PlayerTextDrawAlignment(playerid, insTd[tdAppSprite], 2);
-		PlayerTextDrawColor(playerid, insTd[tdAppSprite], 0x000000FF);
-		PlayerTextDrawBackgroundColor(playerid, insTd[tdAppSprite], 255);
-		PlayerTextDrawBoxColor(playerid, insTd[tdAppSprite], 255);
-		PlayerTextDrawUseBox(playerid, insTd[tdAppSprite], 1);
-		PlayerTextDrawSetProportional(playerid, insTd[tdAppSprite], 1);
-		PlayerTextDrawSetSelectable(playerid, insTd[tdAppSprite], 1);
+		stats[insAppSprite] = CreatePlayerTextDraw(playerid, x, y, sprite);
+		PlayerTextDrawFont(playerid, stats[insAppSprite], 4);
+		PlayerTextDrawLetterSize(playerid, stats[insAppSprite], 0.00000, 0.000000);
+		PlayerTextDrawTextSize(playerid, stats[insAppSprite], size, size);
+		PlayerTextDrawSetOutline(playerid, stats[insAppSprite], 0);
+		PlayerTextDrawSetShadow(playerid, stats[insAppSprite], 0);
+		PlayerTextDrawAlignment(playerid, stats[insAppSprite], 2);
+		PlayerTextDrawColor(playerid, stats[insAppSprite], 0x000000FF);
+		PlayerTextDrawBackgroundColor(playerid, stats[insAppSprite], 255);
+		PlayerTextDrawBoxColor(playerid, stats[insAppSprite], 255);
+		PlayerTextDrawUseBox(playerid, stats[insAppSprite], 1);
+		PlayerTextDrawSetProportional(playerid, stats[insAppSprite], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[insAppSprite], 1);
 
-		insTd[tdAppName] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y + size, name);
-		PlayerTextDrawFont(playerid, insTd[tdAppName], 3);
-		PlayerTextDrawLetterSize(playerid, insTd[tdAppName], 0.150000, 0.600000);
-		PlayerTextDrawTextSize(playerid, insTd[tdAppName], 400.000000, 65.000000);
-		PlayerTextDrawSetOutline(playerid, insTd[tdAppName], 1);
-		PlayerTextDrawSetShadow(playerid, insTd[tdAppName], 0);
-		PlayerTextDrawAlignment(playerid, insTd[tdAppName], 2);
-		PlayerTextDrawColor(playerid, insTd[tdAppName], -1);
-		PlayerTextDrawBackgroundColor(playerid, insTd[tdAppName], 255);
-		PlayerTextDrawBoxColor(playerid, insTd[tdAppName], 50);
-		PlayerTextDrawUseBox(playerid, insTd[tdAppName], 0);
-		PlayerTextDrawSetProportional(playerid, insTd[tdAppName], 1);
-		PlayerTextDrawSetSelectable(playerid, insTd[tdAppName], 0);
+		stats[insAppName] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y + size, name);
+		PlayerTextDrawFont(playerid, stats[insAppName], 3);
+		PlayerTextDrawLetterSize(playerid, stats[insAppName], 0.150000, 0.600000);
+		PlayerTextDrawTextSize(playerid, stats[insAppName], 400.000000, 65.000000);
+		PlayerTextDrawSetOutline(playerid, stats[insAppName], 1);
+		PlayerTextDrawSetShadow(playerid, stats[insAppName], 0);
+		PlayerTextDrawAlignment(playerid, stats[insAppName], 2);
+		PlayerTextDrawColor(playerid, stats[insAppName], -1);
+		PlayerTextDrawBackgroundColor(playerid, stats[insAppName], 255);
+		PlayerTextDrawBoxColor(playerid, stats[insAppName], 50);
+		PlayerTextDrawUseBox(playerid, stats[insAppName], 0);
+		PlayerTextDrawSetProportional(playerid, stats[insAppName], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[insAppName], 0);
 
-		y += size / 2.0 + 9.0 + range_y / 5.0; // tdAppName and tdAppSprite occupy a total of 1/5 range_y
-		insTd[tdAppDesc] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y, "App description:...");
-		PlayerTextDrawFont(playerid, insTd[tdAppDesc], 3);
-		PlayerTextDrawLetterSize(playerid, insTd[tdAppDesc], 0.150000, 0.600000);
-		PlayerTextDrawTextSize(playerid, insTd[tdAppDesc], 9.000000, 65.000000);
-		PlayerTextDrawSetOutline(playerid, insTd[tdAppDesc], 1);
-		PlayerTextDrawSetShadow(playerid, insTd[tdAppDesc], 0);
-		PlayerTextDrawAlignment(playerid, insTd[tdAppDesc], 2);
-		PlayerTextDrawColor(playerid, insTd[tdAppDesc], -1);
-		PlayerTextDrawBackgroundColor(playerid, insTd[tdAppDesc], 255);
-		PlayerTextDrawBoxColor(playerid, insTd[tdAppDesc], 50);
-		PlayerTextDrawUseBox(playerid, insTd[tdAppDesc], 1);
-		PlayerTextDrawSetProportional(playerid, insTd[tdAppDesc], 1);
-		PlayerTextDrawSetSelectable(playerid, insTd[tdAppDesc], 0);
+		y += size / 2.0 + 9.0 + range_y / 5.0; // insAppName and insAppSprite occupy a total of 1/5 range_y
+		stats[insAppDesc] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y, "App description:...");
+		PlayerTextDrawFont(playerid, stats[insAppDesc], 3);
+		PlayerTextDrawLetterSize(playerid, stats[insAppDesc], 0.150000, 0.600000);
+		PlayerTextDrawTextSize(playerid, stats[insAppDesc], 9.000000, 65.000000);
+		PlayerTextDrawSetOutline(playerid, stats[insAppDesc], 1);
+		PlayerTextDrawSetShadow(playerid, stats[insAppDesc], 0);
+		PlayerTextDrawAlignment(playerid, stats[insAppDesc], 2);
+		PlayerTextDrawColor(playerid, stats[insAppDesc], -1);
+		PlayerTextDrawBackgroundColor(playerid, stats[insAppDesc], 255);
+		PlayerTextDrawBoxColor(playerid, stats[insAppDesc], 50);
+		PlayerTextDrawUseBox(playerid, stats[insAppDesc], 1);
+		PlayerTextDrawSetProportional(playerid, stats[insAppDesc], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[insAppDesc], 0);
 
-		y += range_y * 3.0 / 5.0; // tdAppDesc occupies 3/5 of range_y, tdAppButton occupies the last 1/5 of range_y
-		insTd[tdAppButton] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y, "Install");
-		PlayerTextDrawFont(playerid, insTd[tdAppButton], 3);
-		PlayerTextDrawLetterSize(playerid, insTd[tdAppButton], 0.150000, 0.600000);
-		PlayerTextDrawTextSize(playerid, insTd[tdAppButton], 4.000000, 20.000000);
-		PlayerTextDrawSetOutline(playerid, insTd[tdAppButton], 1);
-		PlayerTextDrawSetShadow(playerid, insTd[tdAppButton], 0);
-		PlayerTextDrawAlignment(playerid, insTd[tdAppButton], 2);
-		PlayerTextDrawColor(playerid, insTd[tdAppButton], -1);
-		PlayerTextDrawBackgroundColor(playerid, insTd[tdAppButton], 255);
-		PlayerTextDrawBoxColor(playerid, insTd[tdAppButton], 0xFFFFFFFF);
-		PlayerTextDrawUseBox(playerid, insTd[tdAppButton], 1);
-		PlayerTextDrawSetProportional(playerid, insTd[tdAppButton], 1);
-		PlayerTextDrawSetSelectable(playerid, insTd[tdAppButton], 1);
+		y += range_y * 3.0 / 5.0; // insAppDesc occupies 3/5 of range_y, insAppButton occupies the last 1/5 of range_y
+		stats[insAppButton] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y, "Install");
+		PlayerTextDrawFont(playerid, stats[insAppButton], 3);
+		PlayerTextDrawLetterSize(playerid, stats[insAppButton], 0.150000, 0.600000);
+		PlayerTextDrawTextSize(playerid, stats[insAppButton], 4.000000, 20.000000);
+		PlayerTextDrawSetOutline(playerid, stats[insAppButton], 1);
+		PlayerTextDrawSetShadow(playerid, stats[insAppButton], 0);
+		PlayerTextDrawAlignment(playerid, stats[insAppButton], 2);
+		PlayerTextDrawColor(playerid, stats[insAppButton], -1);
+		PlayerTextDrawBackgroundColor(playerid, stats[insAppButton], 255);
+		PlayerTextDrawBoxColor(playerid, stats[insAppButton], 0x00B029FF);
+		PlayerTextDrawUseBox(playerid, stats[insAppButton], 1);
+		PlayerTextDrawSetProportional(playerid, stats[insAppButton], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[insAppButton], 1);
 
-		for(new i = 0; i != sizeof(insTd); i++) {
-			PlayerTextDrawShow(playerid, PlayerText:insTd[i]);
+		printf("is installed %d", AppMenu_IsAppInstalled(id, app));
+		if(!IPApp_IsExternal(app)) {
+			PlayerTextDrawSetSelectable(playerid, stats[insAppButton], 0);
+			PlayerTextDrawBoxColor(playerid, stats[insAppButton], 0x6E6E6EFF);
+		} else if(AppMenu_IsAppInstalled(id, app)) {
+			PlayerTextDrawBoxColor(playerid, stats[insAppButton], 0xBA0404FF);
+			PlayerTextDrawSetString(playerid, stats[insAppButton], "Uninstall");
 		}
-		if(!map_valid(m_installPageTd)) {
-			m_installPageTd = map_new();
+
+		PlayerTextDrawShow(playerid, PlayerText:stats[insAppSprite]);
+		PlayerTextDrawShow(playerid, PlayerText:stats[insAppName]);
+		PlayerTextDrawShow(playerid, PlayerText:stats[insAppDesc]);
+		PlayerTextDrawShow(playerid, PlayerText:stats[insAppButton]);
+		if(!map_valid(m_installPageStats)) {
+			m_installPageStats = map_new();
 		}
-		map_arr_set_arr(m_installPageTd, key, insTd);
+		map_arr_set_arr(m_installPageStats, key, stats);
+		printf("update install page, id %d, playerid %d", key[ItemId], key[PlayerId]);
 	}
 	return 1;
 }
@@ -290,20 +302,39 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 }
 
 hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
-	if(!map_valid(m_uiItemId) || !map_has_key(m_uiItemId, playerid)) {
+	new id = IPUI_GetPlayerPhone(playerid);
+	if(id == -1) {
 		return 1;
 	}
 
 	new key[Key];
-	key[ItemId] = map_get(m_uiItemId, playerid);
+	key[ItemId] = id;
 	key[PlayerId] = playerid;
-	if(AppStore_HasUIKey(key)) {
+	if(AppStore_HasMainPageKey(key)) {
 		new LinkedList:ll = LinkedList:map_arr_get(m_mainPageTd, key);
 		for(new Iter:it = linked_list_iter(ll), app = 0; iter_inside(it); iter_move_next(it, 2), app++) {
 			if(playertextid == PlayerText:iter_get(it)) {
 				AppStore_UpdateInstallPage(key[ItemId], playerid, app);
 				return Y_HOOKS_BREAK_RETURN_1;
 			}
+		}
+	}
+	if(AppStore_HasInstallPageKey(key)) {
+		new stats[InstallPageStats];
+		map_arr_get_arr(m_installPageStats, key, stats);
+		if(playertextid == stats[insAppButton]) {
+			new Task:t = Task:-1;
+			CallLocalFunction("AppMenu_RequestInstall", "iii", key[ItemId], stats[insApp], ref(_:t));
+			if(task_valid(t)) {
+				task_unblock(Y_HOOKS_BREAK_RETURN_1);
+				new result = await t;
+				printf("result %d", result);
+				if(result) {
+					IPApp_HideUIForPlayer(id, playerid);
+					IPApp_ShowUIForPlayer(id, AppMenu, playerid);
+				}
+			}
+			return Y_HOOKS_BREAK_RETURN_1;
 		}
 	}
 	return 1;

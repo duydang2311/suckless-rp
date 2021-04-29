@@ -117,11 +117,13 @@ stock AppStore_UpdateMainPage(id, playerid) {
 		return 0;
 	}
 
-	AppStore_DestroyUI(id, playerid);
-
 	new index_offset = AppStore_GetIndexOffset(id);
+	new Iter:it = AppStore_GetLLAppStatsIter(index_offset);
+	if(!iter_valid(it)) {
+		return 0;
+	}
+	iter_release(it);
 	new
-		Iter:it = AppStore_GetAppListIter(id, index_offset),
 		LinkedList:ll = linked_list_new(),
 		key[Key];
 	key[ItemId] = id;
@@ -136,11 +138,7 @@ stock AppStore_UpdateMainPage(id, playerid) {
 		Float:size = 15.0;
 	new
 		Float:scr_min[2],
-		Float:scr_max[2],
-		bool:installed[App] = {false, ...};
-	for(; iter_inside(it); iter_move_next(it)) {
-		installed[iter_get(it)] = true;
-	}
+		Float:scr_max[2];
 	if(IPModel_GetScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
 		scr_min[1] += 12.0;
 		scr_max[1] -= 16.0; // decrease max y to leave some space for name td
@@ -154,13 +152,14 @@ stock AppStore_UpdateMainPage(id, playerid) {
 		gap_y = ((scr_max[1] - scr_min[1]) - (size + 2.0) * row) / (row - 1); // same as above for rows
 		key[ItemId] = id;
 		key[PlayerId] = playerid;
-		for(new i = index_offset, cnt = 0, PlayerText:sprite_td, PlayerText:name_td, Float:x, Float:y; i != 6 && i != sizeof(installed); i++, cnt++) {
+		for(new cnt = 0, PlayerText:sprite_td, PlayerText:name_td, Float:x, Float:y, stats[AppStoreRegisteredStats]; iter_inside(it) && cnt != 6; iter_move_next(it), cnt++) {
+			iter_get_arr(it, stats);
 			x = anc_x + scr_min[0] + (gap_x + size) * (cnt % col);
 			y = (anc_y + scr_min[1]) + (gap_y + size) * (floatround(float(cnt) / float(col), floatround_floor));
-			if(!IPApp_IsExternal(i) || installed[i]) {
-				AppStore_CreateAppTd(playerid, i, x, y, size, sprite_td, name_td, .color = 0x000000FF);
+			if(!IPApp_IsExternal(stats[appId]) || AppMenu_IsAppInstalled(id, stats[appId])) {
+				AppStore_CreateAppTd(playerid, stats[appId], x, y, size, sprite_td, name_td, .color = 0x000000FF);
 			} else {
-				AppStore_CreateAppTd(playerid, i, x, y, size, sprite_td, name_td, .color = 0x00000033);
+				AppStore_CreateAppTd(playerid, stats[appId], x, y, size, sprite_td, name_td, .color = 0x00000033);
 			}
 			PlayerTextDrawShow(playerid, sprite_td);
 			PlayerTextDrawShow(playerid, name_td);
@@ -172,8 +171,6 @@ stock AppStore_UpdateMainPage(id, playerid) {
 }
 
 stock AppStore_UpdateInstallPage(id, playerid, app) {
-	AppStore_DestroyUI(id, playerid);
-
 	new
 		stats[InstallPageStats],
 		Float:scr_min[2],
@@ -260,7 +257,6 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 		PlayerTextDrawSetProportional(playerid, stats[insAppButton], 1);
 		PlayerTextDrawSetSelectable(playerid, stats[insAppButton], 1);
 
-		printf("is installed %d", AppMenu_IsAppInstalled(id, app));
 		if(!IPApp_IsExternal(app)) {
 			PlayerTextDrawSetSelectable(playerid, stats[insAppButton], 0);
 			PlayerTextDrawBoxColor(playerid, stats[insAppButton], 0x6E6E6EFF);
@@ -277,7 +273,6 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 			m_installPageStats = map_new();
 		}
 		map_arr_set_arr(m_installPageStats, key, stats);
-		printf("update install page, id %d, playerid %d", key[ItemId], key[PlayerId]);
 	}
 	return 1;
 }
@@ -314,6 +309,7 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 		new LinkedList:ll = LinkedList:map_arr_get(m_mainPageTd, key);
 		for(new Iter:it = linked_list_iter(ll), app = 0; iter_inside(it); iter_move_next(it, 2), app++) {
 			if(playertextid == PlayerText:iter_get(it)) {
+				AppStore_DestroyUI(id, playerid);
 				AppStore_UpdateInstallPage(key[ItemId], playerid, app);
 				return Y_HOOKS_BREAK_RETURN_1;
 			}

@@ -11,6 +11,7 @@ const
 enum _:App {
 	AppMenu,
 	AppStore,
+	AppMessage,
 	AppSunGo
 }
 
@@ -130,7 +131,7 @@ stock IPApp_Ensure(app, const name[], const sprite[], bool:external = true) {
 	if(cache_affected_rows()) {
 		printf("INFO: Ensured phone application: {%d, '%s', '%s', '%s'}.", app, name, sprite, (external) ? "External" : "Built in");
 	} else {
-		printf("INFO: Ensured update phone application: {%d, '%s', '%s', '%s'}, nothing to update.", app, name, sprite, (external) ? "External" : "Built in");
+		printf("INFO: Ensured phone application: {%d, '%s', '%s', '%s'}, nothing to update.", app, name, sprite, (external) ? "External" : "Built in");
 	}
 	cache_delete(result); // set use_cache to true will perform blocking query? i guess
 	return 1;

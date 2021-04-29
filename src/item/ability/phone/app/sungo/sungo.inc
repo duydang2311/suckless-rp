@@ -10,3 +10,8 @@ hook IPA_OnEnsureRequest() {
 	IPApp_Ensure(AppSunGo, "SunGo", "app_sprites:setting", true);
 	return 1;
 }
+
+hook AppStore_OnStatsInit() {
+	AppStore_Register(AppSunGo, "Dat hang, nhan hang nhanh chong voi SunGo!!", "Sunday Company", "0.1.0");
+	return 1;
+}

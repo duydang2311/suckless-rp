@@ -80,10 +80,8 @@ stock AppMenu_UpdateAppList(id, playerid) {
 	if(!AppMenu_HasStats(id)) {
 		return 1;
 	}
-	print("AppMenu_UpdateAppList");
 
 	AppMenu_DestroyUI(id, playerid);
-
 	new
 		Iter:it = AppMenu_GetAppListIter(id, AppStore_GetIndexOffset(id)),
 		LinkedList:ll = linked_list_new(),
@@ -96,11 +94,11 @@ stock AppMenu_UpdateAppList(id, playerid) {
 	map_arr_set(m_uiStats, key, ll);
 	if(iter_valid(it) && iter_release(it)) {
 		new
-			Float:size = 12.0,
 			Float:safe_min[2],
 			Float:safe_max[2];
 		if(IPModel_GetSafeScreenOffset(id, safe_min[0], safe_min[1], safe_max[0], safe_max[1])) {
 			new
+				Float:size = 12.0,
 				row,
 				col,
 				appSize = AppMenu_GetAppListSize(id),
@@ -110,6 +108,7 @@ stock AppMenu_UpdateAppList(id, playerid) {
 				Float:gap_y,
 				Float:first_x,
 				Float:first_y;
+			IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
 			row = floatround(floatsqroot(float(appSize)), floatround_floor);
 			col = floatround(float(appSize) / float(row), floatround_floor);
 			if(row > 3) {
@@ -120,7 +119,6 @@ stock AppMenu_UpdateAppList(id, playerid) {
 			}
 			safe_min[1] += size; safe_min[0] += size / 2.0;
 			safe_max[1] -= size; safe_max[0] -= size / 2.0;
-			IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
 			first_x = anc_x + safe_min[0] + (safe_max[0] - safe_min[0]) / 2.0;
 			first_y = anc_y + safe_min[1] + (safe_max[1] - safe_min[1]) / 2.0;
 			gap_x = (safe_max[0] - safe_min[0]) / (col - 1); // if we have col columns, then we have (col - 1) column gaps
@@ -155,7 +153,6 @@ stock AppMenu_UpdateAppList(id, playerid) {
 				x = first_x + (cnt % col) * gap_x - size / 2.0;
 				y = first_y + (floatround(float(cnt) / float(col), floatround_floor)) * gap_y - size / 2.0;
 				AppMenu_CreateAppTd(playerid, app, x, y, size, sprite_td, name_td);
-				print("AppMenu_CreateAppTd");
 				PlayerTextDrawShow(playerid, sprite_td);
 				PlayerTextDrawShow(playerid, name_td);
 				linked_list_add(ll, _:sprite_td);

@@ -58,6 +58,13 @@ stock Iter:AppStore_GetLLAppStatsIter(index = 0) {
 	return it;
 }
 
+stock AppStore_GetLLAppStatsSize() {
+	if(linked_list_valid(ll_appStats)) {
+		return linked_list_size(ll_appStats);
+	}
+	return 0;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {

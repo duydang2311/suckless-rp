@@ -132,30 +132,64 @@ stock AppStore_UpdateMainPage(id, playerid) {
 		m_mainPageTd = map_new();
 	}
 	map_arr_set(m_mainPageTd, key, ll);
-	const
-		row = 3,
-		col = 3,
-		Float:size = 15.0;
 	new
-		Float:scr_min[2],
-		Float:scr_max[2];
-	if(IPModel_GetSafeScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
-		scr_min[1] += 12.0;
-		scr_max[1] -= 16.0; // decrease max y to leave some space for name td
+		Float:safe_min[2],
+		Float:safe_max[2];
+	if(IPModel_GetSafeScreenOffset(id, safe_min[0], safe_min[1], safe_max[0], safe_max[1])) {
 		new
+			Float:size = 12.0,
+			row,
+			col,
+			appSize = AppStore_GetLLAppStatsSize(),
 			Float:anc_x,
 			Float:anc_y,
 			Float:gap_x,
-			Float:gap_y;
+			Float:gap_y,
+			Float:first_x,
+			Float:first_y;
 		IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
-		gap_x = ((scr_max[0] - scr_min[0]) - size * col) / (col - 1); // if we have col columns, then we have (col - 1) gaps between columns
-		gap_y = ((scr_max[1] - scr_min[1]) - (size + 2.0) * row) / (row - 1); // same as above for rows
+		row = floatround(floatsqroot(float(appSize)), floatround_floor);
+		col = floatround(float(appSize) / float(row), floatround_floor);
+		if(row > 3) {
+			row = 3;
+		}
+		if(col > 4) {
+			col = 4;
+		}
+		safe_min[1] += size; safe_min[0] += size / 2.0;
+		safe_max[1] -= size; safe_max[0] -= size / 2.0;
+		first_x = anc_x + safe_min[0] + (safe_max[0] - safe_min[0]) / 2.0;
+		first_y = anc_y + safe_min[1] + (safe_max[1] - safe_min[1]) / 2.0;
+		gap_x = (safe_max[0] - safe_min[0]) / (col - 1); // if we have col columns, then we have (col - 1) column gaps
+		gap_y = ((safe_max[1] - safe_min[1])) / (row - 1) + 2.0; // same as above for rows
+		if(col == 1) {
+			gap_x = (safe_max[0] - safe_min[0]);
+		}
+		if(row == 1) {
+			gap_y = ((safe_max[1] - safe_min[1])) + 2.0;
+		}
+		if(gap_x > size * 2.5) {
+			gap_x = size * 2.5;
+		}
+		if(gap_y > (size * 2.0 + 2.0)) {
+			gap_y = (size * 2.0 + 2.0);
+		}
+		if(col % 2 == 0) {
+			first_x -= ((floatround(float(col) / 2.0, floatround_floor)) - 0.5) * gap_x;
+		} else {
+			first_x -= ((floatround(float(col) / 2.0, floatround_floor))) * gap_x;
+		}
+		if(row % 2 == 0) {
+			first_y -= ((floatround(float(row) / 2.0, floatround_floor)) - 0.5) * gap_y + 2.0;
+		} else {
+			first_y -= ((floatround(float(row) / 2.0, floatround_floor))) * gap_y + 2.0;
+		}
 		key[ItemId] = id;
 		key[PlayerId] = playerid;
 		for(new cnt = 0, PlayerText:sprite_td, PlayerText:name_td, Float:x, Float:y, stats[AppStoreRegisteredStats]; iter_inside(it) && cnt != 6; iter_move_next(it), cnt++) {
 			iter_get_arr(it, stats);
-			x = anc_x + scr_min[0] + (gap_x + size) * (cnt % col);
-			y = (anc_y + scr_min[1]) + (gap_y + size) * (floatround(float(cnt) / float(col), floatround_floor));
+			x = first_x + (cnt % col) * gap_x - size / 2.0;
+			y = first_y + (floatround(float(cnt) / float(col), floatround_floor)) * gap_y - size / 2.0;
 			if(!IPApp_IsExternal(stats[appId]) || AppMenu_IsAppInstalled(id, stats[appId])) {
 				AppStore_CreateAppTd(playerid, stats[appId], x, y, size, sprite_td, name_td, .color = 0x000000FF);
 			} else {

@@ -29,6 +29,7 @@
 #include "./ability/melee.inc"
 #include "./ability/backpack.inc"
 #include "./ability/whisk.inc"
+#include "./ability/sim/sim.inc"
 #include "./ability/phone/phone.inc"
 
 #include "./item_ground.inc"

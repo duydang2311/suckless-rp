@@ -22,6 +22,7 @@ stock Item_AddToGroupItem(id, group_id) {
 		ll = LinkedList:map_get(m_groupRoot, group_id);
 	}
 	linked_list_add(ll, id);
+	CallLocalFunction("Item_OnAddedToGroup", "ii", id, group_id);
 	return 1;
 }
 

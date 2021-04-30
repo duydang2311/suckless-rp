@@ -11,6 +11,7 @@ enum _:ItemAbility {
 	iAbilityMelee,
 	iAbilityBackpack,
 	iAbilityWhisk,
+	iAbilitySim,
 	iAbilityPhone,
 	iAbilitySize
 }

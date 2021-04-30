@@ -7,111 +7,43 @@
 static const
 	ROW = 4,
 	COLUMN = 3,
+	Float:WIDTH_HEIGHT_RATIO = 0.5,
+	Float:DEFAULT_SIZE_X = 110.0000,
+	Float:DEFAULT_SIZE_Y = 220.0000,
 	Float:BUTTON_START_OFFSET_X = 70.0000, // BUTTON_X - ANCHOR_X
 	Float:BUTTON_START_OFFSET_Y = 130.0000, // BUTTON_Y - ANCHOR_Y
 	Float:BUTTON_MARGIN_X = 25.0000, // BUTTON_X[next] - BUTTON_X[current]
 	Float:BUTTON_MARGIN_Y = 12.0000, // BUTTON_Y[below] - BUTTON_Y[current]
-	Float:SCREEN_OFFSET_MIN_X = 65.0000, // SCREEN_MIN_X - ANCHOR_X
-	Float:SCREEN_OFFSET_MIN_Y = 26.0000, // SCREEN_MIN_Y - ANCHOR_Y
-	Float:SCREEN_OFFSET_MAX_X = 135.0000, // SCREEN_MAX_X - ANCHOR_X
-	Float:SCREEN_OFFSET_MAX_Y = 125.0000, // SCREEN_MAX_Y - ANCHOR_Y
-	Float:FINGER_SIZE = 10.0000;
+	Float:SAFE_SCREEN_OFFSET_MIN_X = 16.0000, // SCREEN_MIN_X - ANCHOR_X
+	Float:SAFE_SCREEN_OFFSET_MIN_Y = 30.0000, // SCREEN_MIN_Y - ANCHOR_Y
+	Float:SAFE_SCREEN_OFFSET_MAX_X = 94.0000, // SCREEN_MAX_X - ANCHOR_X
+	Float:SAFE_SCREEN_OFFSET_MAX_Y = 99.0000, // SCREEN_MAX_Y - ANCHOR_Y
+	Float:SCREEN_OFFSET_MIN_X = 16.0000, // SCREEN_MIN_X - ANCHOR_X
+	Float:SCREEN_OFFSET_MIN_Y = 25.0000, // SCREEN_MIN_Y - ANCHOR_Y
+	Float:SCREEN_OFFSET_MAX_X = 94.0000, // SCREEN_MAX_X - ANCHOR_X
+	Float:SCREEN_OFFSET_MAX_Y = 104.0000; // SCREEN_MAX_Y - ANCHOR_Y
 
 // anchor: 470, 230. 1: 540, 360. 2: 565, 360. 3: 540, 372
 
-stock Nokia_HasIndex(index) {
-	return (index > - 1 && index < (ROW * COLUMN));
-}
-
-stock Nokia_GetButtonOffset(index, &Float:x, &Float:y) {
-	if(!Nokia_HasIndex(index)) {
-		return 0;
-	}
-
-	x = BUTTON_START_OFFSET_X + BUTTON_MARGIN_X * (index % COLUMN);
-	y = BUTTON_START_OFFSET_Y + BUTTON_MARGIN_Y * (floatround(float(index) / float(COLUMN), floatround_floor));
+stock Nokia_GetDefaultSize(&Float:x, &Float:y) {
+	x = DEFAULT_SIZE_X;
+	y = DEFAULT_SIZE_Y;
 	return 1;
 }
 
-stock Nokia_GetFingerSize(index, &Float:size) {
-	if(!Nokia_HasIndex(index)) {
-		return 0;
-	}
-
-	size = FINGER_SIZE;
-	return 1;
-}
-
-stock Nokia_GetScreenOffset(&Float:min_x, &Float:min_y, &Float:max_x, &Float:max_y) {
-	min_x = SCREEN_OFFSET_MIN_X;
-	min_y = SCREEN_OFFSET_MIN_Y;
-	max_x = SCREEN_OFFSET_MAX_X;
-	max_y = SCREEN_OFFSET_MAX_Y;
+stock Nokia_GetSafeScreenOffset(&Float:min_x, &Float:min_y, &Float:max_x, &Float:max_y) {
+	min_x = SAFE_SCREEN_OFFSET_MIN_X;
+	min_y = SAFE_SCREEN_OFFSET_MIN_Y;
+	max_x = SAFE_SCREEN_OFFSET_MAX_X;
+	max_y = SAFE_SCREEN_OFFSET_MAX_Y;
 	return 1;
 }
 
 #include <YSI_Coding\y_hooks>
 
-hook IPM_ValidateIndex(id, &index) {
+hook IPM_OnSafeScreenGet(id, &Float:min_x, &Float:min_y, &Float:max_x, &Float:max_y, &result) {
 	if(IPhone_GetModel(id) == Nokia) {
-		if(!Nokia_HasIndex(index)) {
-			index = -1;
-		}
-		return Y_HOOKS_BREAK_RETURN_1;
-	}
-	return 1;
-}
-
-hook IPM_CalculateUp(id, &index) {
-	if(IPhone_GetModel(id) == Nokia) {
-		if(index == 0) {
-			index = -1;
-		} else {
-			index -= COLUMN;
-			if(index < 0) {
-				index = 0;
-			}
-		}
-		return Y_HOOKS_BREAK_RETURN_1;
-	}
-	return 1;
-}
-
-hook IPM_CalculateDown(id, &index) {
-	if(IPhone_GetModel(id) == Nokia) {
-		if(index == (ROW * COLUMN - 1)) {
-			index = -1;
-		} else {
-			index += COLUMN;
-			if(index >= ROW * COLUMN) {
-				index = ROW * COLUMN - 1;
-			}
-		}
-		return Y_HOOKS_BREAK_RETURN_1;
-	}
-	return 1;
-}
-
-hook IPM_OnBodyOffsetGet(id, index, &Float:x, &Float:y, &Float:size, &bool:result) {
-	if(IPhone_GetModel(id) == Nokia) {
-		if(!Nokia_HasIndex(index)) {
-			result = false;
-		} else {
-			Nokia_GetButtonOffset(index, x, y);
-			Nokia_GetFingerSize(index, size);
-			result = true;
-		}
-		return Y_HOOKS_BREAK_RETURN_1;
-	}
-	return 1;
-}
-
-hook IPM_OnScreenOffsetGet(id, &Float:min_x, &Float:min_y, &Float:max_x, &Float:max_y, &result) {
-	if(IPhone_GetModel(id) == Nokia) {
-		min_x = SCREEN_OFFSET_MIN_X;
-		min_y = SCREEN_OFFSET_MIN_Y;
-		max_x = SCREEN_OFFSET_MAX_X;
-		max_y = SCREEN_OFFSET_MAX_Y;
+		Nokia_GetSafeScreenOffset(min_x, min_y, max_x, max_y);
 		result = true;
 		return Y_HOOKS_BREAK_RETURN_1;
 	}

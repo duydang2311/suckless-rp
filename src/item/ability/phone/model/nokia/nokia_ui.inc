@@ -57,7 +57,7 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		stats[UIBody] = CreatePlayerTextDraw(playerid, x, y, "phone:body");
 		PlayerTextDrawFont(playerid, stats[UIBody], 4);
 		PlayerTextDrawLetterSize(playerid, stats[UIBody], 0.600000, 2.000000);
-		PlayerTextDrawTextSize(playerid, stats[UIBody], 200.000000, 200.000000);
+		PlayerTextDrawTextSize(playerid, stats[UIBody], 110.000000, 220.000000);
 		PlayerTextDrawSetOutline(playerid, stats[UIBody], 1);
 		PlayerTextDrawSetShadow(playerid, stats[UIBody], 0);
 		PlayerTextDrawAlignment(playerid, stats[UIBody], 1);

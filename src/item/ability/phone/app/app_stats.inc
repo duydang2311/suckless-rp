@@ -91,8 +91,8 @@ stock IPApp_ShowUIForPlayer(id, app, playerid) {
 	if(!IPhone_Has(id) || !IPApp_Has(app)) {
 		return 0;
 	}
-
-	CallLocalFunction("IPA_OnUIShowAttempt", "iiii", id, app, playerid);
+	print("IPApp_ShowUIForPlayer");
+	CallLocalFunction("IPA_OnUIShowAttempt", "iii", id, app, playerid);
 	return 1;
 }
 

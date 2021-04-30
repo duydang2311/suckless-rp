@@ -139,7 +139,7 @@ stock AppStore_UpdateMainPage(id, playerid) {
 	new
 		Float:scr_min[2],
 		Float:scr_max[2];
-	if(IPModel_GetScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
+	if(IPModel_GetSafeScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
 		scr_min[1] += 12.0;
 		scr_max[1] -= 16.0; // decrease max y to leave some space for name td
 		new
@@ -176,7 +176,7 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 		Float:scr_min[2],
 		Float:scr_max[2];
 	stats[insApp] = app;
-	if(IPModel_GetScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
+	if(IPModel_GetSafeScreenOffset(id, scr_min[0], scr_min[1], scr_max[0], scr_max[1])) {
 		scr_min[1] += 12.0;
 		scr_max[1] -= 20.0;
 		new
@@ -195,7 +195,7 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 		IPApp_GetName(app, name);
 		IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
 		range_y = scr_max[1] - scr_min[1];
-		size = range_y / 5.0;
+		size = range_y * 2.0 / 5.0;
 		x = anc_x + scr_min[0] + (scr_max[0] - scr_min[0]) / 2.0 - size / 2.0;
 		y = anc_y + scr_min[1] - (size - 9.0) / 2.0;
 
@@ -216,7 +216,7 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 		stats[insAppName] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y + size, name);
 		PlayerTextDrawFont(playerid, stats[insAppName], 3);
 		PlayerTextDrawLetterSize(playerid, stats[insAppName], 0.150000, 0.600000);
-		PlayerTextDrawTextSize(playerid, stats[insAppName], 400.000000, 65.000000);
+		PlayerTextDrawTextSize(playerid, stats[insAppName], 400.000000, scr_max[0] - scr_min[0] - 1.0);
 		PlayerTextDrawSetOutline(playerid, stats[insAppName], 1);
 		PlayerTextDrawSetShadow(playerid, stats[insAppName], 0);
 		PlayerTextDrawAlignment(playerid, stats[insAppName], 2);
@@ -231,7 +231,7 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 		stats[insAppDesc] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y, "App description:...");
 		PlayerTextDrawFont(playerid, stats[insAppDesc], 3);
 		PlayerTextDrawLetterSize(playerid, stats[insAppDesc], 0.150000, 0.600000);
-		PlayerTextDrawTextSize(playerid, stats[insAppDesc], 9.000000, 65.000000);
+		PlayerTextDrawTextSize(playerid, stats[insAppDesc], 9.000000, scr_max[0] - scr_min[0] - 1.0);
 		PlayerTextDrawSetOutline(playerid, stats[insAppDesc], 1);
 		PlayerTextDrawSetShadow(playerid, stats[insAppDesc], 0);
 		PlayerTextDrawAlignment(playerid, stats[insAppDesc], 2);
@@ -242,11 +242,11 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 		PlayerTextDrawSetProportional(playerid, stats[insAppDesc], 1);
 		PlayerTextDrawSetSelectable(playerid, stats[insAppDesc], 0);
 
-		y += range_y * 3.0 / 5.0; // insAppDesc occupies 3/5 of range_y, insAppButton occupies the last 1/5 of range_y
+		y += range_y * 2.0 / 5.0; // insAppDesc occupies 2/5 of range_y, insAppButton occupies the last 1/5 of range_y
 		stats[insAppButton] = CreatePlayerTextDraw(playerid, x + (size / 2.0), y, "Install");
 		PlayerTextDrawFont(playerid, stats[insAppButton], 3);
 		PlayerTextDrawLetterSize(playerid, stats[insAppButton], 0.150000, 0.600000);
-		PlayerTextDrawTextSize(playerid, stats[insAppButton], 4.000000, 20.000000);
+		PlayerTextDrawTextSize(playerid, stats[insAppButton], 4.000000, scr_max[0] - scr_min[0] - 1.0);
 		PlayerTextDrawSetOutline(playerid, stats[insAppButton], 1);
 		PlayerTextDrawSetShadow(playerid, stats[insAppButton], 0);
 		PlayerTextDrawAlignment(playerid, stats[insAppButton], 2);
@@ -309,8 +309,11 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 		new LinkedList:ll = LinkedList:map_arr_get(m_mainPageTd, key);
 		for(new Iter:it = linked_list_iter(ll), app = 0; iter_inside(it); iter_move_next(it, 2), app++) {
 			if(playertextid == PlayerText:iter_get(it)) {
-				AppStore_DestroyUI(id, playerid);
-				AppStore_UpdateInstallPage(key[ItemId], playerid, app);
+				new Iter:app_it = AppStore_GetLLAppStatsIter(app);
+				if(iter_valid(app_it) && iter_release(app_it)) {
+					AppStore_DestroyUI(id, playerid);
+					AppStore_UpdateInstallPage(key[ItemId], playerid, iter_get(app_it));
+				}
 				return Y_HOOKS_BREAK_RETURN_1;
 			}
 		}
@@ -324,7 +327,6 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 			if(task_valid(t)) {
 				task_unblock(Y_HOOKS_BREAK_RETURN_1);
 				new result = await t;
-				printf("result %d", result);
 				if(result) {
 					IPApp_HideUIForPlayer(id, playerid);
 					IPApp_ShowUIForPlayer(id, AppMenu, playerid);

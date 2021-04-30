@@ -93,6 +93,18 @@ stock Iter:AppMenu_GetAppListIter(id, index = 0) {
 	return it;
 }
 
+stock AppMenu_GetAppListSize(id) {
+	if(!AppMenu_HasStats(id)) {
+		return 0;
+	}
+	new stats[AppMenuStats];
+	map_get_arr(m_menuStats, id, stats);
+	if(linked_list_valid(stats[appList])) {
+		return linked_list_size(stats[appList]);
+	}
+	return 0;
+}
+
 stock AppMenu_IsAppInstalled(id, app) {
 	if(AppMenu_HasStats(id)) {
 		new stats[AppMenuStats];

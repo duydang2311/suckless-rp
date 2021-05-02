@@ -153,8 +153,8 @@ hook OnGameModeInit@6() {
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
 
-	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_ground", true);
-	for(new i = 0, rows = cache_num_rows(), stats[ItemGroundStats], Float:pos[3], Float:rot[3], name[64], int, vw, id; i != rows; i++) {
+	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_ground ground INNER JOIN item_stats stats ON ground.id = stats.id", true);
+	for(new i = 0, rows = cache_num_rows(), igStats[ItemGroundStats], iStats[ItemStats], Float:pos[3], Float:rot[3], name[64], int, vw, id; i != rows; i++) {
 		cache_get_value_name_int(i, "id", id);
 		cache_get_value_name_float(i, "pos_x", pos[0]);
 		cache_get_value_name_float(i, "pos_y", pos[1]);
@@ -165,14 +165,19 @@ hook OnGameModeInit@6() {
 		cache_get_value_name_int(i, "interior", int);
 		cache_get_value_name_int(i, "vw", vw);
 
+		cache_get_value_name_int(0, "ability", iStats[iAbility]);
+		cache_get_value_name_int(0, "occupied_space", iStats[iOccupiedSpace]);
+		cache_get_value_name_float(0, "reliability", iStats[iReliability]);
+		CallLocalFunction("Item_OnCreated", "iifi", id, iStats[iAbility], iStats[iReliability], iStats[iOccupiedSpace]);
+
 		Item_GetName(id, name);
-		stats[iGrObjectId] = CreateDynamicObject(Item_GetModel(id), pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], vw, int);
-		stats[iGrTextLabelId] = CreateDynamic3DTextLabel(name, COLOR_YELLOW, pos[0], pos[1], pos[2], 10.0, .worldid = vw, .interiorid = int);
-		Streamer_SetIntData(STREAMER_TYPE_OBJECT, stats[iGrObjectId], E_STREAMER_EXTRA_ID, streamerExtraId);
+		igStats[iGrObjectId] = CreateDynamicObject(Item_GetModel(id), pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], vw, int);
+		igStats[iGrTextLabelId] = CreateDynamic3DTextLabel(name, COLOR_YELLOW, pos[0], pos[1], pos[2], 10.0, .worldid = vw, .interiorid = int);
+		Streamer_SetIntData(STREAMER_TYPE_OBJECT, igStats[iGrObjectId], E_STREAMER_EXTRA_ID, streamerExtraId);
 		if(!map_valid(m_iGroundStats)) {
 			m_iGroundStats = map_new();
 		}
-		map_set_arr(m_iGroundStats, id, stats);
+		map_set_arr(m_iGroundStats, id, igStats);
 	}
 	cache_delete(result);
 	return 1;

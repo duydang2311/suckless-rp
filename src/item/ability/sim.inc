@@ -103,23 +103,6 @@ hook OnGameModeInit@2() {
 	reliability FLOAT(11, 4) DEFAULT 1.0000,\
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
-
-	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_sim", true);
-
-	new rows = cache_num_rows();
-	if(rows) {
-		if(!map_valid(m_simStats)) {
-			m_simStats = map_new();
-		}
-		for(new i = 0, item_id; i != rows; i++) {
-			new stats[ItemSimStats];
-			cache_get_value_name_int(i, "id", item_id);
-			cache_get_value_name(i, "number", stats[iSimNumber], SIM_NUMBER_SIZE);
-			map_set_arr(m_simStats, item_id, stats);
-		}
-	}
-	cache_delete(result);
-	printf("INFO: Loaded %d sim items.", rows);
 	return 1;
 }
 
@@ -132,6 +115,33 @@ hook OnGameModeExit@2() {
 }
 
 #include <YSI_Coding\y_hooks>
+
+forward ISim_OnStatsRetrieving(id);
+public ISim_OnStatsRetrieving(id) {
+	new rows = cache_num_rows();
+	if(rows) {
+		if(!map_valid(m_simStats)) {
+			m_simStats = map_new();
+		}
+		new stats[ItemSimStats];
+		cache_get_value_name(0, "number", stats[iSimNumber], SIM_NUMBER_SIZE);
+		map_set_arr(m_simStats, id, stats);
+
+		new iStats[ItemStats];
+		cache_get_value_name_int(0, "ability", iStats[iAbility]);
+		cache_get_value_name_int(0, "occupied_space", iStats[iOccupiedSpace]);
+		cache_get_value_name_float(0, "reliability", iStats[iReliability]);
+		CallLocalFunction("Item_OnStatsRetrieved", "iifi", id, iStats[iAbility], iStats[iReliability], iStats[iOccupiedSpace]);
+	}
+	return 1;
+}
+
+hook Inventory_OnItemAdded(playerid, item_id) {
+	new query[200];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_sim sim INNER JOIN item_stats stats WHERE sim.id = %d AND sim.id = stats.id LIMIT 1", item_id);
+	mysql_pquery(MySQL_Connection(), query, "ISim_OnStatsRetrieving", "i", item_id);
+	return 1;
+}
 
 hook Item_OnModelGetAttempt(id, &model) {
 	if(Item_GetAbility(id) == iAbilitySim) {

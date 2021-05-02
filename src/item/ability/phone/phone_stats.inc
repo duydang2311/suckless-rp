@@ -71,26 +71,36 @@ hook OnGameModeInit@8() {
 		phone_state TINYINT UNSIGNED DEFAULT 0,\
 		FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
+	return 1;
+}
 
-	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_phone", true);
-	new rows = cache_num_rows();
-	for(new i = 0, stats[ItemPhoneStats], id; i != rows; i++) {
-		cache_get_value_name_int(i, "id", id);
-		cache_get_value_name_int(i, "model", stats[iPhoneModel]);
-		cache_get_value_name_int(i, "phone_state", stats[iPhoneState]);
-		cache_get_value_name_float(i, "power", stats[iPhonePower]);
+#include <YSI_Coding\y_hooks>
+
+forward IPhone_OnStatsRetrieving(id);
+public IPhone_OnStatsRetrieving(id) {
+	if(cache_num_rows()) {
+		new stats[ItemPhoneStats];
+		cache_get_value_name_int(0, "model", stats[iPhoneModel]);
+		cache_get_value_name_int(0, "phone_state", stats[iPhoneState]);
+		cache_get_value_name_float(0, "power", stats[iPhonePower]);
 
 		if(!map_valid(m_phoneStats)) {
 			m_phoneStats = map_new();
 		}
 		map_set_arr(m_phoneStats, id, stats);
 	}
-	cache_delete(result);
-	printf("INFO: Loaded %d phone items.", rows);
 	return 1;
 }
 
-#include <YSI_Coding\y_hooks>
+hook Item_OnStatsRetrieved(id) {
+	if(Item_GetAbility(id) == iAbilityPhone) {
+		new query[128];
+		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_phone WHERE id = %d LIMIT 1", id);
+		mysql_pquery(MySQL_Connection(), query, "IPhone_OnStatsRetrieving", "i", id);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
 
 hook Item_OnModelGetAttempt(id, &model) {
 	if(Item_GetAbility(id) == iAbilityPhone) {

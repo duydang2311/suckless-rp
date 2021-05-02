@@ -17,8 +17,10 @@ enum _:AppMsgStats {
 	appMessages[MAX_MESSAGES]
 }
 
+static Map:m_msgStats;
+
 stock AppMsg_HasStats(id) {
-	// return (map_valid(m_msgStats) && map_has_key(m_msgStats, id));
+	return (map_valid(m_msgStats) && map_has_key(m_msgStats, id));
 }
 
 #include <YSI_Coding\y_hooks>

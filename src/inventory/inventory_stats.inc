@@ -6,16 +6,6 @@
 
 static Map:m_inventory;
 
-forward Inventory_OnItemAdded(playerid, item_id);
-public Inventory_OnItemAdded(playerid, item_id) {
-	return 1;
-}
-
-forward Inventory_OnItemRemoved(playerid, item_id);
-public Inventory_OnItemRemoved(playerid, item_id) {
-	return 1;
-}
-
 forward Inventory_OnStatsRetrieved(playerid);
 public Inventory_OnStatsRetrieved(playerid) {
 	new rows = cache_num_rows();
@@ -29,8 +19,13 @@ public Inventory_OnStatsRetrieved(playerid) {
 		} else {
 			ll = LinkedList:map_get(m_inventory, playerid);
 		}
-		for(new i = 0; i != rows; i++) {
-			cache_get_value_name_int(i, "item_id", id);
+		for(new i = 0, stats[ItemStats]; i != rows; i++) {
+			cache_get_value_name_int(i, "id", id);
+			cache_get_value_name_int(i, "ability", stats[iAbility]);
+			cache_get_value_name_int(i, "occupied_space", stats[iOccupiedSpace]);
+			cache_get_value_name_float(i, "reliability", stats[iReliability]);
+			CallLocalFunction("Item_OnStatsRetrieving", "iifi", id, stats[iAbility], stats[iReliability], stats[iOccupiedSpace]);
+
 			linked_list_add(ll, id);
 			CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, id);
 		}
@@ -122,7 +117,7 @@ stock Inventory_GetSize(playerid) {
 
 hook Player_OnStatsLoaded(playerid) {
 	new query[128];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM inventory WHERE player_id = %d", Player_GetId(playerid));
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM inventory inv INNER JOIN item_stats stats ON inv.item_id = stats.id WHERE inv.player_id = %d", Player_GetId(playerid));
 	mysql_pquery(MySQL_Connection(), query, "Inventory_OnStatsRetrieved", "i", playerid);
 	return 1;
 }

@@ -49,7 +49,6 @@ public Inventory_OnAttachRetrieved(playerid, item_id) {
 				cache_get_value_name_float(0, "scale_y", att[attScale][1]);
 				cache_get_value_name_float(0, "scale_z", att[attScale][2]);
 				SetPlayerAttachedObject(playerid, slot, Item_GetModel(item_id), att[attBone], att[attOffset][0], att[attOffset][1], att[attOffset][2], att[attRot][0], att[attRot][1], att[attRot][2], att[attScale][0], att[attScale][1], att[attScale][2]);
-				printf("Inventory_OnItemAdded query finished - attach item %d, model %d, slot %d", item_id, Item_GetModel(item_id), slot);
 				new bool:exists = false;
 				for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
 					iter_get_arr(it, stats);

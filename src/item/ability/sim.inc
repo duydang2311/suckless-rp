@@ -136,10 +136,13 @@ public ISim_OnStatsRetrieving(id) {
 	return 1;
 }
 
-hook Inventory_OnItemAdded(playerid, item_id) {
-	new query[200];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_sim sim INNER JOIN item_stats stats WHERE sim.id = %d AND sim.id = stats.id LIMIT 1", item_id);
-	mysql_pquery(MySQL_Connection(), query, "ISim_OnStatsRetrieving", "i", item_id);
+hook Item_OnStatsRetrieved(id) {
+	if(Item_GetAbility(id) == iAbilitySim) {
+		new query[200];
+		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_sim WHERE id = %d LIMIT 1", id);
+		mysql_pquery(MySQL_Connection(), query, "ISim_OnStatsRetrieving", "i", id);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
 	return 1;
 }
 

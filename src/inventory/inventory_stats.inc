@@ -116,8 +116,8 @@ stock Inventory_GetSize(playerid) {
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnStatsLoaded(playerid) {
-	new query[128];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM inventory inv INNER JOIN item_stats stats ON inv.item_id = stats.id WHERE inv.player_id = %d", Player_GetId(playerid));
+	new query[200];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT inv.*, stats.ability, stats.occupied_space, stats.reliability FROM inventory inv INNER JOIN item_stats stats ON inv.item_id = stats.id WHERE inv.player_id = %d", Player_GetId(playerid));
 	mysql_pquery(MySQL_Connection(), query, "Inventory_OnStatsRetrieved", "i", playerid);
 	return 1;
 }

@@ -118,27 +118,20 @@ hook OnGameModeExit@2() {
 
 forward ISim_OnStatsRetrieving(id);
 public ISim_OnStatsRetrieving(id) {
-	new rows = cache_num_rows();
-	if(rows) {
+	if(cache_num_rows()) {
 		if(!map_valid(m_simStats)) {
 			m_simStats = map_new();
 		}
 		new stats[ItemSimStats];
 		cache_get_value_name(0, "number", stats[iSimNumber], SIM_NUMBER_SIZE);
 		map_set_arr(m_simStats, id, stats);
-
-		new iStats[ItemStats];
-		cache_get_value_name_int(0, "ability", iStats[iAbility]);
-		cache_get_value_name_int(0, "occupied_space", iStats[iOccupiedSpace]);
-		cache_get_value_name_float(0, "reliability", iStats[iReliability]);
-		CallLocalFunction("Item_OnStatsRetrieved", "iifi", id, iStats[iAbility], iStats[iReliability], iStats[iOccupiedSpace]);
 	}
 	return 1;
 }
 
 hook Item_OnStatsRetrieved(id) {
 	if(Item_GetAbility(id) == iAbilitySim) {
-		new query[200];
+		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_sim WHERE id = %d LIMIT 1", id);
 		mysql_pquery(MySQL_Connection(), query, "ISim_OnStatsRetrieving", "i", id);
 		return Y_HOOKS_BREAK_RETURN_1;

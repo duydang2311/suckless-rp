@@ -101,22 +101,6 @@ hook OnGameModeInit@4() {
 	capacity TINYINT UNSIGNED DEFAULT 0,\
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
-
-	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_backpack", true);
-	new rows = cache_num_rows();
-	if(rows) {
-		for(new i = 0, stats[ItemBackpackStats], id; i != rows; i++) {
-			cache_get_value_name_int(i, "id", id);
-			cache_get_value_name_int(i, "model", stats[iBpModel]);
-			cache_get_value_name_int(i, "capacity", stats[iBpCapacity]);
-			if(!map_valid(m_backpackStats)) {
-				m_backpackStats = map_new();
-			}
-			map_set_arr(m_backpackStats, id, stats);
-		}
-	}
-	cache_delete(result);
-	printf("INFO: Loaded %d backpack items.", rows);
 	return 1;
 }
 
@@ -129,6 +113,30 @@ hook OnGameModeExit@4() {
 }
 
 #include <YSI_Coding\y_hooks>
+
+forward IBackpack_OnStatsRetrieving(id);
+public IBackpack_OnStatsRetrieving(id) {
+	if(cache_num_rows()) {
+		new stats[ItemBackpackStats];
+		cache_get_value_name_int(0, "model", stats[iBpModel]);
+		cache_get_value_name_int(0, "capacity", stats[iBpCapacity]);
+		if(!map_valid(m_backpackStats)) {
+			m_backpackStats = map_new();
+		}
+		map_set_arr(m_backpackStats, id, stats);
+	}
+	return 1;
+}
+
+hook Item_OnStatsRetrieved(id) {
+	if(Item_GetAbility(id) == iAbilityBackpack) {
+		new query[128];
+		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_backpack WHERE id = %d LIMIT 1", id);
+		mysql_pquery(MySQL_Connection(), query, "IBackpack_OnStatsRetrieving", "i", id);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
 
 hook Item_OnModelGetAttempt(id, &model) {
 	if(Item_GetAbility(id) == iAbilityBackpack) {

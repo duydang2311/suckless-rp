@@ -125,28 +125,6 @@ hook OnGameModeInit@2() {
 	reliability FLOAT(11, 4) DEFAULT 1.0000,\
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
-
-	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_gun", true);
-
-	new rows = cache_num_rows();
-	if(rows) {
-		new
-			iWeapon,
-			item_id;
-		for(new i = 0; i != rows; i++) {
-			new stats[ItemGunStats];
-			cache_get_value_name_int(i, "id", item_id);
-			cache_get_value_name_int(i, "weapon", iWeapon);
-			cache_get_value_name_float(i, "damage", stats[iGunDamage]);
-			stats[iGunWeapon] = Weapon:iWeapon;
-			if(!map_valid(m_gunStats)) {
-				m_gunStats = map_new();
-			}
-			map_set_arr(m_gunStats, item_id, stats);
-		}
-	}
-	cache_delete(result);
-	printf("INFO: Loaded %d gun items.", rows);
 	return 1;
 }
 
@@ -159,6 +137,33 @@ hook OnGameModeExit@2() {
 }
 
 #include <YSI_Coding\y_hooks>
+
+forward IGun_OnStatsRetrieving(id);
+public IGun_OnStatsRetrieving(id) {
+	if(cache_num_rows()) {
+		new
+			iWeapon,
+			stats[ItemGunStats];
+		cache_get_value_name_int(0, "weapon", iWeapon);
+		cache_get_value_name_float(0, "damage", stats[iGunDamage]);
+		stats[iGunWeapon] = Weapon:iWeapon;
+		if(!map_valid(m_gunStats)) {
+			m_gunStats = map_new();
+		}
+		map_set_arr(m_gunStats, id, stats);
+	}
+	return 1;
+}
+
+hook Item_OnStatsRetrieved(id) {
+	if(Item_GetAbility(id) == iAbilityGun) {
+		new query[128];
+		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_gun WHERE id = %d LIMIT 1", id);
+		mysql_pquery(MySQL_Connection(), query, "IGun_OnStatsRetrieving", "i", id);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
 
 hook Item_OnModelGetAttempt(id, &model) {
 	if(Item_GetAbility(id) == iAbilityGun) {

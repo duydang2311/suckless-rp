@@ -46,24 +46,31 @@ hook OnGameModeInit@5() {
 	id INT UNSIGNED PRIMARY KEY,\
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
-
-	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_whisk", true);
-	new rows = cache_num_rows();
-	if(rows) {
-		for(new i = 0, id; i != rows; i++) {
-			cache_get_value_name_int(i, "id", id);
-			if(!map_valid(m_whiskStats)) {
-				m_whiskStats = map_new();
-			}
-			map_set(m_whiskStats, id, 1);
-		}
-	}
-	cache_delete(result);
-	printf("INFO: Loaded %d whisk items.", rows);
 	return 1;
 }
 
 #include <YSI_Coding\y_hooks>
+
+forward IWhisk_OnStatsRetrieving(id);
+public IWhisk_OnStatsRetrieving(id) {
+	if(cache_num_rows()) {
+		if(!map_valid(m_whiskStats)) {
+			m_whiskStats = map_new();
+		}
+		map_set(m_whiskStats, id, 1);
+	}
+	return 1;
+}
+
+hook Item_OnStatsRetrieved(id) {
+	if(Item_GetAbility(id) == iAbilityWhisk) {
+		new query[128];
+		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_whisk WHERE id = %d LIMIT 1", id);
+		mysql_pquery(MySQL_Connection(), query, "IWhisk_OnStatsRetrieving", "i", id);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
 
 hook Item_OnModelGetAttempt(id, &model) {
 	if(Item_GetAbility(id) == iAbilityWhisk) {

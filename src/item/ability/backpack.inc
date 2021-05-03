@@ -114,8 +114,8 @@ hook OnGameModeExit@4() {
 
 #include <YSI_Coding\y_hooks>
 
-forward IBackpack_OnStatsRetrieving(id);
-public IBackpack_OnStatsRetrieving(id) {
+forward IBackpack_OnStatsRetrieving(id, Task:t);
+public IBackpack_OnStatsRetrieving(id, Task:t) {
 	if(cache_num_rows()) {
 		new stats[ItemBackpackStats];
 		cache_get_value_name_int(0, "model", stats[iBpModel]);
@@ -125,14 +125,17 @@ public IBackpack_OnStatsRetrieving(id) {
 		}
 		map_set_arr(m_backpackStats, id, stats);
 	}
+	if(task_valid(t)) {
+		task_set_result(t, 1);
+	}
 	return 1;
 }
 
-hook Item_OnStatsRetrieved(id) {
+hook Item_OnStatsRetrieved(id, Task:t) {
 	if(Item_GetAbility(id) == iAbilityBackpack) {
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_backpack WHERE id = %d LIMIT 1", id);
-		mysql_pquery(MySQL_Connection(), query, "IBackpack_OnStatsRetrieving", "i", id);
+		mysql_pquery(MySQL_Connection(), query, "IBackpack_OnStatsRetrieving", "ii", id, _:t);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

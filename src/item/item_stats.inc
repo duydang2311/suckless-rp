@@ -11,8 +11,8 @@ enum _:ItemAbility {
 	iAbilityMelee,
 	iAbilityBackpack,
 	iAbilityWhisk,
-	iAbilitySim,
 	iAbilityPhone,
+	iAbilitySim,
 	iAbilitySize
 }
 
@@ -145,10 +145,10 @@ public Item_OnCreated(item_id, ability, Float:reliability, occupied_space) {
 	return 1;
 }
 
-forward Item_OnStatsRetrieving(id, ability, Float:reliability, occupied_space);
-public Item_OnStatsRetrieving(id, ability, Float:reliability, occupied_space) {
+forward Item_OnStatsRetrieving(id, ability, Float:reliability, occupied_space, Task:t);
+public Item_OnStatsRetrieving(id, ability, Float:reliability, occupied_space, Task:t) {
 	Item_OnCreated(id, ability, reliability, occupied_space);
-	CallLocalFunction("Item_OnStatsRetrieved", "i", id);
+	CallLocalFunction("Item_OnStatsRetrieved", "ii", id, _:t);
 	return 1;
 }
 

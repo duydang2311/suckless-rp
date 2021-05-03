@@ -116,8 +116,8 @@ hook OnGameModeExit@2() {
 
 #include <YSI_Coding\y_hooks>
 
-forward ISim_OnStatsRetrieving(id);
-public ISim_OnStatsRetrieving(id) {
+forward ISim_OnStatsRetrieving(id, Task:t);
+public ISim_OnStatsRetrieving(id, Task:t) {
 	if(cache_num_rows()) {
 		if(!map_valid(m_simStats)) {
 			m_simStats = map_new();
@@ -126,14 +126,17 @@ public ISim_OnStatsRetrieving(id) {
 		cache_get_value_name(0, "number", stats[iSimNumber], SIM_NUMBER_SIZE);
 		map_set_arr(m_simStats, id, stats);
 	}
+	if(task_valid(t)) {
+		task_set_result(t, 1);
+	}
 	return 1;
 }
 
-hook Item_OnStatsRetrieved(id) {
+hook Item_OnStatsRetrieved(id, Task:t) {
 	if(Item_GetAbility(id) == iAbilitySim) {
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_sim WHERE id = %d LIMIT 1", id);
-		mysql_pquery(MySQL_Connection(), query, "ISim_OnStatsRetrieving", "i", id);
+		mysql_pquery(MySQL_Connection(), query, "ISim_OnStatsRetrieving", "ii", id, _:t);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

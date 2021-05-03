@@ -24,7 +24,10 @@ public Inventory_OnStatsRetrieved(playerid) {
 			cache_get_value_name_int(i, "ability", stats[iAbility]);
 			cache_get_value_name_int(i, "occupied_space", stats[iOccupiedSpace]);
 			cache_get_value_name_float(i, "reliability", stats[iReliability]);
-			CallLocalFunction("Item_OnStatsRetrieving", "iifi", id, stats[iAbility], stats[iReliability], stats[iOccupiedSpace]);
+			new Task:t = task_new();
+			CallLocalFunction("Item_OnStatsRetrieving", "iifii", id, stats[iAbility], stats[iReliability], stats[iOccupiedSpace], _:t);
+			task_unblock(1);
+			await t;
 
 			linked_list_add(ll, id);
 			CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, id);

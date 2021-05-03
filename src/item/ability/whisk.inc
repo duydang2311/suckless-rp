@@ -51,22 +51,25 @@ hook OnGameModeInit@5() {
 
 #include <YSI_Coding\y_hooks>
 
-forward IWhisk_OnStatsRetrieving(id);
-public IWhisk_OnStatsRetrieving(id) {
+forward IWhisk_OnStatsRetrieving(id, Task:t);
+public IWhisk_OnStatsRetrieving(id, Task:t) {
 	if(cache_num_rows()) {
 		if(!map_valid(m_whiskStats)) {
 			m_whiskStats = map_new();
 		}
 		map_set(m_whiskStats, id, 1);
 	}
+	if(task_valid(t)) {
+		task_set_result(t, 1);
+	}
 	return 1;
 }
 
-hook Item_OnStatsRetrieved(id) {
+hook Item_OnStatsRetrieved(id, Task:t) {
 	if(Item_GetAbility(id) == iAbilityWhisk) {
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_whisk WHERE id = %d LIMIT 1", id);
-		mysql_pquery(MySQL_Connection(), query, "IWhisk_OnStatsRetrieving", "i", id);
+		mysql_pquery(MySQL_Connection(), query, "IWhisk_OnStatsRetrieving", "ii", id, _:t);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

@@ -76,8 +76,8 @@ hook OnGameModeInit@8() {
 
 #include <YSI_Coding\y_hooks>
 
-forward IPhone_OnStatsRetrieving(id);
-public IPhone_OnStatsRetrieving(id) {
+forward IPhone_OnStatsRetrieving(id, Task:t);
+public IPhone_OnStatsRetrieving(id, Task:t) {
 	if(cache_num_rows()) {
 		new stats[ItemPhoneStats];
 		cache_get_value_name_int(0, "model", stats[iPhoneModel]);
@@ -89,14 +89,17 @@ public IPhone_OnStatsRetrieving(id) {
 		}
 		map_set_arr(m_phoneStats, id, stats);
 	}
+	if(task_valid(t)) {
+		task_set_result(t, 1);
+	}
 	return 1;
 }
 
-hook Item_OnStatsRetrieved(id) {
+hook Item_OnStatsRetrieved(id, Task:t) {
 	if(Item_GetAbility(id) == iAbilityPhone) {
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_phone WHERE id = %d LIMIT 1", id);
-		mysql_pquery(MySQL_Connection(), query, "IPhone_OnStatsRetrieving", "i", id);
+		mysql_pquery(MySQL_Connection(), query, "IPhone_OnStatsRetrieving", "ii", id, _:t);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

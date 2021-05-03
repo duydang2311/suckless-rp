@@ -138,8 +138,8 @@ hook OnGameModeExit@2() {
 
 #include <YSI_Coding\y_hooks>
 
-forward IGun_OnStatsRetrieving(id);
-public IGun_OnStatsRetrieving(id) {
+forward IGun_OnStatsRetrieving(id, Task:t);
+public IGun_OnStatsRetrieving(id, Task:t) {
 	if(cache_num_rows()) {
 		new
 			iWeapon,
@@ -152,14 +152,17 @@ public IGun_OnStatsRetrieving(id) {
 		}
 		map_set_arr(m_gunStats, id, stats);
 	}
+	if(task_valid(t)) {
+		task_set_result(t, 1);
+	}
 	return 1;
 }
 
-hook Item_OnStatsRetrieved(id) {
+hook Item_OnStatsRetrieved(id, Task:t) {
 	if(Item_GetAbility(id) == iAbilityGun) {
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_gun WHERE id = %d LIMIT 1", id);
-		mysql_pquery(MySQL_Connection(), query, "IGun_OnStatsRetrieving", "i", id);
+		mysql_pquery(MySQL_Connection(), query, "IGun_OnStatsRetrieving", "ii", id, _:t);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

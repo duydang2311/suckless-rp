@@ -26,7 +26,7 @@ stock AppMsg_HasStats(id) {
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
-	IPApp_Ensure(AppMessage, "Message", "app_sprites:setting", false);
+	IPApp_Ensure(AppMessage, "Message", "app:message", false);
 	return 1;
 }
 

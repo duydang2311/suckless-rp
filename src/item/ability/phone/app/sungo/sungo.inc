@@ -7,7 +7,7 @@
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
-	IPApp_Ensure(AppSunGo, "SunGo", "app_sprites:setting", true);
+	IPApp_Ensure(AppSunGo, "SunGo", "app:sungo", true);
 	return 1;
 }
 

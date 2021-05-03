@@ -49,7 +49,7 @@ stock Farmer_DeleteEmployee(id) {
 
 #include <YSI_Coding\y_hooks>
 
-hook Player_OnStatsLoaded(playerid) {
+hook Player_OnStatsRetrieved(playerid) {
 	new query[128];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(*) FROM farmer_employees WHERE employee_id = %d LIMIT 1", Player_GetId(playerid));
 	mysql_pquery(MySQL_Connection(), query, "Farmer_OnEmployeeRetrieved", "i", playerid);

@@ -36,7 +36,7 @@ stock Admin_SetFlags(playerid, flags) {
 
 #include <YSI_Coding\y_hooks>
 
-hook Player_OnStatsLoaded(playerid) {
+hook Player_OnStatsRetrieved(playerid) {
 	print("admin_stats.inc");
 	new query[128];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM admin_flags WHERE id = %d LIMIT 1", Player_GetId(playerid));

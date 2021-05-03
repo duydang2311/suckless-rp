@@ -11,7 +11,7 @@ CMD:phone(playerid) {
 			IPhone_ShowUIForPlayer(item, playerid, RandomFloat(200.0, 470.0), RandomFloat(150.0, 230.0));
 			task_unblock(1);
 			await IPApp_InitStatsAsync(item, AppMenu);
-			print("init stats async awaited");
+
 			IPApp_ShowUIForPlayer(item, AppMenu, playerid);
 			SelectTextDraw(playerid, 0x115599FF);
 			break;

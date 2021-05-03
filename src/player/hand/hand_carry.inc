@@ -123,7 +123,7 @@ stock Player_StopCarrying(playerid) {
 
 #include <YSI_Coding\y_hooks>
 
-hook Player_OnStatsLoaded(playerid) {
+hook Player_OnStatsRetrieved(playerid) {
 	new query[128];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM player_hand_carry WHERE id = %d LIMIT 1", Player_GetId(playerid));
 	mysql_pquery(MySQL_Connection(), query, "Player_OnCarryStatsRetrieved", "i", playerid);

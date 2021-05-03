@@ -74,7 +74,7 @@ hook OnPlayerDisconnect(playerid, reason) {
 	return 1;
 }
 
-hook Player_OnStatsLoaded(playerid) {
+hook Player_OnStatsRetrieved(playerid) {
 	new Iter:it = Breed_GetIter();
 	if(iter_valid(it) && iter_release(it)) {
 		new

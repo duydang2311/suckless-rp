@@ -13,10 +13,17 @@ static playerHands[MAX_PLAYERS][2] = {{-1, -1}, ...};
 
 forward Player_OnHandStatsRetrieved(playerid);
 public Player_OnHandStatsRetrieved(playerid) {
-	new index;
-	for(new i = 0, rows = cache_num_rows(); i != rows; i++) {
+	for(new i = 0, rows = cache_num_rows(), stats[ItemStats], index; i != rows; i++) {
 		cache_get_value_name_int(i, "hand_index", index);
 		cache_get_value_name_int(i, "item_id", playerHands[playerid][index]);
+		cache_get_value_name_int(i, "ability", stats[iAbility]);
+		cache_get_value_name_int(i, "occupied_space", stats[iOccupiedSpace]);
+		cache_get_value_name_float(i, "reliability", stats[iReliability]);
+		new Task:t = task_new();
+		CallLocalFunction("Item_OnStatsRetrieving", "iifii", playerHands[playerid][index], stats[iAbility], stats[iReliability], stats[iOccupiedSpace], _:t);
+		task_unblock(1);
+		task_wait(t);
+
 		CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, index, playerHands[playerid][index]);
 		CallLocalFunction("Player_OnItemEquipped", "iii", playerid, index, playerHands[playerid][index]);
 	}
@@ -61,9 +68,9 @@ stock Player_GetFreeHand(playerid) {
 
 #include <YSI_Coding\y_hooks>
 
-hook Player_OnStatsLoaded(playerid) {
-	new query[128];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM player_hands WHERE player_id = %d", Player_GetId(playerid));
+hook Player_OnStatsRetrieved(playerid) {
+	new query[256];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT player_hands.*, item_stats.ability, item_stats.reliability, item_stats.occupied_space FROM player_hands INNER JOIN item_stats ON player_hands.item_id = item_stats.id WHERE player_id = %d", Player_GetId(playerid));
 	mysql_pquery(MySQL_Connection(), query, "Player_OnHandStatsRetrieved", "i", playerid);
 	return 1;
 }

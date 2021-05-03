@@ -13,6 +13,36 @@ enum _:PlayerStats {
 
 static Map:m_playerStats;
 
+forward Player_OnStatsRetrieving(playerid);
+public Player_OnStatsRetrieving(playerid) {
+	if(cache_num_rows()) {
+		new
+			stats[PlayerStats],
+			timestamp,
+			Float:health,
+			Float:armour;
+		cache_get_value_name_int(0, "skin", stats[pSkin]);
+		cache_get_value_name_int(0, "level", stats[pLevel]);
+		cache_get_value_name_int(0, "gender", stats[pGender]);
+		cache_get_value_name_int(0, "birthday_timestamp", timestamp);
+		cache_get_value_name_float(0, "health", health);
+		cache_get_value_name_float(0, "armour", armour);
+		stats[pBirthday] = Timestamp:timestamp;
+
+		SetPlayerHealth(playerid, health);
+		SetPlayerArmour(playerid, armour);
+		SetPlayerSkin(playerid, stats[pSkin]);
+		SetPlayerScore(playerid, stats[pLevel]);
+
+		map_set_arr(m_playerStats, playerid, stats);
+		CallLocalFunction("Player_OnStatsRetrieved", "i", playerid);
+	} else {
+		Player_Msg(playerid, COLOR_YELLOW, "Nhan vat cua ban chua duoc setup, hay tien hanh setup nhan vat ngay bay gio.");
+		Player_SetupStats(playerid);
+	}
+	return 1;
+}
+
 stock Player_GetStats(playerid, stats[PlayerStats]) {
 	if(map_valid(m_playerStats) && map_has_key(m_playerStats, playerid)) {
 		return map_get_arr_safe(m_playerStats, playerid, stats);
@@ -125,36 +155,9 @@ Dialog:StatsSetupBirthday(playerid, response, listitem, inputtext[]) {
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnSpawn(playerid) {
-	print("player_stats.inc");
-	inline const QueryFinished() {
-		if(cache_num_rows()) {
-			new
-				stats[PlayerStats],
-				timestamp,
-				Float:health,
-				Float:armour;
-			cache_get_value_name_int(0, "skin", stats[pSkin]);
-			cache_get_value_name_int(0, "level", stats[pLevel]);
-			cache_get_value_name_int(0, "gender", stats[pGender]);
-			cache_get_value_name_int(0, "birthday_timestamp", timestamp);
-			cache_get_value_name_float(0, "health", health);
-			cache_get_value_name_float(0, "armour", armour);
-			stats[pBirthday] = Timestamp:timestamp;
-
-			SetPlayerHealth(playerid, health);
-			SetPlayerArmour(playerid, armour);
-			SetPlayerSkin(playerid, stats[pSkin]);
-			SetPlayerScore(playerid, stats[pLevel]);
-
-			map_set_arr(m_playerStats, playerid, stats);
-			CallLocalFunction("Player_OnStatsLoaded", "i", playerid);
-		} else {
-			Player_Msg(playerid, COLOR_YELLOW, "Nhan vat cua ban chua duoc setup, hay tien hanh setup nhan vat ngay bay gio.");
-			Player_SetupStats(playerid);
-			return Y_HOOKS_BREAK_RETURN_1;
-		}
-	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT *, UNIX_TIMESTAMP(birthday) as birthday_timestamp FROM player_stats WHERE id = %d LIMIT 1", Player_GetId(playerid));
+	new query[200];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT *, UNIX_TIMESTAMP(birthday) as birthday_timestamp FROM player_stats WHERE id = %d LIMIT 1", Player_GetId(playerid));
+	mysql_pquery(MySQL_Connection(), query, "Player_OnStatsRetrieving", "i", playerid);
 	return 1;
 }
 

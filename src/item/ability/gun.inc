@@ -125,6 +125,14 @@ hook OnGameModeInit@2() {
 	reliability FLOAT(11, 4) DEFAULT 1.0000,\
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
+
+	new query[150];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM item_stats WHERE NOT EXISTS ( SELECT * FROM item_gun WHERE item_stats.id = item_gun.id ) AND item_stats.ability = %d", iAbilityGun);
+	new Cache:result = mysql_query(MySQL_Connection(), query, true);
+	if(cache_affected_rows()) {
+		printf("INFO: Deleted %d rows with non-existing referenced `id` to item_gun in item_stats.", cache_affected_rows());
+	}
+	cache_delete(result);
 	return 1;
 }
 

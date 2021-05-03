@@ -46,6 +46,14 @@ hook OnGameModeInit@5() {
 	id INT UNSIGNED PRIMARY KEY,\
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
+
+	new query[150];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM item_stats WHERE NOT EXISTS ( SELECT * FROM item_whisk WHERE item_stats.id = item_whisk.id ) AND item_stats.ability = %d", iAbilityWhisk);
+	new Cache:result = mysql_query(MySQL_Connection(), query, true);
+	if(cache_affected_rows()) {
+		printf("INFO: Deleted %d rows with non-existing referenced `id` to item_whisk in item_stats.", cache_affected_rows());
+	}
+	cache_delete(result);
 	return 1;
 }
 

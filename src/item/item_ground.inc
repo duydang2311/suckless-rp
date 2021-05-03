@@ -155,8 +155,6 @@ hook OnGameModeInit@6() {
 
 	mysql_query(MySQL_Connection(), "SELECT * FROM item_ground ground INNER JOIN item_stats stats ON ground.id = stats.id", true);
 	new Cache:result = cache_save();
-	printf("rows: %d", cache_num_rows());
-	new create = 0, dead = 0;
 	for(new i = 0, rows = cache_num_rows(), igStats[ItemGroundStats], iStats[ItemStats], Float:pos[3], Float:rot[3], name[64], int, vw, id, Task:t; i != rows; i++) {
 		cache_get_value_name_int(i, "id", id);
 		cache_get_value_name_float(i, "pos_x", pos[0]);

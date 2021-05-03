@@ -13,16 +13,19 @@ static playerHands[MAX_PLAYERS][2] = {{-1, -1}, ...};
 
 forward Player_OnHandStatsRetrieved(playerid);
 public Player_OnHandStatsRetrieved(playerid) {
+	new Cache:data = cache_save();
 	for(new i = 0, rows = cache_num_rows(), stats[ItemStats], index; i != rows; i++) {
 		cache_get_value_name_int(i, "hand_index", index);
 		cache_get_value_name_int(i, "item_id", playerHands[playerid][index]);
 		cache_get_value_name_int(i, "ability", stats[iAbility]);
 		cache_get_value_name_int(i, "occupied_space", stats[iOccupiedSpace]);
 		cache_get_value_name_float(i, "reliability", stats[iReliability]);
+		cache_unset_active();
 		new Task:t = task_new();
 		CallLocalFunction("Item_OnStatsRetrieving", "iifii", playerHands[playerid][index], stats[iAbility], stats[iReliability], stats[iOccupiedSpace], _:t);
 		task_unblock(1);
 		task_wait(t);
+		cache_set_active(data);
 
 		CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, index, playerHands[playerid][index]);
 		CallLocalFunction("Player_OnItemEquipped", "iii", playerid, index, playerHands[playerid][index]);

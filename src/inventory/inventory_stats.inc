@@ -8,7 +8,8 @@ static Map:m_inventory;
 
 forward Inventory_OnStatsRetrieved(playerid);
 public Inventory_OnStatsRetrieved(playerid) {
-	new rows = cache_num_rows();
+	new rows = cache_num_rows(),
+		Cache:data = cache_save();
 	if(rows) {
 		new
 			id,
@@ -25,9 +26,11 @@ public Inventory_OnStatsRetrieved(playerid) {
 			cache_get_value_name_int(i, "occupied_space", stats[iOccupiedSpace]);
 			cache_get_value_name_float(i, "reliability", stats[iReliability]);
 			new Task:t = task_new();
+			cache_unset_active();
 			CallLocalFunction("Item_OnStatsRetrieving", "iifii", id, stats[iAbility], stats[iReliability], stats[iOccupiedSpace], _:t);
 			task_unblock(1);
 			task_wait(t);
+			cache_set_active(data);
 
 			linked_list_add(ll, id);
 			CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, id);

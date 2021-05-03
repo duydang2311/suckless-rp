@@ -140,7 +140,7 @@ Dialog:StatsSetupBirthday(playerid, response, listitem, inputtext[]) {
 			new name[MAX_PLAYER_NAME + 1];
 			GetPlayerName(playerid, name);
 			printf("INFO: Player %s (SQL ID %d) has completed their stats setup (%d affected rows).", name, Player_GetId(playerid), cache_affected_rows());
-			Player_Spawn(playerid);
+			CallLocalFunction("Player_OnAuthRetrieved", "i", playerid);
 		}
 		MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO player_stats (id, skin, birthday, gender) VALUES (%d, %d, '%e', %d)", Player_GetId(playerid), stats[pSkin], time, stats[pGender]);
 	} else {
@@ -154,7 +154,7 @@ Dialog:StatsSetupBirthday(playerid, response, listitem, inputtext[]) {
 
 #include <YSI_Coding\y_hooks>
 
-hook Player_OnSpawn(playerid) {
+hook Player_OnSpawned(playerid) {
 	new query[200];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT *, UNIX_TIMESTAMP(birthday) as birthday_timestamp FROM player_stats WHERE id = %d LIMIT 1", Player_GetId(playerid));
 	mysql_pquery(MySQL_Connection(), query, "Player_OnStatsRetrieving", "i", playerid);

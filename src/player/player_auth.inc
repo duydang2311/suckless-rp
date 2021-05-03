@@ -20,8 +20,7 @@ public Player_OnAuthRetrieving(playerid) {
 		new id;
 		cache_get_value_name_int(0, "id", id);
 		map_set(m_playerId, playerid, id);
-
-		Player_Spawn(playerid);
+		CallLocalFunction("Player_OnAuthRetrieved", "i", playerid);
 	} else {
 		new
 			query[128],
@@ -31,6 +30,47 @@ public Player_OnAuthRetrieving(playerid) {
 		GetPlayerName(playerid, name);
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(*) FROM player_auth WHERE name = '%e' LIMIT 1", name);
 		mysql_pquery(MySQL_Connection(), query, "Player_OnAuthenticated", "i", playerid);
+	}
+	return 1;
+}
+
+forward Player_OnAuthenticated(playerid);
+public Player_OnAuthenticated(playerid) {
+	new
+		count = 0,
+		name[MAX_PLAYER_NAME + 1];
+	cache_get_value_name_int(0, "COUNT(*)", count);
+	GetPlayerName(playerid, name);
+	if(count) {
+		Dialog_Show(playerid, Auth_LoginDialog, DIALOG_STYLE_PASSWORD, "Player | Login", sprintf("Tai khoan '%s' da duoc dang ky.\n> Nhap mat khau de tien hanh dang nhap.", name), "Dang nhap", "<<");
+	} else {
+		Dialog_Show(playerid, Auth_RegisterDialog, DIALOG_STYLE_PASSWORD, "Player | Register", sprintf("Tai khoan '%s' chua duoc dang ky.\n> Nhap mat khau de tien hanh dang ky.", name), "Dang ky", "<<");
+	}
+	return 1;
+}
+
+forward Player_OnHashRetrieving(playerid, const raw[]);
+public Player_OnHashRetrieving(playerid, const raw[]) {
+	if(cache_num_rows()) {
+		new hash[BCRYPT_HASH_LENGTH];
+		cache_get_value_name(0, "hash", hash);
+		bcrypt_check(raw, hash, "Player_OnHashChecking", "i", playerid);
+	} else {
+		new name[MAX_PLAYER_NAME + 1];
+		GetPlayerName(playerid, name);
+		Dialog_Show(playerid, Auth_LoginDialog, DIALOG_STYLE_PASSWORD, "Player | Login", sprintf("Tai khoan '%s' da duoc dang ky.\n> Nhap mat khau de tien hanh dang nhap.\n\nDang nhap that bai, hay thu lai.", name), "Dang nhap", "<<");
+	}
+	return 1;
+}
+
+forward Player_OnHashChecking(playerid);
+public Player_OnHashChecking(playerid) {
+	if(bcrypt_is_equal()) {
+		Player_Login(playerid);
+	} else {
+		new name[MAX_PLAYER_NAME + 1];
+		GetPlayerName(playerid, name);
+		Dialog_Show(playerid, Auth_LoginDialog, DIALOG_STYLE_PASSWORD, "Player | Login", sprintf("Tai khoan '%s' da duoc dang ky.\n> Nhap mat khau de tien hanh dang nhap.\n\nMat khau khong dung, hay thu lai.", name), "Dang nhap", "<<");
 	}
 	return 1;
 }
@@ -71,21 +111,6 @@ stock Player_Login(playerid) {
 	return 1;
 }
 
-forward Player_OnAuthenticated(playerid);
-public Player_OnAuthenticated(playerid) {
-	new
-		count = 0,
-		name[MAX_PLAYER_NAME + 1];
-	cache_get_value_name_int(0, "COUNT(*)", count);
-	GetPlayerName(playerid, name);
-	if(count) {
-		Dialog_Show(playerid, Auth_LoginDialog, DIALOG_STYLE_PASSWORD, "Player | Login", sprintf("Tai khoan '%s' da duoc dang ky.\n> Nhap mat khau de tien hanh dang nhap.", name), "Dang nhap", "<<");
-	} else {
-		Dialog_Show(playerid, Auth_RegisterDialog, DIALOG_STYLE_PASSWORD, "Player | Register", sprintf("Tai khoan '%s' chua duoc dang ky.\n> Nhap mat khau de tien hanh dang ky.", name), "Dang ky", "<<");
-	}
-	return 1;
-}
-
 Dialog:Auth_LoginDialog(playerid, response, listitem, inputtext[]) {
 	if(response) {
 		new name[MAX_PLAYER_NAME + 1];
@@ -95,29 +120,12 @@ Dialog:Auth_LoginDialog(playerid, response, listitem, inputtext[]) {
 			return 1;
 		}
 
-		// y_inline related
-		new password[64];
+		new
+			password[64],
+			query[128];
 		strcopy(password, inputtext);
-		inline const QueryFinished() {
-			inline const Checked(bool:same) {
-				if(same) {
-					print("login successs");
-					Player_Login(playerid);
-				} else {
-					Dialog_Show(playerid, Auth_LoginDialog, DIALOG_STYLE_PASSWORD, "Player | Login", sprintf("Tai khoan '%s' da duoc dang ky.\n> Nhap mat khau de tien hanh dang nhap.\n\nMat khau khong dung, hay thu lai.", name), "Dang nhap", "<<");
-				}
-			}
-
-			if(cache_num_rows()) {
-				new hash[BCRYPT_HASH_LENGTH];
-				cache_get_value_name(0, "hash", hash);
-				BCrypt_CheckInline(password, hash, using inline Checked);
-				print("check bcrypt");
-			} else {
-				Dialog_Show(playerid, Auth_LoginDialog, DIALOG_STYLE_PASSWORD, "Player | Login", sprintf("Tai khoan '%s' da duoc dang ky.\n> Nhap mat khau de tien hanh dang nhap.\n\nDang nhap that bai, hay thu lai.", name), "Dang nhap", "<<");
-			}
-		}
-		MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT hash FROM player_auth WHERE name = '%e' LIMIT 1", name);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT hash FROM player_auth WHERE name = '%e' LIMIT 1", name);
+		mysql_pquery(MySQL_Connection(), query, "Player_OnHashRetrieving", "is", playerid, password);
 	} else {
 		Player_RequestAuthName(playerid);
 	}

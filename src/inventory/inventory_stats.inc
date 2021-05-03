@@ -20,7 +20,7 @@ public Inventory_OnStatsRetrieved(playerid) {
 			ll = LinkedList:map_get(m_inventory, playerid);
 		}
 		for(new i = 0, stats[ItemStats]; i != rows; i++) {
-			cache_get_value_name_int(i, "id", id);
+			cache_get_value_name_int(i, "item_id", id);
 			cache_get_value_name_int(i, "ability", stats[iAbility]);
 			cache_get_value_name_int(i, "occupied_space", stats[iOccupiedSpace]);
 			cache_get_value_name_float(i, "reliability", stats[iReliability]);

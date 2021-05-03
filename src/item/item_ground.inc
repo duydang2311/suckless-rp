@@ -153,36 +153,40 @@ hook OnGameModeInit@6() {
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
 
-	mysql_query(MySQL_Connection(), "SELECT * FROM item_ground ground INNER JOIN item_stats stats ON ground.id = stats.id", true);
-	new Cache:result = cache_save();
-	for(new i = 0, rows = cache_num_rows(), igStats[ItemGroundStats], iStats[ItemStats], Float:pos[3], Float:rot[3], name[64], int, vw, id, Task:t; i != rows; i++) {
-		cache_get_value_name_int(i, "id", id);
-		cache_get_value_name_float(i, "pos_x", pos[0]);
-		cache_get_value_name_float(i, "pos_y", pos[1]);
-		cache_get_value_name_float(i, "pos_z", pos[2]);
-		cache_get_value_name_float(i, "rot_x", rot[0]);
-		cache_get_value_name_float(i, "rot_y", rot[1]);
-		cache_get_value_name_float(i, "rot_z", rot[2]);
-		cache_get_value_name_int(i, "interior", int);
-		cache_get_value_name_int(i, "vw", vw);
+	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_ground ground INNER JOIN item_stats stats ON ground.id = stats.id", true);
+	new rows = cache_num_rows();
+	if(rows) {
+		for(new i = 0, igStats[ItemGroundStats], iStats[ItemStats], Float:pos[3], Float:rot[3], name[64], int, vw, id, Task:t; i != rows; i++) {
+			cache_get_value_name_int(i, "id", id);
+			cache_get_value_name_float(i, "pos_x", pos[0]);
+			cache_get_value_name_float(i, "pos_y", pos[1]);
+			cache_get_value_name_float(i, "pos_z", pos[2]);
+			cache_get_value_name_float(i, "rot_x", rot[0]);
+			cache_get_value_name_float(i, "rot_y", rot[1]);
+			cache_get_value_name_float(i, "rot_z", rot[2]);
+			cache_get_value_name_int(i, "interior", int);
+			cache_get_value_name_int(i, "vw", vw);
 
-		cache_get_value_name_int(i, "ability", iStats[iAbility]);
-		cache_get_value_name_int(i, "occupied_space", iStats[iOccupiedSpace]);
-		cache_get_value_name_float(i, "reliability", iStats[iReliability]);
-		t = task_new();
-		CallLocalFunction("Item_OnStatsRetrieving", "iifii", id, iStats[iAbility], iStats[iReliability], iStats[iOccupiedSpace], _:t);
-		task_wait(t);
-		cache_unset_active();
-		cache_set_active(result);
-		Item_GetName(id, name);
-		igStats[iGrObjectId] = CreateDynamicObject(Item_GetModel(id), pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], vw, int);
-		igStats[iGrTextLabelId] = CreateDynamic3DTextLabel(name, COLOR_YELLOW, pos[0], pos[1], pos[2], 10.0, .worldid = vw, .interiorid = int);
-		Streamer_SetIntData(STREAMER_TYPE_OBJECT, igStats[iGrObjectId], E_STREAMER_EXTRA_ID, streamerExtraId);
-		if(!map_valid(m_iGroundStats)) {
-			m_iGroundStats = map_new();
+			cache_get_value_name_int(i, "ability", iStats[iAbility]);
+			cache_get_value_name_int(i, "occupied_space", iStats[iOccupiedSpace]);
+			cache_get_value_name_float(i, "reliability", iStats[iReliability]);
+
+			t = task_new();
+			CallLocalFunction("Item_OnStatsRetrieving", "iifii", id, iStats[iAbility], iStats[iReliability], iStats[iOccupiedSpace], _:t);
+			task_wait(t);
+			cache_set_active(result);
+
+			Item_GetName(id, name);
+			igStats[iGrObjectId] = CreateDynamicObject(Item_GetModel(id), pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], vw, int);
+			igStats[iGrTextLabelId] = CreateDynamic3DTextLabel(name, COLOR_YELLOW, pos[0], pos[1], pos[2], 10.0, .worldid = vw, .interiorid = int);
+			Streamer_SetIntData(STREAMER_TYPE_OBJECT, igStats[iGrObjectId], E_STREAMER_EXTRA_ID, streamerExtraId);
+			if(!map_valid(m_iGroundStats)) {
+				m_iGroundStats = map_new();
+			}
+			map_set_arr(m_iGroundStats, id, igStats);
 		}
-		map_set_arr(m_iGroundStats, id, igStats);
 	}
+	printf("INFO: Loaded %d ground items.", rows);
 	cache_delete(result);
 	return 1;
 }

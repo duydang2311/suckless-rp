@@ -27,7 +27,7 @@ public Inventory_OnStatsRetrieved(playerid) {
 			new Task:t = task_new();
 			CallLocalFunction("Item_OnStatsRetrieving", "iifii", id, stats[iAbility], stats[iReliability], stats[iOccupiedSpace], _:t);
 			task_unblock(1);
-			await t;
+			task_wait(t);
 
 			linked_list_add(ll, id);
 			CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, id);

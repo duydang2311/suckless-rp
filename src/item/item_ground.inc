@@ -153,7 +153,7 @@ hook OnGameModeInit@6() {
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
 
-	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_ground ground INNER JOIN item_stats stats ON ground.id = stats.id", true);
+	new Cache:data = mysql_query(MySQL_Connection(), "SELECT * FROM item_ground ground INNER JOIN item_stats stats ON ground.id = stats.id", true);
 	new rows = cache_num_rows();
 	if(rows) {
 		for(new i = 0, igStats[ItemGroundStats], iStats[ItemStats], Float:pos[3], Float:rot[3], name[64], int, vw, id, Task:t; i != rows; i++) {
@@ -174,7 +174,7 @@ hook OnGameModeInit@6() {
 			t = task_new();
 			CallLocalFunction("Item_OnStatsRetrieving", "iifii", id, iStats[iAbility], iStats[iReliability], iStats[iOccupiedSpace], _:t);
 			task_wait(t);
-			cache_set_active(result);
+			cache_set_active(data);
 
 			Item_GetName(id, name);
 			igStats[iGrObjectId] = CreateDynamicObject(Item_GetModel(id), pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], vw, int);
@@ -187,6 +187,6 @@ hook OnGameModeInit@6() {
 		}
 	}
 	printf("INFO: Loaded %d ground items.", rows);
-	cache_delete(result);
+	cache_delete(data);
 	return 1;
 }

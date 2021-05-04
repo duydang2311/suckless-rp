@@ -6,7 +6,7 @@
 
 static Map:m_groupRoot;
 
-stock Item_AddToGroupItem(id, group_id) {
+stock IGroup_AddItem(group_id, id) {
 	new
 		query[128],
 		LinkedList:ll;
@@ -26,7 +26,7 @@ stock Item_AddToGroupItem(id, group_id) {
 	return 1;
 }
 
-stock Item_RemoveFromGroupItem(member_id, group_id) {
+stock IGroup_RemoveItem(group_id, member_id) {
 	if(!map_valid(m_groupRoot) || !map_has_key(m_groupRoot, group_id)) {
 		return 0;
 	}
@@ -48,7 +48,7 @@ stock Item_RemoveFromGroupItem(member_id, group_id) {
 	return 1;
 }
 
-stock Iter:Item_GetGroupIter(group_id, index = 0) {
+stock Iter:IGroup_GetIter(group_id, index = 0) {
 	if(!map_valid(m_groupRoot) || !map_has_key(m_groupRoot, group_id)) {
 		return Iter:-1;
 	}
@@ -57,7 +57,7 @@ stock Iter:Item_GetGroupIter(group_id, index = 0) {
 	return it;
 }
 
-stock Item_HasGroup(group_id) {
+stock IGroup_Has(group_id) {
 	return (map_valid(m_groupRoot) && map_has_key(m_groupRoot, group_id));
 }
 

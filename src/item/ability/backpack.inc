@@ -57,8 +57,8 @@ stock IBackpack_GetFreeCapacity(id) {
 	new
 		stats[ItemBackpackStats];
 	map_get_arr(m_backpackStats, id, stats);
-	if(Item_HasGroup(id)) {
-		new Iter:it = Item_GetGroupIter(id);
+	if(IGroup_Has(id)) {
+		new Iter:it = IGroup_GetIter(id);
 		if(iter_valid(it)) {
 			for(; iter_inside(it); iter_move_next(it)) {
 				stats[iBpCapacity] -= Item_GetOccupiedSpace(iter_get(it));

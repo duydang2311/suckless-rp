@@ -26,7 +26,7 @@ static item_group_root_show(playerid) {
 
 static item_group_members_show(playerid, group_id) {
 	new
-		Iter:it = Item_GetGroupIter(group_id),
+		Iter:it = IGroup_GetIter(group_id),
 		name[32],
 		string[512] = "ID\tTen vat pham";
 	Item_GetName(group_id, name);
@@ -54,7 +54,7 @@ CMD:inv(playerid) {
 		for(new id; iter_inside(it); iter_move_next(it)) {
 			id = iter_get(it);
 			Item_GetName(id, name);
-			if(Item_HasGroup(id)) {
+			if(IGroup_Has(id)) {
 				format(string, sizeof(string), "%s\n"E_COLOR_GREEN"%d\t"E_COLOR_GREEN"%s", string, id, name);
 			} else {
 				format(string, sizeof(string), "%s\n%d\t%s", string, id, name);
@@ -99,7 +99,7 @@ Dialog:InventoryDialog(playerid, response, listitem, inputtext[]) {
 				new Iter:it = Inventory_GetIter(playerid, listitem);
 				if(iter_valid(it) && iter_release(it)) {
 					new id = iter_get(it);
-					if(Item_HasGroup(id)) {
+					if(IGroup_Has(id)) {
 						item_group_members_show(playerid, id);
 						return 1;
 					} else {
@@ -282,7 +282,7 @@ Dialog:InventoryItemGroupRoot(playerid, response, listitem, inputtext[]) {
 					return 1;
 				}
 
-				Item_AddToGroupItem(id, select_id);
+				IGroup_AddItem(select_id, id);
 				Inventory_RemoveItem(playerid, id);
 			}
 		}
@@ -309,11 +309,11 @@ Dialog:InventoryItemGroupTake(playerid, response, listitem, inputtext[]) {
 
 			new
 				group_id = map_get(m_selectedItemId, playerid),
-				Iter:it = Item_GetGroupIter(group_id, listitem - 1);
+				Iter:it = IGroup_GetIter(group_id, listitem - 1);
 			if(iter_valid(it)) {
 				new id = iter_get(it);
 				iter_release(it);
-				Item_RemoveFromGroupItem(id, group_id);
+				IGroup_RemoveItem(group_id, id);
 				Inventory_AddItem(playerid, id);
 			}
 		}

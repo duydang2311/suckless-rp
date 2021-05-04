@@ -117,7 +117,7 @@ public IGroup_OnItemRetrieving(id) {
 
 hook Item_OnStatsRetrieving(id, ability, Float:reliability, occupied_space, _:t) {
 	new query[256];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.id, stats.ability, stats.reliability, stats.occupied_space FROM item_stats stats INNER JOIN item_group ON item_group.member_id = item_stats.id WHERE item_group.group_id = %d", id);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.id, stats.ability, stats.reliability, stats.occupied_space FROM item_stats stats INNER JOIN item_group gr ON gr.member_id = stats.id WHERE gr.group_id = %d", id);
 	mysql_pquery(MySQL_Connection(), query, "IGroup_OnItemRetrieving", "i", id);
 	return 1;
 }

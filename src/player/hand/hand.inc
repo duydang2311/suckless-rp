@@ -30,6 +30,7 @@ public Player_OnHandStatsRetrieved(playerid) {
 		CallLocalFunction("Item_OnPlayerEquipped", "iii", playerid, index, playerHands[playerid][index]);
 		CallLocalFunction("Player_OnItemEquipped", "iii", playerid, index, playerHands[playerid][index]);
 	}
+	cache_delete(data);
 	return 1;
 }
 

@@ -71,23 +71,6 @@ hook OnGameModeInit@1() {
 	FOREIGN KEY (group_id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE,\
 	FOREIGN KEY (member_id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);
-
-	new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM item_group", true);
-	for(new i = 0, rows = cache_num_rows(), group_id, member_id, LinkedList:ll; i != rows; i++) {
-		cache_get_value_name_int(i, "group_id", group_id);
-		cache_get_value_name_int(i, "member_id", member_id);
-		if(!map_valid(m_groupRoot)) {
-			m_groupRoot = map_new();
-		}
-		if(!map_has_key(m_groupRoot, group_id)) {
-			ll = linked_list_new();
-			map_set(m_groupRoot, group_id, ll);
-		} else {
-			ll = LinkedList:map_get(m_groupRoot, group_id);
-		}
-		linked_list_add(ll, member_id);
-	}
-	cache_delete(result);
 	return 1;
 }
 
@@ -96,5 +79,45 @@ hook OnGameModeExit@1() {
 		map_delete_deep(m_groupRoot);
 		m_groupRoot = Map:-1;
 	}
+	return 1;
+}
+
+#include <YSI_Coding\y_hooks>
+
+forward IGroup_OnItemRetrieving(id);
+public IGroup_OnItemRetrieving(id) {
+	new Cache:data = cache_save();
+	for(new i = 0, rows = cache_num_rows(), member, LinkedList:ll, stats[ItemStats]; i != rows; i++) {
+		cache_get_value_name_int(i, "id", member);
+		cache_get_value_name_int(i, "ability", stats[iAbility]);
+		cache_get_value_name_int(i, "occupied_space", stats[iOccupiedSpace]);
+		cache_get_value_name_float(i, "reliability", stats[iReliability]);
+		if(!map_valid(m_groupRoot)) {
+			m_groupRoot = map_new();
+		}
+		if(!map_has_key(m_groupRoot, id)) {
+			ll = linked_list_new();
+			map_set(m_groupRoot, id, ll);
+		} else {
+			ll = LinkedList:map_get(m_groupRoot, id);
+		}
+		linked_list_add(ll, member);
+
+		new Task:t = task_new();
+		cache_unset_active();
+		CallLocalFunction("Item_OnStatsRetrieving", "iifii", member, stats[iAbility], stats[iReliability], stats[iOccupiedSpace], _:t);
+		task_unblock(1);
+		task_wait(t);
+		cache_set_active(data);
+	}
+	cache_delete(data);
+	return 1;
+}
+
+
+hook Item_OnStatsRetrieving(id, ability, Float:reliability, occupied_space, _:t) {
+	new query[256];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.id, stats.ability, stats.reliability, stats.occupied_space FROM item_stats stats INNER JOIN item_group ON item_group.member_id = item_stats.id WHERE item_group.group_id = %d", id);
+	mysql_pquery(MySQL_Connection(), query, "IGroup_OnItemRetrieving", "i", id);
 	return 1;
 }

@@ -36,6 +36,7 @@ public Inventory_OnStatsRetrieved(playerid) {
 			CallLocalFunction("Inventory_OnItemAdded", "ii", playerid, id);
 		}
 	}
+	cache_delete(data);
 	return 1;
 }
 

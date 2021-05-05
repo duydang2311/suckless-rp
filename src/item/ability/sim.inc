@@ -64,7 +64,7 @@ stock Task:ISim_Create(const number[] = "", Float:reliability = 1.0, occupied_sp
 	return t;
 }
 
-stock ISim_GetName(item_id, name[], size = sizeof(name)) {
+stock ISim_GetName(id, name[], size = sizeof(name)) {
 	name[0] = EOS;
 	strcat(name, "Sim Card", size);
 	return 1;
@@ -72,6 +72,17 @@ stock ISim_GetName(item_id, name[], size = sizeof(name)) {
 
 stock ISim_GetModel() {
 	return 1581;
+}
+
+stock ISim_GetNumber(id, number[], size = sizeof(number)) {
+	if(!ISim_Has(id)) {
+		return 0;
+	}
+	new stats[ItemSimStats];
+	map_get_arr(m_simStats, id, stats);
+	number[0] = EOS;
+	strcat(number, stats[iSimNumber], size);
+	return 1;
 }
 
 stock ISim_GetPhoneWithNumber(const number[]) {

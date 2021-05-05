@@ -169,3 +169,17 @@ hook Item_OnNameGetAttempt(id, name[], size) {
 	}
 	return 1;
 }
+
+hook IGroup_OnAddingAttempt(group, member, &error) {
+	if(IBackpack_Has(group)) {
+		new capacity = Item_GetFreeCapacity(group);
+		if(capacity < 0 || Item_GetOccupiedSpace(member) > capacity) {
+			error = grErrorCapacityLack;
+		} else {
+			error = grErrorNone;
+		}
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	error = grErrorNotSupported;
+	return 1;
+}

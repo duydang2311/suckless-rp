@@ -134,13 +134,14 @@ hook IGroup_OnAddingAttempt(group, member, &error) {
 	if(IPhone_Has(group)) {
 		if(!ISim_Has(member)) {
 			error = grErrorNotSupported;
-			return Y_HOOKS_BREAK_RETURN_1;
+		} else if(IGroup_Has(group)) {
+			error = grErrorCapacityLack;
+		} else {
+			error = grErrorNone;
 		}
-
-		// if(IGroup_Has(group)) {
-		// 	error = grErrorCapacityLack;
-		// 	return Y_HOOKS_BREAK_RETURN_1;
-		// }
+		return Y_HOOKS_BREAK_RETURN_1;
+	} else {
+		error = grErrorNotSupported;
 	}
 	return 1;
 }

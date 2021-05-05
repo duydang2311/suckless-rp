@@ -53,7 +53,7 @@ stock AppMenu_CreateAppTd(playerid, app, Float:x, Float:y, Float:size, &PlayerTe
 	PlayerTextDrawSetOutline(playerid, sprite_td, 0);
 	PlayerTextDrawSetShadow(playerid, sprite_td, 0);
 	PlayerTextDrawAlignment(playerid, sprite_td, 2);
-	PlayerTextDrawColor(playerid, sprite_td, -65436);
+	PlayerTextDrawColor(playerid, sprite_td, -1);
 	PlayerTextDrawBackgroundColor(playerid, sprite_td, 255);
 	PlayerTextDrawBoxColor(playerid, sprite_td, 255);
 	PlayerTextDrawUseBox(playerid, sprite_td, 1);

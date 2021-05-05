@@ -74,7 +74,7 @@ stock AppStore_DestroyUI(id, playerid) {
 	return 1;
 }
 
-stock AppStore_CreateAppTd(playerid, app, Float:x, Float:y, Float:size, &PlayerText:sprite_td, &PlayerText:name_td, color = 0x000000FF) {
+stock AppStore_CreateAppTd(playerid, app, Float:x, Float:y, Float:size, &PlayerText:sprite_td, &PlayerText:name_td) {
 	new
 		sprite[APP_SPRITE_SIZE],
 		name[APP_NAME_SIZE];
@@ -89,7 +89,7 @@ stock AppStore_CreateAppTd(playerid, app, Float:x, Float:y, Float:size, &PlayerT
 	PlayerTextDrawSetOutline(playerid, sprite_td, 0);
 	PlayerTextDrawSetShadow(playerid, sprite_td, 0);
 	PlayerTextDrawAlignment(playerid, sprite_td, 2);
-	PlayerTextDrawColor(playerid, sprite_td, color);
+	PlayerTextDrawColor(playerid, sprite_td, -1);
 	PlayerTextDrawBackgroundColor(playerid, sprite_td, 255);
 	PlayerTextDrawBoxColor(playerid, sprite_td, 255);
 	PlayerTextDrawUseBox(playerid, sprite_td, 1);
@@ -191,9 +191,9 @@ stock AppStore_UpdateMainPage(id, playerid) {
 			x = first_x + (cnt % col) * gap_x - size / 2.0;
 			y = first_y + (floatround(float(cnt) / float(col), floatround_floor)) * gap_y - size / 2.0;
 			if(!IPApp_IsExternal(stats[appId]) || AppMenu_IsAppInstalled(id, stats[appId])) {
-				AppStore_CreateAppTd(playerid, stats[appId], x, y, size, sprite_td, name_td, .color = 0x000000FF);
+				AppStore_CreateAppTd(playerid, stats[appId], x, y, size, sprite_td, name_td);
 			} else {
-				AppStore_CreateAppTd(playerid, stats[appId], x, y, size, sprite_td, name_td, .color = 0x00000033);
+				AppStore_CreateAppTd(playerid, stats[appId], x, y, size, sprite_td, name_td);
 			}
 			PlayerTextDrawShow(playerid, sprite_td);
 			PlayerTextDrawShow(playerid, name_td);
@@ -240,7 +240,7 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 		PlayerTextDrawSetOutline(playerid, stats[insAppSprite], 0);
 		PlayerTextDrawSetShadow(playerid, stats[insAppSprite], 0);
 		PlayerTextDrawAlignment(playerid, stats[insAppSprite], 2);
-		PlayerTextDrawColor(playerid, stats[insAppSprite], 0x000000FF);
+		PlayerTextDrawColor(playerid, stats[insAppSprite], -1);
 		PlayerTextDrawBackgroundColor(playerid, stats[insAppSprite], 255);
 		PlayerTextDrawBoxColor(playerid, stats[insAppSprite], 255);
 		PlayerTextDrawUseBox(playerid, stats[insAppSprite], 1);

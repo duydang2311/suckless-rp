@@ -330,7 +330,7 @@ Dialog:InventoryItemGroupTake(playerid, response, listitem, inputtext[]) {
 			m_selectedItemId = Map:-1;
 		}
 	}
-	PC_EmulateCommand(playerid, "/inv");
+	PC_EmulateCommand(playerid, "/groupitem");
 	return 1;
 }
 

@@ -2,3 +2,4 @@ AddCharModel(2, 20001, "cow.dff", "cow_1.txd");
 AddCharModel(2, 20002, "cow.dff", "cow_2.txd");
 AddCharModel(2, 20003, "cow.dff", "cow_3.txd");
 AddCharModel(2, 20004, "cow.dff", "cow_4.txd");
+AddSimpleModel(-1, 11735, -1000, "sneaker.dff", "sneaker.txd");

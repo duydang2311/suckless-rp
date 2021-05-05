@@ -11,6 +11,10 @@ enum _:ItemBackpackStats {
 
 static Map:m_backpackStats;
 
+stock IBackpack_Has(id) {
+	return (map_valid(m_backpackStats) && map_has_key(m_backpackStats, id));
+}
+
 stock Task:IBackpack_Create(model, capacity, Float:reliability = 1.0, occupied_space = 1) {
 	new Task:t = task_new();
 	task_detach();
@@ -41,7 +45,7 @@ stock Task:IBackpack_Create(model, capacity, Float:reliability = 1.0, occupied_s
 }
 
 stock IBackpack_GetCapacity(id) {
-	if(!map_valid(m_backpackStats) || !map_has_key(m_backpackStats, id)) {
+	if(!IBackpack_Has(id)) {
 		return 0;
 	}
 	new stats[ItemBackpackStats];
@@ -50,7 +54,7 @@ stock IBackpack_GetCapacity(id) {
 }
 
 stock IBackpack_GetFreeCapacity(id) {
-	if(!map_valid(m_backpackStats) || !map_has_key(m_backpackStats, id)) {
+	if(!IBackpack_Has(id)) {
 		return 0;
 	}
 
@@ -70,7 +74,7 @@ stock IBackpack_GetFreeCapacity(id) {
 }
 
 stock IBackpack_GetModel(id) {
-	if(!map_valid(m_backpackStats) || !map_has_key(m_backpackStats, id)) {
+	if(!IBackpack_Has(id)) {
 		return 0;
 	}
 	new
@@ -81,7 +85,7 @@ stock IBackpack_GetModel(id) {
 
 forward IBackpack_OnDeleted(id);
 public IBackpack_OnDeleted(id) {
-	if(map_valid(m_backpackStats) && map_has_key(m_backpackStats, id)) {
+	if(IBackpack_Has(id)) {
 		map_remove(m_backpackStats, id);
 		if(!map_size(m_backpackStats)) {
 			map_delete(m_backpackStats);

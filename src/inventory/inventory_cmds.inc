@@ -275,13 +275,20 @@ Dialog:InventoryItemGroupRoot(playerid, response, listitem, inputtext[]) {
 					return 1;
 				}
 
-				new capacity = Item_GetFreeCapacity(select_id);
-				if(capacity < 0 || Item_GetOccupiedSpace(id) > capacity) {
-					Player_Msg(playerid, COLOR_YELLOW, "Vat pham duoc chon lam Root khong du suc chua vat pham Member.");
+				new error = grErrorNone;
+				CallLocalFunction("IGroup_OnAddingAttempt", "iii", select_id, id, ref(error));
+				if(error) {
+					switch(error) {
+						case grErrorCapacityLack: {
+							Player_Msg(playerid, COLOR_YELLOW, "Nhom vat pham da het cho chua.");
+						}
+						case grErrorNotSupported: {
+							Player_Msg(playerid, COLOR_YELLOW, "Vat pham khong phu hop de dua vao chung nhom.");
+						}
+					}
 					item_group_root_show(playerid);
 					return 1;
 				}
-
 				IGroup_AddItem(select_id, id);
 				Inventory_RemoveItem(playerid, id);
 			}

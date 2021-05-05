@@ -4,7 +4,23 @@
 
 #define item_group_included
 
+enum _:GroupAddingError {
+	grErrorNone,
+	grErrorCapacityLack,
+	grErrorNotSupported
+}
+
 static Map:m_groupRoot;
+
+
+forward IGroup_OnAddingAttempt(group, member, &error);
+public IGroup_OnAddingAttempt(group, member, &error) {
+	new capacity = Item_GetFreeCapacity(group);
+	if(capacity < 0 || Item_GetOccupiedSpace(member) > capacity) {
+		error = grErrorCapacityLack;
+	}
+	return 1;
+}
 
 stock IGroup_AddItem(group_id, id) {
 	new

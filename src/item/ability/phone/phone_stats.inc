@@ -129,3 +129,18 @@ hook Item_OnNameGetAttempt(id, name[], size) {
 	}
 	return 1;
 }
+
+hook IGroup_OnAddingAttempt(group, member, &error) {
+	if(IPhone_Has(group)) {
+		if(!ISim_Has(member)) {
+			error = grErrorNotSupported;
+			return Y_HOOKS_BREAK_RETURN_1;
+		}
+
+		// if(IGroup_Has(group)) {
+		// 	error = grErrorCapacityLack;
+		// 	return Y_HOOKS_BREAK_RETURN_1;
+		// }
+	}
+	return 1;
+}

@@ -101,13 +101,6 @@ Dialog:InventoryDialog(playerid, response, listitem, inputtext[]) {
 					new id = iter_get(it);
 					Inventory_RemoveItemByIter(playerid, it);
 					Player_EquipItem(playerid, hand, id);
-					// if(IGroup_Has(id)) {
-					// 	item_group_members_show(playerid, id);
-					// 	return 1;
-					// } else {
-					// 	Inventory_RemoveItemByIter(playerid, it);
-					// 	Player_EquipItem(playerid, hand, id);
-					// }
 				}
 			}
 		} else {
@@ -246,15 +239,18 @@ Dialog:InventoryItemGroupMember(playerid, response, listitem, inputtext[]) {
 		}
 
 		new Iter:it = Inventory_GetIter(playerid, listitem);
-		if(!iter_valid(it)) {
-			return 0;
+		if(iter_valid(it) && iter_release(it)) {
+			new id = iter_get(it);
+			if(!map_valid(m_selectedItemId)) {
+				m_selectedItemId = map_new();
+			}
+			map_set(m_selectedItemId, playerid, id);
+			if(IGroup_Has(id)) {
+				item_group_members_show(playerid, id);
+			} else {
+				item_group_root_show(playerid);
+			}
 		}
-		iter_release(it);
-		if(!map_valid(m_selectedItemId)) {
-			m_selectedItemId = map_new();
-		}
-		map_set(m_selectedItemId, playerid, iter_get(it));
-		item_group_root_show(playerid);
 	}
 	return 1;
 }

@@ -51,3 +51,17 @@ hook IPA_OnAppsGetAttempt(id, bool:arr[], size) {
 	}
 	return 1;
 }
+
+hook OnGameModeInit() {
+	mysql_query(MySQL_Connection(), query, sizeof(query), "CREATE TABLE IF NOT EXISTS appmsg_stats (\
+	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
+	from_sim INT UNSIGNED,\
+	to_sim INT UNSIGNED,\
+	content VARCHAR(64) DEFAULT '',\
+	FOREIGN KEY (to_sim) REFERENCES item_sim(id) ON UPDATE CASCADE ON DELETE CASCADE,\
+	FOREIGN KEY (from_sim) REFERENCES item_sim(id) ON UPDATE CASCADE ON DELETE CASCADE\
+	)", false);
+	return 1;
+}

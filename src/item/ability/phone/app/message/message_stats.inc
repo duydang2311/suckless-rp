@@ -6,15 +6,15 @@
 
 const MAX_MESSAGES = 10;
 
-enum _:AppMsg_MessageStats {
+enum _:AppMsgStats {
 	msgFromSim,
 	msgToSim,
 	msgContent[64]
 }
 
-enum _:AppMsgStats {
-	appMessageOffset,
-	appMessages[MAX_MESSAGES]
+enum _:AppMsgBuffer {
+	msgBufferOffset,
+	LinkedList:msgList
 }
 
 static Map:m_msgStats;

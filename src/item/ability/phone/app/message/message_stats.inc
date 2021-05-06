@@ -41,6 +41,7 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 hook IPA_OnStatsTermnAttempt(id, app) {
 	if(app == AppMessage) {
 
+		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;
 }

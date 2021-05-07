@@ -25,8 +25,8 @@ enum _:MessageDetailStats {
 }
 
 static
-	Map:m_msgListStats, // { phone_id: {AppMsgStats} }
-	Map:m_msgDetailStats; // { phone_id: {AppMsgStats} }
+	Map:m_listStats, // { phone_id: {AppMsgStats} }
+	Map:m_detailStats; // { phone_id: {AppMsgStats} }
 
 forward AppMsg_OnStatsRetrieved(id, Task:result);
 public AppMsg_OnStatsRetrieved(id, Task:result) {
@@ -54,11 +54,55 @@ public AppMsg_OnStatsRetrieved(id, Task:result) {
 }
 
 stock AppMsg_HasListStats(id) {
-	return (map_valid(m_msgListStats) && map_has_key(m_msgListStats, id));
+	return (map_valid(m_listStats) && map_has_key(m_listStats, id));
 }
 
 stock AppMsg_HasDetailStats(id) {
-	return (map_valid(m_msgDetailStats) && map_has_key(m_msgDetailStats, id));
+	return (map_valid(m_detailStats) && map_has_key(m_detailStats, id));
+}
+
+stock AppMsg_GetListOffset(id) {
+	if(!AppMsg_HasListStats(id)) {
+		return 0;
+	}
+	new stats[AppMsgStats];
+	map_get_arr(m_listStats, id, stats);
+	return stats[msgOffset];
+}
+
+stock AppMsg_GetDetailOffset(id) {
+	if(!AppMsg_HasDetailStats(id)) {
+		return 0;
+	}
+	new stats[AppMsgStats];
+	map_get_arr(m_detailStats, id, stats);
+	return stats[msgOffset];
+}
+
+stock Iter:AppMsg_GetListIter(id, offset) {
+	new Iter:it = Iter:-1;
+	if(AppMsg_HasListStats(id)) {
+		new stats[AppMsgStats];
+		map_get_arr(m_listStats, id, stats);
+		if(linked_list_valid(stats[msgList])) {
+			it = linked_list_iter(stats[msgList], offset);
+			iter_acquire(it);
+		}
+	}
+	return it;
+}
+
+stock Iter:AppMsg_GetDetailIter(id, offset) {
+	new Iter:it = Iter:-1;
+	if(AppMsg_HasDetailStats(id)) {
+		new stats[AppMsgStats];
+		map_get_arr(m_detailStats, id, stats);
+		if(linked_list_valid(stats[msgList])) {
+			it = linked_list_iter(stats[msgList], offset);
+			iter_acquire(it);
+		}
+	}
+	return it;
 }
 
 #include <YSI_Coding\y_hooks>

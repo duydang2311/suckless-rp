@@ -14,10 +14,14 @@ static
 	Map:m_msgDetailsPageTd;
 
 stock AppMsg_UpdateMsgList(id, playerid) {
-	if(!AppMsg_HasListStats(id)) {
+	if(!AppMsg_HasListStats(id)) { // TODO: print 'Sim not found' on the phone screen.
 		return 0;
 	}
 
+	new Iter:it = AppMsg_GetListIter(id, AppMsg_GetListOffset(id));
+	if(iter_valid(it) && iter_acquire(it)) {
+
+	}
 	return 1;
 }
 

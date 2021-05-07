@@ -6,6 +6,7 @@
 
 static enum _:UIStats {
 	PlayerText:UIBody,
+	PlayerText:UIScreen,
 	Float:UIX,
 	Float:UIY
 }
@@ -51,10 +52,12 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		} else if(map_has_arr_key(m_uiStats, key)) {
 			map_arr_get_arr(m_uiStats, key, stats);
 			PlayerTextDrawDestroy(playerid, stats[UIBody]);
+			PlayerTextDrawDestroy(playerid, stats[UIScreen]);
 		}
 		stats[UIX] = x;
 		stats[UIY] = y;
-		stats[UIBody] = CreatePlayerTextDraw(playerid, x, y, "phone:body");
+
+		stats[UIBody] = CreatePlayerTextDraw(playerid, x, y, "phone:body_trans");
 		PlayerTextDrawFont(playerid, stats[UIBody], 4);
 		PlayerTextDrawLetterSize(playerid, stats[UIBody], 0.600000, 2.000000);
 		PlayerTextDrawTextSize(playerid, stats[UIBody], 110.000000, 220.000000);
@@ -68,6 +71,22 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		PlayerTextDrawSetProportional(playerid, stats[UIBody], 1);
 		PlayerTextDrawSetSelectable(playerid, stats[UIBody], 0);
 		PlayerTextDrawShow(playerid, stats[UIBody]);
+
+		stats[UIScreen] = CreatePlayerTextDraw(playerid, x + 13.000000, y + 24.500000, "phone:screen");
+		PlayerTextDrawFont(playerid, stats[UIScreen], 4);
+		PlayerTextDrawLetterSize(playerid, stats[UIScreen], 0.600000, 2.000000);
+		PlayerTextDrawTextSize(playerid, stats[UIScreen], 84.000000, 84.000000);
+		PlayerTextDrawSetOutline(playerid, stats[UIScreen], 1);
+		PlayerTextDrawSetShadow(playerid, stats[UIScreen], 0);
+		PlayerTextDrawAlignment(playerid, stats[UIScreen], 1);
+		PlayerTextDrawColor(playerid, stats[UIScreen], -1);
+		PlayerTextDrawBackgroundColor(playerid, stats[UIScreen], 255);
+		PlayerTextDrawBoxColor(playerid, stats[UIScreen], 50);
+		PlayerTextDrawUseBox(playerid, stats[UIScreen], 1);
+		PlayerTextDrawSetProportional(playerid, stats[UIScreen], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[UIScreen], 0);
+		PlayerTextDrawShow(playerid, stats[UIScreen]);
+
 		map_arr_set_arr(m_uiStats, key, stats);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -83,6 +102,7 @@ hook IPUI_OnHideAttempt(id, playerid) {
 			new stats[UIStats];
 			map_arr_get_arr(m_uiStats, key, stats);
 			PlayerTextDrawDestroy(playerid, stats[UIBody]);
+			PlayerTextDrawDestroy(playerid, stats[UIScreen]);
 			map_arr_remove(m_uiStats, key);
 			if(!map_size(m_uiStats)) {
 				map_delete(m_uiStats);

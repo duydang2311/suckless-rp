@@ -4,6 +4,23 @@
 
 #define app_message_ui_included
 
+static enum _:Key {
+	ItemId,
+	PlayerId
+}
+
+static
+	Map:m_msgListPageTd,
+	Map:m_msgDetailsPageTd;
+
+stock AppMsg_UpdateMsgList(id, playerid) {
+	if(!AppMsg_HasListStats(id)) {
+		return 0;
+	}
+
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnUIShowAttempt(id, app, playerid) {
@@ -12,6 +29,7 @@ hook IPA_OnUIShowAttempt(id, app, playerid) {
 	}
 
 	if(app == AppStore) {
+
 		AppMsg_UpdateMsgList(id, playerid);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}

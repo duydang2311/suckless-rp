@@ -19,8 +19,13 @@ stock AppMsg_UpdateMsgList(id, playerid) {
 	}
 
 	new Iter:it = AppMsg_GetListIter(id, AppMsg_GetListOffset(id));
-	if(iter_valid(it) && iter_acquire(it)) {
+	if(iter_valid(it) && iter_release(it)) {
+		new stats[MessageListStats];
+		for(; iter_inside(it); iter_move_next(it)) {
+			iter_get_arr(it, stats);
 
+			// TODO: creating textdraw based on stats
+		}
 	}
 	return 1;
 }

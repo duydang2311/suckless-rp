@@ -221,3 +221,37 @@ hook IPUI_OnHideAttempt(id, playerid) {
 	}
 	return 1;
 }
+
+hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
+	new phone = IPUI_GetPlayerPhone(playerid);
+	if(phone != -1) {
+		new key[UIStatsKey];
+		key[ItemId] = phone;
+		key[PlayerId] = playerid;
+		if(NokiaUI_Has(key)) {
+			new
+				stats[UIStats];
+			map_arr_get_arr(m_uiStats, key, stats);
+			if(playertextid == stats[UIBtnUp]) {
+				CallLocalFunction("IPUI_OnButtonClicked", "iii", phone, playerid, PhoneButtonUp);
+				return Y_HOOKS_BREAK_RETURN_1;
+			} else if(playertextid == stats[UIBtnDown]) {
+				CallLocalFunction("IPUI_OnButtonClicked", "iii", phone, playerid, PhoneButtonDown);
+				return Y_HOOKS_BREAK_RETURN_1;
+			} else if(playertextid == stats[UIBtnLeft]) {
+				CallLocalFunction("IPUI_OnButtonClicked", "iii", phone, playerid, PhoneButtonLeft);
+				return Y_HOOKS_BREAK_RETURN_1;
+			} else if(playertextid == stats[UIBtnRight]) {
+				CallLocalFunction("IPUI_OnButtonClicked", "iii", phone, playerid, PhoneButtonRight);
+				return Y_HOOKS_BREAK_RETURN_1;
+			} else if(playertextid == stats[UIBtnCall]) {
+				CallLocalFunction("IPUI_OnButtonClicked", "iii", phone, playerid, PhoneButtonCall);
+				return Y_HOOKS_BREAK_RETURN_1;
+			} else if(playertextid == stats[UIBtnHangup]) {
+				CallLocalFunction("IPUI_OnButtonClicked", "iii", phone, playerid, PhoneButtonHangup);
+				return Y_HOOKS_BREAK_RETURN_1;
+			}
+		}
+	}
+	return 1;
+}

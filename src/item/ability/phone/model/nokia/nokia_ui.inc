@@ -97,10 +97,10 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		PlayerTextDrawSetProportional(playerid, stats[UIBody], 1);
 		PlayerTextDrawSetSelectable(playerid, stats[UIBody], 0);
 
-		stats[UIBtnUp] = CreatePlayerTextDraw(playerid, x + 55.000000, y + 119.000000, "_");
-		PlayerTextDrawFont(playerid, stats[UIBtnUp], 1);
-		PlayerTextDrawLetterSize(playerid, stats[UIBtnUp], 0.600000, -0.149998);
-		PlayerTextDrawTextSize(playerid, stats[UIBtnUp], 298.500000, 9.500000);
+		stats[UIBtnUp] = CreatePlayerTextDraw(playerid, 547.000000, 316.500000, "ld_drv:blkdot");
+		PlayerTextDrawFont(playerid, stats[UIBtnUp], 4);
+		PlayerTextDrawLetterSize(playerid, stats[UIBtnUp], 0.600000, -0.149996);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnUp], 16.500000, 4.500000);
 		PlayerTextDrawSetOutline(playerid, stats[UIBtnUp], 1);
 		PlayerTextDrawSetShadow(playerid, stats[UIBtnUp], 0);
 		PlayerTextDrawAlignment(playerid, stats[UIBtnUp], 2);
@@ -111,10 +111,10 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		PlayerTextDrawSetProportional(playerid, stats[UIBtnUp], 1);
 		PlayerTextDrawSetSelectable(playerid, stats[UIBtnUp], 1);
 
-		stats[UIBtnDown] = CreatePlayerTextDraw(playerid, x + 55.000000, y + 134.000000, "_");
-		PlayerTextDrawFont(playerid, stats[UIBtnDown], 1);
+		stats[UIBtnDown] = CreatePlayerTextDraw(playerid, 547.000000, 330.000000, "LD_DRV:BLKDOT");
+		PlayerTextDrawFont(playerid, stats[UIBtnDown], 4);
 		PlayerTextDrawLetterSize(playerid, stats[UIBtnDown], 0.600000, -0.299997);
-		PlayerTextDrawTextSize(playerid, stats[UIBtnDown], 298.500000, 9.500000);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnDown], 16.500000, 4.500000);
 		PlayerTextDrawSetOutline(playerid, stats[UIBtnDown], 1);
 		PlayerTextDrawSetShadow(playerid, stats[UIBtnDown], 0);
 		PlayerTextDrawAlignment(playerid, stats[UIBtnDown], 2);
@@ -125,10 +125,10 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		PlayerTextDrawSetProportional(playerid, stats[UIBtnDown], 1);
 		PlayerTextDrawSetSelectable(playerid, stats[UIBtnDown], 1);
 
-		stats[UIBtnLeft] = CreatePlayerTextDraw(playerid, x + 44.000000, y + 125.000000, "_");
-		PlayerTextDrawFont(playerid, stats[UIBtnLeft], 1);
+		stats[UIBtnLeft] = CreatePlayerTextDraw(playerid, 542.000000, 321.000000, "LD_DRV:BLKDOT");
+		PlayerTextDrawFont(playerid, stats[UIBtnLeft], 4);
 		PlayerTextDrawLetterSize(playerid, stats[UIBtnLeft], 0.554166, 0.100000);
-		PlayerTextDrawTextSize(playerid, stats[UIBtnLeft], 298.500000, 2.500000);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnLeft], 5.000000, 8.500000);
 		PlayerTextDrawSetOutline(playerid, stats[UIBtnLeft], 1);
 		PlayerTextDrawSetShadow(playerid, stats[UIBtnLeft], 0);
 		PlayerTextDrawAlignment(playerid, stats[UIBtnLeft], 2);
@@ -139,10 +139,10 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		PlayerTextDrawSetProportional(playerid, stats[UIBtnLeft], 1);
 		PlayerTextDrawSetSelectable(playerid, stats[UIBtnLeft], 1);
 
-		stats[UIBtnRight] = CreatePlayerTextDraw(playerid, x + 66.500000, y + 125.000000, "_");
-		PlayerTextDrawFont(playerid, stats[UIBtnRight], 1);
+		stats[UIBtnRight] = CreatePlayerTextDraw(playerid, 563.500000, 321.000000, "LD_DRV:BLKDOT");
+		PlayerTextDrawFont(playerid, stats[UIBtnRight], 4);
 		PlayerTextDrawLetterSize(playerid, stats[UIBtnRight], 0.554166, 0.100000);
-		PlayerTextDrawTextSize(playerid, stats[UIBtnRight], 298.500000, 2.500000);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnRight], 5.000000, 8.500000);
 		PlayerTextDrawSetOutline(playerid, stats[UIBtnRight], 1);
 		PlayerTextDrawSetShadow(playerid, stats[UIBtnRight], 0);
 		PlayerTextDrawAlignment(playerid, stats[UIBtnRight], 2);
@@ -153,11 +153,11 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		PlayerTextDrawSetProportional(playerid, stats[UIBtnRight], 1);
 		PlayerTextDrawSetSelectable(playerid, stats[UIBtnRight], 1);
 
-		stats[UIBtnCall] = CreatePlayerTextDraw(playerid, x + 25.000000, y + 117.000000, "_");
-		PlayerTextDrawFont(playerid, stats[UIBtnCall], 1);
-		PlayerTextDrawLetterSize(playerid, stats[UIBtnCall], 0.554166, 1.250000);
-		PlayerTextDrawTextSize(playerid, stats[UIBtnCall], 298.500000, 15.500000);
-		PlayerTextDrawSetOutline(playerid, stats[UIBtnCall], 1);
+		stats[UIBtnCall] = CreatePlayerTextDraw(playerid, 518.500000, 315.500000, "ld_drv:blkdot");
+		PlayerTextDrawFont(playerid, stats[UIBtnCall], 4);
+		PlayerTextDrawLetterSize(playerid, stats[UIBtnCall], 0.150000, 1.200000);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnCall], 14.000000, 14.000000);
+		PlayerTextDrawSetOutline(playerid, stats[UIBtnCall], 0);
 		PlayerTextDrawSetShadow(playerid, stats[UIBtnCall], 0);
 		PlayerTextDrawAlignment(playerid, stats[UIBtnCall], 2);
 		PlayerTextDrawColor(playerid, stats[UIBtnCall], -1);
@@ -167,10 +167,10 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		PlayerTextDrawSetProportional(playerid, stats[UIBtnCall], 1);
 		PlayerTextDrawSetSelectable(playerid, stats[UIBtnCall], 1);
 
-		stats[UIBtnHangup] = CreatePlayerTextDraw(playerid, x + 84.500000, y + 117.000000, "_");
-		PlayerTextDrawFont(playerid, stats[UIBtnHangup], 1);
+		stats[UIBtnHangup] = CreatePlayerTextDraw(playerid, 578.000000, 315.500000, "LD_DRV:BLKDOT");
+		PlayerTextDrawFont(playerid, stats[UIBtnHangup], 4);
 		PlayerTextDrawLetterSize(playerid, stats[UIBtnHangup], 0.554166, 1.250000);
-		PlayerTextDrawTextSize(playerid, stats[UIBtnHangup], 298.500000, 15.500000);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnHangup], 14.000000, 14.000000);
 		PlayerTextDrawSetOutline(playerid, stats[UIBtnHangup], 1);
 		PlayerTextDrawSetShadow(playerid, stats[UIBtnHangup], 0);
 		PlayerTextDrawAlignment(playerid, stats[UIBtnHangup], 2);

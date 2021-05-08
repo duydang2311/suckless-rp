@@ -25,7 +25,7 @@ CMD:phone(playerid) {
 			task_unblock(1);
 			await IPApp_InitStatsAsync(item, AppMenu);
 			IPApp_ShowUIForPlayer(item, AppMenu, playerid);
-			SelectTextDraw(playerid, 0x115599FF);
+			SelectTextDraw(playerid, 0x115599AA);
 			break;
 		}
 	}

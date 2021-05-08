@@ -7,6 +7,12 @@
 static enum _:UIStats {
 	PlayerText:UIBody,
 	PlayerText:UIScreen,
+	PlayerText:UIBtnUp,
+	PlayerText:UIBtnDown,
+	PlayerText:UIBtnLeft,
+	PlayerText:UIBtnRight,
+	PlayerText:UIBtnCall,
+	PlayerText:UIBtnHangup,
 	Float:UIX,
 	Float:UIY
 }
@@ -53,24 +59,15 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 			map_arr_get_arr(m_uiStats, key, stats);
 			PlayerTextDrawDestroy(playerid, stats[UIBody]);
 			PlayerTextDrawDestroy(playerid, stats[UIScreen]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnUp]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnDown]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnLeft]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnRight]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnCall]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnHangup]);
 		}
 		stats[UIX] = x;
 		stats[UIY] = y;
-
-		stats[UIBody] = CreatePlayerTextDraw(playerid, x, y, "phone:body_trans");
-		PlayerTextDrawFont(playerid, stats[UIBody], 4);
-		PlayerTextDrawLetterSize(playerid, stats[UIBody], 0.600000, 2.000000);
-		PlayerTextDrawTextSize(playerid, stats[UIBody], 110.000000, 220.000000);
-		PlayerTextDrawSetOutline(playerid, stats[UIBody], 1);
-		PlayerTextDrawSetShadow(playerid, stats[UIBody], 0);
-		PlayerTextDrawAlignment(playerid, stats[UIBody], 1);
-		PlayerTextDrawColor(playerid, stats[UIBody], -1);
-		PlayerTextDrawBackgroundColor(playerid, stats[UIBody], 255);
-		PlayerTextDrawBoxColor(playerid, stats[UIBody], 50);
-		PlayerTextDrawUseBox(playerid, stats[UIBody], 1);
-		PlayerTextDrawSetProportional(playerid, stats[UIBody], 1);
-		PlayerTextDrawSetSelectable(playerid, stats[UIBody], 0);
-		PlayerTextDrawShow(playerid, stats[UIBody]);
 
 		stats[UIScreen] = CreatePlayerTextDraw(playerid, x + 13.000000, y + 24.500000, "phone:screen");
 		PlayerTextDrawFont(playerid, stats[UIScreen], 4);
@@ -85,8 +82,113 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		PlayerTextDrawUseBox(playerid, stats[UIScreen], 1);
 		PlayerTextDrawSetProportional(playerid, stats[UIScreen], 1);
 		PlayerTextDrawSetSelectable(playerid, stats[UIScreen], 0);
-		PlayerTextDrawShow(playerid, stats[UIScreen]);
 
+		stats[UIBody] = CreatePlayerTextDraw(playerid, x, y, "phone:body_trans");
+		PlayerTextDrawFont(playerid, stats[UIBody], 4);
+		PlayerTextDrawLetterSize(playerid, stats[UIBody], 0.600000, 2.000000);
+		PlayerTextDrawTextSize(playerid, stats[UIBody], 110.000000, 220.000000);
+		PlayerTextDrawSetOutline(playerid, stats[UIBody], 1);
+		PlayerTextDrawSetShadow(playerid, stats[UIBody], 0);
+		PlayerTextDrawAlignment(playerid, stats[UIBody], 1);
+		PlayerTextDrawColor(playerid, stats[UIBody], -1);
+		PlayerTextDrawBackgroundColor(playerid, stats[UIBody], 255);
+		PlayerTextDrawBoxColor(playerid, stats[UIBody], 50);
+		PlayerTextDrawUseBox(playerid, stats[UIBody], 1);
+		PlayerTextDrawSetProportional(playerid, stats[UIBody], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[UIBody], 0);
+
+		stats[UIBtnUp] = CreatePlayerTextDraw(playerid, x + 55.000000, y + 119.000000, "_");
+		PlayerTextDrawFont(playerid, stats[UIBtnUp], 1);
+		PlayerTextDrawLetterSize(playerid, stats[UIBtnUp], 0.600000, -0.149998);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnUp], 298.500000, 9.500000);
+		PlayerTextDrawSetOutline(playerid, stats[UIBtnUp], 1);
+		PlayerTextDrawSetShadow(playerid, stats[UIBtnUp], 0);
+		PlayerTextDrawAlignment(playerid, stats[UIBtnUp], 2);
+		PlayerTextDrawColor(playerid, stats[UIBtnUp], -1);
+		PlayerTextDrawBackgroundColor(playerid, stats[UIBtnUp], 255);
+		PlayerTextDrawBoxColor(playerid, stats[UIBtnUp], 0x00000000);
+		PlayerTextDrawUseBox(playerid, stats[UIBtnUp], 1);
+		PlayerTextDrawSetProportional(playerid, stats[UIBtnUp], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[UIBtnUp], 1);
+
+		stats[UIBtnDown] = CreatePlayerTextDraw(playerid, x + 55.000000, y + 134.000000, "_");
+		PlayerTextDrawFont(playerid, stats[UIBtnDown], 1);
+		PlayerTextDrawLetterSize(playerid, stats[UIBtnDown], 0.600000, -0.299997);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnDown], 298.500000, 9.500000);
+		PlayerTextDrawSetOutline(playerid, stats[UIBtnDown], 1);
+		PlayerTextDrawSetShadow(playerid, stats[UIBtnDown], 0);
+		PlayerTextDrawAlignment(playerid, stats[UIBtnDown], 2);
+		PlayerTextDrawColor(playerid, stats[UIBtnDown], -1);
+		PlayerTextDrawBackgroundColor(playerid, stats[UIBtnDown], 255);
+		PlayerTextDrawBoxColor(playerid, stats[UIBtnDown], 0x00000000);
+		PlayerTextDrawUseBox(playerid, stats[UIBtnDown], 1);
+		PlayerTextDrawSetProportional(playerid, stats[UIBtnDown], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[UIBtnDown], 1);
+
+		stats[UIBtnLeft] = CreatePlayerTextDraw(playerid, x + 44.000000, y + 125.000000, "_");
+		PlayerTextDrawFont(playerid, stats[UIBtnLeft], 1);
+		PlayerTextDrawLetterSize(playerid, stats[UIBtnLeft], 0.554166, 0.100000);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnLeft], 298.500000, 2.500000);
+		PlayerTextDrawSetOutline(playerid, stats[UIBtnLeft], 1);
+		PlayerTextDrawSetShadow(playerid, stats[UIBtnLeft], 0);
+		PlayerTextDrawAlignment(playerid, stats[UIBtnLeft], 2);
+		PlayerTextDrawColor(playerid, stats[UIBtnLeft], -1);
+		PlayerTextDrawBackgroundColor(playerid, stats[UIBtnLeft], 255);
+		PlayerTextDrawBoxColor(playerid, stats[UIBtnLeft], 0x00000000);
+		PlayerTextDrawUseBox(playerid, stats[UIBtnLeft], 1);
+		PlayerTextDrawSetProportional(playerid, stats[UIBtnLeft], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[UIBtnLeft], 1);
+
+		stats[UIBtnRight] = CreatePlayerTextDraw(playerid, x + 66.500000, y + 125.000000, "_");
+		PlayerTextDrawFont(playerid, stats[UIBtnRight], 1);
+		PlayerTextDrawLetterSize(playerid, stats[UIBtnRight], 0.554166, 0.100000);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnRight], 298.500000, 2.500000);
+		PlayerTextDrawSetOutline(playerid, stats[UIBtnRight], 1);
+		PlayerTextDrawSetShadow(playerid, stats[UIBtnRight], 0);
+		PlayerTextDrawAlignment(playerid, stats[UIBtnRight], 2);
+		PlayerTextDrawColor(playerid, stats[UIBtnRight], -1);
+		PlayerTextDrawBackgroundColor(playerid, stats[UIBtnRight], 255);
+		PlayerTextDrawBoxColor(playerid, stats[UIBtnRight], 0x00000000);
+		PlayerTextDrawUseBox(playerid, stats[UIBtnRight], 1);
+		PlayerTextDrawSetProportional(playerid, stats[UIBtnRight], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[UIBtnRight], 1);
+
+		stats[UIBtnCall] = CreatePlayerTextDraw(playerid, x + 25.000000, y + 117.000000, "_");
+		PlayerTextDrawFont(playerid, stats[UIBtnCall], 1);
+		PlayerTextDrawLetterSize(playerid, stats[UIBtnCall], 0.554166, 1.250000);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnCall], 298.500000, 15.500000);
+		PlayerTextDrawSetOutline(playerid, stats[UIBtnCall], 1);
+		PlayerTextDrawSetShadow(playerid, stats[UIBtnCall], 0);
+		PlayerTextDrawAlignment(playerid, stats[UIBtnCall], 2);
+		PlayerTextDrawColor(playerid, stats[UIBtnCall], -1);
+		PlayerTextDrawBackgroundColor(playerid, stats[UIBtnCall], 255);
+		PlayerTextDrawBoxColor(playerid, stats[UIBtnCall], 0x00000000);
+		PlayerTextDrawUseBox(playerid, stats[UIBtnCall], 1);
+		PlayerTextDrawSetProportional(playerid, stats[UIBtnCall], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[UIBtnCall], 1);
+
+		stats[UIBtnHangup] = CreatePlayerTextDraw(playerid, x + 84.500000, y + 117.000000, "_");
+		PlayerTextDrawFont(playerid, stats[UIBtnHangup], 1);
+		PlayerTextDrawLetterSize(playerid, stats[UIBtnHangup], 0.554166, 1.250000);
+		PlayerTextDrawTextSize(playerid, stats[UIBtnHangup], 298.500000, 15.500000);
+		PlayerTextDrawSetOutline(playerid, stats[UIBtnHangup], 1);
+		PlayerTextDrawSetShadow(playerid, stats[UIBtnHangup], 0);
+		PlayerTextDrawAlignment(playerid, stats[UIBtnHangup], 2);
+		PlayerTextDrawColor(playerid, stats[UIBtnHangup], -1);
+		PlayerTextDrawBackgroundColor(playerid, stats[UIBtnHangup], 255);
+		PlayerTextDrawBoxColor(playerid, stats[UIBtnHangup], 0x00000000);
+		PlayerTextDrawUseBox(playerid, stats[UIBtnHangup], 1);
+		PlayerTextDrawSetProportional(playerid, stats[UIBtnHangup], 1);
+		PlayerTextDrawSetSelectable(playerid, stats[UIBtnHangup], 1);
+
+		PlayerTextDrawShow(playerid, stats[UIBody]);
+		PlayerTextDrawShow(playerid, stats[UIScreen]);
+		PlayerTextDrawShow(playerid, stats[UIBtnUp]);
+		PlayerTextDrawShow(playerid, stats[UIBtnDown]);
+		PlayerTextDrawShow(playerid, stats[UIBtnLeft]);
+		PlayerTextDrawShow(playerid, stats[UIBtnRight]);
+		PlayerTextDrawShow(playerid, stats[UIBtnCall]);
+		PlayerTextDrawShow(playerid, stats[UIBtnHangup]);
 		map_arr_set_arr(m_uiStats, key, stats);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -103,6 +205,12 @@ hook IPUI_OnHideAttempt(id, playerid) {
 			map_arr_get_arr(m_uiStats, key, stats);
 			PlayerTextDrawDestroy(playerid, stats[UIBody]);
 			PlayerTextDrawDestroy(playerid, stats[UIScreen]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnUp]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnDown]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnLeft]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnRight]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnCall]);
+			PlayerTextDrawDestroy(playerid, stats[UIBtnHangup]);
 			map_arr_remove(m_uiStats, key);
 			if(!map_size(m_uiStats)) {
 				map_delete(m_uiStats);

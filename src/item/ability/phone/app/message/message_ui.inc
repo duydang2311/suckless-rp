@@ -14,9 +14,14 @@ static enum _:ListTdComponent {
 	PlayerText:lsTdMessage
 }
 
+static enum _:ListUI {
+	lsComponentCount,
+	LinkedList:lsComponentList
+}
+
 static
-	Map:m_listTd, // { [Key]: LinkedList<ListTdComponent> }
-	Map:m_detailsTd;
+	Map:m_listUI, // { [Key]: {ListUI} }
+	Map:m_detailsUI;
 
 stock AppMsg_DestroyListUI(id, playerid) {
 	new key[Key];
@@ -25,15 +30,16 @@ stock AppMsg_DestroyListUI(id, playerid) {
 	if(!AppMsg_HasListUIKey(key)) {
 		return 0;
 	}
-	new LinkedList:ll = LinkedList:map_arr_get(m_listTd, key);
-	if(linked_list_valid(ll)) {
-		for(new Iter:it = linked_list_iter(ll), component[ListTdComponent]; iter_inside(it); iter_move_next(it)) {
+	new ui[ListUI];
+	map_arr_get_arr(m_listUI, key, ui);
+	if(linked_list_valid(ui[lsComponentList])) {
+		for(new Iter:it = linked_list_iter(ui[lsComponentList]), component[ListTdComponent]; iter_inside(it); iter_move_next(it)) {
 			iter_get_arr(it, component);
 			PlayerTextDrawDestroy(playerid, component[lsTdHeader]);
 			PlayerTextDrawDestroy(playerid, component[lsTdMessage]);
 		}
 	}
-	map_arr_remove_deep(m_listTd, key);
+	map_arr_remove_deep(m_listUI, key);
 	return 1;
 }
 
@@ -44,16 +50,16 @@ stock AppMsg_DestroyDetailsUI(id, playerid) {
 	if(!AppMsg_HasDetailsUIKey(key)) {
 		return 0;
 	}
-	map_arr_remove_deep(m_detailsTd, key);
+	map_arr_remove_deep(m_detailsUI, key);
 	return 1;
 }
 
 stock AppMsg_HasListUIKey(const key[], size = sizeof(key)) {
-	return (map_valid(m_listTd) && map_has_arr_key(m_listTd, key, size));
+	return (map_valid(m_listUI) && map_has_arr_key(m_listUI, key, size));
 }
 
 stock AppMsg_HasDetailsUIKey(const key[], size = sizeof(key)) {
-	return (map_valid(m_detailsTd) && map_has_arr_key(m_detailsTd, key, size));
+	return (map_valid(m_detailsUI) && map_has_arr_key(m_detailsUI, key, size));
 }
 
 stock AppMsg_UpdateMsgList(id, playerid) {
@@ -72,7 +78,6 @@ stock AppMsg_UpdateMsgList(id, playerid) {
 			Float:MINIMUM_COMPONENT_GAP = 4.00;
 
 		new
-			stats[MessageStats],
 			component_cnt = 0,
 			Float:anc[2],
 			Float:safe_min[2],
@@ -102,19 +107,19 @@ stock AppMsg_UpdateMsgList(id, playerid) {
 		}
 
 		new
-			LinkedList:ll,
+			ui[ListUI],
+			stats[MessageStats],
 			key[Key];
 		key[ItemId] = id;
 		key[PlayerId] = playerid;
-		if(!map_valid(m_listTd)) {
-			m_listTd = map_new();
+		if(!map_valid(m_listUI)) {
+			m_listUI = map_new();
+		} else if(map_has_arr_key(m_listUI, key)) {
+			AppMsg_DestroyListUI(id, playerid);
 		}
-		if(!map_has_arr_key(m_listTd, key)) {
-			ll = linked_list_new();
-			map_arr_set(m_listTd, key, _:ll);
-		} else {
-			ll = LinkedList:map_arr_get(m_listTd, key);
-		}
+		ui[lsComponentList] = linked_list_new();
+		ui[lsComponentCount] = component_cnt;
+		map_arr_set_arr(m_listUI, key, ui);
 		for(new cnt = 0, component[ListTdComponent], number[SIM_NUMBER_SIZE]; iter_inside(it) && cnt != component_cnt; iter_move_next(it), cnt++) {
 			iter_get_arr(it, stats);
 			ISim_GetNumber(stats[msgFromSim], number);
@@ -149,7 +154,7 @@ stock AppMsg_UpdateMsgList(id, playerid) {
 
 			PlayerTextDrawShow(playerid, component[lsTdHeader]);
 			PlayerTextDrawShow(playerid, component[lsTdMessage]);
-			linked_list_add_arr(ll, component);
+			linked_list_add_arr(ui[lsComponentList], component);
 		}
 	}
 	return 1;
@@ -190,8 +195,11 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	} else if(AppMsg_HasListUIKey(key)) {
 		switch(button) {
 			case PhoneButtonDown: {
-				new offset = AppMsg_GetListOffset(id);
-				if(offset != (AppMsg_GetListSize(id) - 1)) {
+				new
+					offset = AppMsg_GetListOffset(id),
+					ui[ListUI];
+				map_arr_get_arr(m_listUI, key, ui);
+				if(offset < (AppMsg_GetListSize(id) - ui[lsComponentCount])) {
 					AppMsg_SetListOffset(id, offset + 1);
 					AppMsg_DestroyListUI(id, playerid);
 					AppMsg_UpdateMsgList(id, playerid);

@@ -65,6 +65,22 @@ stock AppMsg_GetListOffset(id) {
 	return stats[msgOffset];
 }
 
+stock AppMsg_SetListOffset(id, offset) {
+	if(!AppMsg_HasListStats(id)) {
+		return 0;
+	}
+	map_set_cell(m_listStats, id, msgOffset, offset);
+	return 1;
+}
+
+stock AppMsg_SetDetailsOffset(id, offset) {
+	if(!AppMsg_HasDetailsStats(id)) {
+		return 0;
+	}
+	map_set_cell(m_detailsStats, id, msgOffset, offset);
+	return 1;
+}
+
 stock AppMsg_GetDetailOffset(id) {
 	if(!AppMsg_HasDetailStats(id)) {
 		return 0;

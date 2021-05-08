@@ -51,11 +51,11 @@ stock AppMsg_UpdateMsgList(id, playerid) {
 
 		// calculate how many detail component textdraw will be displayed based on safe screen and gap sizes
 		component_cnt = floatround((safe_max[1] - safe_min[1]) / (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + MINIMUM_COMPONENT_GAP), floatround_floor);
-		printf("(safe_max[1] - safe_min[1]) / (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + MINIMUM_COMPONENT_GAP) = %.2f", (safe_max[1] - safe_min[1]) / (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + MINIMUM_COMPONENT_GAP));
-		component_cnt = ((AppMsg_GetListSize(id) - offset) > component_cnt) ? component_cnt : (AppMsg_GetListSize(id) - offset);
+		Util_Clamp(component_cnt, (AppMsg_GetListSize(id) - offset), component_cnt);
 		component_gap = (safe_max[1] - safe_min[1] - component_cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE)) / component_cnt;
+		Util_FloatClamp(component_gap, MINIMUM_COMPONENT_GAP, MINIMUM_COMPONENT_GAP * 2.0);
 		first_x = anc[0] + safe_min[0]; // Align left
-		first_y = anc[1] + safe_min[1] + (safe_max[1] - safe_min[1]) / 2.0; // center position of the screen because textdraw is displayed from top to bottom without vertical centering
+		first_y = anc[1] + safe_min[1] + (safe_max[1] - safe_min[1]) / 2.0 - (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE) / 2.0; // center position of the screen because textdraw is displayed from top to bottom without vertical centering
 		if(component_cnt % 2 == 0) {
 			first_y -= (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap) / 2.0 + (floatround(float(component_cnt - 1) / 2.0, floatround_floor)) * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap);
 		} else {

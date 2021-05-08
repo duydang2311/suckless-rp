@@ -30,10 +30,10 @@ public AppMsg_OnStatsRetrieved(id, Task:result) {
 		new stats[AppMsgStats];
 		stats[msgOffset] = 0;
 		stats[msgList] = linked_list_new();
-		if(!map_valid(m_detailStats)) {
-			m_detailStats = map_new();
+		if(!map_valid(m_listStats)) {
+			m_listStats = map_new();
 		}
-		map_set_arr(m_detailStats, id, stats);
+		map_set_arr(m_listStats, id, stats);
 
 		for(new i = 0, msg[MessageStats]; i != rows; i++) {
 			cache_get_value_name_int(i, "id", msg[msgId]);
@@ -74,7 +74,7 @@ stock AppMsg_GetDetailOffset(id) {
 	return stats[msgOffset];
 }
 
-stock Iter:AppMsg_GetListIter(id, offset) {
+stock Iter:AppMsg_GetListIter(id, offset = 0) {
 	new Iter:it = Iter:-1;
 	if(AppMsg_HasListStats(id)) {
 		new stats[AppMsgStats];
@@ -100,6 +100,20 @@ stock Iter:AppMsg_GetDetailIter(id, offset) {
 	return it;
 }
 
+stock AppMsg_GetListSize(id) {
+	if(!AppMsg_HasListStats(id)) {
+		return 0;
+	}
+
+	new stats[AppMsgStats];
+	map_get_arr(m_listStats, id, stats);
+	if(!linked_list_valid(stats[msgList])) {
+		return 0;
+	}
+
+	return linked_list_size(stats[msgList]);
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
@@ -115,12 +129,12 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 
 		new Iter:it = IGroup_GetIter(id);
 		if(iter_valid(it) && iter_release(it)) {
-			for(new sim; iter_inside(it); iter_release(it)) {
+			for(new sim; iter_inside(it); iter_move_next(it)) {
 				sim = iter_get(it);
 				if(ISim_Has(sim)) {
-					new query[256];
-					mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.from_sim, stats.content FROM appmsg_stats stats INNER JOIN (\
-					SELECT to_sim, MAX(created_date) LatestDate FROM appmsg_stats GROUP BY to_sim) grouped_stats ON stats.to_sim = grouped_stats.to_sim AND stats.to_sim = %d AND stats.created_date = grouped_stats.LatestDate ORDER BY created_date DESC", sim);
+					new query[512];
+					mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.id, stats.from_sim, stats.content FROM appmsg_stats stats INNER JOIN (\
+					SELECT to_sim, MAX(created_date) LatestDate FROM appmsg_stats GROUP BY from_sim) grouped_stats ON stats.to_sim = grouped_stats.to_sim WHERE stats.to_sim = %d AND stats.created_date = grouped_stats.LatestDate ORDER BY created_date DESC", sim);
 					mysql_pquery(MySQL_Connection(), query, "AppMsg_OnStatsRetrieved", "ii", id, _:result);
 				}
 			}

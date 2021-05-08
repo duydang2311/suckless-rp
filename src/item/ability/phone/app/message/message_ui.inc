@@ -9,9 +9,14 @@ static enum _:Key {
 	PlayerId
 }
 
+static enum _:DetailTdComponent {
+	PlayerText:dtlHeader,
+	PlayerText:dtlMessage
+}
+
 static
-	Map:m_msgListPageTd,
-	Map:m_msgDetailsPageTd;
+	Map:m_listTd,
+	Map:m_detailsTd; // { [Key]: LinkedList<DetailTdComponent> }
 
 stock AppMsg_DestroyUI(id, playerid) {
 	return 1;

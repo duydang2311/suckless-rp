@@ -4,6 +4,15 @@
 
 #define phone_ui_included
 
+enum _:PhoneButtonSignal {
+	PhoneButtonUp,
+	PhoneButtonDown,
+	PhoneButtonLeft,
+	PhoneButtonRight,
+	PhoneButtonCall,
+	PhoneButtonHangup
+}
+
 static Map:m_playerPhone;
 
 stock IPUI_GetPlayerPhone(playerid) {

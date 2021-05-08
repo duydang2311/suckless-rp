@@ -29,16 +29,21 @@ stock AppMsg_UpdateMsgList(id, playerid) {
 
 	new Iter:it = AppMsg_GetListIter(id, AppMsg_GetListOffset(id));
 	if(iter_valid(it) && iter_release(it)) {
+		// header to text: 7, text to next header: 8
+		const
+			Float:HEADER_TO_TEXT_GAP = 7.00,
+			Float:TEXT_TO_ANOTHER_COMPONENT_GAP = 8.00;
+
 		new
 			stats[MessageStats],
-			component_cnt = 0;
+			component_cnt = 0; // calculate how many detail component textdraw will be displayed based on safe screen and gap sizes
 
 		new
 			Float:anc[2],
 			Float:safe_min[2],
 			Float:safe_max[2];
 		IPModel_GetSafeScreenOffset(id, safe_min[0], safe_min[1], safe_max[0], safe_max[1]);
-		IPUI_GetAnchor(id, playerid, &Float:x, &Float:y)
+		IPUI_GetAnchor(id, playerid, anc[0], anc[1]);
 		for(; iter_inside(it); iter_move_next(it)) {
 			iter_get_arr(it, stats);
 

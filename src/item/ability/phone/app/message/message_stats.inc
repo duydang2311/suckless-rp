@@ -146,7 +146,20 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 
 hook IPA_OnStatsTermnAttempt(id, app) {
 	if(app == AppMessage) {
-
+		if(AppMsg_HasDetailStats(id)) {
+			map_remove_deep(m_detailStats, id);
+			if(!map_size(m_detailStats)) {
+				map_delete(m_detailStats);
+				m_detailStats = Map:-1;
+			}
+		}
+		if(AppMsg_HasListStats(id)) {
+			map_remove_deep(m_listStats, id);
+			if(!map_size(m_listStats)) {
+				map_delete(m_listStats);
+				m_listStats = Map:-1;
+			}
+		}
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

@@ -23,7 +23,6 @@ stock AppMsg_DestroyUI(id, playerid) {
 }
 
 stock AppMsg_UpdateMsgList(id, playerid) {
-	printf("AppMsg_UpdateMsgList(%d, %d), has list %d", id, playerid, AppMsg_HasListStats(id));
 	if(!AppMsg_HasListStats(id)) { // TODO: print 'Sim not found' on the phone screen.
 		return 0;
 	}
@@ -34,7 +33,7 @@ stock AppMsg_UpdateMsgList(id, playerid) {
 	if(iter_valid(it) && iter_release(it)) {
 		const
 			Float:HEADER_SIZE = 6.00,
-			Float:HEADER_TO_TEXT_GAP = 3.00,
+			Float:HEADER_TO_TEXT_GAP = 2.00,
 			Float:TEXT_SIZE = 4.00,
 			Float:MINIMUM_COMPONENT_GAP = 4.00;
 
@@ -52,10 +51,11 @@ stock AppMsg_UpdateMsgList(id, playerid) {
 
 		// calculate how many detail component textdraw will be displayed based on safe screen and gap sizes
 		component_cnt = floatround((safe_max[1] - safe_min[1]) / (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + MINIMUM_COMPONENT_GAP), floatround_floor);
+		printf("(safe_max[1] - safe_min[1]) / (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + MINIMUM_COMPONENT_GAP) = %.2f", (safe_max[1] - safe_min[1]) / (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + MINIMUM_COMPONENT_GAP));
 		component_cnt = ((AppMsg_GetListSize(id) - offset) > component_cnt) ? component_cnt : (AppMsg_GetListSize(id) - offset);
 		component_gap = (safe_max[1] - safe_min[1] - component_cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE)) / component_cnt;
 		first_x = anc[0] + safe_min[0]; // Align left
-		first_y = anc[1] + safe_min[1] + (safe_max[1] - safe_min[1]) / 2.0; // offset a value of COMPONENT_GAP from the center position of the screen because textdraw is displayed from top to bottom without vertical centering
+		first_y = anc[1] + safe_min[1] + (safe_max[1] - safe_min[1]) / 2.0; // center position of the screen because textdraw is displayed from top to bottom without vertical centering
 		if(component_cnt % 2 == 0) {
 			first_y -= (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap) / 2.0 + (floatround(float(component_cnt - 1) / 2.0, floatround_floor)) * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap);
 		} else {

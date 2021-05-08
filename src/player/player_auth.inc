@@ -52,9 +52,12 @@ public Player_OnAuthenticated(playerid) {
 forward Player_OnHashRetrieving(playerid, const raw[]);
 public Player_OnHashRetrieving(playerid, const raw[]) {
 	if(cache_num_rows()) {
-		new hash[BCRYPT_HASH_LENGTH];
+		new
+			hash[BCRYPT_HASH_LENGTH],
+			raw_avoid_warning[128] = "";
+		strcat(raw_avoid_warning, raw);
 		cache_get_value_name(0, "hash", hash);
-		bcrypt_check(raw, hash, "Player_OnHashChecking", "i", playerid);
+		bcrypt_check(raw_avoid_warning, hash, "Player_OnHashChecking", "i", playerid);
 	} else {
 		new name[MAX_PLAYER_NAME + 1];
 		GetPlayerName(playerid, name);

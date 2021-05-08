@@ -13,6 +13,10 @@ static
 	Map:m_msgListPageTd,
 	Map:m_msgDetailsPageTd;
 
+stock AppMsg_DestroyUI(id, playerid) {
+	return 1;
+}
+
 stock AppMsg_UpdateMsgList(id, playerid) {
 	if(!AppMsg_HasListStats(id)) { // TODO: print 'Sim not found' on the phone screen.
 		return 0;
@@ -20,7 +24,7 @@ stock AppMsg_UpdateMsgList(id, playerid) {
 
 	new Iter:it = AppMsg_GetListIter(id, AppMsg_GetListOffset(id));
 	if(iter_valid(it) && iter_release(it)) {
-		new stats[MessageListStats];
+		new stats[MessageStats];
 		for(; iter_inside(it); iter_move_next(it)) {
 			iter_get_arr(it, stats);
 

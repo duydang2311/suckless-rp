@@ -10,17 +10,12 @@ const
 
 enum _:AppMsgStats {
 	msgOffset,
-	LinkedList:msgList // [ {MessageListStats || MessageDetailStats} ]
+	LinkedList:msgList // [ {MessageStats} ]
 }
 
-enum _:MessageListStats {
+enum _:MessageStats {
 	msgId,
 	msgFromSim,
-	msgContent[MESSAGE_CONTENT_SIZE]
-}
-
-enum _:MessageDetailStats {
-	msgId,
 	msgContent[MESSAGE_CONTENT_SIZE]
 }
 
@@ -33,18 +28,18 @@ public AppMsg_OnStatsRetrieved(id, Task:result) {
 	new rows = cache_num_rows();
 	if(rows) {
 		new stats[AppMsgStats];
-		stats[msgBufferOffset] = 0;
+		stats[msgOffset] = 0;
 		stats[msgList] = linked_list_new();
-		if(!map_valid(m_msgStats)) {
-			m_msgStats = map_new();
+		if(!map_valid(m_detailStats)) {
+			m_detailStats = map_new();
 		}
-		map_set_arr(m_msgStats, id, stats);
+		map_set_arr(m_detailStats, id, stats);
 
-		for(new i = 0, msg[MessageListStats]; i != rows; i++) {
+		for(new i = 0, msg[MessageStats]; i != rows; i++) {
 			cache_get_value_name_int(i, "id", msg[msgId]);
 			cache_get_value_name_int(i, "from_sim", msg[msgFromSim]);
 			cache_get_value_name(i, "content", msg[msgContent], MESSAGE_CONTENT_SIZE);
-			linked_list_add(stats[msgList], msg);
+			linked_list_add_arr(stats[msgList], msg);
 		}
 	}
 	if(task_valid(result)) {
@@ -144,14 +139,14 @@ hook IPA_OnStatsTermnAttempt(id, app) {
 }
 
 hook IPA_OnAppsGetAttempt(id, bool:arr[], size) {
-	if(AppMessage < size && AppMsg_HasStats(id)) {
+	if(AppMessage < size && (AppMsg_HasDetailStats(id) || AppMsg_HasListStats(id))) {
 		arr[AppMessage] = true;
 	}
 	return 1;
 }
 
 hook OnGameModeInit() {
-	mysql_query(MySQL_Connection(), query, sizeof(query), "CREATE TABLE IF NOT EXISTS appmsg_stats (\
+	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS appmsg_stats (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\

@@ -108,7 +108,7 @@ stock AppMenu_UpdateAppList(id, playerid) {
 				Float:gap_y,
 				Float:first_x,
 				Float:first_y;
-			IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
+			IPUI_GetAnchor(id, playerid, anc_x, anc_y);
 			row = floatround(floatsqroot(float(appSize)), floatround_floor);
 			col = floatround(float(appSize) / float(row), floatround_floor);
 			if(row > 3) {

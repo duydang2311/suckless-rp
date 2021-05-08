@@ -147,7 +147,7 @@ stock AppStore_UpdateMainPage(id, playerid) {
 			Float:gap_y,
 			Float:first_x,
 			Float:first_y;
-		IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
+		IPUI_GetAnchor(id, playerid, anc_x, anc_y);
 		row = floatround(floatsqroot(float(appSize)), floatround_floor);
 		col = floatround(float(appSize) / float(row), floatround_floor);
 		if(row > 3) {
@@ -227,7 +227,7 @@ stock AppStore_UpdateInstallPage(id, playerid, app) {
 		key[PlayerId] = playerid;
 		IPApp_GetSprite(app, sprite);
 		IPApp_GetName(app, name);
-		IPhone_GetUIAnchor(id, playerid, anc_x, anc_y);
+		IPUI_GetAnchor(id, playerid, anc_x, anc_y);
 		range_y = scr_max[1] - scr_min[1];
 		size = range_y * 2.0 / 5.0;
 		x = anc_x + scr_min[0] + (scr_max[0] - scr_min[0]) / 2.0 - size / 2.0;

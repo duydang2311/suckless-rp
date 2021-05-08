@@ -29,7 +29,16 @@ stock AppMsg_UpdateMsgList(id, playerid) {
 
 	new Iter:it = AppMsg_GetListIter(id, AppMsg_GetListOffset(id));
 	if(iter_valid(it) && iter_release(it)) {
-		new stats[MessageStats];
+		new
+			stats[MessageStats],
+			component_cnt = 0;
+
+		new
+			Float:anc[2],
+			Float:safe_min[2],
+			Float:safe_max[2];
+		IPModel_GetSafeScreenOffset(id, safe_min[0], safe_min[1], safe_max[0], safe_max[1]);
+		IPUI_GetAnchor(id, playerid, &Float:x, &Float:y)
 		for(; iter_inside(it); iter_move_next(it)) {
 			iter_get_arr(it, stats);
 

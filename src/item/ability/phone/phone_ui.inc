@@ -13,7 +13,7 @@ stock IPUI_GetPlayerPhone(playerid) {
 	return map_get(m_playerPhone, playerid);
 }
 
-stock IPhone_ShowUIForPlayer(id, playerid, Float:x, Float:y) {
+stock IPUI_ShowForPlayer(id, playerid, Float:x, Float:y) {
 	if(!IPhone_Has(id)) {
 		return 0;
 	}
@@ -26,12 +26,12 @@ stock IPhone_ShowUIForPlayer(id, playerid, Float:x, Float:y) {
 	return 1;
 }
 
-stock IPhone_GetUIAnchor(id, playerid, &Float:x, &Float:y) {
+stock IPUI_GetAnchor(id, playerid, &Float:x, &Float:y) {
 	CallLocalFunction("IPUI_OnAnchorGetAttempt", "iiff", id, playerid, ref(_:x), ref(_:y));
 	return 1;
 }
 
-stock IPhone_HideUIForPlayer(id, playerid) {
+stock IPUI_HideForPlayer(id, playerid) {
 	if(IPUI_GetPlayerPhone(playerid) == id) {
 		map_remove(m_playerPhone, playerid);
 		if(!map_size(m_playerPhone)) {
@@ -57,7 +57,7 @@ hook OnPlayerClickTD(playerid, Text:clickedid) {
 				}
 			}
 			IPApp_HideUIForPlayer(id, playerid);
-			IPhone_HideUIForPlayer(id, playerid);
+			IPUI_HideForPlayer(id, playerid);
 		}
 	}
 	return 1;

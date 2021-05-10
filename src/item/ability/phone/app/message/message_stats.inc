@@ -23,8 +23,8 @@ static
 	Map:m_listStats, // { phone_id: {AppMsgStats} }
 	Map:m_detailStats; // { phone_id: {AppMsgStats} }
 
-forward AppMsg_OnStatsRetrieved(id, Task:result);
-public AppMsg_OnStatsRetrieved(id, Task:result) {
+forward AppMsg_OnListStatsRetrieved(id, Task:result);
+public AppMsg_OnListStatsRetrieved(id, Task:result) {
 	new rows = cache_num_rows();
 	if(rows) {
 		new stats[AppMsgStats];
@@ -130,6 +130,44 @@ stock AppMsg_GetListSize(id) {
 	return linked_list_size(stats[msgList]);
 }
 
+forward AppMsg_OnDetailsStatsRetrieved(id, from_sim, Task:t);
+public AppMsg_OnDetailsStatsRetrieved(id, from_sim, Task:t) {
+	new rows = cache_num_rows();
+	if(rows) {
+		new stats[AppMsgStats];
+		if(!AppMsg_HasDetailStats(id)) {
+			stats[msgOffset] = 0;
+			stats[msgList] = linked_list_new();
+			if(!map_valid(m_detailStats)) {
+				m_detailStats = map_new();
+			}
+			map_set_arr(m_detailStats, id, stats);
+		} else {
+			map_get_arr(m_detailStats, id, stats);
+		}
+
+		for(new i = 0, msg[MessageStats]; i != rows; i++) {
+			cache_get_value_name_int(i, "id", msg[msgId]);
+			cache_get_value_name(i, "content", msg[msgContent], MESSAGE_CONTENT_SIZE);
+			cache_get_value_name_int(i, "from_sim", msg[msgFromSim]);
+
+			linked_list_add_arr(stats[msgList], msg);
+		}
+	}
+	task_set_result(t, rows);
+	return 1;
+}
+
+stock Task:AppMsg_RetrieveDetailsStats(id, from_sim) {
+	// this function retrieves the next 10 rows based on (rowOffset / 10) in enum AppMsgStats of Map:m_detailStats
+	new
+		Task:t = task_new(),
+		query[220];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT id, content, from_sim FROM appmsg_stats WHERE (from_sim = %d AND to_sim = %d) OR  (from_sim = %d AND to_sim = %d) ORDER BY created_date DESC LIMIT %d,%d", from_sim, to_sim, to_sim, from_sim, floatround(float(stats[msgOffset]) / 10.0, floatround_floor) * 10, (floatround(float(stats[msgOffset]) / 10.0, floatround_floor) + 1) * 10 - 1);
+	mysql_pquery(MySQL_Connection(), query, "AppMsg_OnDetailsStatsRetrieved", "iii", id, from_sim, _:t);
+	return t;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
@@ -151,7 +189,7 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 					new query[512];
 					mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.id, stats.from_sim, stats.content FROM appmsg_stats stats INNER JOIN (\
 					SELECT to_sim, MAX(created_date) LatestDate FROM appmsg_stats GROUP BY from_sim) grouped_stats ON stats.to_sim = grouped_stats.to_sim WHERE stats.to_sim = %d AND stats.created_date = grouped_stats.LatestDate ORDER BY created_date DESC", sim);
-					mysql_pquery(MySQL_Connection(), query, "AppMsg_OnStatsRetrieved", "ii", id, _:result);
+					mysql_pquery(MySQL_Connection(), query, "AppMsg_OnListStatsRetrieved", "ii", id, _:result);
 				}
 			}
 		}

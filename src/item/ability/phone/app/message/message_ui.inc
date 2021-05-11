@@ -271,7 +271,6 @@ stock AppMsg_UpdateMsgDetail(id, playerid) {
 					content[idx++] = (stats[msgContent][i] == ' ') ? '_' : stats[msgContent][i];
 				}
 				content[idx] = EOS;
-				printf("%s", content);
 				if(stats[msgFromSim] == from_sim) {
 					msgTd = CreatePlayerTextDraw(playerid, anc[0] + safe_min[0], anc[1] + safe_min[1] + last_height, content);
 					PlayerTextDrawFont(playerid, msgTd, 1);
@@ -280,7 +279,7 @@ stock AppMsg_UpdateMsgDetail(id, playerid) {
 					PlayerTextDrawSetOutline(playerid, msgTd, 1);
 					PlayerTextDrawSetShadow(playerid, msgTd, 0);
 					PlayerTextDrawAlignment(playerid, msgTd, 1);
-					PlayerTextDrawColor(playerid, msgTd, -2686721);
+					PlayerTextDrawColor(playerid, msgTd, 0x7A7A7AFF);
 					PlayerTextDrawBackgroundColor(playerid, msgTd, 255);
 					PlayerTextDrawBoxColor(playerid, msgTd, 50);
 					PlayerTextDrawUseBox(playerid, msgTd, 0);
@@ -294,7 +293,7 @@ stock AppMsg_UpdateMsgDetail(id, playerid) {
 					PlayerTextDrawSetOutline(playerid, msgTd, 1);
 					PlayerTextDrawSetShadow(playerid, msgTd, 0);
 					PlayerTextDrawAlignment(playerid, msgTd, 3);
-					PlayerTextDrawColor(playerid, msgTd, -1378294017);
+					PlayerTextDrawColor(playerid, msgTd, 0xBDBDBDFF);
 					PlayerTextDrawBackgroundColor(playerid, msgTd, 255);
 					PlayerTextDrawBoxColor(playerid, msgTd, 50);
 					PlayerTextDrawUseBox(playerid, msgTd, 0);

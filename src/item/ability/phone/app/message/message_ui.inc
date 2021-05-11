@@ -181,7 +181,39 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 }
 
 hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
+	new id = IPUI_GetPlayerPhone(playerid);
+	if(id == -1) {
+		return 1;
+	}
 
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(AppMsg_HasDetailsUIKey(key)) {
+
+	} else if(AppMsg_HasListUIKey(key)) {
+		new ui[ListUI];
+		map_arr_get_arr(m_listUI, key, ui);
+		if(linked_list_valid(ui[lsComponentList])) {
+			for(new Iter:it = linked_list_iter(ui[lsComponentList]), component[ListTdComponent]; iter_inside(it); iter_move_next(it)) {
+				iter_get_arr(it, component);
+				if(component[lsTdHeader] == playertextid) {
+					new
+						offset = AppMsg_GetListOffset(id),
+						Iter:msg_it = AppMsg_GetListIter(id, offset);
+					if(iter_valid(msg_it) && iter_release(msg_it)) {
+						new stats[MessageStats];
+						iter_get_arr(msg_it, stats);
+
+						task_unblock(Y_HOOKS_BREAK_RETURN_1);
+						await AppMsg_RetrieveDetailsStats(id, stats[msgFromSim]);
+						AppMsg_UpdateMsgDetails(id, playerid);
+						return Y_HOOKS_BREAK_RETURN_1;
+					}
+				}
+			}
+		}
+	}
 	return 1;
 }
 
@@ -191,7 +223,6 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	key[PlayerId] = playerid;
 	if(AppMsg_HasDetailsUIKey(key)) {
 
-		return Y_HOOKS_BREAK_RETURN_1;
 	} else if(AppMsg_HasListUIKey(key)) {
 		switch(button) {
 			case PhoneButtonDown: {

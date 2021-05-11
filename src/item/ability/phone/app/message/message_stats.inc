@@ -163,7 +163,7 @@ stock Task:AppMsg_RetrieveDetailsStats(id, from_sim) {
 	new
 		Task:t = task_new(),
 		query[220];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT id, content, from_sim FROM appmsg_stats WHERE (from_sim = %d AND to_sim = %d) OR  (from_sim = %d AND to_sim = %d) ORDER BY created_date DESC LIMIT %d,%d", from_sim, to_sim, to_sim, from_sim, floatround(float(stats[msgOffset]) / 10.0, floatround_floor) * 10, (floatround(float(stats[msgOffset]) / 10.0, floatround_floor) + 1) * 10 - 1);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT id, content, from_sim FROM appmsg_stats WHERE (from_sim = %d AND to_sim = %d) OR  (from_sim = %d AND to_sim = %d) ORDER BY created_date DESC LIMIT %d, %d", from_sim, to_sim, to_sim, from_sim, floatround(float(stats[msgOffset]) / 10.0, floatround_floor) * 10, (floatround(float(stats[msgOffset]) / 10.0, floatround_floor) + 1) * 10 - 1);
 	mysql_pquery(MySQL_Connection(), query, "AppMsg_OnDetailsStatsRetrieved", "iii", id, from_sim, _:t);
 	return t;
 }

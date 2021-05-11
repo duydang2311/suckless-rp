@@ -21,7 +21,8 @@ enum _:MessageStats {
 
 static
 	Map:m_listStats, // { phone_id: {AppMsgStats} }
-	Map:m_detailStats; // { phone_id: {AppMsgStats} }
+	Map:m_detailStats, // { phone_id: {AppMsgStats} }
+	Map:m_simFromDetails; // { phone_id: sim_id }
 
 forward AppMsg_OnListStatsRetrieved(id, Task:result);
 public AppMsg_OnListStatsRetrieved(id, Task:result) {
@@ -90,6 +91,13 @@ stock AppMsg_GetDetailsOffset(id) {
 	return stats[msgOffset];
 }
 
+stock AppMsg_GetSimFromDetails(id) {
+	if(!map_valid(m_detailStatsFromSim) || !map_has_key(m_simFromDetails, id)) {
+		return -1;
+	}
+	return map_get(m_simFromDetails, id);
+}
+
 stock Iter:AppMsg_GetListIter(id, offset = 0) {
 	new Iter:it = Iter:-1;
 	if(AppMsg_HasListStats(id)) {
@@ -155,6 +163,10 @@ public AppMsg_OnDetailsStatsRetrieved(id, from_sim, Task:t) {
 		}
 	}
 	task_set_result(t, rows);
+	if(!map_valid(m_detailStatsFromSim)) {
+		m_simFromDetails = map_new();
+	}
+	map_set(m_simFromDetails, id, from_sim);
 	return 1;
 }
 
@@ -212,6 +224,13 @@ hook IPA_OnStatsTermnAttempt(id, app) {
 			if(!map_size(m_listStats)) {
 				map_delete(m_listStats);
 				m_listStats = Map:-1;
+			}
+		}
+		if(map_valid(m_detailStatsFromSim) && map_has_key(m_simFromDetails, id)) {
+			map_remove(m_simFromDetails, id);
+			if(!map_size(m_simFromDetails)) {
+				map_delete(m_simFromDetails);
+				m_simFromDetails = Map:-1;
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;

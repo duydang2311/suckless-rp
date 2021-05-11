@@ -22,7 +22,7 @@ enum _:MessageStats {
 static
 	Map:m_listStats, // { phone_id: {AppMsgStats} }
 	Map:m_detailStats, // { phone_id: {AppMsgStats} }
-	Map:m_simFromDetails; // { phone_id: sim_id }
+	Map:m_simFromDetail; // { phone_id: sim_id }
 
 forward AppMsg_OnListStatsRetrieved(id, Task:result);
 public AppMsg_OnListStatsRetrieved(id, Task:result) {
@@ -74,15 +74,15 @@ stock AppMsg_SetListOffset(id, offset) {
 	return 1;
 }
 
-stock AppMsg_SetDetailsOffset(id, offset) {
-	if(!AppMsg_HasDetailsStats(id)) {
+stock AppMsg_SetDetailOffset(id, offset) {
+	if(!AppMsg_HasDetailStats(id)) {
 		return 0;
 	}
-	map_set_cell(m_detailsStats, id, msgOffset, offset);
+	map_set_cell(m_detailStats, id, msgOffset, offset);
 	return 1;
 }
 
-stock AppMsg_GetDetailsOffset(id) {
+stock AppMsg_GetDetailOffset(id) {
 	if(!AppMsg_HasDetailStats(id)) {
 		return 0;
 	}
@@ -91,11 +91,11 @@ stock AppMsg_GetDetailsOffset(id) {
 	return stats[msgOffset];
 }
 
-stock AppMsg_GetSimFromDetails(id) {
-	if(!map_valid(m_detailStatsFromSim) || !map_has_key(m_simFromDetails, id)) {
+stock AppMsg_GetSimFromDetail(id) {
+	if(!map_valid(m_simFromDetail) || !map_has_key(m_simFromDetail, id)) {
 		return -1;
 	}
-	return map_get(m_simFromDetails, id);
+	return map_get(m_simFromDetail, id);
 }
 
 stock Iter:AppMsg_GetListIter(id, offset = 0) {
@@ -111,7 +111,7 @@ stock Iter:AppMsg_GetListIter(id, offset = 0) {
 	return it;
 }
 
-stock Iter:AppMsg_GetDetailsIter(id, offset) {
+stock Iter:AppMsg_GetDetailIter(id, offset) {
 	new Iter:it = Iter:-1;
 	if(AppMsg_HasDetailStats(id)) {
 		new stats[AppMsgStats];
@@ -138,8 +138,22 @@ stock AppMsg_GetListSize(id) {
 	return linked_list_size(stats[msgList]);
 }
 
-forward AppMsg_OnDetailsStatsRetrieved(id, from_sim, Task:t);
-public AppMsg_OnDetailsStatsRetrieved(id, from_sim, Task:t) {
+stock AppMsg_GetDetailSize(id) {
+	if(!AppMsg_HasDetailStats(id)) {
+		return 0;
+	}
+
+	new stats[AppMsgStats];
+	map_get_arr(m_detailStats, id, stats);
+	if(!linked_list_valid(stats[msgList])) {
+		return 0;
+	}
+
+	return linked_list_size(stats[msgList]);
+}
+
+forward AppMsg_OnDetailStatsRetrieved(id, from_sim, Task:t);
+public AppMsg_OnDetailStatsRetrieved(id, from_sim, Task:t) {
 	new rows = cache_num_rows();
 	if(rows) {
 		new stats[AppMsgStats];
@@ -161,23 +175,40 @@ public AppMsg_OnDetailsStatsRetrieved(id, from_sim, Task:t) {
 
 			linked_list_add_arr(stats[msgList], msg);
 		}
+		if(!map_valid(m_simFromDetail)) {
+			m_simFromDetail = map_new();
+		}
+		map_set(m_simFromDetail, id, from_sim);
 	}
 	task_set_result(t, rows);
-	if(!map_valid(m_detailStatsFromSim)) {
-		m_simFromDetails = map_new();
-	}
-	map_set(m_simFromDetails, id, from_sim);
 	return 1;
 }
 
-stock Task:AppMsg_RetrieveDetailsStats(id, from_sim) {
-	// this function retrieves the next 10 rows based on (rowOffset / 10) in enum AppMsgStats of Map:m_detailStats
-	new
-		Task:t = task_new(),
-		query[220];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT id, content, from_sim FROM appmsg_stats WHERE (from_sim = %d AND to_sim = %d) OR  (from_sim = %d AND to_sim = %d) ORDER BY created_date DESC LIMIT %d, %d", from_sim, to_sim, to_sim, from_sim, floatround(float(stats[msgOffset]) / 10.0, floatround_floor) * 10, (floatround(float(stats[msgOffset]) / 10.0, floatround_floor) + 1) * 10 - 1);
-	mysql_pquery(MySQL_Connection(), query, "AppMsg_OnDetailsStatsRetrieved", "iii", id, from_sim, _:t);
-	return t;
+stock Task:AppMsg_RetrieveDetailStats(id, from_sim, advance = 0) {
+	if(!IGroup_Has(id)) {
+		return Task:0;
+	}
+	new Iter:it = IGroup_GetIter(id);
+	if(iter_valid(it) && iter_release(it)) {
+		for(new sim; iter_inside(it); iter_move_next(it)) {
+			sim = iter_get(it);
+			if(ISim_Has(sim)) {
+				new
+					Task:t = task_new(),
+					query[220],
+					offset = 0 + advance;
+				if(AppMsg_HasDetailStats(id)) {
+					new stats[AppMsgStats];
+					map_get_arr(m_detailStats, id, stats);
+					offset += stats[msgOffset];
+				}
+				mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT id, content, from_sim FROM appmsg_stats WHERE (from_sim = %d AND to_sim = %d) OR  (from_sim = %d AND to_sim = %d) ORDER BY created_date DESC LIMIT %d, %d", from_sim, sim, sim, from_sim, floatround(float(offset) / 10.0, floatround_floor) * 10, (floatround(float(offset) / 10.0, floatround_floor) + 1) * 10 - 1);
+				mysql_pquery(MySQL_Connection(), query, "AppMsg_OnDetailStatsRetrieved", "iii", id, from_sim, _:t);
+				return t;
+			}
+		}
+	}
+	return Task:0;
 }
 
 #include <YSI_Coding\y_hooks>
@@ -226,11 +257,11 @@ hook IPA_OnStatsTermnAttempt(id, app) {
 				m_listStats = Map:-1;
 			}
 		}
-		if(map_valid(m_detailStatsFromSim) && map_has_key(m_simFromDetails, id)) {
-			map_remove(m_simFromDetails, id);
-			if(!map_size(m_simFromDetails)) {
-				map_delete(m_simFromDetails);
-				m_simFromDetails = Map:-1;
+		if(map_valid(m_simFromDetail) && map_has_key(m_simFromDetail, id)) {
+			map_remove(m_simFromDetail, id);
+			if(!map_size(m_simFromDetail)) {
+				map_delete(m_simFromDetail);
+				m_simFromDetail = Map:-1;
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;

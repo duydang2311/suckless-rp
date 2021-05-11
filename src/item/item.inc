@@ -13,6 +13,7 @@
 #include <sscanf2>
 #include <YSI_Extra\y_inline_mysql>
 #include <samp-precise-timers>
+#include <td-string-width>
 
 #include <config\colors>
 #include <config\cmd_flags>

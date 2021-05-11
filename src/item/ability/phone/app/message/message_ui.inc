@@ -10,13 +10,18 @@ static enum _:Key {
 }
 
 static enum _:ListTdComponent {
-	PlayerText:lsTdHeader,
-	PlayerText:lsTdMessage
+	PlayerText:lsHeaderTd,
+	PlayerText:lsMessageTd
 }
 
 static enum _:ListUI {
 	lsComponentCount,
 	LinkedList:lsComponentList
+}
+static enum _:DetailsUI {
+	dtlMessageCount,
+	PlayerText:dtlHeaderTd,
+	LinkedList:dtlMessageTdList
 }
 
 static
@@ -35,8 +40,8 @@ stock AppMsg_DestroyListUI(id, playerid) {
 	if(linked_list_valid(ui[lsComponentList])) {
 		for(new Iter:it = linked_list_iter(ui[lsComponentList]), component[ListTdComponent]; iter_inside(it); iter_move_next(it)) {
 			iter_get_arr(it, component);
-			PlayerTextDrawDestroy(playerid, component[lsTdHeader]);
-			PlayerTextDrawDestroy(playerid, component[lsTdMessage]);
+			PlayerTextDrawDestroy(playerid, component[lsHeaderTd]);
+			PlayerTextDrawDestroy(playerid, component[lsMessageTd]);
 		}
 	}
 	map_arr_remove_deep(m_listUI, key);
@@ -124,36 +129,145 @@ stock AppMsg_UpdateMsgList(id, playerid) {
 			iter_get_arr(it, stats);
 			ISim_GetNumber(stats[msgFromSim], number);
 
-			component[lsTdHeader] = CreatePlayerTextDraw(playerid, first_x, first_y + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), number);
-			PlayerTextDrawFont(playerid, component[lsTdHeader], 3);
-			PlayerTextDrawLetterSize(playerid, component[lsTdHeader], 0.150000, 0.600000);
-			PlayerTextDrawTextSize(playerid, component[lsTdHeader], 593.000000, HEADER_SIZE);
-			PlayerTextDrawSetOutline(playerid, component[lsTdHeader], 1);
-			PlayerTextDrawSetShadow(playerid, component[lsTdHeader], 0);
-			PlayerTextDrawAlignment(playerid, component[lsTdHeader], 1);
-			PlayerTextDrawColor(playerid, component[lsTdHeader], -1);
-			PlayerTextDrawBackgroundColor(playerid, component[lsTdHeader], 255);
-			PlayerTextDrawBoxColor(playerid, component[lsTdHeader], 50);
-			PlayerTextDrawUseBox(playerid, component[lsTdHeader], 0);
-			PlayerTextDrawSetProportional(playerid, component[lsTdHeader], 1);
-			PlayerTextDrawSetSelectable(playerid, component[lsTdHeader], 1);
+			component[lsHeaderTd] = CreatePlayerTextDraw(playerid, first_x, first_y + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), number);
+			PlayerTextDrawFont(playerid, component[lsHeaderTd], 3);
+			PlayerTextDrawLetterSize(playerid, component[lsHeaderTd], 0.150000, 0.600000);
+			PlayerTextDrawTextSize(playerid, component[lsHeaderTd], 593.000000, HEADER_SIZE);
+			PlayerTextDrawSetOutline(playerid, component[lsHeaderTd], 1);
+			PlayerTextDrawSetShadow(playerid, component[lsHeaderTd], 0);
+			PlayerTextDrawAlignment(playerid, component[lsHeaderTd], 1);
+			PlayerTextDrawColor(playerid, component[lsHeaderTd], -1);
+			PlayerTextDrawBackgroundColor(playerid, component[lsHeaderTd], 255);
+			PlayerTextDrawBoxColor(playerid, component[lsHeaderTd], 50);
+			PlayerTextDrawUseBox(playerid, component[lsHeaderTd], 0);
+			PlayerTextDrawSetProportional(playerid, component[lsHeaderTd], 1);
+			PlayerTextDrawSetSelectable(playerid, component[lsHeaderTd], 1);
 
-			component[lsTdMessage] = CreatePlayerTextDraw(playerid, first_x, first_y + HEADER_TO_TEXT_GAP + HEADER_SIZE + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), stats[msgContent]);
-			PlayerTextDrawFont(playerid, component[lsTdMessage], 1);
-			PlayerTextDrawLetterSize(playerid, component[lsTdMessage], 0.119998, 0.479999);
-			PlayerTextDrawTextSize(playerid, component[lsTdMessage], 594.000000, 82.000000);
-			PlayerTextDrawSetOutline(playerid, component[lsTdMessage], 1);
-			PlayerTextDrawSetShadow(playerid, component[lsTdMessage], 0);
-			PlayerTextDrawAlignment(playerid, component[lsTdMessage], 1);
-			PlayerTextDrawColor(playerid, component[lsTdMessage], -1111638529);
-			PlayerTextDrawBackgroundColor(playerid, component[lsTdMessage], 255);
-			PlayerTextDrawBoxColor(playerid, component[lsTdMessage], 50);
-			PlayerTextDrawUseBox(playerid, component[lsTdMessage], 0);
-			PlayerTextDrawSetProportional(playerid, component[lsTdMessage], 1);
-			PlayerTextDrawSetSelectable(playerid, component[lsTdMessage], 0);
+			component[lsMessageTd] = CreatePlayerTextDraw(playerid, first_x, first_y + HEADER_TO_TEXT_GAP + HEADER_SIZE + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), stats[msgContent]);
+			PlayerTextDrawFont(playerid, component[lsMessageTd], 1);
+			PlayerTextDrawLetterSize(playerid, component[lsMessageTd], 0.119998, 0.479999);
+			PlayerTextDrawTextSize(playerid, component[lsMessageTd], 594.000000, 82.000000);
+			PlayerTextDrawSetOutline(playerid, component[lsMessageTd], 1);
+			PlayerTextDrawSetShadow(playerid, component[lsMessageTd], 0);
+			PlayerTextDrawAlignment(playerid, component[lsMessageTd], 1);
+			PlayerTextDrawColor(playerid, component[lsMessageTd], -1111638529);
+			PlayerTextDrawBackgroundColor(playerid, component[lsMessageTd], 255);
+			PlayerTextDrawBoxColor(playerid, component[lsMessageTd], 50);
+			PlayerTextDrawUseBox(playerid, component[lsMessageTd], 0);
+			PlayerTextDrawSetProportional(playerid, component[lsMessageTd], 1);
+			PlayerTextDrawSetSelectable(playerid, component[lsMessageTd], 0);
 
-			PlayerTextDrawShow(playerid, component[lsTdHeader]);
-			PlayerTextDrawShow(playerid, component[lsTdMessage]);
+			PlayerTextDrawShow(playerid, component[lsHeaderTd]);
+			PlayerTextDrawShow(playerid, component[lsMessageTd]);
+			linked_list_add_arr(ui[lsComponentList], component);
+		}
+	}
+	return 1;
+}
+
+stock AppMsg_UpdateMsgDetails(id, playerid) {
+	if(!AppMsg_HasDetailsStats(id)) {
+		return 0;
+	}
+
+	new
+		offset = AppMsg_GetDetailsOffset(id),
+		Iter:it = AppMsg_GetDetailsIter(id, offset);
+	if(iter_valid(it) && iter_release(it)) {
+		const
+			Float:HEADER_SIZE = 8.00,
+			Float:HEADER_GAP = 2.00,
+			Float:TEXT_SIZE = 4.00,
+			Float:MINIMUM_COMPONENT_GAP = 4.00;
+
+		new
+			ui[DetailsUI],
+			stats[MessageStats],
+			key[Key],
+			component_cnt = 0,
+			Float:anc[2],
+			Float:safe_min[2],
+			Float:safe_max[2],
+			Float:first_y,
+			Float:component_gap;
+		IPModel_GetSafeScreenOffset(id, safe_min[0], safe_min[1], safe_max[0], safe_max[1]);
+		IPUI_GetAnchor(id, playerid, anc[0], anc[1]);
+
+		key[ItemId] = id;
+		key[PlayerId] = playerid;
+		if(!map_valid(m_detailsUI)) {
+			m_detailsUI = map_new();
+		} else if(map_has_arr_key(m_detailsUI, key)) {
+			AppMsg_DestroyDetailsUI(id, playerid);
+		}
+		ui[dtlMessageTdList] = linked_list_new();
+		ui[dtlHeaderTd] = PlayerTextDrawCreate(playerid, anc[0] + safe_min[0] + (safe_max[0] - safe_min[0]) / 2.0, y + safe_min[1], "From Gibbs Brown");
+		PlayerTextDrawFont(playerid, ui[dtlHeaderTd], 0);
+		PlayerTextDrawLetterSize(playerid, ui[dtlHeaderTd], 0.200000, 0.800000);
+		PlayerTextDrawTextSize(playerid, ui[dtlHeaderTd], 400.000000, 82.000000);
+		PlayerTextDrawSetOutline(playerid, ui[dtlHeaderTd], 1);
+		PlayerTextDrawSetShadow(playerid, ui[dtlHeaderTd], 0);
+		PlayerTextDrawAlignment(playerid, ui[dtlHeaderTd], 2);
+		PlayerTextDrawColor(playerid, ui[dtlHeaderTd], -1);
+		PlayerTextDrawBackgroundColor(playerid, ui[dtlHeaderTd], 255);
+		PlayerTextDrawBoxColor(playerid, ui[dtlHeaderTd], 50);
+		PlayerTextDrawUseBox(playerid, ui[dtlHeaderTd], 0);
+		PlayerTextDrawSetProportional(playerid, ui[dtlHeaderTd], 1);
+		PlayerTextDrawSetSelectable(playerid, ui[dtlHeaderTd], 0);
+
+		safe_min[1] -= HEADER_SIZE + HEADER_GAP;
+
+		// calculate how many detail component textdraw will be displayed based on safe screen and gap sizes
+		td_cnt = floatround((safe_max[1] - safe_min[1]) / (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + MINIMUM_COMPONENT_GAP), floatround_floor);
+		if((AppMsg_GetDetailSize(id) - offset) < td_cnt) {
+			td_cnt = (AppMsg_GetDetailSize(id) - offset);
+		}
+
+		component_gap = (safe_max[1] - safe_min[1] - td_cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE)) / td_cnt;
+		if(component_gap > (2.0 * MINIMUM_COMPONENT_GAP)) {
+			component_gap = (2.0 * MINIMUM_COMPONENT_GAP);
+		}
+		first_y = anc[1] + safe_min[1] + (safe_max[1] - safe_min[1]) / 2.0 - (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE) / 2.0; // center position of the screen
+		if(td_cnt % 2 == 0) {
+			first_y -= (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap) / 2.0 + (floatround(float(td_cnt - 1) / 2.0, floatround_floor)) * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap);
+		} else {
+			first_y -= (floatround(float(td_cnt - 1) / 2.0, floatround_floor)) * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap);
+		}
+
+		ui[dtlTdCount] = td_cnt;
+		map_arr_set_arr(m_detailsUI, key, ui);
+		for(new cnt = 0, number[SIM_NUMBER_SIZE]; iter_inside(it) && cnt != td_cnt; iter_move_next(it), cnt++) {
+			iter_get_arr(it, stats);
+			ISim_GetNumber(stats[msgFromSim], number);
+
+			msg_1[playerid] = CreatePlayerTextDraw(playerid, 516.000000, 255.000000, "May o dau Lucas?");
+			PlayerTextDrawFont(playerid, msg_1[playerid], 1);
+			PlayerTextDrawLetterSize(playerid, msg_1[playerid], 0.150000, 0.600000);
+			PlayerTextDrawTextSize(playerid, msg_1[playerid], 594.000000, 82.000000);
+			PlayerTextDrawSetOutline(playerid, msg_1[playerid], 1);
+			PlayerTextDrawSetShadow(playerid, msg_1[playerid], 0);
+			PlayerTextDrawAlignment(playerid, msg_1[playerid], 1);
+			PlayerTextDrawColor(playerid, msg_1[playerid], -2686721);
+			PlayerTextDrawBackgroundColor(playerid, msg_1[playerid], 255);
+			PlayerTextDrawBoxColor(playerid, msg_1[playerid], 50);
+			PlayerTextDrawUseBox(playerid, msg_1[playerid], 1);
+			PlayerTextDrawSetProportional(playerid, msg_1[playerid], 1);
+			PlayerTextDrawSetSelectable(playerid, msg_1[playerid], 0);
+
+			msg_2[playerid] = CreatePlayerTextDraw(playerid, 593.000000, 268.000000, "Tao o Mall, den day. ~t~");
+			PlayerTextDrawFont(playerid, msg_2[playerid], 1);
+			PlayerTextDrawLetterSize(playerid, msg_2[playerid], 0.150000, 0.600000);
+			PlayerTextDrawTextSize(playerid, msg_2[playerid], 0.000000, 54.500000);
+			PlayerTextDrawSetOutline(playerid, msg_2[playerid], 1);
+			PlayerTextDrawSetShadow(playerid, msg_2[playerid], 0);
+			PlayerTextDrawAlignment(playerid, msg_2[playerid], 3);
+			PlayerTextDrawColor(playerid, msg_2[playerid], -1378294017);
+			PlayerTextDrawBackgroundColor(playerid, msg_2[playerid], 255);
+			PlayerTextDrawBoxColor(playerid, msg_2[playerid], 50);
+			PlayerTextDrawUseBox(playerid, msg_2[playerid], 0);
+			PlayerTextDrawSetProportional(playerid, msg_2[playerid], 1);
+			PlayerTextDrawSetSelectable(playerid, msg_2[playerid], 0);
+
 			linked_list_add_arr(ui[lsComponentList], component);
 		}
 	}
@@ -197,13 +311,14 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 		if(linked_list_valid(ui[lsComponentList])) {
 			for(new Iter:it = linked_list_iter(ui[lsComponentList]), component[ListTdComponent]; iter_inside(it); iter_move_next(it)) {
 				iter_get_arr(it, component);
-				if(component[lsTdHeader] == playertextid) {
+				if(component[lsHeaderTd] == playertextid) {
 					new
 						offset = AppMsg_GetListOffset(id),
 						Iter:msg_it = AppMsg_GetListIter(id, offset);
 					if(iter_valid(msg_it) && iter_release(msg_it)) {
 						new stats[MessageStats];
 						iter_get_arr(msg_it, stats);
+						AppMsg_DestroyListUI(id, playerid);
 
 						task_unblock(Y_HOOKS_BREAK_RETURN_1);
 						await AppMsg_RetrieveDetailsStats(id, stats[msgFromSim]);

@@ -81,7 +81,7 @@ stock AppMsg_SetDetailsOffset(id, offset) {
 	return 1;
 }
 
-stock AppMsg_GetDetailOffset(id) {
+stock AppMsg_GetDetailsOffset(id) {
 	if(!AppMsg_HasDetailStats(id)) {
 		return 0;
 	}
@@ -103,7 +103,7 @@ stock Iter:AppMsg_GetListIter(id, offset = 0) {
 	return it;
 }
 
-stock Iter:AppMsg_GetDetailIter(id, offset) {
+stock Iter:AppMsg_GetDetailsIter(id, offset) {
 	new Iter:it = Iter:-1;
 	if(AppMsg_HasDetailStats(id)) {
 		new stats[AppMsgStats];

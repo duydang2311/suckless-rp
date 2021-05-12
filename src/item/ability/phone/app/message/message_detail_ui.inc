@@ -136,7 +136,6 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 			line,
 			content[80] = "",
 			Float:height = 0.00,
-			Float:last_height = 0.00,
 			msg_cnt = 0,
 			idx;
 		scr_width = safe_max[0] - safe_min[0] - 3.0;
@@ -205,7 +204,6 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 				linked_list_add(ui[dtlMessageTdList], _:msgTd);
 			}
 			height += MINIMUM_MESSAGE_GAP;
-			last_height = height;
 		}
 
 		ui[dtlMessageCount] = msg_cnt;

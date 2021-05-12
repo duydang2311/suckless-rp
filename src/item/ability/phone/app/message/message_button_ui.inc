@@ -72,6 +72,8 @@ Dialog:AppMsgContentDialog(playerid, response, listitem, inputtext[]) {
 						if(from_sim == sent_to_sim) {
 							// player is sending a message to m_toSimId, if player is opening detail ui for from_sim and from_sim == m_toSimId
 							AppMsg_DetailMsgPushFront(phone, id, sim, inputtext);
+							AppMsg_DestroyDetailUI(id, playerid);
+							AppMsg_UpdateDetailUI(id, playerid);
 						}
 						if(AppMsg_HasListStats(phone)) {
 							new Iter:list_it = AppMsg_GetListIter(phone);
@@ -82,6 +84,8 @@ Dialog:AppMsgContentDialog(playerid, response, listitem, inputtext[]) {
 										stats[msgContent][0] = EOS;
 										strcat(stats[msgContent], inputtext, MESSAGE_CONTENT_SIZE);
 										iter_set_arr(list_it, stats);
+										AppMsg_DestroyListUI(id, playerid);
+										AppMsg_UpdateListUI(id, playerid);
 										break;
 									}
 								}

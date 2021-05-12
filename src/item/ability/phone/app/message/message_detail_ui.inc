@@ -125,7 +125,8 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 		PlayerTextDrawSetSelectable(playerid, ui[dtlHeaderTd], 0);
 		PlayerTextDrawShow(playerid, ui[dtlHeaderTd]);
 
-		safe_min[1] += HEADER_SIZE + HEADER_GAP;
+		safe_min[1] += HEADER_SIZE;
+		safe_max[1] -= 15.0; // make space for message_button_ui
 
 		new
 			Float:scr_width,
@@ -139,7 +140,7 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 			msg_cnt = 0,
 			idx;
 		scr_width = safe_max[0] - safe_min[0] - 5.0;
-		scr_height = safe_max[1] - safe_min[1] - 10.0;
+		scr_height = safe_max[1] - safe_min[1];
 		for(new PlayerText:msgTd; iter_inside(it); iter_move_next(it)) {
 			if(height < scr_height) {
 				iter_get_arr(it, stats);
@@ -172,7 +173,7 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 				}
 				content[idx] = EOS;
 				if(stats[msgFromSim] == from_sim) {
-					msgTd = CreatePlayerTextDraw(playerid, anc[0] + safe_min[0], anc[1] + safe_max[1] - last_height, content);
+					msgTd = CreatePlayerTextDraw(playerid, anc[0] + safe_min[0], anc[1] + safe_max[1] - height, content);
 					PlayerTextDrawFont(playerid, msgTd, 1);
 					PlayerTextDrawLetterSize(playerid, msgTd, 0.150000, 0.600000);
 					PlayerTextDrawTextSize(playerid, msgTd, anc[0] + safe_min[0] + scr_width, TEXT_SIZE);
@@ -186,7 +187,7 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 					PlayerTextDrawSetProportional(playerid, msgTd, 1);
 					PlayerTextDrawSetSelectable(playerid, msgTd, 0);
 				} else {
-					msgTd = CreatePlayerTextDraw(playerid, anc[0] + safe_max[0], anc[1] + safe_max[1] - last_height, content);
+					msgTd = CreatePlayerTextDraw(playerid, anc[0] + safe_max[0], anc[1] + safe_max[1] - height, content);
 					PlayerTextDrawFont(playerid, msgTd, 1);
 					PlayerTextDrawLetterSize(playerid, msgTd, 0.150000, 0.600000);
 					PlayerTextDrawTextSize(playerid, msgTd, anc[0] + safe_max[0] + scr_width, TEXT_SIZE);

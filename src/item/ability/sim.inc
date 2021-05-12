@@ -92,6 +92,34 @@ stock ISim_GetPhoneWithNumber(const number[]) {
 	return map_str_get(m_phoneByNumber, number);
 }
 
+stock ISim_ValidateNumber(const number[]) {
+	for(new i = 0, length = strlen(number); i != length; i++) {
+		if(number[i] < '0' || number[i] > '9') {
+			return 0;
+		}
+	}
+	return 1;
+}
+
+stock Task:ISim_RetrieveByNumber(const number[]) {
+	new
+		Task:t = task_new(),
+		query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT id FROM item_sim WHERE number = '%e' LIMIT 1", number);
+	mysql_pquery(MySQL_Connection(), query, "ISim_OnRetrievedByNumber", "i", _:t);
+	return t;
+}
+
+forward ISim_OnRetrievedByNumber(Task:t);
+public ISim_OnRetrievedByNumber(Task:t) {
+	new id = -1;
+	if(cache_num_rows()) {
+		cache_get_value_name_int(0, "id", id);
+	}
+	task_set_result(t, id);
+	return 1;
+}
+
 forward ISim_OnDeleted(id);
 public ISim_OnDeleted(id) {
 	if(map_valid(m_simStats) && map_has_key(m_simStats, id)) {
@@ -110,7 +138,7 @@ hook OnGameModeInit@2() {
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED PRIMARY KEY,\
-	number VARCHAR(11) DEFAULT '',\
+	number VARCHAR(11) UNIQUE DEFAULT '',\
 	reliability FLOAT(11, 4) DEFAULT 1.0000,\
 	FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);

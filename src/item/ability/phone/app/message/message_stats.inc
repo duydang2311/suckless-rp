@@ -227,6 +227,46 @@ stock AppMsg_DeleteMsgByIter(Iter:it) {
 	return 1;
 }
 
+stock Task:AppMsg_SendAsync(from_sim, to_sim, const content[]) {
+	new
+		Task:t = task_new(),
+		safe_content[MESSAGE_CONTENT_SIZE],
+		query[256];
+	strcat(safe_content, content); // just to make sure
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO appmsg_stats (from_sim, to_sim, content) VALUES (%d, %d, '%e')", from_sim, to_sim, content);
+	mysql_pquery(MySQL_Connection(), query, "AppMsg_OnSentAsync", "i", _:t);
+	return t;
+}
+
+stock AppMsg_DetailMsgPushFront(id, msg_id, from_sim, const content[]) {
+	new stats[AppMsgStats];
+	if(!map_valid(m_detailStats)) {
+		m_detailStats = map_new();
+		stats[msgOffset] = 0;
+		stats[msgList] = linked_list_new();
+		map_set_arr(m_detailStats, id, stats);
+	} else if(map_has_key(m_detailStats, id)) {
+		map_get_arr(m_detailStats, id, stats);
+	}
+
+	new msg[MessageStats];
+	msg[msgId] = msg_id;
+	strcat(msg[msgContent], content);
+	msg[msgFromSim] = from_sim;
+	linked_list_add_arr(stats[msgList], msg, 0);
+	return 1;
+}
+
+forward AppMsg_OnSentAsync(Task:t);
+public AppMsg_OnSentAsync(Task:t) {
+	new id = -1;
+	if(cache_affected_rows()) {
+		id = cache_insert_id();
+	}
+	task_set_result(t, id);
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
@@ -249,6 +289,7 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 					mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.id, stats.from_sim, stats.content FROM appmsg_stats stats INNER JOIN (\
 					SELECT to_sim, MAX(created_date) LatestDate FROM appmsg_stats GROUP BY from_sim) grouped_stats ON stats.to_sim = grouped_stats.to_sim WHERE stats.to_sim = %d AND stats.created_date = grouped_stats.LatestDate ORDER BY created_date DESC", sim);
 					mysql_pquery(MySQL_Connection(), query, "AppMsg_OnListStatsRetrieved", "ii", id, _:result);
+					break;
 				}
 			}
 		}

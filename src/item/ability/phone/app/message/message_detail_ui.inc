@@ -216,10 +216,6 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 
 #include <YSI_Coding\y_hooks>
 
-hook IPA_OnUIShowAttempt(id, app, playerid) {
-	return 1;
-}
-
 hook IPA_OnUIHideAttempt(id, playerid) {
 	AppMsg_DestroyDetailUI(id, playerid);
 	return 1;

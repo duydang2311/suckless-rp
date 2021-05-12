@@ -5,5 +5,6 @@
 #define app_message_included
 
 #include ".\ability\phone\app\message\message_stats.inc"
+#include ".\ability\phone\app\message\message_button_ui.inc"
 #include ".\ability\phone\app\message\message_detail_ui.inc"
 #include ".\ability\phone\app\message\message_list_ui.inc"

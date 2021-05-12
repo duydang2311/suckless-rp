@@ -152,6 +152,7 @@ hook IPA_OnUIShowAttempt(id, app, playerid) {
 
 	if(app == AppMessage) {
 		AppMsg_UpdateListUI(id, playerid);
+		AppMsg_UpdateButtonUI(id, playerid);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

@@ -178,15 +178,18 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
 	if(AppMsg_HasButtonUIKey(key)) {
-		new sim = AppMsg_GetSimFromDetail(id);
-		if(sim != -1) {
-			if(!map_valid(m_toSimId)) {
-				m_toSimId = map_new();
+		if(playertextid == PlayerText:map_arr_get(m_buttonUI, key)) {
+			new sim = AppMsg_GetSimFromDetail(id);
+			if(sim != -1) {
+				if(!map_valid(m_toSimId)) {
+					m_toSimId = map_new();
+				}
+				map_set(m_toSimId, playerid, sim);
+				Dialog_Show(playerid, AppMsgContentDialog, DIALOG_STYLE_INPUT, "App Message | Send", "> Nhap noi dung tin nhan ban muon gui.", "Send", "<<");
+			} else if(AppMsg_HasListUIKey(key)) {
+				Dialog_Show(playerid, AppMsgSimDialog, DIALOG_STYLE_INPUT, "App Message | Send", "> Nhap so dien thoai ban muon gui tin nhan.", ">>", "<<");
 			}
-			map_set(m_toSimId, playerid, sim);
-			Dialog_Show(playerid, AppMsgContentDialog, DIALOG_STYLE_INPUT, "App Message | Send", "> Nhap noi dung tin nhan ban muon gui.", "Send", "<<");
-		} else if(AppMsg_HasListUIKey(key)) {
-			Dialog_Show(playerid, AppMsgSimDialog, DIALOG_STYLE_INPUT, "App Message | Send", "> Nhap so dien thoai ban muon gui tin nhan.", ">>", "<<");
+			return Y_HOOKS_BREAK_RETURN_1;
 		}
 	}
 	return 1;

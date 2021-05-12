@@ -20,17 +20,32 @@ static
 	Map:m_selectedMsgIter;
 
 Dialog:MessageRemoveDialog(playerid, response, listitem, inputtext[]) {
-	if(!map_valid(m_selectedMsgId) || !map_has_key(m_selectedMsgId, playerid)) {
+	if(!map_valid(m_selectedMsgIter) || !map_has_key(m_selectedMsgIter, playerid)) {
+		return 1;
+	}
+
+	new id = IPUI_GetPlayerPhone(playerid);
+	if(id == -1) {
 		return 1;
 	}
 
 	new Iter:it = Iter:map_get(m_selectedMsgIter, playerid);
 	iter_release(it);
 	if(response) {
-		iter_erase(it);
-		AppMsg_DeleteMessage(map_get(m_selectedMsgId, playerid));
-
-		new offset = AppMsg_GetDetailOffset(id);
+		AppMsg_DeleteMsgByIter(it);
+		new
+			offset = AppMsg_GetDetailOffset(id),
+			size = AppMsg_GetDetailSize(id);
+		if(offset >= size) {
+			offset = size - 1;
+		}
+		AppMsg_DestroyDetailUI(id, playerid);
+		AppMsg_UpdateDetailUI(id, playerid);
+	}
+	map_remove(m_selectedMsgIter, playerid);
+	if(!map_size(m_selectedMsgIter)) {
+		map_delete(m_selectedMsgIter);
+		m_selectedMsgIter = Map:-1;
 	}
 	return 1;
 }
@@ -58,7 +73,7 @@ stock AppMsg_HasDetailUIKey(const key[], size = sizeof(key)) {
 	return (map_valid(m_detailUI) && map_has_arr_key(m_detailUI, key, size));
 }
 
-stock AppMsg_UpdateMsgDetail(id, playerid) {
+stock AppMsg_UpdateDetailUI(id, playerid) {
 	if(!AppMsg_HasDetailStats(id)) {
 		return 0;
 	}
@@ -258,7 +273,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 				if(offset < (AppMsg_GetDetailSize(id) - ui[dtlMessageCount])) {
 					AppMsg_SetDetailOffset(id, offset + 1);
 					AppMsg_DestroyDetailUI(id, playerid);
-					AppMsg_UpdateMsgDetail(id, playerid);
+					AppMsg_UpdateDetailUI(id, playerid);
 				}
 			}
 			case PhoneButtonUp: {
@@ -266,7 +281,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 				if(offset) {
 					AppMsg_SetDetailOffset(id, offset - 1);
 					AppMsg_DestroyDetailUI(id, playerid);
-					AppMsg_UpdateMsgDetail(id, playerid);
+					AppMsg_UpdateDetailUI(id, playerid);
 				}
 			}
 		}

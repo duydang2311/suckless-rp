@@ -45,7 +45,7 @@ stock AppMsg_HasListUIKey(const key[], size = sizeof(key)) {
 	return (map_valid(m_listUI) && map_has_arr_key(m_listUI, key, size));
 }
 
-stock AppMsg_UpdateMsgList(id, playerid) {
+stock AppMsg_UpdateListUI(id, playerid) {
 	if(!AppMsg_HasListStats(id)) { // TODO: print 'Sim not found' on the phone screen.
 		return 0;
 	}
@@ -151,7 +151,7 @@ hook IPA_OnUIShowAttempt(id, app, playerid) {
 	}
 
 	if(app == AppMessage) {
-		AppMsg_UpdateMsgList(id, playerid);
+		AppMsg_UpdateListUI(id, playerid);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;
@@ -188,7 +188,7 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 
 						task_unblock(Y_HOOKS_BREAK_RETURN_1);
 						await AppMsg_RetrieveDetailStats(id, stats[msgFromSim]);
-						AppMsg_UpdateMsgDetail(id, playerid);
+						AppMsg_UpdateDetailUI(id, playerid);
 						return Y_HOOKS_BREAK_RETURN_1;
 					}
 				}
@@ -212,7 +212,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 				if(offset < (AppMsg_GetListSize(id) - ui[lsComponentCount])) {
 					AppMsg_SetListOffset(id, offset + 1);
 					AppMsg_DestroyListUI(id, playerid);
-					AppMsg_UpdateMsgList(id, playerid);
+					AppMsg_UpdateListUI(id, playerid);
 				}
 			}
 			case PhoneButtonUp: {
@@ -220,7 +220,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 				if(offset) {
 					AppMsg_SetListOffset(id, offset - 1);
 					AppMsg_DestroyListUI(id, playerid);
-					AppMsg_UpdateMsgList(id, playerid);
+					AppMsg_UpdateListUI(id, playerid);
 				}
 			}
 		}

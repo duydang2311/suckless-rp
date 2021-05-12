@@ -211,6 +211,22 @@ stock Task:AppMsg_RetrieveDetailStats(id, from_sim, advance = 0) {
 	return Task:0;
 }
 
+stock AppMsg_DeleteMsgByIter(Iter:it) {
+	if(!iter_linked(it)) {
+		return 0;
+	}
+
+	new
+		msg[MessageStats],
+		query[128];
+	iter_get_arr(it, msg);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM appmsg_stats WHERE id = %d LIMIT 1", msg[msgId]);
+	mysql_pquery(MySQL_Connection(), query);
+
+	iter_erase(it);
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {

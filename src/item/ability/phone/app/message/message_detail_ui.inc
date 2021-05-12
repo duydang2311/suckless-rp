@@ -172,21 +172,21 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 				}
 				content[idx] = EOS;
 				if(stats[msgFromSim] == from_sim) {
-					msgTd = CreatePlayerTextDraw(playerid, anc[0] + safe_min[0], anc[1] + safe_min[1] + last_height, content);
+					msgTd = CreatePlayerTextDraw(playerid, anc[0] + safe_min[0], anc[1] + safe_max[1] - last_height, content);
 					PlayerTextDrawFont(playerid, msgTd, 1);
 					PlayerTextDrawLetterSize(playerid, msgTd, 0.150000, 0.600000);
 					PlayerTextDrawTextSize(playerid, msgTd, anc[0] + safe_min[0] + scr_width, TEXT_SIZE);
 					PlayerTextDrawSetOutline(playerid, msgTd, 1);
 					PlayerTextDrawSetShadow(playerid, msgTd, 0);
 					PlayerTextDrawAlignment(playerid, msgTd, 1);
-					PlayerTextDrawColor(playerid, msgTd, 0x7A7A7AFF);
+					PlayerTextDrawColor(playerid, msgTd, 0xA19999FF);
 					PlayerTextDrawBackgroundColor(playerid, msgTd, 255);
 					PlayerTextDrawBoxColor(playerid, msgTd, 50);
 					PlayerTextDrawUseBox(playerid, msgTd, 0);
 					PlayerTextDrawSetProportional(playerid, msgTd, 1);
 					PlayerTextDrawSetSelectable(playerid, msgTd, 0);
 				} else {
-					msgTd = CreatePlayerTextDraw(playerid, anc[0] + safe_max[0], anc[1] + safe_min[1] + last_height, content);
+					msgTd = CreatePlayerTextDraw(playerid, anc[0] + safe_max[0], anc[1] + safe_max[1] - last_height, content);
 					PlayerTextDrawFont(playerid, msgTd, 1);
 					PlayerTextDrawLetterSize(playerid, msgTd, 0.150000, 0.600000);
 					PlayerTextDrawTextSize(playerid, msgTd, anc[0] + safe_max[0] + scr_width, TEXT_SIZE);
@@ -265,7 +265,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	key[PlayerId] = playerid;
 	if(AppMsg_HasDetailUIKey(key)) {
 		switch(button) {
-			case PhoneButtonDown: {
+			case PhoneButtonUp: {
 				new
 					offset = AppMsg_GetDetailOffset(id),
 					ui[DetailUI];
@@ -276,7 +276,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 					AppMsg_UpdateDetailUI(id, playerid);
 				}
 			}
-			case PhoneButtonUp: {
+			case PhoneButtonDown: {
 				new offset = AppMsg_GetDetailOffset(id);
 				if(offset) {
 					AppMsg_SetDetailOffset(id, offset - 1);

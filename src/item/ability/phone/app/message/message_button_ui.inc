@@ -84,8 +84,10 @@ Dialog:AppMsgContentDialog(playerid, response, listitem, inputtext[]) {
 										stats[msgContent][0] = EOS;
 										strcat(stats[msgContent], inputtext, MESSAGE_CONTENT_SIZE);
 										iter_set_arr(list_it, stats);
-										AppMsg_DestroyListUI(phone, playerid);
-										AppMsg_UpdateListUI(phone, playerid);
+										if(AppMsg_HasListUIKey(key)) {
+											AppMsg_DestroyListUI(phone, playerid);
+											AppMsg_UpdateListUI(phone, playerid);
+										}
 										break;
 									}
 								}

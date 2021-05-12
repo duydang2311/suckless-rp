@@ -125,8 +125,8 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 		PlayerTextDrawSetSelectable(playerid, ui[dtlHeaderTd], 0);
 		PlayerTextDrawShow(playerid, ui[dtlHeaderTd]);
 
-		safe_min[1] += HEADER_SIZE;
-		safe_max[1] -= 15.0; // make space for message_button_ui
+		safe_min[1] += HEADER_SIZE + HEADER_GAP;
+		safe_max[1] -= 3.0 * 6.00; // make space for message_button_ui, BUTTON_SIZE == 6.0
 
 		new
 			Float:scr_width,
@@ -139,7 +139,7 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 			Float:last_height = 0.00,
 			msg_cnt = 0,
 			idx;
-		scr_width = safe_max[0] - safe_min[0] - 5.0;
+		scr_width = safe_max[0] - safe_min[0] - 3.0;
 		scr_height = safe_max[1] - safe_min[1];
 		for(new PlayerText:msgTd; iter_inside(it); iter_move_next(it)) {
 			if(height < scr_height) {
@@ -153,7 +153,6 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 				for(new i = 0; i != length; i++) {
 					width += GetTextDrawCharacterWidth(stats[msgContent][i], 1, true) * 0.15;
 					if(width >= scr_width) {
-						height += TEXT_SIZE;
 						if(height >= scr_height) {
 							content[idx - 3] = '.';
 							content[idx - 2] = '.';
@@ -161,6 +160,7 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 							msg_cnt--;
 							break;
 						} else {
+							height += TEXT_SIZE;
 							width = GetTextDrawCharacterWidth(stats[msgContent][i], 1, true) * 0.15;
 							content[idx++] = '~';
 							content[idx++] = 'n';

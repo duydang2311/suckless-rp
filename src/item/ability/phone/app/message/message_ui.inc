@@ -238,7 +238,7 @@ stock AppMsg_UpdateMsgDetail(id, playerid) {
 			Float:last_height = 0.00,
 			msg_cnt = 0,
 			idx;
-		scr_width = safe_max[0] - safe_min[0] - 10.0;
+		scr_width = safe_max[0] - safe_min[0] - 5.0;
 		scr_height = safe_max[1] - safe_min[1] - 10.0;
 		for(new PlayerText:msgTd; iter_inside(it); iter_move_next(it)) {
 			if(height < scr_height) {

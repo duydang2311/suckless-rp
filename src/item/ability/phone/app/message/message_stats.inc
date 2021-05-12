@@ -24,8 +24,8 @@ static
 	Map:m_detailStats, // { phone_id: {AppMsgStats} }
 	Map:m_simFromDetail; // { phone_id: sim_id }
 
-forward AppMsg_OnListStatsRetrieved(id, Task:result);
-public AppMsg_OnListStatsRetrieved(id, Task:result) {
+forward AppMsg_OnListStatsRetrieved(id, for_sim, Task:result);
+public AppMsg_OnListStatsRetrieved(id, for_sim, Task:result) {
 	new rows = cache_num_rows();
 	if(rows) {
 		new stats[AppMsgStats];
@@ -39,6 +39,9 @@ public AppMsg_OnListStatsRetrieved(id, Task:result) {
 		for(new i = 0, msg[MessageStats]; i != rows; i++) {
 			cache_get_value_name_int(i, "id", msg[msgId]);
 			cache_get_value_name_int(i, "from_sim", msg[msgFromSim]);
+			if(msg[msgFromSim] == for_sim) {
+				cache_get_value_name_int(i, "to_sim", msg[msgFromSim]);
+			}
 			cache_get_value_name(i, "content", msg[msgContent], MESSAGE_CONTENT_SIZE);
 			linked_list_add_arr(stats[msgList], msg);
 		}
@@ -286,9 +289,25 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 				sim = iter_get(it);
 				if(ISim_Has(sim)) {
 					new query[512];
-					mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.id, stats.from_sim, stats.content FROM appmsg_stats stats INNER JOIN (\
-					SELECT to_sim, MAX(created_date) LatestDate FROM appmsg_stats GROUP BY from_sim) grouped_stats ON stats.to_sim = grouped_stats.to_sim WHERE stats.to_sim = %d AND stats.created_date = grouped_stats.LatestDate ORDER BY created_date DESC", sim);
-					mysql_pquery(MySQL_Connection(), query, "AppMsg_OnListStatsRetrieved", "ii", id, _:result);
+					mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT m.id, m.from_sim, m.to_sim, m.content from appmsg_stats m \
+						inner join ( \
+							select \
+								least(from_sim, to_sim) as user_1, \
+								greatest(from_sim, to_sim) as user_2, \
+								max(id) as last_id, \
+								max(created_date) as latest_date \
+								from \
+								appmsg_stats \
+							WHERE to_sim = %d OR from_sim = %d \
+							group by \
+							least(from_sim, to_sim), \
+							greatest(from_sim, to_sim) \
+						) s on least(from_sim, to_sim)=user_1 \
+							and greatest(from_sim, to_sim)=user_2 \
+							and m.id = s.last_id \
+						ORDER BY m.created_date DESC", sim, sim);
+
+					mysql_pquery(MySQL_Connection(), query, "AppMsg_OnListStatsRetrieved", "iii", id, sim, _:result);
 					break;
 				}
 			}

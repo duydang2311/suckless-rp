@@ -241,6 +241,27 @@ stock Task:AppMsg_SendAsync(from_sim, to_sim, const content[]) {
 	return t;
 }
 
+stock AppMsg_ListPushFront(id, msg_id, from_sim, const content[]) {
+	new stats[AppMsgStats];
+	if(!map_valid(m_listStats)) {
+		m_listStats = map_new();
+	}
+	if(!map_has_key(m_listStats, id, stats)) {
+		stats[msgOffset] = 0;
+		stats[msgList] = linked_list_new();
+		map_set_arr(m_listStats, id, stats);
+	} else if(map_has_key(m_listStats, id)) {
+		map_get_arr(m_listStats, id, stats);
+	}
+
+	new msg[MessageStats];
+	msg[msgId] = msg_id;
+	strcat(msg[msgContent], content, SIM_NUMBER_SIZE);
+	msg[msgFromSim] = from_sim;
+	linked_list_add_arr(stats[msgList], msg, 0);
+	return 1;
+}
+
 stock AppMsg_DetailMsgPushFront(id, msg_id, from_sim, const content[]) {
 	new stats[AppMsgStats];
 	if(!map_valid(m_detailStats)) {

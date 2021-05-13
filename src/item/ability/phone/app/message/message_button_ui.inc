@@ -81,9 +81,8 @@ Dialog:AppMsgContentDialog(playerid, response, listitem, inputtext[]) {
 								for(new stats[MessageStats]; iter_inside(list_it); iter_move_next(list_it)) {
 									iter_get_arr(list_it, stats);
 									if(stats[msgFromSim] == sent_to_sim) {
-										stats[msgContent][0] = EOS;
-										strcat(stats[msgContent], inputtext, MESSAGE_CONTENT_SIZE);
-										iter_set_arr(list_it, stats);
+										iter_erase(list_it);
+										AppMsg_ListPushFront(phone, id, sent_to_sim, inputtext);
 										if(AppMsg_HasListUIKey(key)) {
 											AppMsg_DestroyListUI(phone, playerid);
 											AppMsg_UpdateListUI(phone, playerid);

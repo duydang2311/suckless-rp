@@ -85,6 +85,25 @@ stock ISim_GetNumber(id, number[], size = sizeof(number)) {
 	return 1;
 }
 
+stock Task:ISim_RetrieveNumber(id) {
+	new
+		Task:t = task_new(),
+		query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT number FROM item_sim WHERE id = %d LIMIT 1", id);
+	mysql_pquery(MySQL_Connection(), query, "ISim_OnNumberRetrieved", "i", _:t);
+	return t;
+}
+
+forward ISim_OnNumberRetrieved(Task:t);
+public ISim_OnNumberRetrieved(Task:t) {
+	new number[SIM_NUMBER_SIZE] = "";
+	if(cache_num_rows()) {
+		cache_get_value_name(0, "number", number);
+	}
+	task_set_result_str(t, number);
+	return 1;
+}
+
 stock ISim_GetPhoneWithNumber(const number[]) {
 	if(!map_valid(m_phoneByNumber) || !map_has_str_key(m_phoneByNumber, number)) {
 		return -1;

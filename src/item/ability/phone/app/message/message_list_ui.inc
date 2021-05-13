@@ -53,7 +53,7 @@ stock AppMsg_UpdateListUI(id, playerid) {
 	new
 		offset = AppMsg_GetListOffset(id),
 		Iter:it = AppMsg_GetListIter(id, offset);
-	if(iter_valid(it) && iter_release(it)) {
+	if(iter_valid(it)) { // cannot iter_release here, use iter_release below this scope because there are asynchronous processes in this scope.
 		const
 			Float:HEADER_SIZE = 6.00,
 			Float:HEADER_TO_TEXT_GAP = 2.00,
@@ -103,9 +103,12 @@ stock AppMsg_UpdateListUI(id, playerid) {
 		ui[lsComponentList] = linked_list_new();
 		ui[lsComponentCount] = component_cnt;
 		map_arr_set_arr(m_listUI, key, ui);
-		for(new cnt = 0, component[ListTdComponent], number[SIM_NUMBER_SIZE]; iter_inside(it) && cnt != component_cnt; iter_move_next(it), cnt++) {
+		for(new cnt = 0, component[ListTdComponent], number[SIM_NUMBER_SIZE], Task:t; iter_inside(it) && cnt != component_cnt; iter_move_next(it), cnt++) {
 			iter_get_arr(it, stats);
-			ISim_GetNumber(stats[msgFromSim], number);
+			task_unblock(1);
+			t = ISim_RetrieveNumber(stats[msgFromSim]);
+			task_wait(t);
+			task_get_result_str(t, number);
 
 			component[lsHeaderTd] = CreatePlayerTextDraw(playerid, first_x, first_y + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), number);
 			PlayerTextDrawFont(playerid, component[lsHeaderTd], 3);
@@ -140,6 +143,7 @@ stock AppMsg_UpdateListUI(id, playerid) {
 			linked_list_add_arr(ui[lsComponentList], component);
 		}
 	}
+	iter_release(it);
 	return 1;
 }
 

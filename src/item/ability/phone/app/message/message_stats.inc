@@ -433,6 +433,7 @@ hook AppMsg_StatsOnMsgSent(msg_id, from_sim, to_sim, const content[]) {
 								}
 							}
 						}
+						printf("list, push %s", safe_content);
 						AppMsg_ListPushFront(id, msg_id, to_sim, safe_content);
 						cnt++;
 						break;

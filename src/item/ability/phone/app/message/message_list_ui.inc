@@ -91,7 +91,6 @@ stock AppMsg_UpdateListUI(id, playerid) {
 
 		new
 			ui[ListUI],
-			stats[MessageStats],
 			key[Key];
 		key[ItemId] = id;
 		key[PlayerId] = playerid;
@@ -103,8 +102,9 @@ stock AppMsg_UpdateListUI(id, playerid) {
 		ui[lsComponentList] = linked_list_new();
 		ui[lsComponentCount] = component_cnt;
 		map_arr_set_arr(m_listUI, key, ui);
-		for(new cnt = 0, component[ListTdComponent], number[SIM_NUMBER_SIZE], Task:t, length, Float:scr_width = safe_max[0] - safe_min[0] - 3.0; iter_inside(it) && cnt != component_cnt; iter_move_next(it), cnt++) {
+		for(new cnt = 0, component[ListTdComponent], number[SIM_NUMBER_SIZE], stats[MessageStats], Task:t, length, Float:scr_width = safe_max[0] - safe_min[0] - 3.0; iter_inside(it) && cnt != component_cnt; iter_move_next(it), cnt++) {
 			iter_get_arr(it, stats);
+			printf("inside UpdateListUI, before content %s", stats[msgContent]);
 			task_unblock(1);
 			t = ISim_RetrieveNumber(stats[msgFromSim]);
 			task_wait(t);
@@ -133,7 +133,6 @@ stock AppMsg_UpdateListUI(id, playerid) {
 			PlayerTextDrawSetProportional(playerid, component[lsHeaderTd], 1);
 			PlayerTextDrawSetSelectable(playerid, component[lsHeaderTd], 1);
 
-			printf("inside UpdateListUI, before content %s", stats[msgContent]);
 			length = strlen(stats[msgContent]);
 			for(new i = 0, Float:width = 0.0; i != length; i++) {
 				width += GetTextDrawCharacterWidth(stats[msgContent][i], 1) * 0.12;

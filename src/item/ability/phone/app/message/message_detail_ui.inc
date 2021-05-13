@@ -274,6 +274,9 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 					AppMsg_SetDetailOffset(id, offset + 1);
 					AppMsg_DestroyDetailUI(id, playerid);
 					AppMsg_UpdateDetailUI(id, playerid);
+				} else if(offset == (AppMsg_GetDetailSize(id) - ui[dtlMessageCount])) {
+					task_unblock(Y_HOOKS_BREAK_RETURN_1);
+					await AppMsg_RetrieveDetailStats(id, AppMsg_GetSimFromDetail(id), ui[dtlMessageCount]);
 				}
 			}
 			case PhoneButtonDown: {

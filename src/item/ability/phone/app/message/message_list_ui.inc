@@ -252,23 +252,27 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	return 1;
 }
 
-// hook AppMsg_OnMsgSent(id, msg_id, from_sim, to_sim, const content[]) {
-// 	if(AppMsg_HasListStats(id)) {
-// 		new Iter:list_it = AppMsg_GetListIter(id);
-// 		if(iter_valid(list_it) && iter_release(list_it)) {
-// 			for(new stats[MessageStats]; iter_inside(list_it); iter_move_next(list_it)) {
-// 				iter_get_arr(list_it, stats);
-// 				if(stats[msgFromSim] == to_sim) {
-// 					iter_erase(list_it);
-// 					AppMsg_ListPushFront(id, msg_id, to_sim, content);
-// 					if(AppMsg_HasListUIKey(key)) {
-// 						AppMsg_DestroyListUI(id, playerid);
-// 						AppMsg_UpdateListUI(id, playerid);
-// 					}
-// 					break;
-// 				}
-// 			}
-// 		}
-// 	}
-// 	return 1;
-// }
+hook AppMsg_UIOnMsgSent(msg_id, from_sim, to_sim, const content[]) {
+	for(new Iter:it = map_iter(m_listUI), Iter:phone_it, key[Key], cnt = 0; iter_inside(it) && cnt != 2; iter_move_next(it)) {
+		iter_get_key_arr(it, key);
+		if(!IGroup_Has(key[ItemId])) {
+			continue;
+		}
+
+		phone_it = IGroup_GetIter(key[ItemId]);
+		if(iter_valid(phone_it) && iter_release(phone_it)) {
+			for(new sim; iter_inside(phone_it); iter_move_next(phone_it)) {
+				sim = iter_get(phone_it);
+				if(sim == from_sim || sim == to_sim) {
+					if(AppMsg_HasListUIKey(key)) {
+						AppMsg_DestroyListUI(key[ItemId], key[PlayerId]);
+						AppMsg_UpdateListUI(key[ItemId], key[PlayerId]);
+					}
+					cnt++;
+					break;
+				}
+			}
+		}
+	}
+	return 1;
+}

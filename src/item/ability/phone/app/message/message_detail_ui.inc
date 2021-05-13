@@ -297,12 +297,12 @@ hook AppMsg_UIOnMsgSent(msg_id, from_sim, to_sim, const content[]) {
 			continue;
 		}
 
-		phone_it = IGroup_GetIter(id);
+		phone_it = IGroup_GetIter(key[ItemId]);
 		if(iter_valid(phone_it) && iter_release(phone_it)) {
 			for(new sim; iter_inside(phone_it); iter_move_next(phone_it)) {
 				sim = iter_get(phone_it);
 				if(sim == from_sim || sim == to_sim) {
-					AppMsg_DetailMsgPushFront(key[ItemId], msg_id, from_sim, content);
+					AppMsg_DetailPushFront(key[ItemId], msg_id, from_sim, content);
 					AppMsg_DestroyDetailUI(key[ItemId], key[PlayerId]);
 					AppMsg_UpdateDetailUI(key[ItemId], key[PlayerId]);
 					cnt++;

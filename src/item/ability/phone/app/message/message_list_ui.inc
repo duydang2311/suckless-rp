@@ -133,6 +133,7 @@ stock AppMsg_UpdateListUI(id, playerid) {
 			PlayerTextDrawSetProportional(playerid, component[lsHeaderTd], 1);
 			PlayerTextDrawSetSelectable(playerid, component[lsHeaderTd], 1);
 
+			printf("inside UpdateListUI, before content %s", stats[msgContent]);
 			length = strlen(stats[msgContent]);
 			for(new i = 0, Float:width = 0.0; i != length; i++) {
 				width += GetTextDrawCharacterWidth(stats[msgContent][i], 1) * 0.12;
@@ -142,6 +143,7 @@ stock AppMsg_UpdateListUI(id, playerid) {
 					break;
 				}
 			}
+			printf("inside UpdateListUI, after content %s", stats[msgContent]);
 			component[lsMessageTd] = CreatePlayerTextDraw(playerid, first_x, first_y + HEADER_TO_TEXT_GAP + HEADER_SIZE + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), stats[msgContent]);
 			PlayerTextDrawFont(playerid, component[lsMessageTd], 1);
 			PlayerTextDrawLetterSize(playerid, component[lsMessageTd], 0.12000, 0.48000);

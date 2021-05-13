@@ -51,8 +51,10 @@ Dialog:AppMsgContentDialog(playerid, response, listitem, inputtext[]) {
 	if(response) {
 		if(isnull(inputtext)) {
 			Dialog_Show(playerid, AppMsgContentDialog, DIALOG_STYLE_INPUT, "App Message | Send", "> Nhap noi dung tin nhan ban muon gui.", "Send", "<<");
+			return 1;
 		} else if(strlen(inputtext) > MESSAGE_CONTENT_SIZE) {
 			Dialog_Show(playerid, AppMsgContentDialog, DIALOG_STYLE_INPUT, "App Message | Send", "> Nhap noi dung tin nhan ban muon gui.\nNoi dung tin nhan qua dai, vui long rut ngan lai.", "Send", "<<");
+			return 1;
 		} else {
 			new
 				phone = IPUI_GetPlayerPhone(playerid),

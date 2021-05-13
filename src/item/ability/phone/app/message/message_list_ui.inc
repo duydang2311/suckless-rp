@@ -103,13 +103,22 @@ stock AppMsg_UpdateListUI(id, playerid) {
 		ui[lsComponentList] = linked_list_new();
 		ui[lsComponentCount] = component_cnt;
 		map_arr_set_arr(m_listUI, key, ui);
-		for(new cnt = 0, component[ListTdComponent], number[SIM_NUMBER_SIZE], Task:t; iter_inside(it) && cnt != component_cnt; iter_move_next(it), cnt++) {
+		for(new cnt = 0, component[ListTdComponent], number[SIM_NUMBER_SIZE], Task:t, length, Float:scr_width = safe_max[0] - safe_min[0] - 3.0; iter_inside(it) && cnt != component_cnt; iter_move_next(it), cnt++) {
 			iter_get_arr(it, stats);
 			task_unblock(1);
 			t = ISim_RetrieveNumber(stats[msgFromSim]);
 			task_wait(t);
 			task_get_result_str(t, number);
 
+			length = strlen(number);
+			for(new i = 0, Float:width = 0.0; i != length; i++) {
+				width += GetTextDrawCharacterWidth(number[i], 3) * 0.15;
+				if(width > scr_width) {
+					strdel(number, i - 3, length);
+					strcat(number, "...");
+					break;
+				}
+			}
 			component[lsHeaderTd] = CreatePlayerTextDraw(playerid, first_x, first_y + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), number);
 			PlayerTextDrawFont(playerid, component[lsHeaderTd], 3);
 			PlayerTextDrawLetterSize(playerid, component[lsHeaderTd], 0.150000, 0.600000);
@@ -124,9 +133,18 @@ stock AppMsg_UpdateListUI(id, playerid) {
 			PlayerTextDrawSetProportional(playerid, component[lsHeaderTd], 1);
 			PlayerTextDrawSetSelectable(playerid, component[lsHeaderTd], 1);
 
+			length = strlen(stats[msgContent]);
+			for(new i = 0, Float:width = 0.0; i != length; i++) {
+				width += GetTextDrawCharacterWidth(stats[msgContent][i], 1) * 0.12;
+				if(width > scr_width) {
+					strdel(stats[msgContent], i - 3, length);
+					strcat(stats[msgContent], "...");
+					break;
+				}
+			}
 			component[lsMessageTd] = CreatePlayerTextDraw(playerid, first_x, first_y + HEADER_TO_TEXT_GAP + HEADER_SIZE + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), stats[msgContent]);
 			PlayerTextDrawFont(playerid, component[lsMessageTd], 1);
-			PlayerTextDrawLetterSize(playerid, component[lsMessageTd], 0.119998, 0.479999);
+			PlayerTextDrawLetterSize(playerid, component[lsMessageTd], 0.12000, 0.48000);
 			PlayerTextDrawTextSize(playerid, component[lsMessageTd], 594.000000, 82.000000);
 			PlayerTextDrawSetOutline(playerid, component[lsMessageTd], 1);
 			PlayerTextDrawSetShadow(playerid, component[lsMessageTd], 0);

@@ -81,7 +81,7 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 	new
 		offset = AppMsg_GetDetailOffset(id),
 		Iter:it = AppMsg_GetDetailIter(id, offset);
-	if(iter_valid(it) && iter_release(it)) {
+	if(iter_valid(it)) { // cannot use iter_release straight here because there is asynchronous in this scope, release the iter below this scope is the solution.
 		const
 			Float:HEADER_SIZE = 10.00,
 			Float:HEADER_GAP = 5.00,
@@ -99,7 +99,11 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 			from_sim_number[SIM_NUMBER_SIZE];
 		IPModel_GetSafeScreenOffset(id, safe_min[0], safe_min[1], safe_max[0], safe_max[1]);
 		IPUI_GetAnchor(id, playerid, anc[0], anc[1]);
-		ISim_GetNumber(from_sim, from_sim_number);
+
+		new Task:t = ISim_RetrieveNumber(from_sim);
+		task_unblock(1);
+		task_wait(t);
+		task_get_result_str(t, from_sim_number);
 
 		key[ItemId] = id;
 		key[PlayerId] = playerid;
@@ -209,6 +213,7 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 		ui[dtlMessageCount] = msg_cnt;
 		map_arr_set_arr(m_detailUI, key, ui);
 	}
+	iter_release(it);
 	return 1;
 }
 

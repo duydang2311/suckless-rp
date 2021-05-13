@@ -180,12 +180,12 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 		new ui[ListUI];
 		map_arr_get_arr(m_listUI, key, ui);
 		if(linked_list_valid(ui[lsComponentList])) {
-			for(new Iter:it = linked_list_iter(ui[lsComponentList]), component[ListTdComponent]; iter_inside(it); iter_move_next(it)) {
+			for(new Iter:it = linked_list_iter(ui[lsComponentList]), component[ListTdComponent], cnt = 0; iter_inside(it); iter_move_next(it), cnt++) {
 				iter_get_arr(it, component);
 				if(component[lsHeaderTd] == playertextid) {
 					new
 						offset = AppMsg_GetListOffset(id),
-						Iter:msg_it = AppMsg_GetListIter(id, offset);
+						Iter:msg_it = AppMsg_GetListIter(id, offset + cnt);
 					if(iter_valid(msg_it) && iter_release(msg_it)) {
 						new stats[MessageStats];
 						iter_get_arr(msg_it, stats);

@@ -246,7 +246,7 @@ stock AppMsg_ListPushFront(id, msg_id, from_sim, const content[]) {
 	if(!map_valid(m_listStats)) {
 		m_listStats = map_new();
 	}
-	if(!map_has_key(m_listStats, id, stats)) {
+	if(!map_has_key(m_listStats, id)) {
 		stats[msgOffset] = 0;
 		stats[msgList] = linked_list_new();
 		map_set_arr(m_listStats, id, stats);

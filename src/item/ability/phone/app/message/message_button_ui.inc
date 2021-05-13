@@ -69,7 +69,7 @@ Dialog:AppMsgContentDialog(playerid, response, listitem, inputtext[]) {
 						task_unblock(1);
 						new id = await AppMsg_SendAsync(sim, map_get(m_toSimId, playerid), inputtext);
 						CallLocalFunction("AppMsg_StatsOnMsgSent", "iiis", id, sim, map_get(m_toSimId, playerid), inputtext);
-						SetPreciseTimer("AppMsg_UIOnMsgSent", 0, false, "iiis", id, sim, map_get(m_toSimId, playerid), inputtext);
+						SetPreciseTimer("AppMsg_UIOnMsgSent", 500, false, "iii", id, sim, map_get(m_toSimId, playerid));
 						// new
 						// 	sent_to_sim = map_get(m_toSimId, playerid),
 						// 	from_sim = AppMsg_GetSimFromDetail(phone);

@@ -293,7 +293,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	return 1;
 }
 
-hook AppMsg_UIOnMsgSent(msg_id, from_sim, to_sim, const content[]) {
+hook AppMsg_UIOnMsgSent(msg_id, from_sim, to_sim) {
 	if(!map_valid(m_detailUI)) {
 		return 1;
 	}

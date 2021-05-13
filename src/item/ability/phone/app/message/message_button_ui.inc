@@ -66,8 +66,8 @@ Dialog:AppMsgContentDialog(playerid, response, listitem, inputtext[]) {
 					if(ISim_Has(sim)) {
 						task_unblock(1);
 						new id = await AppMsg_SendAsync(sim, map_get(m_toSimId, playerid), inputtext);
-						CallLocalFunction("AppMsg_UIOnMsgSent", "iiis", id, sim, map_get(m_toSimId, playerid), inputtext);
-						CallLocalFunction("AppMsg_StatsOnMsgSent", "iiis", phone, id, sim, map_get(m_toSimId, playerid), inputtext);
+						CallLocalFunction("AppMsg_StatsOnMsgSent", "iiis", id, sim, map_get(m_toSimId, playerid), inputtext);
+						SetPreciseTimer("AppMsg_UIOnMsgSent", 0, false, "iiis", id, sim, map_get(m_toSimId, playerid), inputtext);
 						// new
 						// 	sent_to_sim = map_get(m_toSimId, playerid),
 						// 	from_sim = AppMsg_GetSimFromDetail(phone);

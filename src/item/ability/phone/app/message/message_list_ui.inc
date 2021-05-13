@@ -253,6 +253,9 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 }
 
 hook AppMsg_UIOnMsgSent(msg_id, from_sim, to_sim, const content[]) {
+	if(!map_valid(m_listUI)) {
+		return 1;
+	}
 	for(new Iter:it = map_iter(m_listUI), Iter:phone_it, key[Key], cnt = 0; iter_inside(it) && cnt != 2; iter_move_next(it)) {
 		iter_get_key_arr(it, key);
 		if(!IGroup_Has(key[ItemId])) {

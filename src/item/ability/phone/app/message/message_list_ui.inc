@@ -246,7 +246,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 				}
 			}
 			case PhoneButtonHangup: {
-				IPApp_TerminateStats(id, AppMsg);
+				IPApp_TerminateStats(id, AppMessage);
 				AppMsg_DestroyListUI(id, playerid);
 				AppMenu_UpdateAppList(id, playerid);
 			}

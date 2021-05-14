@@ -257,6 +257,8 @@ hook AppMsg_UIOnMsgSent(msg_id, from_sim, to_sim) {
 	if(!map_valid(m_listUI)) {
 		return 1;
 	}
+
+	new keyToUpdate[2][Key] = {{-1, -1}, ...};
 	for(new Iter:it = map_iter(m_listUI), Iter:phone_it, key[Key], cnt = 0; iter_inside(it) && cnt != 2; iter_move_next(it)) {
 		iter_get_key_arr(it, key);
 		if(!IGroup_Has(key[ItemId])) {
@@ -269,13 +271,18 @@ hook AppMsg_UIOnMsgSent(msg_id, from_sim, to_sim) {
 				sim = iter_get(phone_it);
 				if(sim == from_sim || sim == to_sim) {
 					if(AppMsg_HasListUIKey(key)) {
-						AppMsg_DestroyListUI(key[ItemId], key[PlayerId]);
-						AppMsg_UpdateListUI(key[ItemId], key[PlayerId]);
+						keyToUpdate[cnt] = key;
+						cnt++;
 					}
-					cnt++;
 					break;
 				}
 			}
+		}
+	}
+	for(new i = 0; i != sizeof(keyToUpdate); i++) {
+		if(keyToUpdate[i][ItemId] != -1) {
+			AppMsg_DestroyListUI(keyToUpdate[i][ItemId], keyToUpdate[i][PlayerId]);
+			AppMsg_UpdateListUI(keyToUpdate[i][ItemId], keyToUpdate[i][PlayerId]);
 		}
 	}
 	return 1;

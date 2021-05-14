@@ -388,7 +388,6 @@ hook OnGameModeInit() {
 }
 
 hook AppMsg_StatsOnMsgSent(msg_id, from_sim, to_sim, const content[]) {
-	printf("AppMsg_StatsOnMsgSent(%d, %d, %d, %s)", msg_id, from_sim, to_sim, content);
 	new safe_content[MESSAGE_CONTENT_SIZE];
 	strcat(safe_content, content);
 	if(map_valid(m_detailStats)) {
@@ -402,7 +401,7 @@ hook AppMsg_StatsOnMsgSent(msg_id, from_sim, to_sim, const content[]) {
 			if(iter_valid(phone_it) && iter_release(phone_it)) {
 				for(new sim; iter_inside(phone_it); iter_move_next(phone_it)) {
 					sim = iter_get(phone_it);
-					if(sim == from_sim || sim == to_sim) {
+					if(sim == to_sim || sim == from_sim) {
 						AppMsg_DetailPushFront(id, msg_id, from_sim, safe_content);
 						cnt++;
 					}
@@ -433,8 +432,7 @@ hook AppMsg_StatsOnMsgSent(msg_id, from_sim, to_sim, const content[]) {
 								}
 							}
 						}
-						printf("list, push %s", safe_content);
-						AppMsg_ListPushFront(id, msg_id, to_sim, safe_content);
+						AppMsg_ListPushFront(id, msg_id, (sim == from_sim) ? to_sim : from_sim, safe_content);
 						cnt++;
 						break;
 					}

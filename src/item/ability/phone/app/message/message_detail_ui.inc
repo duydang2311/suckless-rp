@@ -301,7 +301,6 @@ hook AppMsg_UIOnMsgSent(msg_id, from_sim, to_sim) {
 	new keyToUpdate[2][Key] = {{-1, -1}, ...};
 	for(new Iter:it = map_iter(m_detailUI), Iter:phone_it, key[Key], cnt = 0; iter_inside(it) && cnt != 2; iter_move_next(it)) {
 		iter_get_key_arr(it, key);
-		printf("outside checking key {%d, %d}", key[ItemId], key[PlayerId]);
 		if(!IGroup_Has(key[ItemId])) {
 			continue;
 		}
@@ -309,9 +308,7 @@ hook AppMsg_UIOnMsgSent(msg_id, from_sim, to_sim) {
 		if(iter_valid(phone_it) && iter_release(phone_it)) {
 			for(new sim; iter_inside(phone_it); iter_move_next(phone_it)) {
 				sim = iter_get(phone_it);
-				printf("checking key {%d, %d} with sim %d", key[ItemId], key[PlayerId], sim);
 				if(sim == from_sim || sim == to_sim) {
-					printf("update detail ui for {%d, %d}", key[ItemId], key[PlayerId]);
 					keyToUpdate[cnt] = key;
 					cnt++;
 					break;

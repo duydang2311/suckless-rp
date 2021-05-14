@@ -104,7 +104,6 @@ stock AppMsg_UpdateListUI(id, playerid) {
 		map_arr_set_arr(m_listUI, key, ui);
 		for(new cnt = 0, component[ListTdComponent], number[SIM_NUMBER_SIZE], stats[MessageStats], Task:t, length, Float:scr_width = safe_max[0] - safe_min[0] - 3.0; iter_inside(it) && cnt != component_cnt; iter_move_next(it), cnt++) {
 			iter_get_arr(it, stats);
-			printf("inside UpdateListUI, before content %s", stats[msgContent]);
 			task_unblock(1);
 			t = ISim_RetrieveNumber(stats[msgFromSim]);
 			task_wait(t);
@@ -142,7 +141,6 @@ stock AppMsg_UpdateListUI(id, playerid) {
 					break;
 				}
 			}
-			printf("inside UpdateListUI, after content %s", stats[msgContent]);
 			component[lsMessageTd] = CreatePlayerTextDraw(playerid, first_x, first_y + HEADER_TO_TEXT_GAP + HEADER_SIZE + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), stats[msgContent]);
 			PlayerTextDrawFont(playerid, component[lsMessageTd], 1);
 			PlayerTextDrawLetterSize(playerid, component[lsMessageTd], 0.12000, 0.48000);

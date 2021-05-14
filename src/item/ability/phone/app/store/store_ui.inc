@@ -371,3 +371,20 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 	}
 	return 1;
 }
+
+hook IPUI_OnButtonClicked(id, playerid, button) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(AppStore_HasMainPageKey(key) && button == PhoneButtonHangup) {
+		IPApp_TerminateStats(id, AppStore);
+		AppStore_DestroyUI(id, playerid);
+		AppMenu_UpdateAppList(id, playerid);
+		return Y_HOOKS_BREAK_RETURN_1;
+	} else if(AppStore_HasInstallPageKey(key) && button == PhoneButtonHangup) {
+		AppStore_DestroyUI(id, playerid);
+		AppStore_UpdateMainPage(id, playerid);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}

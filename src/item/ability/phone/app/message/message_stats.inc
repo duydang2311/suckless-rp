@@ -256,7 +256,7 @@ stock AppMsg_ListPushFront(id, msg_id, from_sim, const content[]) {
 
 	new msg[MessageStats];
 	msg[msgId] = msg_id;
-	strcat(msg[msgContent], content, SIM_NUMBER_SIZE);
+	strcat(msg[msgContent], content, MESSAGE_CONTENT_SIZE);
 	msg[msgFromSim] = from_sim;
 	linked_list_add_arr(stats[msgList], msg, 0);
 	return 1;

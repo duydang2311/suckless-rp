@@ -245,6 +245,11 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 					AppMsg_UpdateListUI(id, playerid);
 				}
 			}
+			case PhoneButtonHangup: {
+				IPApp_TerminateStats(id, AppMsg);
+				AppMsg_DestroyListUI(id, playerid);
+				AppMenu_UpdateAppList(id, playerid);
+			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;
 	}

@@ -171,8 +171,6 @@ stock AppMsg_UpdateButtonUI(id, playerid) {
 
 #include <YSI_Coding\y_hooks>
 
-#include <YSI_Coding\y_hooks>
-
 hook IPA_OnUIHideAttempt(id, playerid) {
 	AppMsg_DestroyButtonUI(id, playerid);
 	return 1;

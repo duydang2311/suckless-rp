@@ -206,3 +206,16 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 	}
 	return 1;
 }
+
+hook IPUI_OnButtonClicked(id, playerid, button) {
+	if(AppMenu_HasUI(id, playerid)) {
+		switch(button) {
+			case PhoneButtonHangup: {
+				IPApp_TerminateStats(id, AppMessage);
+				AppMenu_DestroyUI(id, playerid);
+			}
+		}
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}

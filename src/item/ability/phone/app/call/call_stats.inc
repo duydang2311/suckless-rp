@@ -49,7 +49,7 @@ hook OnGameModeInit() {
 	)", false);
 
 	new
-		Cache:result = mysql_query(MySQL_Connection(), "SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='appmenu_call' AND index_name='unique_saved_sim'", true);
+		Cache:result = mysql_query(MySQL_Connection(), "SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE table_schema=DATABASE() AND table_name='appcall_stats' AND index_name='unique_saved_sim'", true);
 	new count = 0;
 	cache_get_value_name_int(0, "COUNT(*)", count);
 	if(!count) {

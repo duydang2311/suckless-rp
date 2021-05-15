@@ -70,32 +70,6 @@ Dialog:AppMsgContentDialog(playerid, response, listitem, inputtext[]) {
 						new id = await AppMsg_SendAsync(sim, map_get(m_toSimId, playerid), inputtext);
 						CallLocalFunction("AppMsg_StatsOnMsgSent", "iiis", id, sim, map_get(m_toSimId, playerid), inputtext);
 						SetPreciseTimer("AppMsg_UIOnMsgSent", 0, false, "iii", id, sim, map_get(m_toSimId, playerid));
-						// new
-						// 	sent_to_sim = map_get(m_toSimId, playerid),
-						// 	from_sim = AppMsg_GetSimFromDetail(phone);
-						// if(from_sim == sent_to_sim) {
-						// 	// player is sending a message to m_toSimId, if player is opening detail ui for from_sim and from_sim == m_toSimId
-						// 	AppMsg_DetailPushFront(phone, id, sim, inputtext);
-						// 	AppMsg_DestroyDetailUI(phone, playerid);
-						// 	AppMsg_UpdateDetailUI(phone, playerid);
-						// }
-						// if(AppMsg_HasListStats(phone)) {
-							// new Iter:list_it = AppMsg_GetListIter(phone);
-							// if(iter_valid(list_it) && iter_release(list_it)) {
-							// 	for(new stats[MessageStats]; iter_inside(list_it); iter_move_next(list_it)) {
-							// 		iter_get_arr(list_it, stats);
-							// 		if(stats[msgFromSim] == sent_to_sim) {
-							// 			iter_erase(list_it);
-							// 			AppMsg_ListPushFront(phone, id, sent_to_sim, inputtext);
-							// 			if(AppMsg_HasListUIKey(key)) {
-							// 				AppMsg_DestroyListUI(phone, playerid);
-							// 				AppMsg_UpdateListUI(phone, playerid);
-							// 			}
-							// 			break;
-							// 		}
-							// 	}
-						// 	}
-						// }
 						break;
 					}
 				}

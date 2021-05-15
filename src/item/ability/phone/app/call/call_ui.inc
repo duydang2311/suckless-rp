@@ -120,7 +120,7 @@ stock AppCall_UpdateUI(id, playerid) {
 			component[uiSavedNameTd] = CreatePlayerTextDraw(playerid, first_x, first_y + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), stats[contactName]);
 			PlayerTextDrawFont(playerid, component[uiSavedNameTd], 3);
 			PlayerTextDrawLetterSize(playerid, component[uiSavedNameTd], 0.150000, 0.600000);
-			PlayerTextDrawTextSize(playerid, component[uiSavedNameTd], HEADER_SIZE, width);
+			PlayerTextDrawTextSize(playerid, component[uiSavedNameTd], HEADER_SIZE, width + 5.0);
 			PlayerTextDrawSetOutline(playerid, component[uiSavedNameTd], 1);
 			PlayerTextDrawSetShadow(playerid, component[uiSavedNameTd], 0);
 			PlayerTextDrawAlignment(playerid, component[uiSavedNameTd], 2);

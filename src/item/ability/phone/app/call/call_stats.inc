@@ -6,7 +6,7 @@
 
 const CONTACT_NAME_SIZE = 33;
 
-static enum _:ContactStats {
+enum _:ContactStats {
 	contactSim,
 	contactName[CONTACT_NAME_SIZE]
 }
@@ -76,7 +76,7 @@ stock Task:AppCall_RetrieveStats(id, advance = 0) {
 					map_get_arr(m_appStats, id, stats);
 					offset += stats[appOffset];
 				}
-				mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.saved_sim, stats.saved_name FROM appcall_stats WHERE sim = %d ORDER BY modified_date DESC LIMIT %d, %d", sim, floatround(float(offset) / 10.0, floatround_floor) * 10, (floatround(float(offset) / 10.0, floatround_floor) + 1) * 10 - 1);
+				mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.saved_sim, stats.saved_name FROM appcall_stats stats WHERE sim = %d ORDER BY modified_date DESC LIMIT %d, %d", sim, floatround(float(offset) / 10.0, floatround_floor) * 10, (floatround(float(offset) / 10.0, floatround_floor) + 1) * 10 - 1);
 				mysql_pquery(MySQL_Connection(), query, "AppCall_OnSavedSimRetrieved", "ii", id, _:t);
 				return t;
 			}
@@ -141,7 +141,7 @@ stock Task:AppCall_UpdateModDate(sim, saved_sim) {
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
-	IPApp_Ensure(AppCall, "Call", "app:call", false);
+	IPApp_Ensure(AppCall, "Call", "app:menu", false);
 	return 1;
 }
 
@@ -152,7 +152,10 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 		}
 
 		task_unblock(Y_HOOKS_BREAK_RETURN_1);
-		await AppCall_RetrieveStats(id);
+		new rows = await AppCall_RetrieveStats(id);
+		if(task_valid(result)) {
+			task_set_result(result, rows);
+		}
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

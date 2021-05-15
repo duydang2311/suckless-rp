@@ -26,16 +26,16 @@ static
 
 forward AppMsg_OnListStatsRetrieved(id, for_sim, Task:result);
 public AppMsg_OnListStatsRetrieved(id, for_sim, Task:result) {
-	new rows = cache_num_rows();
+	new
+		rows = cache_num_rows(),
+		stats[AppMsgStats];
+	stats[msgOffset] = 0;
+	stats[msgList] = linked_list_new();
+	if(!map_valid(m_listStats)) {
+		m_listStats = map_new();
+	}
+	map_set_arr(m_listStats, id, stats);
 	if(rows) {
-		new stats[AppMsgStats];
-		stats[msgOffset] = 0;
-		stats[msgList] = linked_list_new();
-		if(!map_valid(m_listStats)) {
-			m_listStats = map_new();
-		}
-		map_set_arr(m_listStats, id, stats);
-
 		for(new i = 0, msg[MessageStats]; i != rows; i++) {
 			cache_get_value_name_int(i, "id", msg[msgId]);
 			cache_get_value_name_int(i, "from_sim", msg[msgFromSim]);
@@ -171,12 +171,26 @@ public AppMsg_OnDetailStatsRetrieved(id, from_sim, Task:t) {
 			map_get_arr(m_detailStats, id, stats);
 		}
 
-		for(new i = 0, msg[MessageStats]; i != rows; i++) {
-			cache_get_value_name_int(i, "id", msg[msgId]);
-			cache_get_value_name(i, "content", msg[msgContent], MESSAGE_CONTENT_SIZE);
-			cache_get_value_name_int(i, "from_sim", msg[msgFromSim]);
-
-			linked_list_add_arr(stats[msgList], msg);
+		for(new i = 0, msg_id, msg[MessageStats], bool:skip = false, mark_idx = 0, Iter:it; i != rows; i++) {
+			cache_get_value_name_int(i, "id", msg_id);
+			skip = false;
+			it = linked_list_iter(stats[msgList], mark_idx);
+			if(iter_valid(it)) {
+				for(new cnt = mark_idx; iter_inside(it); iter_move_next(it), cnt++) {
+					iter_get_arr(it, msg);
+					if(msg[msgId] == msg_id) {
+						skip = true;
+						mark_idx = cnt;
+						break;
+					}
+				}
+			}
+			if(!skip) {
+				msg[msgId] = msg_id;
+				cache_get_value_name(i, "content", msg[msgContent], MESSAGE_CONTENT_SIZE);
+				cache_get_value_name_int(i, "from_sim", msg[msgFromSim]);
+				linked_list_add_arr(stats[msgList], msg);
+			}
 		}
 		if(!map_valid(m_simFromDetail)) {
 			m_simFromDetail = map_new();
@@ -215,6 +229,7 @@ stock Task:AppMsg_RetrieveDetailStats(id, from_sim, advance = 0) {
 }
 
 stock AppMsg_DeleteMsgByIter(Iter:it) {
+	printf("AppMsg_DeleteMsgByIter");
 	if(!iter_linked(it)) {
 		return 0;
 	}
@@ -225,6 +240,7 @@ stock AppMsg_DeleteMsgByIter(Iter:it) {
 	iter_get_arr(it, msg);
 	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM appmsg_stats WHERE id = %d LIMIT 1", msg[msgId]);
 	mysql_pquery(MySQL_Connection(), query);
+	printf("AppMsg_DeleteMsgByIter, query %s", query);
 
 	iter_erase(it);
 	return 1;

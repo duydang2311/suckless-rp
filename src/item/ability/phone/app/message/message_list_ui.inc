@@ -46,7 +46,7 @@ stock AppMsg_HasListUIKey(const key[], size = sizeof(key)) {
 }
 
 stock AppMsg_UpdateListUI(id, playerid) {
-	if(!AppMsg_HasListStats(id)) { // TODO: print 'Sim not found' on the phone screen.
+	if(!AppMsg_HasListStats(id)) {
 		return 0;
 	}
 

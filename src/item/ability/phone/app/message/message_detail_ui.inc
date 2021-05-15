@@ -36,7 +36,6 @@ Dialog:MessageRemoveDialog(playerid, response, listitem, inputtext[]) {
 
 	new selected[SelectedMessageStats];
 	map_get_arr(m_selectedMsgIter, playerid, selected);
-	iter_release(selected[sltedIter]);
 	if(response) {
 		new
 			to_sim = AppMsg_GetSimFromDetail(id),
@@ -58,7 +57,7 @@ Dialog:MessageRemoveDialog(playerid, response, listitem, inputtext[]) {
 		if(map_valid(m_detailUI)) {
 			for(new Iter:jt = map_iter(m_detailUI), Iter:phone_it, key[Key], bool:stop = false; iter_inside(jt) && !stop; iter_move_next(jt)) {
 				iter_get_key_arr(jt, key);
-				if(!IGroup_Has(key[ItemId]) || key[ItemId] == id) {
+				if((key[PlayerId] == playerid && key[ItemId] == id) || !IGroup_Has(key[ItemId])) {
 					continue;
 				}
 				phone_it = IGroup_GetIter(key[ItemId]);
@@ -86,7 +85,8 @@ Dialog:MessageRemoveDialog(playerid, response, listitem, inputtext[]) {
 			}
 		}
 	}
-	map_remove(m_selectedMsgIter, playerid);
+	iter_release(selected[sltedIter]);
+	map_remove_deep(m_selectedMsgIter, playerid);
 	if(!map_size(m_selectedMsgIter)) {
 		map_delete(m_selectedMsgIter);
 		m_selectedMsgIter = Map:-1;

@@ -158,6 +158,7 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 	new key[Key];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
+	printf("OnPlayerClickPlayerTD, id %d", key[ItemId]);
 	if(AppMsg_HasButtonUIKey(key)) {
 		if(playertextid == PlayerText:map_arr_get(m_buttonUI, key)) {
 			new sim = AppMsg_GetSimFromDetail(id);

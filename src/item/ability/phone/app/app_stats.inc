@@ -12,6 +12,7 @@ enum _:App {
 	AppMenu,
 	AppStore,
 	AppMessage,
+	AppCall,
 	AppSunGo
 }
 

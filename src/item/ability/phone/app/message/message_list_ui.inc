@@ -167,7 +167,7 @@ stock AppMsg_UpdateListUI(id, playerid) {
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnUIShowAttempt(id, app, playerid) {
-	if(!IPhone_Has(id) || !IPApp_Has(app)) {
+	if(!IPhone_Has(id)) {
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 

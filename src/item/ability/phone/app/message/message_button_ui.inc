@@ -86,6 +86,15 @@ Dialog:AppMsgContentDialog(playerid, response, listitem, inputtext[]) {
 	return 1;
 }
 
+stock AppMsg_ShowSendMsgDialog(playerid, to_sim) {
+	if(!map_valid(m_toSimId)) {
+		m_toSimId = map_new();
+	}
+	map_set(m_toSimId, playerid, to_sim);
+	Dialog_Show(playerid, AppMsgContentDialog, DIALOG_STYLE_INPUT, "App Message | Send", "> Nhap noi dung tin nhan ban muon gui.", "Send", "<<");
+	return 1;
+}
+
 stock AppMsg_HasButtonUIKey(const key[], size = sizeof(key)) {
 	return (map_valid(m_buttonUI) && map_has_arr_key(m_buttonUI, key, size));
 }

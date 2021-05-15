@@ -229,7 +229,6 @@ stock Task:AppMsg_RetrieveDetailStats(id, from_sim, advance = 0) {
 }
 
 stock AppMsg_DeleteMsgByIter(Iter:it) {
-	printf("AppMsg_DeleteMsgByIter");
 	if(!iter_linked(it)) {
 		return 0;
 	}
@@ -240,7 +239,6 @@ stock AppMsg_DeleteMsgByIter(Iter:it) {
 	iter_get_arr(it, msg);
 	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM appmsg_stats WHERE id = %d LIMIT 1", msg[msgId]);
 	mysql_pquery(MySQL_Connection(), query);
-	printf("AppMsg_DeleteMsgByIter, query %s", query);
 
 	iter_erase(it);
 	return 1;

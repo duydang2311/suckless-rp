@@ -15,6 +15,11 @@ static enum _:DetailUI {
 	LinkedList:dtlMessageTdList
 }
 
+static enum _:SelectedMessageStats {
+	sltedOffset,
+	Iter:sltedIter
+}
+
 static
 	Map:m_detailUI, // { [Key]: {DetailUI} }
 	Map:m_selectedMsgIter;
@@ -29,18 +34,57 @@ Dialog:MessageRemoveDialog(playerid, response, listitem, inputtext[]) {
 		return 1;
 	}
 
-	new Iter:it = Iter:map_get(m_selectedMsgIter, playerid);
-	iter_release(it);
+	new selected[SelectedMessageStats];
+	map_get_arr(m_selectedMsgIter, playerid, selected);
+	iter_release(selected[sltedIter]);
 	if(response) {
-		AppMsg_DeleteMsgByIter(it);
 		new
-			offset = AppMsg_GetDetailOffset(id),
-			size = AppMsg_GetDetailSize(id);
+			to_sim = AppMsg_GetSimFromDetail(id),
+			offset,
+			size;
+
+		// update UI for playerid
+		AppMsg_DeleteMsgByIter(selected[sltedIter]);
+		offset = AppMsg_GetDetailOffset(id);
+		size = AppMsg_GetDetailSize(id);
 		if(offset >= size) {
 			offset = size - 1;
+			AppMsg_SetDetailOffset(id, offset);
 		}
 		AppMsg_DestroyDetailUI(id, playerid);
 		AppMsg_UpdateDetailUI(id, playerid);
+
+		// update UI for another player
+		if(map_valid(m_detailUI)) {
+			for(new Iter:jt = map_iter(m_detailUI), Iter:phone_it, key[Key], bool:stop = false; iter_inside(jt) && !stop; iter_move_next(jt)) {
+				iter_get_key_arr(jt, key);
+				if(!IGroup_Has(key[ItemId]) || key[ItemId] == id) {
+					continue;
+				}
+				phone_it = IGroup_GetIter(key[ItemId]);
+				if(iter_valid(phone_it) && iter_release(phone_it)) {
+					for(new sim; iter_inside(phone_it); iter_move_next(phone_it)) {
+						sim = iter_get(phone_it);
+						if(sim == to_sim) {
+							new Iter:kt = AppMsg_GetDetailIter(key[ItemId], selected[sltedOffset]);
+							if(iter_valid(kt) && iter_release(kt)) {
+								iter_erase(kt);
+							}
+							offset = AppMsg_GetDetailOffset(key[ItemId]);
+							size = AppMsg_GetDetailSize(key[ItemId]);
+							if(offset >= size) {
+								offset = size - 1;
+								AppMsg_SetDetailOffset(key[ItemId], offset);
+							}
+							AppMsg_DestroyDetailUI(key[ItemId], key[PlayerId]);
+							AppMsg_UpdateDetailUI(key[ItemId], key[PlayerId]);
+							stop = true;
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 	map_remove(m_selectedMsgIter, playerid);
 	if(!map_size(m_selectedMsgIter)) {
@@ -241,14 +285,14 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 				if(playertextid == PlayerText:iter_get(it)) {
 					new
 						offset = AppMsg_GetDetailOffset(id),
-						Iter:msg_it = AppMsg_GetDetailIter(id, offset + cnt);
-					if(iter_valid(msg_it)) { // iter_release later on dialog response
-						new msg[MessageStats];
-						iter_get_arr(msg_it, msg);
+						selected[SelectedMessageStats];
+					selected[sltedOffset] = offset + cnt;
+					selected[sltedIter] = AppMsg_GetDetailIter(id, selected[sltedOffset]);
+					if(iter_valid(selected[sltedIter])) { // iter_release later on dialog response
 						if(!map_valid(m_selectedMsgIter)) {
 							m_selectedMsgIter = map_new();
 						}
-						map_set(m_selectedMsgIter, playerid, _:msg_it);
+						map_set_arr(m_selectedMsgIter, playerid, selected);
 						Dialog_Show(playerid, MessageRemoveDialog, DIALOG_STYLE_MSGBOX, "Message Remove", "Ban co muon xoa tin nhan nay?", "Xoa", "<<");
 						return Y_HOOKS_BREAK_RETURN_1;
 					}

@@ -238,3 +238,19 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	}
 	return 1;
 }
+
+hook AppCall_UIOnContactAdded(id, saved_sim, const saved_name[]) {
+	if(AppCall_HasStats(id)) {
+		new stats[AppCallStats];
+		map_get_arr(m_appStats, id, stats);
+		if(!linked_list_valid(stats[appContactList])) {
+			stats[appContactList] = linked_list_new();
+			map_set_cell(m_appStats, id, appContactList, stats[appContactList]);
+		}
+		new contact[ContactStats];
+		contact[contactSim] = saved_sim;
+		strcat(contact[contactName], saved_name, CONTACT_NAME_SIZE);
+		linked_list_add_arr(stats[appContactList], contact, 0);
+	}
+	return 1;
+}

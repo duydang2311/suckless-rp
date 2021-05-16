@@ -141,7 +141,7 @@ stock Task:AppCall_UpdateModDate(sim, saved_sim) {
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
-	IPApp_Ensure(AppCall, "Call", "app:menu", false);
+	IPApp_Ensure(AppCall, "Call", "app:call", false);
 	return 1;
 }
 

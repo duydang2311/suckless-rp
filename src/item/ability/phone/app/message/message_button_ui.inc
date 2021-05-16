@@ -141,7 +141,7 @@ stock AppMsg_UpdateButtonUI(id, playerid) {
 	PlayerTextDrawSetOutline(playerid, button, 1);
 	PlayerTextDrawSetShadow(playerid, button, 0);
 	PlayerTextDrawAlignment(playerid, button, 1);
-	PlayerTextDrawColor(playerid, button, 0x7A7A7AFF);
+	PlayerTextDrawColor(playerid, button, 0xFCCA03FF);
 	PlayerTextDrawBackgroundColor(playerid, button, 255);
 	PlayerTextDrawBoxColor(playerid, button, 50);
 	PlayerTextDrawUseBox(playerid, button, 1);

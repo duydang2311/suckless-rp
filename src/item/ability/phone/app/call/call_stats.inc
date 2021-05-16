@@ -138,6 +138,23 @@ stock Task:AppCall_UpdateModDate(sim, saved_sim) {
 	return 1;
 }
 
+stock AppCall_GetListOffset(id) {
+	if(AppCall_HasStats(id)) {
+		new stats[AppCallStats];
+		map_get_arr(m_appStats, id, stats);
+		return stats[appOffset];
+	}
+	return 0;
+}
+
+stock AppCall_SetListOffset(id, offset) {
+	if(AppCall_HasStats(id)) {
+		map_set_cell(m_appStats, id, appOffset, offset);
+		return 1;
+	}
+	return 0;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
@@ -193,6 +210,7 @@ HOOK__ AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
 		new contact[ContactStats];
 		contact[contactSim] = saved_sim;
 		strcat(contact[contactName], saved_name, CONTACT_NAME_SIZE);
+		printf("AppCall_OnContactAdded, add arr [%d, %s]", contact[contactSim], contact[contactName]);
 		linked_list_add_arr(stats[appContactList], contact, 0);
 	}
 	return 1;

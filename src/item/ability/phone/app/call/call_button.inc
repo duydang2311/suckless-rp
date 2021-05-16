@@ -43,7 +43,7 @@ Dialog:AppCallContactName(playerid, response, listitem, inputtext[]) {
 					task_unblock(1);
 					new rows = await AppCall_AddContact(sim, saved_sim, inputtext);
 					if(rows) {
-						SetPreciseTimer("AppCall_UIOnContactAdded", 0, false, "iii", id, saved_sim, inputtext);
+						SetPreciseTimer("AppCall_OnContactAdded", 0, false, "iis", id, saved_sim, inputtext);
 					}
 					break;
 				}
@@ -121,10 +121,11 @@ stock AppCall_UpdateButtonUI(id, playerid) {
 
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
+	if(map_valid(m_buttonUI) && map_has_arr_key(m_buttonUI, key)) {
+		AppCall_DestroyButtonUI(id, playerid);
+	}
 	if(!map_valid(m_buttonUI)) {
 		m_buttonUI = map_new();
-	} else if(map_has_arr_key(m_buttonUI, key)) {
-		AppCall_DestroyButtonUI(id, playerid);
 	}
 
 	new PlayerText:button = CreatePlayerTextDraw(playerid, anc[0] + safe_min[0], anc[1] + safe_max[1] - BUTTON_SIZE / 2.0, "Add contact");
@@ -163,5 +164,10 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 			return Y_HOOKS_BREAK_RETURN_1;
 		}
 	}
+	return 1;
+}
+
+hook IPA_OnUIHideAttempt(id, playerid) {
+	AppCall_DestroyButtonUI(id, playerid);
 	return 1;
 }

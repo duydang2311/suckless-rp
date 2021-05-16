@@ -228,9 +228,9 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 			case PhoneButtonHangup: {
 				IPApp_TerminateStats(id, AppCall);
 				AppCall_DestroyUI(id, playerid);
-				// if(AppCall_HasButtonUIKey(key)) {
-				// 	AppCall_DestroyButtonUI(id, playerid);
-				// }
+				if(AppCall_HasButtonUIKey(key)) {
+					AppCall_DestroyButtonUI(id, playerid);
+				}
 				AppMenu_UpdateAppList(id, playerid);
 			}
 		}
@@ -240,17 +240,37 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 }
 
 hook AppCall_UIOnContactAdded(id, saved_sim, const saved_name[]) {
-	if(AppCall_HasStats(id)) {
-		new stats[AppCallStats];
-		map_get_arr(m_appStats, id, stats);
-		if(!linked_list_valid(stats[appContactList])) {
-			stats[appContactList] = linked_list_new();
-			map_set_cell(m_appStats, id, appContactList, stats[appContactList]);
+	if(!map_valid(m_callUI)) {
+		return 1;
+	}
+
+	new keyToUpdate[2][Key] = {{-1, -1}, ...};
+	for(new Iter:it = map_iter(m_callUI), key[Key], cnt = 0; iter_inside(it) && cnt != 2; iter_move_next(it)) {
+		iter_get_key_arr(it, key);
+		if(key[ItemId] != id) {
+			if(IGroup_Has(key[ItemId])) {
+				new Iter:group_it = IGroup_GetIter(key[ItemId]);
+				if(iter_valid(group_it) && iter_release(group_it)) {
+					for(new sim; iter_inside(it); iter_move_next(it)) {
+						sim = iter_get(it);
+						if(sim == saved_sim) {
+							keyToUpdate[cnt] = key;
+							cnt++;
+							break;
+						}
+					}
+				}
+			}
+		} else {
+			keyToUpdate[cnt] = key;
+			cnt++;
 		}
-		new contact[ContactStats];
-		contact[contactSim] = saved_sim;
-		strcat(contact[contactName], saved_name, CONTACT_NAME_SIZE);
-		linked_list_add_arr(stats[appContactList], contact, 0);
+	}
+	for(new i = 0; i != sizeof(keyToUpdate); i++) {
+		if(keyToUpdate[i][ItemId] != -1 && keyToUpdate[i][PlayerId] != -1) {
+			AppCall_DestroyUI(keyToUpdate[i][ItemId], keyToUpdate[i][PlayerId]);
+			AppCall_UpdateUI(keyToUpdate[i][ItemId], keyToUpdate[i][PlayerId]);
+		}
 	}
 	return 1;
 }

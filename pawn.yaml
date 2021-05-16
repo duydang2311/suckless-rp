@@ -22,7 +22,6 @@ dependencies:
 - samp-incognito/samp-streamer-plugin:v2.9.4
 - Pottus/ColAndreas:1.5.0
 - kristoisberg/samp-td-string-width
-- IllidanS4/LFN:v1.0
 local: true
 runtime:
   version: 0.3.DL-R1

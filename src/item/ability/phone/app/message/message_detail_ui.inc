@@ -151,10 +151,11 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 
 		key[ItemId] = id;
 		key[PlayerId] = playerid;
+		if(map_valid(m_detailUI) && map_has_arr_key(m_detailUI, key)) {
+			AppMsg_DestroyDetailUI(id, playerid);
+		}
 		if(!map_valid(m_detailUI)) {
 			m_detailUI = map_new();
-		} else if(map_has_arr_key(m_detailUI, key)) {
-			AppMsg_DestroyDetailUI(id, playerid);
 		}
 		ui[dtlMessageTdList] = linked_list_new();
 

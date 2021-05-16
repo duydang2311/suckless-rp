@@ -94,10 +94,11 @@ stock AppMsg_UpdateListUI(id, playerid) {
 			key[Key];
 		key[ItemId] = id;
 		key[PlayerId] = playerid;
+		if(map_valid(m_listUI) && map_has_arr_key(m_listUI, key)) {
+			AppMsg_DestroyListUI(id, playerid);
+		}
 		if(!map_valid(m_listUI)) {
 			m_listUI = map_new();
-		} else if(map_has_arr_key(m_listUI, key)) {
-			AppMsg_DestroyListUI(id, playerid);
 		}
 		ui[lsComponentList] = linked_list_new();
 		ui[lsComponentCount] = component_cnt;

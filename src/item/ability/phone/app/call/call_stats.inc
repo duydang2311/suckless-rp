@@ -182,7 +182,7 @@ hook IPA_OnAppsGetAttempt(id, bool:arr[], size) {
 	return 1;
 }
 
-hook AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
+HOOK__ AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
 	if(AppCall_HasStats(id)) {
 		new stats[AppCallStats];
 		map_get_arr(m_appStats, id, stats);

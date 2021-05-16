@@ -239,7 +239,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	return 1;
 }
 
-hook AppCall_UIOnContactAdded(id, saved_sim, const saved_name[]) {
+hook AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
 	if(!map_valid(m_callUI)) {
 		return 1;
 	}

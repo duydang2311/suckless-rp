@@ -244,32 +244,12 @@ hook AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
 		return 1;
 	}
 
-	new keyToUpdate[2][Key] = {{-1, -1}, ...};
-	for(new Iter:it = map_iter(m_callUI), key[Key], cnt = 0; iter_inside(it) && cnt != 2; iter_move_next(it)) {
+	for(new Iter:it = map_iter(m_callUI), key[Key]; iter_inside(it); iter_move_next(it)) {
 		iter_get_key_arr(it, key);
-		if(key[ItemId] != id) {
-			if(IGroup_Has(key[ItemId])) {
-				new Iter:group_it = IGroup_GetIter(key[ItemId]);
-				if(iter_valid(group_it) && iter_release(group_it)) {
-					for(new sim; iter_inside(it); iter_move_next(it)) {
-						sim = iter_get(it);
-						if(sim == saved_sim) {
-							keyToUpdate[cnt] = key;
-							cnt++;
-							break;
-						}
-					}
-				}
-			}
-		} else {
-			keyToUpdate[cnt] = key;
-			cnt++;
-		}
-	}
-	for(new i = 0; i != sizeof(keyToUpdate); i++) {
-		if(keyToUpdate[i][ItemId] != -1 && keyToUpdate[i][PlayerId] != -1) {
-			AppCall_DestroyUI(keyToUpdate[i][ItemId], keyToUpdate[i][PlayerId]);
-			AppCall_UpdateUI(keyToUpdate[i][ItemId], keyToUpdate[i][PlayerId]);
+		if(key[ItemId] == id) {
+			AppCall_DestroyUI(key[ItemId], key[PlayerId]);
+			AppCall_UpdateUI(key[ItemId], key[PlayerId]);
+			break;
 		}
 	}
 	return 1;

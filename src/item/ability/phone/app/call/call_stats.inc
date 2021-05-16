@@ -210,7 +210,6 @@ HOOK__ AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
 		new contact[ContactStats];
 		contact[contactSim] = saved_sim;
 		strcat(contact[contactName], saved_name, CONTACT_NAME_SIZE);
-		printf("AppCall_OnContactAdded, add arr [%d, %s]", contact[contactSim], contact[contactName]);
 		linked_list_add_arr(stats[appContactList], contact, 0);
 	}
 	return 1;

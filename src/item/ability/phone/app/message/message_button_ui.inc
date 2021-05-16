@@ -28,7 +28,7 @@ Dialog:AppMsgSimDialog(playerid, response, listitem, inputtext[]) {
 		}
 
 		task_unblock(1);
-		new id = await ISim_RetrieveByNumber(inputtext);
+		new id = await ISim_RetrieveByNumber(number);
 		if(id == -1) {
 			Dialog_Show(playerid, AppMsgSimDialog, DIALOG_STYLE_INPUT, "App Message | Send", "> Nhap so dien thoai ban muon gui tin nhan.\nSo dien thoai khong ton tai.", ">>", "<<");
 			return 1;

@@ -46,8 +46,8 @@ public AppCall_OnSavedSimRetrieved(id, Task:result) {
 	return 1;
 }
 
-forward AppCall_OnContactAdded(Task:t);
-public AppCall_OnContactAdded(Task:t) {
+forward AppCall_OnContactInserted(Task:t);
+public AppCall_OnContactInserted(Task:t) {
 	task_set_result(t, cache_affected_rows());
 	return 1;
 }
@@ -125,8 +125,8 @@ stock Task:AppCall_AddContact(sim, saved_sim, const saved_name[]) {
 	strcat(safe_saved_name, saved_name);
 	new query[172];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO appcall_stats (sim, saved_sim, saved_name) VALUES (%d, %d, '%e')", sim, saved_sim, saved_name);
-	mysql_format(MySQL_Connection(), query, "AppCall_OnContactAdded", "i", _:t);
-	return 1;
+	mysql_pquery(MySQL_Connection(), query, "AppCall_OnContactInserted", "i", _:t);
+	return t;
 }
 
 stock Task:AppCall_UpdateModDate(sim, saved_sim) {
@@ -178,6 +178,22 @@ hook IPA_OnStatsTermnAttempt(id, app) {
 hook IPA_OnAppsGetAttempt(id, bool:arr[], size) {
 	if(AppCall < size && AppCall_HasStats(id)) {
 		arr[AppCall] = true;
+	}
+	return 1;
+}
+
+hook AppCall_StatsOnContactAdded(id, saved_sim, const saved_name[]) {
+	if(AppCall_HasStats(id)) {
+		new stats[AppCallStats];
+		map_get_arr(m_appStats, id, stats);
+		if(!linked_list_valid(stats[appContactList])) {
+			stats[appContactList] = linked_list_new();
+			map_set_cell(m_appStats, id, appContactList, stats[appContactList]);
+		}
+		new contact[ContactStats];
+		contact[contactSim] = saved_sim;
+		strcat(contact[contactName], saved_name, CONTACT_NAME_SIZE);
+		linked_list_add_arr(stats[appContactList], contact, 0);
 	}
 	return 1;
 }

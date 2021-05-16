@@ -13,19 +13,19 @@ static
 	Map:m_buttonUI, // { {Key}: PlayerText: }
 	Map:m_contactSim; // { playerid: sim_id }
 
-Dialog:AppCallContactName(playerid, response, listitem, inputtext) {
+Dialog:AppCallContactName(playerid, response, listitem, inputtext[]) {
 	if(!map_valid(m_contactSim) || !map_has_key(m_contactSim, playerid)) {
 		return 1;
 	}
 
 	if(response) {
 		if(isnull(inputtext)) {
-			Dialog_Show(playerid, AppCallContactName, DIALOG_STYLE_INPUT, "> Nhap ten ban muon luu cho lien he nay.", ">>", "<<");
+			Dialog_Show(playerid, AppCallContactName, DIALOG_STYLE_INPUT, "Add Contact", "> Nhap ten ban muon luu cho lien he nay.", ">>", "<<");
 			return 1;
 		}
 
 		if(strlen(inputtext) >= CONTACT_NAME_SIZE - 1) {
-			Dialog_Show(playerid, AppCallContactName, DIALOG_STYLE_INPUT, "> Nhap ten ban muon luu cho lien he nay.\nTen lien he qua dai, hay thu rut ngan them.", ">>", "<<");
+			Dialog_Show(playerid, AppCallContactName, DIALOG_STYLE_INPUT, "Add Contact", "> Nhap ten ban muon luu cho lien he nay.\nTen lien he qua dai, hay thu rut ngan them.", ">>", "<<");
 			return 1;
 		}
 
@@ -62,35 +62,35 @@ Dialog:AppCallContactName(playerid, response, listitem, inputtext) {
 Dialog:AppCallContactSim(playerid, response, listitem, inputtext[]) {
 	if(response) {
 		if(isnull(inputtext)) {
-			Dialog_Show(playerid, AppCallContactSim, DIALOG_STYLE_INPUT, "> Nhap so dien thoai ban muon luu.", ">>", "<<");
+			Dialog_Show(playerid, AppCallContactSim, DIALOG_STYLE_INPUT, "Add Contact", "> Nhap so dien thoai ban muon luu.", ">>", "<<");
 			return 1;
 		}
 
 		new number[SIM_NUMBER_SIZE] = "";
 		strcat(number, inputtext);
 		if(!ISim_ValidateNumber(number)) {
-			Dialog_Show(playerid, AppCallContactSim, DIALOG_STYLE_INPUT, "> Nhap so dien thoai ban muon luu.\nSo dien thoai khong hop le.", ">>", "<<");
+			Dialog_Show(playerid, AppCallContactSim, DIALOG_STYLE_INPUT, "Add Contact", "> Nhap so dien thoai ban muon luu.\nSo dien thoai khong hop le.", ">>", "<<");
 			return 1;
 		}
 
 		task_unblock(1);
 		new id = await ISim_RetrieveByNumber(number);
 		if(id == -1) {
-			Dialog_Show(playerid, AppCallContactSim, DIALOG_STYLE_INPUT, "> Nhap so dien thoai ban muon luu.\nSo dien thoai khong ton tai.", ">>", "<<");
+			Dialog_Show(playerid, AppCallContactSim, DIALOG_STYLE_INPUT, "Add Contact", "> Nhap so dien thoai ban muon luu.\nSo dien thoai khong ton tai.", ">>", "<<");
 			return 1;
 		}
 
-		if(!map_new(m_contactSim)) {
+		if(!map_valid(m_contactSim)) {
 			m_contactSim = map_new();
 		}
 		map_set(m_contactSim, playerid, id);
-		Dialog_Show(playerid, AppCallContactName, DIALOG_STYLE_INPUT, "> Nhap ten ban muon luu cho lien he nay.", ">>", "<<");
+		Dialog_Show(playerid, AppCallContactName, DIALOG_STYLE_INPUT, "Add Contact", "> Nhap ten ban muon luu cho lien he nay.", ">>", "<<");
 	}
 	return 1;
 }
 
 stock AppCall_HasButtonUIKey(const key[], size = sizeof(key)) {
-	return if(map_valid(m_buttonUI) && map_has_arr_key(m_buttonUI, key, size));
+	return (map_valid(m_buttonUI) && map_has_arr_key(m_buttonUI, key, size));
 }
 
 stock AppCall_DestroyButtonUI(id, playerid) {
@@ -160,7 +160,7 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 	key[PlayerId] = playerid;
 	if(AppCall_HasButtonUIKey(key)) {
 		if(playertextid == PlayerText:map_arr_get(m_buttonUI, key)) {
-			Dialog_Show(playerid, AppCallContactSim, DIALOG_STYLE_INPUT, "> Nhap so dien thoai ban muon luu.", ">>", "<<");
+			Dialog_Show(playerid, AppCallContactSim, DIALOG_STYLE_INPUT, "Add Contact", "> Nhap so dien thoai ban muon luu.", ">>", "<<");
 			return Y_HOOKS_BREAK_RETURN_1;
 		}
 	}

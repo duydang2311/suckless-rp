@@ -7,8 +7,8 @@
 const CONTACT_NAME_SIZE = 33;
 
 enum _:ContactStats {
-	contactSim,
-	contactName[CONTACT_NAME_SIZE]
+	ContactSim,
+	ContactName[CONTACT_NAME_SIZE]
 }
 
 static enum _:AppCallStats {
@@ -35,8 +35,8 @@ public AppCall_OnSavedSimRetrieved(id, Task:result) {
 	}
 	if(rows) {
 		for(new i = 0, contact[ContactStats]; i != rows; i++) {
-			cache_get_value_name_int(i, "saved_sim", contact[contactSim]);
-			cache_get_value_name(i, "saved_name", contact[contactName], CONTACT_NAME_SIZE);
+			cache_get_value_name_int(i, "saved_sim", contact[ContactSim]);
+			cache_get_value_name(i, "saved_name", contact[ContactName], CONTACT_NAME_SIZE);
 			linked_list_add_arr(stats[appContactList], contact);
 		}
 	}
@@ -168,8 +168,8 @@ forward AppCall_OnContactRetrieved(Task:t);
 public AppCall_OnContactRetrieved(Task:t) {
 	new contact[ContactStats] = {-1, ""};
 	if(cache_num_rows()) {
-		cache_get_value_name_int(0, "saved_sim", contact[contactSim]);
-		cache_get_value_name(0, "saved_name", contact[contactName], CONTACT_NAME_SIZE);
+		cache_get_value_name_int(0, "saved_sim", contact[ContactSim]);
+		cache_get_value_name(0, "saved_name", contact[ContactName], CONTACT_NAME_SIZE);
 	}
 	if(task_valid(t)) {
 		task_set_result_arr(t, contact);
@@ -230,8 +230,8 @@ HOOK__ AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
 			map_set_cell(m_appStats, id, appContactList, stats[appContactList]);
 		}
 		new contact[ContactStats];
-		contact[contactSim] = saved_sim;
-		strcat(contact[contactName], saved_name, CONTACT_NAME_SIZE);
+		contact[ContactSim] = saved_sim;
+		strcat(contact[ContactName], saved_name, CONTACT_NAME_SIZE);
 		linked_list_add_arr(stats[appContactList], contact, 0);
 	}
 	return 1;

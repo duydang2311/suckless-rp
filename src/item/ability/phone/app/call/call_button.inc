@@ -109,9 +109,9 @@ Dialog:AppCallContactSim(playerid, response, listitem, inputtext[]) {
 
 		new contact[ContactStats];
 		await_arr(contact) AppCall_RetrieveContact(tracked_phone_sim, sim);
-		if(contact[contactSim] != -1) {
+		if(contact[ContactSim] != -1) {
 			new string[128];
-			format(string, sizeof(string), "Lien he nay da duoc luu truoc do duoi ten '%s' trong danh ba.", contact[contactName]);
+			format(string, sizeof(string), "Lien he nay da duoc luu truoc do duoi ten '%s' trong danh ba.", contact[ContactName]);
 			Dialog_Show(playerid, AppCallContactError, DIALOG_STYLE_MSGBOX, "Add Contact | Error", string, "<<", "");
 			return 1;
 		}

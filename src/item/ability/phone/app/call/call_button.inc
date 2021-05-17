@@ -13,6 +13,13 @@ static
 	Map:m_buttonUI, // { {Key}: PlayerText: }
 	Map:m_contactSim; // { playerid: sim_id }
 
+Dialog:AppCallContactError(playerid, response, listitem, inputtext[]) {
+	if(response) {
+		Dialog_Show(playerid, AppCallContactSim, DIALOG_STYLE_INPUT, "Add Contact", "> Nhap so dien thoai ban muon luu.", ">>", "<<");
+	}
+	return 1;
+}
+
 Dialog:AppCallContactName(playerid, response, listitem, inputtext[]) {
 	if(!map_valid(m_contactSim) || !map_has_key(m_contactSim, playerid)) {
 		return 1;
@@ -72,17 +79,44 @@ Dialog:AppCallContactSim(playerid, response, listitem, inputtext[]) {
 			return 1;
 		}
 
+		new phone = IPUI_GetPlayerPhone(playerid);
+		if(phone == -1 || !IGroup_Has(phone)) {
+			return 1;
+		}
+
 		task_unblock(1);
-		new id = await ISim_RetrieveByNumber(number);
-		if(id == -1) {
+		new sim = await ISim_RetrieveByNumber(number);
+		if(sim == -1) {
 			Dialog_Show(playerid, AppCallContactSim, DIALOG_STYLE_INPUT, "Add Contact", "> Nhap so dien thoai ban muon luu.\nSo dien thoai khong ton tai.", ">>", "<<");
+			return 1;
+		}
+
+		new Iter:it = IGroup_GetIter(phone);
+		if(iter_valid(it) && iter_release(it)) {
+			for(new phone_sim; iter_inside(it); iter_move_next(it)) {
+				phone_sim = iter_get(it);
+				if(ISim_Has(phone_sim)) {
+					if(phone_sim == sim) {
+						Dialog_Show(playerid, AppCallContactError, DIALOG_STYLE_INPUT, "Add Contact | Error", "Khong the luu lien he voi so dien thoai cua chinh ban.", "<<", "");
+						return 1;
+					}
+				}
+			}
+		}
+
+		new contact[ContactStats];
+		await_arr(contact) AppCall_RetrieveContact(phone_sim, sim);
+		if(contact[contactSim] != -1) {
+			new string[128];
+			format(string, sizeof(string), "Lien he nay da duoc luu truoc do duoi ten '%s' trong danh ba.", contact[contactName]);
+			Dialog_Show(playerid, AppCallContactError, DIALOG_STYLE_INPUT, "Add Contact | Error", string, "<<", "");
 			return 1;
 		}
 
 		if(!map_valid(m_contactSim)) {
 			m_contactSim = map_new();
 		}
-		map_set(m_contactSim, playerid, id);
+		map_set(m_contactSim, playerid, sim);
 		Dialog_Show(playerid, AppCallContactName, DIALOG_STYLE_INPUT, "Add Contact", "> Nhap ten ban muon luu cho lien he nay.", ">>", "<<");
 	}
 	return 1;

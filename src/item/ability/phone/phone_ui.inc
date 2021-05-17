@@ -43,6 +43,11 @@ stock IPUI_HideForPlayer(id, playerid) {
 	return 1;
 }
 
+stock IPUI_SetScreenColor(id, playerid, color) {
+	CallLocalFunction("IPUI_OnScreenColorSet", "iii", id, playerid, color);
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook OnPlayerClickTD(playerid, Text:clickedid) {

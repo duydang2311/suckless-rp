@@ -213,6 +213,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 			case PhoneButtonHangup: {
 				IPApp_TerminateStats(id, AppMessage);
 				AppMenu_DestroyUI(id, playerid);
+				IPUI_SetScreenColor(id, playerid, 0x000000AA);
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;

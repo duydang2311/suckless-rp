@@ -222,6 +222,22 @@ hook IPUI_OnHideAttempt(id, playerid) {
 	return 1;
 }
 
+hook IPUI_OnScreenColorSet(id, playerid, color) {
+	if(IPhone_GetModel(id) == Nokia) {
+		new key[UIStatsKey];
+		key[ItemId] = id;
+		key[PlayerId] = playerid;
+		if(NokiaUI_Has(key)) {
+			new ui[UIStats];
+			map_arr_get_arr(m_uiStats, key, ui);
+			PlayerTextDrawColor(playerid, ui[UIScreen], color);
+			PlayerTextDrawShow(playerid, ui[UIScreen]);
+		}
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
+
 hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 	new phone = IPUI_GetPlayerPhone(playerid);
 	if(phone != -1) {

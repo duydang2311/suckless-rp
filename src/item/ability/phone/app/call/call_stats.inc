@@ -46,9 +46,19 @@ public AppCall_OnSavedSimRetrieved(id, Task:result) {
 	return 1;
 }
 
-forward AppCall_OnContactInserted(Task:t);
-public AppCall_OnContactInserted(Task:t) {
-	task_set_result(t, cache_affected_rows());
+forward _appcall_onInserted(Task:t);
+public _appcall_onInserted(Task:t) {
+	if(task_valid(t)) {
+		task_set_result(t, cache_affected_rows());
+	}
+	return 1;
+}
+
+forward _appcall_onDeleted(Task:t);
+public _appcall_onDeleted(Task:t) {
+	if(task_valid(t)) {
+		task_set_result(t, cache_affected_rows());
+	}
 	return 1;
 }
 
@@ -125,7 +135,16 @@ stock Task:AppCall_AddContact(sim, saved_sim, const saved_name[]) {
 	strcat(safe_saved_name, saved_name);
 	new query[172];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO appcall_stats (sim, saved_sim, saved_name) VALUES (%d, %d, '%e')", sim, saved_sim, saved_name);
-	mysql_pquery(MySQL_Connection(), query, "AppCall_OnContactInserted", "i", _:t);
+	mysql_pquery(MySQL_Connection(), query, "_appcall_onInserted", "i", _:t);
+	return t;
+}
+
+stock Task:AppCall_DeleteContact(sim, saved_sim) {
+	new
+		Task:t = task_new(),
+		query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM appcall_stats WHERE sim = %d AND saved_sim = %d LIMIT 1", sim, saved_sim);
+	mysql_pquery(MySQL_Connection(), query, "_appcall_onDeleted", "i", _:t);
 	return t;
 }
 

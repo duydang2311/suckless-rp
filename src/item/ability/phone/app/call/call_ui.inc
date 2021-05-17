@@ -53,7 +53,10 @@ Dialog:AppCallContactAction(playerid, response, listitem, inputtext[]) {
 								CallLocalFunction("AppMsg_OnMsgSendRequest", "ii", playerid, contact[ContactSim]);
 							}
 							case 2: {
-								// Delete
+								task_unblock(1);
+								iter_erase(it);
+								await AppCall_DeleteContact(phone_sim, contact[ContactSim]);
+								CallLocalFunction("AppCall_OnContactDeleted", "i", phone);
 							}
 						}
 					}
@@ -313,6 +316,22 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 }
 
 hook AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
+	if(!map_valid(m_callUI)) {
+		return 1;
+	}
+
+	for(new Iter:it = map_iter(m_callUI), key[Key]; iter_inside(it); iter_move_next(it)) {
+		iter_get_key_arr(it, key);
+		if(key[ItemId] == id) {
+			AppCall_DestroyUI(key[ItemId], key[PlayerId]);
+			AppCall_UpdateUI(key[ItemId], key[PlayerId]);
+			break;
+		}
+	}
+	return 1;
+}
+
+hook AppCall_OnContactDeleted(id) {
 	if(!map_valid(m_callUI)) {
 		return 1;
 	}

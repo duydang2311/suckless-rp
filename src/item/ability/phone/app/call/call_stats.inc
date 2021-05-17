@@ -159,7 +159,7 @@ stock Task:AppCall_RetrieveContact(sim, saved_sim) {
 	new
 		query[128],
 		Task:t = task_new();
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.saved_sim, stats.saved_name FROM appcall_stats WHERE sim = %d AND saved_sim = %d LIMIT 1", sim, saved_sim);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.saved_sim, stats.saved_name FROM appcall_stats stats WHERE sim = %d AND saved_sim = %d LIMIT 1", sim, saved_sim);
 	mysql_pquery(MySQL_Connection(), query, "AppCall_OnContactRetrieved", "i", _:t);
 	return t;
 }
@@ -169,7 +169,7 @@ public AppCall_OnContactRetrieved(Task:t) {
 	new contact[ContactStats] = {-1, ""};
 	if(cache_num_rows()) {
 		cache_get_value_name_int(0, "saved_sim", contact[contactSim]);
-		cache_get_value_name_int(0, "saved_name", contact[contactName], CONTACT_NAME_SIZE);
+		cache_get_value_name(0, "saved_name", contact[contactName], CONTACT_NAME_SIZE);
 	}
 	if(task_valid(t)) {
 		task_set_result_arr(t, contact);

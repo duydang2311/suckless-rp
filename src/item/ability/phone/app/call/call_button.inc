@@ -91,13 +91,16 @@ Dialog:AppCallContactSim(playerid, response, listitem, inputtext[]) {
 			return 1;
 		}
 
-		new Iter:it = IGroup_GetIter(phone);
+		new
+			Iter:it = IGroup_GetIter(phone),
+			tracked_phone_sim = -1;
 		if(iter_valid(it) && iter_release(it)) {
 			for(new phone_sim; iter_inside(it); iter_move_next(it)) {
 				phone_sim = iter_get(it);
 				if(ISim_Has(phone_sim)) {
+					tracked_phone_sim = phone_sim;
 					if(phone_sim == sim) {
-						Dialog_Show(playerid, AppCallContactError, DIALOG_STYLE_INPUT, "Add Contact | Error", "Khong the luu lien he voi so dien thoai cua chinh ban.", "<<", "");
+						Dialog_Show(playerid, AppCallContactError, DIALOG_STYLE_MSGBOX, "Add Contact | Error", "Khong the luu lien he voi so dien thoai cua chinh ban.", "<<", "");
 						return 1;
 					}
 				}
@@ -105,11 +108,11 @@ Dialog:AppCallContactSim(playerid, response, listitem, inputtext[]) {
 		}
 
 		new contact[ContactStats];
-		await_arr(contact) AppCall_RetrieveContact(phone_sim, sim);
+		await_arr(contact) AppCall_RetrieveContact(tracked_phone_sim, sim);
 		if(contact[contactSim] != -1) {
 			new string[128];
 			format(string, sizeof(string), "Lien he nay da duoc luu truoc do duoi ten '%s' trong danh ba.", contact[contactName]);
-			Dialog_Show(playerid, AppCallContactError, DIALOG_STYLE_INPUT, "Add Contact | Error", string, "<<", "");
+			Dialog_Show(playerid, AppCallContactError, DIALOG_STYLE_MSGBOX, "Add Contact | Error", string, "<<", "");
 			return 1;
 		}
 

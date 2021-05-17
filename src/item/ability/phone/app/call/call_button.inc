@@ -168,7 +168,7 @@ stock AppCall_UpdateButtonUI(id, playerid) {
 	new PlayerText:button = CreatePlayerTextDraw(playerid, anc[0] + safe_min[0], anc[1] + safe_max[1] - BUTTON_SIZE / 2.0, "Add contact");
 	PlayerTextDrawFont(playerid, button, 1);
 	PlayerTextDrawLetterSize(playerid, button, 0.150000, 0.600000);
-	PlayerTextDrawTextSize(playerid, button, anc[0] + safe_min[0] + 20.0, BUTTON_SIZE);
+	PlayerTextDrawTextSize(playerid, button, anc[0] + safe_min[0] + (safe_max[0] - safe_min[0]) / 2.0, BUTTON_SIZE);
 	PlayerTextDrawSetOutline(playerid, button, 1);
 	PlayerTextDrawSetShadow(playerid, button, 0);
 	PlayerTextDrawAlignment(playerid, button, 1);

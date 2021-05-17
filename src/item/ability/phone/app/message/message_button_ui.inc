@@ -13,6 +13,16 @@ static
 	Map:m_buttonUI, // { {Key}: PlayerText:button_textdraw }
 	Map:m_toSimId; // { playerid: sim id which message will be sent to }
 
+forward AppMsg_OnMsgSendRequest(playerid, to_sim);
+public AppMsg_OnMsgSendRequest(playerid, to_sim) {
+	if(!map_valid(m_toSimId)) {
+		m_toSimId = map_new();
+	}
+	map_set(m_toSimId, playerid, to_sim);
+	Dialog_Show(playerid, AppMsgContentDialog, DIALOG_STYLE_INPUT, "App Message | Send", "> Nhap noi dung tin nhan ban muon gui.", "Send", "<<");
+	return 1;
+}
+
 Dialog:AppMsgSimDialog(playerid, response, listitem, inputtext[]) {
 	if(response) {
 		if(isnull(inputtext)) {
@@ -83,15 +93,6 @@ Dialog:AppMsgContentDialog(playerid, response, listitem, inputtext[]) {
 		map_delete(m_toSimId);
 		m_toSimId = Map:-1;
 	}
-	return 1;
-}
-
-stock AppMsg_ShowSendMsgDialog(playerid, to_sim) {
-	if(!map_valid(m_toSimId)) {
-		m_toSimId = map_new();
-	}
-	map_set(m_toSimId, playerid, to_sim);
-	Dialog_Show(playerid, AppMsgContentDialog, DIALOG_STYLE_INPUT, "App Message | Send", "> Nhap noi dung tin nhan ban muon gui.", "Send", "<<");
 	return 1;
 }
 

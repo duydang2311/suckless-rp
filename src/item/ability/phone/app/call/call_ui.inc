@@ -50,7 +50,7 @@ Dialog:AppCallContactAction(playerid, response, listitem, inputtext[]) {
 							}
 							case 1: {
 								// Message
-								CallLocalFunction("AppMsg_OnMsgSendRequest", "ii", phone_sim, contact[ContactSim]);
+								CallLocalFunction("AppMsg_OnMsgSendRequest", "ii", playerid, contact[ContactSim]);
 							}
 							case 2: {
 								// Delete

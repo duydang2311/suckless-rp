@@ -1,8 +1,8 @@
-#if defined app_call_ui_included
+#if defined app_call_contact_ui_included
 	#endinput
 #endif
 
-#define app_call_ui_included
+#define app_call_contact_ui_included
 
 static enum _:Key {
 	ItemId,
@@ -57,7 +57,7 @@ Dialog:AppCallContactAction(playerid, response, listitem, inputtext[]) {
 								task_unblock(1);
 								iter_erase(it);
 								await AppCall_DeleteContact(phone_sim, contact[ContactSim]);
-								CallLocalFunction("AppCall_OnContactDeleted", "i", phone);
+								CallLocalFunction("AppCall_OnContDeleted", "i", phone);
 							}
 						}
 					}
@@ -316,7 +316,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	return 1;
 }
 
-hook AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
+hook AppCall_OnContAdded(id, saved_sim, const saved_name[]) {
 	if(!map_valid(m_contactUI)) {
 		return 1;
 	}
@@ -332,7 +332,7 @@ hook AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
 	return 1;
 }
 
-hook AppCall_OnContactDeleted(id) {
+hook AppCall_OnContDeleted(id) {
 	if(!map_valid(m_contactUI)) {
 		return 1;
 	}

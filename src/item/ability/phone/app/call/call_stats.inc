@@ -179,12 +179,12 @@ stock Task:AppCall_RetrieveContact(sim, saved_sim) {
 		query[128],
 		Task:t = task_new();
 	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT stats.saved_sim, stats.saved_name FROM appcall_stats stats WHERE sim = %d AND saved_sim = %d LIMIT 1", sim, saved_sim);
-	mysql_pquery(MySQL_Connection(), query, "AppCall_OnContactRetrieved", "i", _:t);
+	mysql_pquery(MySQL_Connection(), query, "AppCall_OnContRetrieved", "i", _:t);
 	return t;
 }
 
-forward AppCall_OnContactRetrieved(Task:t);
-public AppCall_OnContactRetrieved(Task:t) {
+forward AppCall_OnContRetrieved(Task:t);
+public AppCall_OnContRetrieved(Task:t) {
 	new contact[ContactStats] = {-1, ""};
 	if(cache_num_rows()) {
 		cache_get_value_name_int(0, "saved_sim", contact[ContactSim]);
@@ -240,7 +240,7 @@ hook IPA_OnAppsGetAttempt(id, bool:arr[], size) {
 	return 1;
 }
 
-HOOK__ AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
+HOOK__ AppCall_OnContAdded(id, saved_sim, const saved_name[]) {
 	if(AppCall_HasStats(id)) {
 		new stats[AppCallStats];
 		map_get_arr(m_appStats, id, stats);

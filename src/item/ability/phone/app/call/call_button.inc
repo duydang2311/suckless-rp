@@ -50,7 +50,7 @@ Dialog:AppCallContactName(playerid, response, listitem, inputtext[]) {
 					task_unblock(1);
 					new rows = await AppCall_AddContact(sim, saved_sim, inputtext);
 					if(rows) {
-						SetPreciseTimer("AppCall_OnContactAdded", 0, false, "iis", id, saved_sim, inputtext);
+						SetPreciseTimer("AppCall_OnContAdded", 0, false, "iis", id, saved_sim, inputtext);
 					}
 					break;
 				}

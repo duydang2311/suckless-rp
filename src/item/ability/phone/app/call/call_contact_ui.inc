@@ -14,13 +14,13 @@ static enum _:UIComponent {
 	PlayerText:uiSavedNumberTd
 }
 
-static enum _:CallUI {
+static enum _:ContactUI {
 	uiComponentCount,
 	LinkedList:uiComponentList // LinkedList<{UIComponent}>
 }
 
 static
-	Map:m_callUI, // { {Key}: {CallUI} }
+	Map:m_contactUI, // { {Key}: {ContactUI} }
 	Map:m_selectedContactIdx; // { playerid: contact_index in call_stats linked list }
 
 Dialog:AppCallContactAction(playerid, response, listitem, inputtext[]) {
@@ -47,6 +47,7 @@ Dialog:AppCallContactAction(playerid, response, listitem, inputtext[]) {
 						switch(listitem) {
 							case 0: {
 								// Call
+								AppCall_Dial(phone_sim, contact[ContactSim]);
 							}
 							case 1: {
 								// Message
@@ -75,7 +76,7 @@ Dialog:AppCallContactAction(playerid, response, listitem, inputtext[]) {
 }
 
 stock AppCall_HasUIKey(const key[], size = sizeof(key)) {
-	return (map_valid(m_callUI) && map_has_arr_key(m_callUI, key, size));
+	return (map_valid(m_contactUI) && map_has_arr_key(m_contactUI, key, size));
 }
 
 stock AppCall_DestroyUI(id, playerid) {
@@ -86,8 +87,8 @@ stock AppCall_DestroyUI(id, playerid) {
 		return 0;
 	}
 
-	new ui[CallUI];
-	map_arr_get_arr(m_callUI, key, ui);
+	new ui[ContactUI];
+	map_arr_get_arr(m_contactUI, key, ui);
 	if(linked_list_valid(ui[uiComponentList])) {
 		for(new Iter:it = linked_list_iter(ui[uiComponentList]), component[UIComponent]; iter_inside(it); iter_move_next(it)) {
 			iter_get_arr(it, component);
@@ -95,10 +96,10 @@ stock AppCall_DestroyUI(id, playerid) {
 			PlayerTextDrawDestroy(playerid, component[uiSavedNumberTd]);
 		}
 	}
-	map_arr_remove_deep(m_callUI, key);
-	if(!map_size(m_callUI)) {
-		map_delete(m_callUI);
-		m_callUI = Map:-1;
+	map_arr_remove_deep(m_contactUI, key);
+	if(!map_size(m_contactUI)) {
+		map_delete(m_contactUI);
+		m_contactUI = Map:-1;
 	}
 	return 1;
 }
@@ -148,19 +149,19 @@ stock AppCall_UpdateUI(id, playerid) {
 		}
 
 		new
-			ui[CallUI],
+			ui[ContactUI],
 			key[Key];
 		key[ItemId] = id;
 		key[PlayerId] = playerid;
-		if(map_valid(m_callUI) && map_has_arr_key(m_callUI, key)) {
+		if(map_valid(m_contactUI) && map_has_arr_key(m_contactUI, key)) {
 			AppCall_DestroyUI(id, playerid);
 		}
-		if(!map_valid(m_callUI)) {
-			m_callUI = map_new();
+		if(!map_valid(m_contactUI)) {
+			m_contactUI = map_new();
 		}
 		ui[uiComponentList] = linked_list_new();
 		ui[uiComponentCount] = component_cnt;
-		map_arr_set_arr(m_callUI, key, ui);
+		map_arr_set_arr(m_contactUI, key, ui);
 		for(new cnt = 0, component[UIComponent], number[SIM_NUMBER_SIZE], stats[ContactStats], Task:t, length, Float:scr_width = safe_max[0] - safe_min[0] - 3.0, Float:width = 0.0; iter_inside(it) && cnt != component_cnt; iter_move_next(it), cnt++) {
 			iter_get_arr(it, stats);
 			task_unblock(1);
@@ -256,8 +257,8 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
 	if(AppCall_HasUIKey(key)) {
-		new ui[CallUI];
-		map_arr_get_arr(m_callUI, key, ui);
+		new ui[ContactUI];
+		map_arr_get_arr(m_contactUI, key, ui);
 		if(linked_list_valid(ui[uiComponentList])) {
 			for(new Iter:it = linked_list_iter(ui[uiComponentList]), cnt = 0, component[UIComponent]; iter_inside(it); iter_move_next(it), cnt++) {
 				iter_get_arr(it, component);
@@ -285,8 +286,8 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 			case PhoneButtonDown: {
 				new
 					offset = AppCall_GetListOffset(id),
-					ui[CallUI];
-				map_arr_get_arr(m_callUI, key, ui);
+					ui[ContactUI];
+				map_arr_get_arr(m_contactUI, key, ui);
 				if(offset < (AppCall_GetListSize(id) - ui[uiComponentCount])) {
 					AppCall_SetListOffset(id, offset + 1);
 					AppCall_DestroyUI(id, playerid);
@@ -316,11 +317,11 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 }
 
 hook AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
-	if(!map_valid(m_callUI)) {
+	if(!map_valid(m_contactUI)) {
 		return 1;
 	}
 
-	for(new Iter:it = map_iter(m_callUI), key[Key]; iter_inside(it); iter_move_next(it)) {
+	for(new Iter:it = map_iter(m_contactUI), key[Key]; iter_inside(it); iter_move_next(it)) {
 		iter_get_key_arr(it, key);
 		if(key[ItemId] == id) {
 			AppCall_DestroyUI(key[ItemId], key[PlayerId]);
@@ -332,11 +333,11 @@ hook AppCall_OnContactAdded(id, saved_sim, const saved_name[]) {
 }
 
 hook AppCall_OnContactDeleted(id) {
-	if(!map_valid(m_callUI)) {
+	if(!map_valid(m_contactUI)) {
 		return 1;
 	}
 
-	for(new Iter:it = map_iter(m_callUI), key[Key]; iter_inside(it); iter_move_next(it)) {
+	for(new Iter:it = map_iter(m_contactUI), key[Key]; iter_inside(it); iter_move_next(it)) {
 		iter_get_key_arr(it, key);
 		if(key[ItemId] == id) {
 			AppCall_DestroyUI(key[ItemId], key[PlayerId]);

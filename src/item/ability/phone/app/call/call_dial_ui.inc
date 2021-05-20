@@ -16,6 +16,10 @@ static enum _:DialUI {
 
 static Map:m_dialUI; // { {Key}: {DialUI} }
 
+stock AppCall_HasDialUIKey(const key[Key]) {
+	return (map_valid(m_dialUI) && map_has_arr_key(m_dialUI, key));
+}
+
 stock AppCall_UpdateDialUI(id, playerid) {
 
 	return 1;

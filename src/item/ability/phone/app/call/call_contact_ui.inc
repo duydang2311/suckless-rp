@@ -236,7 +236,7 @@ hook IPA_OnUIShowAttempt(id, app, playerid) {
 
 	if(app == AppCall) {
 		AppCall_UpdateContactUI(id, playerid);
-		AppCall_UpdateButtonUI(id, playerid);
+		AppCall_UpdateContactButtonUI(id, playerid);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;
@@ -306,7 +306,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 				IPApp_TerminateStats(id, AppCall);
 				AppCall_DestroyContactUI(id, playerid);
 				if(AppCall_HasButtonUIKey(key)) {
-					AppCall_DestroyButtonUI(id, playerid);
+					AppCall_DestroyContactButtonUI(id, playerid);
 				}
 				AppMenu_UpdateAppList(id, playerid);
 			}
@@ -343,6 +343,30 @@ hook AppCall_OnContDeleted(id) {
 			AppCall_DestroyContactUI(key[ItemId], key[PlayerId]);
 			AppCall_UpdateContactUI(key[ItemId], key[PlayerId]);
 			break;
+		}
+	}
+	return 1;
+}
+
+hook AppCall_OnPreDialed(from_sim, to_sim) {
+	if(!map_valid(m_contactUI)) {
+		return 1;
+	}
+
+	for(new Iter:it = map_iter(m_contactUI), key[Key]; iter_inside(it); iter_move_next(it)) {
+		iter_get_key_arr(it, key);
+		if(IPhone_Has(key[ItemId]) && IGroup_Has(key[ItemId])) {
+			new Iter:phone_it = IGroup_GetIter(key[ItemId]);
+			if(iter_valid(phone_it) && iter_release(phone_it)) {
+				for(new sim; iter_inside(phone_it); iter_move_next(phone_it)) {
+					sim = iter_get(phone_it);
+					if(sim == from_sim) {
+						AppCall_DestroyContactUI(key[ItemId], key[PlayerId]);
+						AppCall_DestroyContactButtonUI(key[ItemId], key[PlayerId]);
+						return 1;
+					}
+				}
+			}
 		}
 	}
 	return 1;

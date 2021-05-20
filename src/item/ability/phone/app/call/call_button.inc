@@ -129,7 +129,7 @@ stock AppCall_HasButtonUIKey(const key[], size = sizeof(key)) {
 	return (map_valid(m_buttonUI) && map_has_arr_key(m_buttonUI, key, size));
 }
 
-stock AppCall_DestroyButtonUI(id, playerid) {
+stock AppCall_DestroyContactButtonUI(id, playerid) {
 	new key[Key];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
@@ -146,7 +146,7 @@ stock AppCall_DestroyButtonUI(id, playerid) {
 	return 1;
 }
 
-stock AppCall_UpdateButtonUI(id, playerid) {
+stock AppCall_UpdateContactButtonUI(id, playerid) {
 	const Float:BUTTON_SIZE = 6.00;
 	new
 		key[Key],
@@ -159,7 +159,7 @@ stock AppCall_UpdateButtonUI(id, playerid) {
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
 	if(map_valid(m_buttonUI) && map_has_arr_key(m_buttonUI, key)) {
-		AppCall_DestroyButtonUI(id, playerid);
+		AppCall_DestroyContactButtonUI(id, playerid);
 	}
 	if(!map_valid(m_buttonUI)) {
 		m_buttonUI = map_new();
@@ -205,6 +205,6 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 }
 
 hook IPA_OnUIHideAttempt(id, playerid) {
-	AppCall_DestroyButtonUI(id, playerid);
+	AppCall_DestroyContactButtonUI(id, playerid);
 	return 1;
 }

@@ -25,15 +25,19 @@ stock AppCall_UpdateDialUI(id, playerid) {
 		return 0;
 	}
 
-	new key[Key];
+	new
+		key[Key],
+		dial_sim,
+		number[SIM_NUMBER_SIZE],
+		ui[DialUI];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
 	if(AppCall_HasDialUIKey(key)) {
 		AppCall_DestroyDialUI(id, playerid);
 	}
 
-	new ui[DialUI];
-
+	dial_sim = AppCall_GetDialSim(id);
+	if()
 	return 1;
 }
 

@@ -7,7 +7,7 @@
 const APP_CALL_DIAL_DELAY_MS = 1000;
 
 enum _:CallDialStats {
-	dialSim,
+	dialSimNumber[SIM_NUMBER_SIZE],
 	bool:dialUsingSpeaker
 }
 
@@ -15,6 +15,35 @@ static Map:m_dialStats; // { phone_id: {CallDialStats} }
 
 stock AppCall_HasDialStats(id) {
 	return (map_valid(m_dialStats) && map_has_key(m_dialStats, id));
+}
+
+stock AppCall_GetDialStats(id, stats[CallDialStats]) {
+	if(!AppCall_HasDialStats(id)) {
+		return 0;
+	}
+
+	map_get_arr(m_dialStats, id, stats);
+	return 1;
+}
+
+stock AppCall_GetDialSim(id) {
+	if(!AppCall_HasDialStats(id)) {
+		return -1;
+	}
+
+	new stats[CallDialStats];
+	map_get_arr(m_dialStats, id, stats);
+	return stats[dialSimNumber];
+}
+
+stock bool:AppCall_IsDialUsingSpeaker(id) {
+	if(!AppCall_HasDialStats(id)) {
+		return -1;
+	}
+
+	new stats[CallDialStats];
+	map_get_arr(m_dialStats, id, stats);
+	return stats[dialUsingSpeaker];
 }
 
 stock AppCall_Dial(id, const to_number[]) {
@@ -28,14 +57,14 @@ stock AppCall_Dial(id, const to_number[]) {
 			sim = iter_get(it);
 			if(ISim_Has(sim)) {
 				new stats[CallDialStats];
-				stats[dialSim] = ISim_GetSimWithNumber(to_number);
+				strcat(stats[dialSimNumber], to_number, SIM_NUMBER_SIZE);
 				stats[dialUsingSpeaker] = false;
 				if(!map_valid(m_dialStats)) {
 					m_dialStats = map_new();
 				}
 				map_set_arr(m_dialStats, id, stats);
-				CallLocalFunction("AppCall_OnPreDialed", "ii", sim, stats[dialSim]);
-				SetPreciseTimer("AppCall_OnDialed", APP_CALL_DIAL_DELAY_MS, false, "ii", sim, stats[dialSim]);
+				CallLocalFunction("AppCall_OnPreDialed", "is", sim, stats[dialSimNumber]);
+				SetPreciseTimer("AppCall_OnDialed", APP_CALL_DIAL_DELAY_MS, false, "is", sim, stats[dialSimNumber]);
 			}
 		}
 	}

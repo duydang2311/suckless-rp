@@ -66,7 +66,7 @@ stock AppCall_UpdateDialUI(id, playerid) {
 	PlayerTextDrawSetSelectable(playerid, ui[uiDialNumberText], 0);
 	first_y += SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP;
 
-	ui[uiDialExtraText] = CreatePlayerTextDraw(playerid, first_x, first_y, "dialing...");
+	ui[uiDialExtraText] = CreatePlayerTextDraw(playerid, first_x, first_y, "...dialing...");
 	PlayerTextDrawFont(playerid, ui[uiDialExtraText], 2);
 	PlayerTextDrawLetterSize(playerid, ui[uiDialExtraText], 0.120000, 0.4800000);
 	PlayerTextDrawTextSize(playerid, ui[uiDialExtraText], SIM_NUMBER_TEXT_SIZE - 2.0, (safe_max[0] - safe_min[0]));

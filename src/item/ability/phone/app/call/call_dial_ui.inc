@@ -49,7 +49,7 @@ stock AppCall_UpdateDialUI(id, playerid) {
 	IPModel_GetSafeScreenOffset(id, safe_min[0], safe_min[1], safe_max[0], safe_max[1]);
 	IPUI_GetAnchor(id, playerid, anc[0], anc[1]);
 	first_x = anc[0] + safe_min[0] + (safe_max[0] - safe_min[0]) / 2.0;
-	first_y = anc[1] + safe_min[1];
+	first_y = anc[1] + safe_min[1] + SIM_NUMBER_TEXT_SIZE;
 
 	ui[uiDialNumberText] = CreatePlayerTextDraw(playerid, first_x, first_y, number);
 	PlayerTextDrawFont(playerid, ui[uiDialNumberText], 3);

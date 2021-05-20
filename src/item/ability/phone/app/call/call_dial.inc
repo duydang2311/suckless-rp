@@ -4,6 +4,11 @@
 
 #define app_call_dial_included
 
+enum _:CallDialStats {
+	dialSim,
+	dial
+}
+
 const APP_CALL_DIAL_DELAY_MS = 1000;
 
 stock AppCall_Dial(id, const to_number[]) {
@@ -18,6 +23,7 @@ stock AppCall_Dial(id, const to_number[]) {
 			if(ISim_Has(sim)) {
 				new to_sim;
 				to_sim = ISim_GetSimWithNumber(to_number);
+				CallLocalFunction("AppCall_OnPreDialed", "ii", sim, to_sim);
 				SetPreciseTimer("AppCall_OnDialed", APP_CALL_DIAL_DELAY_MS, false, "ii", sim, to_sim);
 			}
 		}

@@ -75,15 +75,15 @@ Dialog:AppCallContactAction(playerid, response, listitem, inputtext[]) {
 	return 1;
 }
 
-stock AppCall_HasUIKey(const key[], size = sizeof(key)) {
+stock AppCall_HasContactUIKey(const key[], size = sizeof(key)) {
 	return (map_valid(m_contactUI) && map_has_arr_key(m_contactUI, key, size));
 }
 
-stock AppCall_DestroyUI(id, playerid) {
+stock AppCall_DestroyContactUI(id, playerid) {
 	new key[Key];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
-	if(!AppCall_HasUIKey(key)) {
+	if(!AppCall_HasContactUIKey(key)) {
 		return 0;
 	}
 
@@ -104,7 +104,7 @@ stock AppCall_DestroyUI(id, playerid) {
 	return 1;
 }
 
-stock AppCall_UpdateUI(id, playerid) {
+stock AppCall_UpdateContactUI(id, playerid) {
 	if(!AppCall_HasStats(id)) {
 		return 0;
 	}
@@ -154,7 +154,7 @@ stock AppCall_UpdateUI(id, playerid) {
 		key[ItemId] = id;
 		key[PlayerId] = playerid;
 		if(map_valid(m_contactUI) && map_has_arr_key(m_contactUI, key)) {
-			AppCall_DestroyUI(id, playerid);
+			AppCall_DestroyContactUI(id, playerid);
 		}
 		if(!map_valid(m_contactUI)) {
 			m_contactUI = map_new();
@@ -235,7 +235,7 @@ hook IPA_OnUIShowAttempt(id, app, playerid) {
 	}
 
 	if(app == AppCall) {
-		AppCall_UpdateUI(id, playerid);
+		AppCall_UpdateContactUI(id, playerid);
 		AppCall_UpdateButtonUI(id, playerid);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -243,7 +243,7 @@ hook IPA_OnUIShowAttempt(id, app, playerid) {
 }
 
 hook IPA_OnUIHideAttempt(id, playerid) {
-	AppCall_DestroyUI(id, playerid);
+	AppCall_DestroyContactUI(id, playerid);
 	return 1;
 }
 
@@ -256,7 +256,7 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 	new key[Key];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
-	if(AppCall_HasUIKey(key)) {
+	if(AppCall_HasContactUIKey(key)) {
 		new ui[ContactUI];
 		map_arr_get_arr(m_contactUI, key, ui);
 		if(linked_list_valid(ui[uiComponentList])) {
@@ -281,7 +281,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	new key[Key];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
-	if(AppCall_HasUIKey(key)) {
+	if(AppCall_HasContactUIKey(key)) {
 		switch(button) {
 			case PhoneButtonDown: {
 				new
@@ -290,21 +290,21 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 				map_arr_get_arr(m_contactUI, key, ui);
 				if(offset < (AppCall_GetListSize(id) - ui[uiComponentCount])) {
 					AppCall_SetListOffset(id, offset + 1);
-					AppCall_DestroyUI(id, playerid);
-					AppCall_UpdateUI(id, playerid);
+					AppCall_DestroyContactUI(id, playerid);
+					AppCall_UpdateContactUI(id, playerid);
 				}
 			}
 			case PhoneButtonUp: {
 				new offset = AppCall_GetListOffset(id);
 				if(offset) {
 					AppCall_SetListOffset(id, offset - 1);
-					AppCall_DestroyUI(id, playerid);
-					AppCall_UpdateUI(id, playerid);
+					AppCall_DestroyContactUI(id, playerid);
+					AppCall_UpdateContactUI(id, playerid);
 				}
 			}
 			case PhoneButtonHangup: {
 				IPApp_TerminateStats(id, AppCall);
-				AppCall_DestroyUI(id, playerid);
+				AppCall_DestroyContactUI(id, playerid);
 				if(AppCall_HasButtonUIKey(key)) {
 					AppCall_DestroyButtonUI(id, playerid);
 				}
@@ -324,8 +324,8 @@ hook AppCall_OnContAdded(id, saved_sim, const saved_name[]) {
 	for(new Iter:it = map_iter(m_contactUI), key[Key]; iter_inside(it); iter_move_next(it)) {
 		iter_get_key_arr(it, key);
 		if(key[ItemId] == id) {
-			AppCall_DestroyUI(key[ItemId], key[PlayerId]);
-			AppCall_UpdateUI(key[ItemId], key[PlayerId]);
+			AppCall_DestroyContactUI(key[ItemId], key[PlayerId]);
+			AppCall_UpdateContactUI(key[ItemId], key[PlayerId]);
 			break;
 		}
 	}
@@ -340,8 +340,8 @@ hook AppCall_OnContDeleted(id) {
 	for(new Iter:it = map_iter(m_contactUI), key[Key]; iter_inside(it); iter_move_next(it)) {
 		iter_get_key_arr(it, key);
 		if(key[ItemId] == id) {
-			AppCall_DestroyUI(key[ItemId], key[PlayerId]);
-			AppCall_UpdateUI(key[ItemId], key[PlayerId]);
+			AppCall_DestroyContactUI(key[ItemId], key[PlayerId]);
+			AppCall_UpdateContactUI(key[ItemId], key[PlayerId]);
 			break;
 		}
 	}

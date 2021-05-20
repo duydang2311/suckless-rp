@@ -60,6 +60,9 @@ stock AppCall_Dial(id, const to_number[]) {
 			if(ISim_Has(sim)) {
 				new stats[CallDialStats];
 				strcat(stats[dialSimNumber], to_number, SIM_NUMBER_SIZE);
+				if(isnull(stats[dialSimNumber])) {
+					strcat(stats[dialSimNumber], "Unknown");
+				}
 				stats[dialUsingSpeaker] = false;
 				if(!map_valid(m_dialStats)) {
 					m_dialStats = map_new();

@@ -49,6 +49,10 @@ Dialog:AppCallContactAction(playerid, response, listitem, inputtext[]) {
 								// Call
 								new number[SIM_NUMBER_SIZE];
 								ISim_GetNumber(contact[ContactSim], number);
+								if(isnull(number)) {
+									task_unblock(1);
+									await_arr(number) ISim_RetrieveNumber(contact[ContactSim]);
+								}
 								AppCall_Dial(phone, number);
 							}
 							case 1: {

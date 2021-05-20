@@ -1,8 +1,8 @@
-#if defined app_call_stats_included
+#if defined app_call_contact_included
 	#endinput
 #endif
 
-#define app_call_stats_included
+#define app_call_contact_included
 
 const CONTACT_NAME_SIZE = 33;
 

@@ -47,7 +47,9 @@ Dialog:AppCallContactAction(playerid, response, listitem, inputtext[]) {
 						switch(listitem) {
 							case 0: {
 								// Call
-								AppCall_Dial(phone, contact[ContactSim]);
+								new number[SIM_NUMBER_SIZE];
+								ISim_GetNumber(contact[ContactSim], number);
+								AppCall_Dial(phone, number);
 							}
 							case 1: {
 								// Message

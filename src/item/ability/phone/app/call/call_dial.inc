@@ -4,6 +4,8 @@
 
 #define app_call_dial_included
 
+const APP_CALL_DIAL_DELAY_MS = 1000;
+
 stock AppCall_Dial(id, const to_number[]) {
 	if(!IPhone_Has(id) || !IGroup_Has(id)) {
 		return 0;
@@ -15,13 +17,8 @@ stock AppCall_Dial(id, const to_number[]) {
 			sim = iter_get(it);
 			if(ISim_Has(sim)) {
 				new to_sim;
-
-				if(!ISim_GetNumber(from_sim, from_number)) {
-					task_unblock(1);
-					await_arr(from_number) ISim_RetrieveNumber(from_sim);
-				}
-
-				SetPreciseTimer("AppCall_OnDialed", "ii", sim, to_sim);
+				to_sim = ISim_GetSimWithNumber(to_number);
+				SetPreciseTimer("AppCall_OnDialed", APP_CALL_DIAL_DELAY_MS, false, "ii", sim, to_sim);
 			}
 		}
 	}

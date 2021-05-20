@@ -227,6 +227,31 @@ stock AppCall_UpdateContactUI(id, playerid) {
 	return 1;
 }
 
+stock AppCall_GetContactUIKeyBySim(sim, result_key[Key]) {
+	result_key[ItemId] = -1;
+	result_key[PlayerId] = -1;
+	if(!map_valid(m_contactUI)) {
+		return 0;
+	}
+
+	for(new Iter:it = map_iter(m_contactUI), key[Key]; iter_inside(it); iter_move_next(it)) {
+		iter_get_key_arr(it, key);
+		if(IPhone_Has(key[ItemId]) && IGroup_Has(key[ItemId])) {
+			new Iter:phone_it = IGroup_GetIter(key[ItemId]);
+			if(iter_valid(phone_it) && iter_release(phone_it)) {
+				for(; iter_inside(phone_it); iter_move_next(phone_it)) {
+					if(iter_get(phone_it) == sim) {
+						result_key[ItemId] = key[ItemId];
+						result_key[PlayerId] = key[PlayerId];
+						return 1;
+					}
+				}
+			}
+		}
+	}
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnUIShowAttempt(id, app, playerid) {

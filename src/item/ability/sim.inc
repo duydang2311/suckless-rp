@@ -111,6 +111,30 @@ stock ISim_GetPhoneWithNumber(const number[]) {
 	return map_str_get(m_phoneByNumber, number);
 }
 
+stock ISim_GetSimWithNumber(const number[]) {
+	if(!map_valid(m_phoneByNumber) || !map_has_str_key(m_phoneByNumber, number)) {
+		return -1;
+	}
+	new phone =  map_str_get(m_phoneByNumber, number);
+	if(!IPhone_Has(phone) || !IGroup_Has(phone)) {
+		return -1;
+	}
+
+	new Iter:it = IGroup_GetIter(phone);
+	if(iter_valid(it) && iter_release(it)) {
+		for(new sim, sim_number[SIM_NUMBER_SIZE]; iter_inside(it); iter_move_next(it)) {
+			sim = iter_get(it);
+			if(ISim_Has(sim)) {
+				ISim_GetNumber(sim, sim_number);
+				if(!strcmp(sim_number, number)) {
+					return sim;
+				}
+			}
+		}
+	}
+	return -1;
+}
+
 stock ISim_ValidateNumber(const number[]) {
 	for(new i = 0, length = strlen(number); i != length; i++) {
 		if(number[i] < '0' || number[i] > '9') {

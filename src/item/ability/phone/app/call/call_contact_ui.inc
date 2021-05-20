@@ -373,7 +373,7 @@ hook AppCall_OnContDeleted(id) {
 	return 1;
 }
 
-hook AppCall_OnPreDialed(from_sim, to_sim) {
+hook AppCall_OnPreDialed(from_sim, to_number[]) {
 	if(!map_valid(m_contactUI)) {
 		return 1;
 	}

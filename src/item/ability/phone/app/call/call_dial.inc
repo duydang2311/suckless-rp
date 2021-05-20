@@ -26,19 +26,21 @@ stock AppCall_GetDialStats(id, stats[CallDialStats]) {
 	return 1;
 }
 
-stock AppCall_GetDialSim(id) {
+stock AppCall_GetDialSimNumber(id, number[SIM_NUMBER_SIZE]) {
 	if(!AppCall_HasDialStats(id)) {
-		return -1;
+		return 0;
 	}
 
 	new stats[CallDialStats];
 	map_get_arr(m_dialStats, id, stats);
-	return stats[dialSimNumber];
+	number[0] = EOS;
+	strcat(number, stats[dialSimNumber]);
+	return 1;
 }
 
 stock bool:AppCall_IsDialUsingSpeaker(id) {
 	if(!AppCall_HasDialStats(id)) {
-		return -1;
+		return false;
 	}
 
 	new stats[CallDialStats];

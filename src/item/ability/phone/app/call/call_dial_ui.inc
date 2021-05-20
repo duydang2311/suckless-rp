@@ -27,7 +27,6 @@ stock AppCall_UpdateDialUI(id, playerid) {
 
 	new
 		key[Key],
-		dial_sim,
 		number[SIM_NUMBER_SIZE],
 		ui[DialUI];
 	key[ItemId] = id;
@@ -36,8 +35,8 @@ stock AppCall_UpdateDialUI(id, playerid) {
 		AppCall_DestroyDialUI(id, playerid);
 	}
 
-	dial_sim = AppCall_GetDialSim(id);
-	if()
+	AppCall_GetDialSimNumber(id, number);
+
 	return 1;
 }
 
@@ -48,7 +47,7 @@ stock AppCall_DestroyDialUI(id, playerid) {
 
 #include <YSI_Coding\y_hooks>
 
-HOOK__ AppCall_OnPreDialed(from_sim, to_sim) {
+HOOK__ AppCall_OnPreDialed(from_sim, to_number[]) {
 	new key[Key];
 	AppCall_GetContactUIKeyBySim(from_sim, key);
 	if(key[ItemId] != -1 && key[PlayerId] != -1) {
@@ -59,7 +58,7 @@ HOOK__ AppCall_OnPreDialed(from_sim, to_sim) {
 	return 1;
 }
 
-hook AppCall_OnDialed(from_sim, to_sim) {
+hook AppCall_OnDialed(from_sim, to_number[]) {
 
 	return 1;
 }

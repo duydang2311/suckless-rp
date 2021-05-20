@@ -21,6 +21,18 @@ stock AppCall_HasDialUIKey(const key[Key]) {
 }
 
 stock AppCall_UpdateDialUI(id, playerid) {
+	if(!AppCall_HasDialStats(id)) {
+		return 0;
+	}
+
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(AppCall_HasDialUIKey(key)) {
+		AppCall_DestroyDialUI(id, playerid);
+	}
+
+	new ui[DialUI];
 
 	return 1;
 }

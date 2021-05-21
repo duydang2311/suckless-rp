@@ -58,7 +58,7 @@ public AppCall_DialingEffectHandler(id, playerid) {
 	}
 	PlayerTextDrawSetString(playerid, ui[uiDialExtraText], extra_text);
 	PlayerTextDrawShow(playerid, ui[uiDialExtraText]);
-	map_arr_set_cell(m_dialingEffect, key, effStage, (effStage + 1) % 3);
+	map_arr_set_cell(m_dialingEffect, key, effStage, (eff[effStage] + 1) % (3 + 1));
 	return 1;
 }
 
@@ -211,5 +211,24 @@ HOOK__ AppCall_OnPreDialed(from_sim, to_number[]) {
 
 hook AppCall_OnDialed(from_sim, to_number[]) {
 
+	return 1;
+}
+
+hook IPUI_OnButtonClicked(id, playerid, button) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(AppCall_HasDialUIKey(key)) {
+		switch(button) {
+			case PhoneButtonHangup: {
+				AppCall_DestroyDialUI(id, playerid);
+				AppCall_KillDialingEffect(id, playerid);
+
+				AppCall_UpdateContactUI(id, playerid);
+				AppCall_UpdateContactButtonUI(id, playerid);
+			}
+		}
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
 	return 1;
 }

@@ -70,6 +70,27 @@ stock Player_GetFreeHand(playerid) {
 	return (playerHands[playerid][1] == -1 ? 1 : playerHands[playerid][0] == -1 ? 0 : -1);
 }
 
+stock Task:Player_RetrieveIdByHandItem(id) {
+	new
+		Task:t = task_new(),
+		query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT player_hands.player_id FROM player_hands WHERE item_id = %d LIMIT 1", id);
+	mysql_pquery(MySQL_Connection(), query, "_prv_Player_OnRetByHandItem", "i", _:t);
+	return t;
+}
+
+forward _prv_Player_OnRetByHandItem(Task:t);
+public _prv_Player_OnRetByHandItem(Task:t) {
+	new player_id = -1;
+	if(cache_num_rows()) {
+		cache_get_value_name_int(0, "player_id", player_id);
+	}
+	if(task_valid(t)) {
+		task_set_result(t, player_id);
+	}
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnStatsRetrieved(playerid) {

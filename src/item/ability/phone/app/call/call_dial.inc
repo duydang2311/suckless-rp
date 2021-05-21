@@ -11,6 +11,11 @@ enum _:CallDialStats {
 	bool:dialUsingSpeaker
 }
 
+enum _:DialErrors {
+	errRemoteBusy,
+	errRemoteInvalid
+}
+
 static Map:m_dialStats; // { phone_id: {CallDialStats} }
 
 stock AppCall_HasDialStats(id) {
@@ -74,4 +79,23 @@ stock AppCall_Dial(id, const to_number[]) {
 		}
 	}
 	return 0;
+}
+
+stock AppCall_ThrowDialError(from_sim, error) {
+	return 1;
+}
+
+#include <YSI_Coding\y_hooks>
+
+HOOK__ AppCall_OnDialed(from_sim, to_number[]) {
+	new phone = ISim_GetPhoneWithNumber(to_number);
+	if(phone == -1) {
+		AppCall_ThrowDialError(from_sim, errRemoteInvalid);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	if(AppCall_HasDialStats(phone)) {
+		AppCall_ThrowDialError(from_sim, errRemoteBusy);
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
 }

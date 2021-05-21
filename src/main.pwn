@@ -45,6 +45,7 @@ DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 
 #include <mysql>
 #include <vehicle>
+#include <inventory_forward>
 #include <item>
 #include <inventory>
 #include <weapon>

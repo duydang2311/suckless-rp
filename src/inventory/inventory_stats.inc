@@ -129,8 +129,8 @@ stock Task:Inventory_RetrievePlayerByItem(id) {
 	return t;
 }
 
-forward _private_Inv_OnPlayerRetByItem();
-public _private_Inv_OnPlayerRetByItem() {
+forward _private_Inv_OnPlayerRetByItem(Task:t);
+public _private_Inv_OnPlayerRetByItem(Task:t) {
 	new player_id = -1;
 	if(cache_num_rows()) {
 		cache_get_value_name_int(0, "player_id", player_id);

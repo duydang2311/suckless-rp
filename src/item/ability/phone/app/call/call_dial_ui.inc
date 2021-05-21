@@ -210,7 +210,17 @@ HOOK__ AppCall_OnPreDialed(from_sim, to_number[]) {
 }
 
 hook AppCall_OnDialed(from_sim, to_number[]) {
-
+	new phone = ISim_GetPhoneWithNumber(to_number);
+	if(phone != -1) {
+		task_unblock(1);
+		new id = await Inventory_RetrievePlayerByItem(phone);
+		if(id != -1) {
+			new playerid = Player_GetById(id);
+			if(playerid != -1) {
+				SubtitleText_Show(playerid, "~g~Chuong dien thoai dang rung len...");
+			}
+		}
+	}
 	return 1;
 }
 

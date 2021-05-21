@@ -120,6 +120,27 @@ stock Inventory_GetSize(playerid) {
 	return 0;
 }
 
+stock Task:Inventory_RetrievePlayerByItem(id) {
+	new
+		Task:t = task_new(),
+		query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT inventory.player_id FROM inventory WHERE item_id = %d LIMIT 1", id);
+	mysql_pquery(MySQL_Connection(), query, "_private_Inv_OnPlayerRetByItem", "i", _:t);
+	return t;
+}
+
+forward _private_Inv_OnPlayerRetByItem();
+public _private_Inv_OnPlayerRetByItem() {
+	new player_id = -1;
+	if(cache_num_rows()) {
+		cache_get_value_name_int(0, "player_id", player_id);
+	}
+	if(task_valid(t)) {
+		task_set_result(t, player_id);
+	}
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnStatsRetrieved(playerid) {

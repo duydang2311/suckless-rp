@@ -56,6 +56,8 @@ public AppCall_DialingEffectHandler(id, playerid) {
 		strins(extra_text, ".", 0);
 		strcat(extra_text, ".");
 	}
+	PlayerTextDrawSetString(playerid, ui[uiDialExtraText], extra_text);
+	PlayerTextDrawShow(playerid, ui[uiDialExtraText]);
 	map_arr_set_cell(m_dialingEffect, key, effStage, (effStage + 1) % 3);
 	return 1;
 }

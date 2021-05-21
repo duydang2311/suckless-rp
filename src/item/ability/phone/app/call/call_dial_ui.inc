@@ -211,7 +211,6 @@ HOOK__ AppCall_OnPreDialed(from_sim, to_number[]) {
 
 hook AppCall_OnDialed(from_sim, to_number[]) {
 	new phone = ISim_GetPhoneWithNumber(to_number);
-	printf("number %s, phone %d", to_number, phone);
 	if(phone != -1) {
 		task_unblock(1);
 		new id = await Player_RetrieveIdByHandItem(phone);
@@ -219,10 +218,8 @@ hook AppCall_OnDialed(from_sim, to_number[]) {
 			task_unblock(1);
 			id = await Inventory_RetrievePlayerByItem(phone);
 		}
-		printf("phone %d, id %d", phone, id);
 		if(id != -1) {
 			new playerid = Player_GetById(id);
-			printf("phone %d, id %d, playerid %d", phone, id, playerid);
 			if(playerid != -1) {
 				SubtitleText_Show(playerid, "~g~Chuong dien thoai dang rung len...");
 			}

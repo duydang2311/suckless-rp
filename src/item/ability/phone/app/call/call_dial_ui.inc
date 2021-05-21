@@ -14,10 +14,74 @@ static enum _:DialUI {
 	PlayerText:uiDialExtraText
 }
 
-static Map:m_dialUI; // { {Key}: {DialUI} }
+static enum _:DialingEffect {
+	effStage,
+	effTimer
+}
+
+static
+	Map:m_dialUI, // { {Key}: {DialUI} }
+	Map:m_dialingEffect; // { {Key}: {DialingEffect} }
+
+forward AppCall_DialingEffectHandler(id, playerid);
+public AppCall_DialingEffectHandler(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!AppCall_HasDialUIKey(key)) {
+		if(map_valid(m_dialingEffect) && map_has_arr_key(m_dialingEffect, key)) {
+			new eff[DialingEffect];
+			map_arr_get_arr(m_dialingEffect, key, eff);
+			DeletePreciseTimer(eff[effTimer]);
+			map_arr_remove(m_dialingEffect, key);
+			if(!map_size(m_dialingEffect)) {
+				map_delete(m_dialingEffect);
+				m_dialingEffect = Map:-1;
+			}
+		}
+		return 0;
+	}
+
+	if(!map_valid(m_dialingEffect) || !map_has_arr_key(m_dialingEffect, key)) {
+		return 0;
+	}
+
+	new
+		eff[DialingEffect],
+		ui[DialUI],
+		extra_text[24] = "dialing";
+	map_arr_get_arr(m_dialingEffect, key, eff);
+	map_arr_get_arr(m_dialUI, key, ui);
+	for(new i = 0; i != eff[effStage]; i++) {
+		strins(extra_text, ".", 0);
+		strcat(extra_text, ".");
+	}
+	map_arr_set_cell(m_dialingEffect, key, effStage, (effStage + 1) % 3);
+	return 1;
+}
 
 stock AppCall_HasDialUIKey(const key[Key]) {
 	return (map_valid(m_dialUI) && map_has_arr_key(m_dialUI, key));
+}
+
+stock AppCall_DestroyDialUI(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!AppCall_HasDialUIKey(key)) {
+		return 0;
+	}
+
+	new ui[DialUI];
+	map_arr_get_arr(m_dialUI, key, ui);
+	PlayerTextDrawDestroy(playerid, ui[uiDialNumberText]);
+	PlayerTextDrawDestroy(playerid, ui[uiDialExtraText]);
+	map_arr_remove(m_dialUI, key);
+	if(!map_size(m_dialUI)) {
+		map_delete(m_dialUI);
+		m_dialUI = Map:-1;
+	}
+	return 1;
 }
 
 stock AppCall_UpdateDialUI(id, playerid) {
@@ -89,7 +153,7 @@ stock AppCall_UpdateDialUI(id, playerid) {
 	return 1;
 }
 
-stock AppCall_DestroyDialUI(id, playerid) {
+stock AppCall_RunDialingEffect(id, playerid) {
 	new key[Key];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
@@ -97,17 +161,37 @@ stock AppCall_DestroyDialUI(id, playerid) {
 		return 0;
 	}
 
-	new ui[DialUI];
-	map_arr_get_arr(m_dialUI, key, ui);
-	PlayerTextDrawDestroy(playerid, ui[uiDialNumberText]);
-	PlayerTextDrawDestroy(playerid, ui[uiDialExtraText]);
-	map_arr_remove(m_dialUI, key);
-	if(!map_size(m_dialUI)) {
-		map_delete(m_dialUI);
-		m_dialUI = Map:-1;
+	new eff[DialingEffect];
+	if(!map_valid(m_dialingEffect)) {
+		m_dialingEffect = map_new();
+	} else if(map_has_arr_key(m_dialingEffect, key)) {
+		map_arr_get_arr(m_dialingEffect, key, eff);
+		DeletePreciseTimer(eff[effTimer]);
 	}
+	eff[effStage] = 0;
+	eff[effTimer] = SetPreciseTimer("AppCall_DialingEffectHandler", 500, true, "ii", id, playerid);
+	map_arr_set_arr(m_dialingEffect, key, eff);
 	return 1;
 }
+
+stock AppCall_KillDialingEffect(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(map_valid(m_dialingEffect) && map_has_arr_key(m_dialingEffect, key)) {
+		new eff[DialingEffect];
+		map_arr_get_arr(m_dialingEffect, key, eff);
+		DeletePreciseTimer(eff[effTimer]);
+		map_arr_remove(m_dialingEffect, key);
+		if(!map_size(m_dialingEffect)) {
+			map_delete(m_dialingEffect);
+			m_dialingEffect = Map:-1;
+		}
+		return 1;
+	}
+	return 0;
+}
+
 
 #include <YSI_Coding\y_hooks>
 
@@ -118,6 +202,7 @@ HOOK__ AppCall_OnPreDialed(from_sim, to_number[]) {
 		task_unblock(1);
 		await task_ticks(1);
 		AppCall_UpdateDialUI(key[ItemId], key[PlayerId]);
+		AppCall_RunDialingEffect(key[ItemId], key[PlayerId]);
 	}
 	return 1;
 }

@@ -92,6 +92,7 @@ hook OnGameModeExit@1() {
 
 forward IGroup_OnItemRetrieving(id);
 public IGroup_OnItemRetrieving(id) {
+	printf("IGroup_OnItemRetrieving(%d)", id);
 	new Cache:data = cache_save();
 	for(new i = 0, rows = cache_num_rows(), member, LinkedList:ll, stats[ItemStats]; i != rows; i++) {
 		cache_get_value_name_int(i, "id", member);
@@ -112,6 +113,7 @@ public IGroup_OnItemRetrieving(id) {
 		new Task:t = task_new();
 		cache_unset_active();
 		CallLocalFunction("Item_OnStatsRetrieving", "iifii", member, stats[iAbility], stats[iReliability], stats[iOccupiedSpace], _:t);
+		CallLocalFunction("IGroup_OnMemRetrieved", "ii", id, member);
 		task_unblock(1);
 		task_wait(t);
 		cache_set_active(data);

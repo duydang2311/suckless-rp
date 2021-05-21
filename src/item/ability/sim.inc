@@ -10,9 +10,15 @@ enum _:ItemSimStats {
 	iSimNumber[SIM_NUMBER_SIZE]
 }
 
+static enum _:PhoneByNumberCache {
+	Phone,
+	Sim
+}
+
 static
 	Map:m_simStats, // { item_id: {ItemSimStats} }
-	Map:m_phoneByNumber; // { {ItemSimStats}.iSimNumber: item phone id }
+	Map:m_phoneByNumber, // { {ItemSimStats}.iSimNumber: item phone id }
+	LinkedList:ll_cache; // LinkedList<PhoneByNumberCache>
 
 stock ISim_Has(id) {
 	return (map_valid(m_simStats) && map_has_key(m_simStats, id));
@@ -208,6 +214,7 @@ hook OnGameModeExit@2() {
 
 forward ISim_OnStatsRetrieving(id, Task:t);
 public ISim_OnStatsRetrieving(id, Task:t) {
+	printf("ISim_OnStatsRetrieving(%d, %d)", id, _:t);
 	if(cache_num_rows()) {
 		if(!map_valid(m_simStats)) {
 			m_simStats = map_new();
@@ -215,6 +222,24 @@ public ISim_OnStatsRetrieving(id, Task:t) {
 		new stats[ItemSimStats];
 		cache_get_value_name(0, "number", stats[iSimNumber], SIM_NUMBER_SIZE);
 		map_set_arr(m_simStats, id, stats);
+		if(linked_list_valid(ll_cache)) {
+			for(new Iter:it = linked_list_iter(ll_cache), cache[PhoneByNumberCache]; iter_inside(it); iter_move_next(it)) {
+				iter_get_arr(it, cache);
+				if(cache[Sim] == id) {
+					if(!map_valid(m_phoneByNumber)) {
+						m_phoneByNumber = map_new();
+					}
+					map_str_set(m_phoneByNumber, stats[iSimNumber], cache[Phone]);
+					printf("erase [%d, %d] from cache", cache[Phone], cache[Sim]);
+					iter_erase(it);
+					if(!linked_list_size(ll_cache)) {
+						linked_list_delete(ll_cache);
+						ll_cache = LinkedList:-1;
+					}
+					break;
+				}
+			}
+		}
 	}
 	if(task_valid(t)) {
 		task_set_result(t, 1);
@@ -256,6 +281,26 @@ hook Item_OnAddedToGroup(id, group_id) {
 		new stats[ItemSimStats];
 		map_get_arr(m_simStats, id, stats);
 		map_str_set(m_phoneByNumber, stats[iSimNumber], group_id);
+	}
+	return 1;
+}
+
+forward IGroup_OnMemRetrieved(group, id);
+public IGroup_OnMemRetrieved(group, id) {
+	return 1;
+}
+
+hook IGroup_OnMemRetrieved(group, id) {
+	printf("IGroup_OnMemRetrieved(%d, %d)", group, id);
+	if(Item_GetAbility(group) == iAbilityPhone && Item_GetAbility(id) == iAbilitySim) {
+		if(!linked_list_valid(ll_cache)) {
+			ll_cache = linked_list_new();
+		}
+		new cache[PhoneByNumberCache];
+		cache[Phone] = group;
+		cache[Sim] = id;
+		linked_list_add_arr(ll_cache, cache);
+		printf("add [%d, %d] to cache", cache[Phone], cache[Sim]);
 	}
 	return 1;
 }

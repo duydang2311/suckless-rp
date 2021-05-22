@@ -242,10 +242,13 @@ hook AppCall_OnDialError(from_phone, error) {
 			case errRemoteInvalid: {
 				AppCall_UpdateDialExtraText(key[ItemId], key[PlayerId], "Khong tim thay so dien thoai...");
 			}
+			case errRemoteNotReachable: {
+				AppCall_UpdateDialExtraText(key[ItemId], key[PlayerId], "So dien thoai ngoai vung phu song...");
+			}
 		}
 
 		task_unblock(1);
-		await task_ms(3000);
+		await task_ms(floatround(float(APP_CALL_DIAL_DELAY_MS) / 2.0, floatround_ceil));
 		AppCall_DestroyDialUI(key[ItemId], key[PlayerId]);
 		AppCall_UpdateContactUI(key[ItemId], key[PlayerId]);
 		AppCall_UpdateContactButtonUI(key[ItemId], key[PlayerId]);
@@ -282,7 +285,6 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 			case PhoneButtonHangup: {
 				AppCall_DestroyDialUI(id, playerid);
 				AppCall_KillDialingEffect(id, playerid);
-
 				AppCall_UpdateContactUI(id, playerid);
 				AppCall_UpdateContactButtonUI(id, playerid);
 			}

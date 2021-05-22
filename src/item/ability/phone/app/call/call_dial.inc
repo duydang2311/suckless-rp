@@ -13,7 +13,8 @@ enum _:CallDialStats {
 
 enum _:DialErrors {
 	errRemoteBusy,
-	errRemoteInvalid
+	errRemoteInvalid,
+	errRemoteNotReachable
 }
 
 static Map:m_dialStats; // { phone_id: {CallDialStats} }
@@ -102,6 +103,10 @@ HOOK__ AppCall_OnDialed(from_phone, const to_number[]) {
 	new phone = ISim_GetPhoneWithNumber(to_number);
 	if(phone == -1) {
 		phone = await ISim_RetrieveByNumber(to_number); // we are not using task_unblock here because we want to sync another AppCall_OnDialed hooks as well
+		if(phone != -1) {
+			AppCall_ThrowDialError(from_phone, errRemoteNotReachable);
+			return Y_HOOKS_BREAK_RETURN_1;
+		}
 	}
 	if(phone == -1) {
 		AppCall_ThrowDialError(from_phone, errRemoteInvalid);

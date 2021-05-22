@@ -17,7 +17,9 @@ enum _:DialErrors {
 	errRemoteNotReachable
 }
 
-static Map:m_dialStats; // { phone_id: {CallDialStats} }
+static
+	Map:m_dialStats, // { phone_id: {CallDialStats} }
+	Map:m_incomingCall; // { phone_id: phone_id }
 
 stock AppCall_HasDialStats(id) {
 	return (map_valid(m_dialStats) && map_has_key(m_dialStats, id));
@@ -97,7 +99,35 @@ stock AppCall_ThrowDialError(from_phone, error) {
 	return 1;
 }
 
+stock AppCall_CancelDial(id) {
+	if(!AppCall_HasDialStats(id)) {
+		return 0;
+	}
+
+	new
+		stats[CallDialStats],
+		dialPhone;
+	map_get_arr(m_dialStats, id, stats);
+	map_remove(m_dialStats, id);
+	if(!map_size(m_dialStats)) {
+		map_delete(m_dialStats);
+		m_dialStats = Map:-1;
+	}
+	dialPhone = ISim_GetPhoneWithNumber(stats[dialSimNumber]);
+	if(AppCall_HasIncoming(dialPhone)) {
+		if(map_get(m_incomingCall, dialPhone) == id) {
+			AppCall_CancelIncoming(dialPhone);
+		}
+	}
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
+
+hook AppCall_OnTermnAttempt(id) {
+	AppCall_CancelDial(id);
+	return 1;
+}
 
 HOOK__ AppCall_OnDialed(from_phone, const to_number[]) {
 	new phone = ISim_GetPhoneWithNumber(to_number);

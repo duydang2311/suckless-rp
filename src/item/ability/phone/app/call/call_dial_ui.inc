@@ -287,6 +287,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 				AppCall_KillDialingEffect(id, playerid);
 				AppCall_UpdateContactUI(id, playerid);
 				AppCall_UpdateContactButtonUI(id, playerid);
+				AppCall_CancelDial(id);
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;
@@ -297,5 +298,6 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 hook IPA_OnUIHideAttempt(id, playerid) {
 	AppCall_DestroyDialUI(id, playerid);
 	AppCall_KillDialingEffect(id, playerid);
+	AppCall_CancelDial(id);
 	return 1;
 }

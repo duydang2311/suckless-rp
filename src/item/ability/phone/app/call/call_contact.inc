@@ -228,6 +228,7 @@ hook IPA_OnStatsTermnAttempt(id, app) {
 				m_pageStats = Map:-1;
 			}
 		}
+		CallLocalFunction("AppCall_OnTermnAttempt", "i", id);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

@@ -301,12 +301,3 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 	AppCall_CancelDial(id);
 	return 1;
 }
-
-hook AppCall_OnUIShowAttempt(id, playerid, &bool:busy) {
-	if(AppCall_HasIncoming(id)) {
-		AppCall_UpdateDialUI(id, playerid);
-		AppCall_UpdateDialExtraText(id, playerid, "dang goi den ban...");
-		busy = true;
-	}
-	return 1;
-}

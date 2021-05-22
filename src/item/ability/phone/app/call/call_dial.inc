@@ -17,9 +17,7 @@ enum _:DialErrors {
 	errRemoteNotReachable
 }
 
-static
-	Map:m_dialStats, // { phone_id: {CallDialStats} }
-	Map:m_incoming; // { phone_id: phone_id }
+static Map:m_dialStats; // { phone_id: {CallDialStats} }
 
 stock AppCall_HasDialStats(id) {
 	return (map_valid(m_dialStats) && map_has_key(m_dialStats, id));

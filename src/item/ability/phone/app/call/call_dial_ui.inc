@@ -293,3 +293,9 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	}
 	return 1;
 }
+
+hook IPA_OnUIHideAttempt(id, playerid) {
+	AppCall_DestroyDialUI(id, playerid);
+	AppCall_KillDialingEffect(id, playerid);
+	return 1;
+}

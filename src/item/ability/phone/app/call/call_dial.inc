@@ -4,7 +4,7 @@
 
 #define app_call_dial_included
 
-const APP_CALL_DIAL_DELAY_MS = 5000;
+const APP_CALL_DIAL_DELAY_MS = 4000;
 
 enum _:CallDialStats {
 	dialSimNumber[SIM_NUMBER_SIZE],

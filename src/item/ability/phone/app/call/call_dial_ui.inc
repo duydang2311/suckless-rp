@@ -194,6 +194,20 @@ stock AppCall_KillDialingEffect(id, playerid) {
 	return 0;
 }
 
+stock AppCall_UpdateDialExtraText(id, playerid, const text[]) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!AppCall_HasDialUIKey(key)) {
+		return 0;
+	}
+
+	new ui[DialUI];
+	map_arr_get_arr(m_dialUI, key, ui);
+	PlayerTextDrawSetString(playerid, ui[uiDialExtraText], text);
+	PlayerTextDrawShow(playerid, ui[uiDialExtraText]);
+	return 1;
+}
 
 #include <YSI_Coding\y_hooks>
 
@@ -209,8 +223,34 @@ HOOK__ AppCall_OnPreDialed(from_sim, const to_number[]) {
 	return 1;
 }
 
-hook AppCall_OnDialError(from_sim, error) {
+hook AppCall_OnDialError(from_phone, error) {
+	if(!map_valid(m_dialUI)) {
+		return 1;
+	}
 
+	for(new Iter:it = map_iter(m_dialUI), key[Key]; iter_inside(it); iter_move_next(it)) {
+		iter_get_key_arr(it, key);
+		if(key[ItemId] != from_phone) {
+			continue;
+		}
+
+		AppCall_KillDialingEffect(key[ItemId], key[PlayerId]);
+		switch(error) {
+			case errRemoteBusy: {
+				AppCall_UpdateDialExtraText(key[ItemId], key[PlayerId], "May ban...");
+			}
+			case errRemoteInvalid: {
+				AppCall_UpdateDialExtraText(key[ItemId], key[PlayerId], "Khong tim thay so dien thoai...");
+			}
+		}
+
+		task_unblock(1);
+		await task_ms(3000);
+		AppCall_DestroyDialUI(key[ItemId], key[PlayerId]);
+		AppCall_UpdateContactUI(key[ItemId], key[PlayerId]);
+		AppCall_UpdateContactButtonUI(key[ItemId], key[PlayerId]);
+		break;
+	}
 	return 1;
 }
 

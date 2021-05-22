@@ -81,6 +81,21 @@ Dialog:AppCallContactAction(playerid, response, listitem, inputtext[]) {
 	return 1;
 }
 
+Dialog:AppCallSpecificNumber(playerid, response, listitem, inputtext[]) {
+	if(response) {
+		if(!ISim_ValidateNumber(inputtext)) {
+			Dialog_Show(playerid, AppCallSpecificNumber, DIALOG_STYLE_INPUT, "Call", "> Nhap so dien thoai ban muon goi.\nSo dien thoai vua nhap khong hop le.", ">>", "<<");
+			return 1;
+		}
+
+		if(!AppCall_Dial(IPUI_GetPlayerPhone(playerid), inputtext)) {
+			Dialog_Show(playerid, AppCallSpecificNumber, DIALOG_STYLE_INPUT, "Call", "> Nhap so dien thoai ban muon goi.\nCuoc goi that bai, co the do dien thoai cua ban khong co sim.", ">>", "<<");
+			return 1;
+		}
+	}
+	return 1;
+}
+
 stock AppCall_HasContactUIKey(const key[], size = sizeof(key)) {
 	return (map_valid(m_contactUI) && map_has_arr_key(m_contactUI, key, size));
 }
@@ -340,6 +355,9 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 					AppCall_DestroyContactButtonUI(id, playerid);
 				}
 				AppMenu_UpdateAppList(id, playerid);
+			}
+			case PhoneButtonCall: {
+				Dialog_Show(playerid, AppCallSpecificNumber, DIALOG_STYLE_INPUT, "Call", "> Nhap so dien thoai ban muon goi.", ">>", "<<");
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;

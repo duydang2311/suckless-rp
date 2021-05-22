@@ -4,7 +4,7 @@
 
 #define app_call_dial_included
 
-const APP_CALL_DIAL_DELAY_MS = 1000;
+const APP_CALL_DIAL_DELAY_MS = 5000;
 
 enum _:CallDialStats {
 	dialSimNumber[SIM_NUMBER_SIZE],
@@ -75,6 +75,7 @@ stock AppCall_Dial(id, const to_number[]) {
 				map_set_arr(m_dialStats, id, stats);
 				CallLocalFunction("AppCall_OnPreDialed", "is", sim, stats[dialSimNumber]);
 				SetPreciseTimer("AppCall_OnDialed", APP_CALL_DIAL_DELAY_MS, false, "is", id, stats[dialSimNumber]);
+				return 1;
 			}
 		}
 	}

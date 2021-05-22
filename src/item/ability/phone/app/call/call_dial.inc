@@ -19,7 +19,7 @@ enum _:DialErrors {
 
 static
 	Map:m_dialStats, // { phone_id: {CallDialStats} }
-	Map:m_incomingCall; // { phone_id: phone_id }
+	Map:m_incoming; // { phone_id: phone_id }
 
 stock AppCall_HasDialStats(id) {
 	return (map_valid(m_dialStats) && map_has_key(m_dialStats, id));
@@ -99,6 +99,24 @@ stock AppCall_ThrowDialError(from_phone, error) {
 	return 1;
 }
 
+stock AppCall_HasIncoming(id) {
+	return (map_valid(m_incoming) && map_has_key(m_incoming, id));
+}
+
+stock AppCall_CancelIncoming(id) {
+	if(!AppCall_HasIncoming(id)) {
+		return 0;
+	}
+
+	CallLocalFunction("AppCall_OnInCallCancel", "i", id); // process first, delete then
+	map_remove(m_incoming, id);
+	if(!map_size(m_incoming)) {
+		map_delete(m_incoming);
+		m_incoming = Map:-1;
+	}
+	return 1;
+}
+
 stock AppCall_CancelDial(id) {
 	if(!AppCall_HasDialStats(id)) {
 		return 0;
@@ -115,7 +133,7 @@ stock AppCall_CancelDial(id) {
 	}
 	dialPhone = ISim_GetPhoneWithNumber(stats[dialSimNumber]);
 	if(AppCall_HasIncoming(dialPhone)) {
-		if(map_get(m_incomingCall, dialPhone) == id) {
+		if(map_get(m_incoming, dialPhone) == id) {
 			AppCall_CancelIncoming(dialPhone);
 		}
 	}
@@ -132,17 +150,17 @@ hook AppCall_OnTermnAttempt(id) {
 HOOK__ AppCall_OnDialed(from_phone, const to_number[]) {
 	new phone = ISim_GetPhoneWithNumber(to_number);
 	if(phone == -1) {
-		phone = await ISim_RetrieveByNumber(to_number); // we are not using task_unblock here because we want to sync another AppCall_OnDialed hooks as well
+		// we are not using task_unblock here because we want other hooks to wait for this operation
+		phone = await ISim_RetrieveByNumber(to_number);
 		if(phone != -1) {
 			AppCall_ThrowDialError(from_phone, errRemoteNotReachable);
 			return Y_HOOKS_BREAK_RETURN_1;
+		} else {
+			AppCall_ThrowDialError(from_phone, errRemoteInvalid);
+			return Y_HOOKS_BREAK_RETURN_1;
 		}
 	}
-	if(phone == -1) {
-		AppCall_ThrowDialError(from_phone, errRemoteInvalid);
-		return Y_HOOKS_BREAK_RETURN_1;
-	}
-	if(AppCall_HasDialStats(phone)) {
+	if(AppCall_HasDialStats(phone) || AppCall_HasIncoming(phone)) {
 		AppCall_ThrowDialError(from_phone, errRemoteBusy);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}

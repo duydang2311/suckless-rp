@@ -99,43 +99,16 @@ stock AppCall_ThrowDialError(from_phone, error) {
 	return 1;
 }
 
-stock AppCall_HasIncoming(id) {
-	return (map_valid(m_incoming) && map_has_key(m_incoming, id));
-}
-
-stock AppCall_CancelIncoming(id) {
-	if(!AppCall_HasIncoming(id)) {
-		return 0;
-	}
-
-	CallLocalFunction("AppCall_OnInCallCancel", "i", id); // process first, delete then
-	map_remove(m_incoming, id);
-	if(!map_size(m_incoming)) {
-		map_delete(m_incoming);
-		m_incoming = Map:-1;
-	}
-	return 1;
-}
-
 stock AppCall_CancelDial(id) {
 	if(!AppCall_HasDialStats(id)) {
 		return 0;
 	}
 
-	new
-		stats[CallDialStats],
-		dialPhone;
-	map_get_arr(m_dialStats, id, stats);
+	CallLocalFunction("AppCall_OnDialCancel", "i", id); // process first, delete then
 	map_remove(m_dialStats, id);
 	if(!map_size(m_dialStats)) {
 		map_delete(m_dialStats);
 		m_dialStats = Map:-1;
-	}
-	dialPhone = ISim_GetPhoneWithNumber(stats[dialSimNumber]);
-	if(AppCall_HasIncoming(dialPhone)) {
-		if(map_get(m_incoming, dialPhone) == id) {
-			AppCall_CancelIncoming(dialPhone);
-		}
 	}
 	return 1;
 }

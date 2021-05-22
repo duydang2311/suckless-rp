@@ -197,7 +197,7 @@ stock AppCall_KillDialingEffect(id, playerid) {
 
 #include <YSI_Coding\y_hooks>
 
-HOOK__ AppCall_OnPreDialed(from_sim, to_number[]) {
+HOOK__ AppCall_OnPreDialed(from_sim, const to_number[]) {
 	new key[Key];
 	AppCall_GetContactUIKeyBySim(from_sim, key);
 	if(key[ItemId] != -1 && key[PlayerId] != -1) {
@@ -209,7 +209,12 @@ HOOK__ AppCall_OnPreDialed(from_sim, to_number[]) {
 	return 1;
 }
 
-hook AppCall_OnDialed(from_sim, to_number[]) {
+hook AppCall_OnDialError(from_sim, error) {
+
+	return 1;
+}
+
+hook AppCall_OnDialed(from_phone, const to_number[]) {
 	new phone = ISim_GetPhoneWithNumber(to_number);
 	if(phone != -1) {
 		task_unblock(1);

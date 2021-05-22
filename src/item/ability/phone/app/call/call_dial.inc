@@ -74,27 +74,40 @@ stock AppCall_Dial(id, const to_number[]) {
 				}
 				map_set_arr(m_dialStats, id, stats);
 				CallLocalFunction("AppCall_OnPreDialed", "is", sim, stats[dialSimNumber]);
-				SetPreciseTimer("AppCall_OnDialed", APP_CALL_DIAL_DELAY_MS, false, "is", sim, stats[dialSimNumber]);
+				SetPreciseTimer("AppCall_OnDialed", APP_CALL_DIAL_DELAY_MS, false, "is", id, stats[dialSimNumber]);
 			}
 		}
 	}
 	return 0;
 }
 
-stock AppCall_ThrowDialError(from_sim, error) {
+stock AppCall_ThrowDialError(from_phone, error) {
+	if(!AppCall_HasDialStats(from_phone)) {
+		return 0;
+	}
+
+	CallLocalFunction("AppCall_OnDialError", "ii", from_phone, error);
+	map_remove(m_dialStats, from_phone);
+	if(!map_size(m_dialStats)) {
+		map_delete(m_dialStats);
+		m_dialStats = Map:-1;
+	}
 	return 1;
 }
 
 #include <YSI_Coding\y_hooks>
 
-HOOK__ AppCall_OnDialed(from_sim, to_number[]) {
+HOOK__ AppCall_OnDialed(from_phone, const to_number[]) {
 	new phone = ISim_GetPhoneWithNumber(to_number);
 	if(phone == -1) {
-		AppCall_ThrowDialError(from_sim, errRemoteInvalid);
+		phone = await ISim_RetrieveByNumber(to_number); // we are not using task_unblock here because we want to sync another AppCall_OnDialed hooks as well
+	}
+	if(phone == -1) {
+		AppCall_ThrowDialError(from_phone, errRemoteInvalid);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	if(AppCall_HasDialStats(phone)) {
-		AppCall_ThrowDialError(from_sim, errRemoteBusy);
+		AppCall_ThrowDialError(from_phone, errRemoteBusy);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

@@ -1,3 +1,18 @@
 {
-	"discord.enabled": true
+	"discord.enabled": true,
+	"sqltools.connections": [
+		{
+			"mysqlOptions": {
+				"authProtocol": "default"
+			},
+			"previewLimit": 50,
+			"server": "localhost",
+			"port": 3306,
+			"driver": "MariaDB",
+			"name": "sunday",
+			"database": "sundaydb",
+			"username": "root",
+			"password": "123456"
+		}
+	]
 }

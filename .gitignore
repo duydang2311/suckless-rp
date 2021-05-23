@@ -17,6 +17,8 @@ filterscripts/
 # Dependency versions lockfile
 pawn.lock
 
+# vscode extension temp file
+*.session.sql
 
 #
 # Server/gamemode related files

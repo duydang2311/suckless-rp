@@ -147,3 +147,19 @@ hook AppCall_OnInCallCancel(id) {
 	}
 	return 1;
 }
+
+HOOK__ AppCall_OnInCallAccept(id) {
+	new
+		number[SIM_NUMBER_SIZE],
+		phone;
+	AppCall_GetIncomingNumber(id, number);
+	phone = ISim_GetPhoneWithNumber(number);
+	if(phone != -1 && AppCall_HasDialStats(phone)) {
+		map_remove(m_dialStats, phone);
+		if(!map_size(m_dialStats)) {
+			map_delete(m_dialStats);
+			m_dialStats = Map:-1;
+		}
+	}
+	return 1;
+}

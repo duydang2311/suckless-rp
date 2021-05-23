@@ -319,8 +319,8 @@ hook AppCall_OnInCallCancel(id) {
 
 				task_unblock(1);
 				await task_ms(floatround(float(APP_CALL_DIAL_DELAY_MS) / 2.0, floatround_ceil));
-				AppCall_DestroyDialUI(id, playerid);
-				AppCall_UpdateContactUI(id, playerid);
+				AppCall_DestroyDialUI(key[ItemId], key[PlayerId]);
+				AppCall_UpdateContactUI(key[ItemId], key[PlayerId]);
 				break;
 			}
 		}
@@ -328,7 +328,24 @@ hook AppCall_OnInCallCancel(id) {
 	return 1;
 }
 
-hook AppCall_OnInCallAccept(id) {
+HOOK__ AppCall_OnInCallAccept(id) {
+	if(!map_valid(m_dialUI)) {
+		return 0;
+	}
 
+	new
+		number[SIM_NUMBER_SIZE],
+		phone;
+	AppCall_GetIncomingNumber(id, number);
+	phone = ISim_GetPhoneWithNumber(number);
+	if(phone != -1) {
+		for(new Iter:it = map_iter(m_dialUI), key[Key]; iter_inside(it); iter_move_next(it)) {
+			iter_get_arr(it, key);
+			if(key[ItemId] == phone) {
+				AppCall_DestroyDialUI(key[ItemId], key[PlayerId]);
+				break;
+			}
+		}
+	}
 	return 1;
 }

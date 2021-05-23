@@ -118,10 +118,11 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	if(AppCall_HasIncomingUIKey(key)) {
 		switch(button) {
 			case PhoneButtonCall: {
-
+				AppCall_DestroyIncomingUI(id, playerid);
 				AppCall_AcceptIncoming(id);
 			}
 			case PhoneButtonHangup: {
+				AppCall_DestroyIncomingUI(id, playerid);
 				AppCall_CancelIncoming(id);
 			}
 		}

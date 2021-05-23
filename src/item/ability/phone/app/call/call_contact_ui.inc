@@ -374,9 +374,12 @@ hook AppCall_OnContAdded(id, saved_sim, const saved_name[]) {
 		return 1;
 	}
 
+	printf("AppCall_OnContAdded(%d, %d, %s)", id, saved_sim, saved_name);
 	for(new Iter:it = map_iter(m_contactUI), key[Key]; iter_inside(it); iter_move_next(it)) {
 		iter_get_key_arr(it, key);
+		printf("AppCall_OnContAdded, iterating key id %d", id, saved_sim, saved_name, key[ItemId]);
 		if(key[ItemId] == id) {
+			printf("AppCall_OnContAdded, destroy, update for player %d", key[PlayerId]);
 			AppCall_DestroyContactUI(key[ItemId], key[PlayerId]);
 			AppCall_UpdateContactUI(key[ItemId], key[PlayerId]);
 			break;

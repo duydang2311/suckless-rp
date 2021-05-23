@@ -49,8 +49,9 @@ Dialog:AppCallContactName(playerid, response, listitem, inputtext[]) {
 					new saved_sim = map_get(m_contactSim, playerid);
 					task_unblock(1);
 					new rows = await AppCall_AddContact(sim, saved_sim, inputtext);
+					printf("AddCall_AddContact -> rows %d, inputtext %s", rows, inputtext);
 					if(rows) {
-						SetPreciseTimer("AppCall_OnContAdded", 0, false, "iis", id, saved_sim, inputtext);
+						CallLocalFunction("AppCall_OnContAdded", "iis", id, saved_sim, inputtext);
 					}
 					break;
 				}

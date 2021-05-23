@@ -4,8 +4,6 @@
 
 #define app_call_included
 
-DEFINE_HOOK_REPLACEMENT(Contact, Cont);
-
 #include ".\item\ability\phone\app\call\call_contact.inc"
 #include ".\item\ability\phone\app\call\call_dial.inc"
 #include ".\item\ability\phone\app\call\call_incoming.inc"

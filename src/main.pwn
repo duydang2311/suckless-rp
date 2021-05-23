@@ -43,9 +43,11 @@ DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 // DEFINE_HOOK_REPLACEMENT__(IPhoneUI, IPUI);
 // DEFINE_HOOK_REPLACEMENT__(IPApp, IPA);
 
+#include <inventory_forward>
+#include <hand/hand_forward>
+
 #include <mysql>
 #include <vehicle>
-#include <inventory_forward>
 #include <item>
 #include <inventory>
 #include <weapon>

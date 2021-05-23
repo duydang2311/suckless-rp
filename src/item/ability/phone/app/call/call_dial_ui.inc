@@ -303,11 +303,27 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 }
 
 hook AppCall_OnInCallCancel(id) {
+	if(!map_valid(m_dialUI)) {
+		return 1;
+	}
+
 	new number[SIM_NUMBER_SIZE];
 	AppCall_GetIncomingNumber(id, number);
 	new phone = ISim_GetPhoneWithNumber(number);
-	if(phone != -1 && AppCall_HasDialStats(phone)) {
-		AppCall_CancelDial(phone);
+	if(phone != -1) {
+		for(new Iter:it = map_iter(m_dialUI), key[Key]; iter_inside(it); iter_move_next(it)) {
+			iter_get_arr(it, key);
+			if(key[ItemId] == phone) {
+				AppCall_KillDialingEffect(key[ItemId], key[PlayerId]);
+				AppCall_UpdateDialExtraText(id, playerid, "da tu choi cuoc goi...");
+				break;
+			}
+		}
 	}
+	return 1;
+}
+
+hook AppCall_OnInCallAccept(id) {
+
 	return 1;
 }

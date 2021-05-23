@@ -25,6 +25,20 @@ stock AppCall_CancelIncoming(id) {
 	return 1;
 }
 
+stock AppCall_AcceptIncoming(id) {
+	if(!AppCall_HasIncoming(id)) {
+		return 0;
+	}
+
+	CallLocalFunction("AppCall_OnInCallAccept", "i", id); // process first, delete then
+	map_remove(m_incoming, id);
+	if(!map_size(m_incoming)) {
+		map_delete(m_incoming);
+		m_incoming = Map:-1;
+	}
+	return 1;
+}
+
 stock AppCall_GetIncomingNumber(id, number[SIM_NUMBER_SIZE]) {
 	if(!AppCall_HasIncoming(id)) {
 		return 0;

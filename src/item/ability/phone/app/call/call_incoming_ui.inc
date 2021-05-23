@@ -119,9 +119,10 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 		switch(button) {
 			case PhoneButtonCall: {
 
+				AppCall_AcceptIncoming(id);
 			}
 			case PhoneButtonHangup: {
-
+				AppCall_CancelIncoming(id);
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;

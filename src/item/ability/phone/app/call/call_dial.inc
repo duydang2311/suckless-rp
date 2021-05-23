@@ -126,12 +126,16 @@ hook AppCall_OnDialed(from_phone, const to_number[]) {
 	return 1;
 }
 
-hook AppCall_OnInCallCancel(id) {
+hook AppCall_OnInCallCancel@(id) {
 	new number[SIM_NUMBER_SIZE];
 	AppCall_GetIncomingNumber(id, number);
 	new phone = ISim_GetPhoneWithNumber(number);
 	if(phone != -1 && AppCall_HasDialStats(phone)) {
-		AppCall_CancelDial(phone);
+		map_remove(m_dialStats, phone);
+		if(!map_size(m_dialStats)) {
+			map_delete(m_dialStats);
+			m_dialStats = Map:-1;
+		}
 	}
 	return 1;
 }

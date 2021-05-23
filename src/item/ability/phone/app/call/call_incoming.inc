@@ -48,15 +48,20 @@ stock AppCall_GetIncomingNumber(id, number[SIM_NUMBER_SIZE]) {
 
 #include <YSI_Coding\y_hooks>
 
-hook AppCall_OnDialCancel(id) {
+hook AppCall_OnDialCancel@(id) {
 	new
 		dialPhone,
 		number[SIM_NUMBER_SIZE];
 	AppCall_GetDialSimNumber(id, number);
 	dialPhone = ISim_GetPhoneWithNumber(number);
 	if(AppCall_HasIncoming(dialPhone)) {
-		if(map_get(m_incoming, dialPhone) == id) {
-			AppCall_CancelIncoming(dialPhone);
+		map_get_str(m_incoming, dialPhone, number);
+		if(ISim_GetPhoneWithNumber(number) == id) {
+			map_remove(m_incoming, dialPhone);
+			if(!map_size(m_incoming)) {
+				map_delete(m_incoming);
+				m_incoming = Map:-1;
+			}
 		}
 	}
 	return 1;

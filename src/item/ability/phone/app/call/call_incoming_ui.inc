@@ -118,6 +118,21 @@ stock Iter:AppCall_GetIncomingUIMapIter(offset = 0) {
 	return it;
 }
 
+stock AppCall_UpdateIncExtraText(id, playerid, const text[]) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!AppCall_HasIncomingUIKey(key)) {
+		return 0;
+	}
+
+	new ui[IncomingUI];
+	map_arr_get_arr(m_incomingUI, key, ui);
+	PlayerTextDrawSetString(playerid, ui[uiIncExtraText], text);
+	PlayerTextDrawShow(playerid, ui[uiIncExtraText]);
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPUI_OnButtonClicked(id, playerid, button) {
@@ -157,6 +172,40 @@ hook AppCall_OnUIShowAttempt(id, playerid, &bool:busy) {
 	if(AppCall_HasIncoming(id)) {
 		AppCall_UpdateIncomingUI(id, playerid);
 		busy = true; // means that when app call initiates, it won't show the contact ui but show this incoming call ui instead
+	}
+	return 1;
+}
+
+hook AppCall_OnDialCancel(id) {
+	if(!map_valid(m_incomingUI)) {
+		return 1;
+	}
+	new
+		dialPhone,
+		number[SIM_NUMBER_SIZE];
+	AppCall_GetDialSimNumber(id, number);
+	dialPhone = ISim_GetPhoneWithNumber(number);
+	if(AppCall_HasIncoming(dialPhone)) {
+		AppCall_GetIncomingNumber(dialPhone, number);
+		if(ISim_GetPhoneWithNumber(number) == id) {
+			for(new Iter:it = map_iter(m_incomingUI), key[Key]; iter_inside(it); iter_move_next(it)) {
+				iter_get_key_arr(it, key);
+				if(key[ItemId] == dialPhone) {
+					AppCall_UpdateIncExtraText(key[ItemId], key[PlayerId], "da huy cuoc goi...");
+
+					task_unblock(1);
+					await task_ms(floatround(float(APP_CALL_DIAL_DELAY_MS) / 2.0, floatround_ceil));
+					AppCall_DestroyIncomingUI(key[ItemId], key[PlayerId]);
+					if(!AppCall_HasContactUIKey(key)) {
+						AppCall_UpdateContactUI(key[ItemId], key[PlayerId]);
+					}
+					if(!AppCall_HasButtonUIKey(key)) {
+						AppCall_UpdateContactButtonUI(key[ItemId], key[PlayerId]);
+					}
+					break;
+				}
+			}
+		}
 	}
 	return 1;
 }

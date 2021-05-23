@@ -109,6 +109,15 @@ stock AppCall_UpdateIncomingUI(id, playerid) {
 	return 1;
 }
 
+stock Iter:AppCall_GetIncomingUIMapIter(offset = 0) {
+	new Iter:it = Iter:-1;
+	if(map_valid(m_incomingUI)) {
+		it = map_iter(m_incomingUI, offset);
+		iter_acquire(it);
+	}
+	return it;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook IPUI_OnButtonClicked(id, playerid, button) {

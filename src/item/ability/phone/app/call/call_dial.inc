@@ -106,7 +106,7 @@ hook AppCall_OnTermnAttempt(id) {
 	return 1;
 }
 
-HOOK__ AppCall_OnDialed(from_phone, const to_number[]) {
+hook AppCall_OnDialed(from_phone, const to_number[]) {
 	new phone = ISim_GetPhoneWithNumber(to_number);
 	if(phone == -1) {
 		// we are not using task_unblock here because we want other hooks to wait for this operation
@@ -136,7 +136,7 @@ hook AppCall_OnInCallCancel(id) {
 	return 1;
 }
 
-HOOK__ AppCall_OnInCallAccept(id) {
+hook AppCall_OnInCallAccept@(id) {
 	new
 		number[SIM_NUMBER_SIZE],
 		phone;

@@ -5,6 +5,7 @@
 #define app_call_perform_included
 
 static enum _:CallPerformStats {
+	callOffset,
 	LinkedList:callRemotePhoneList, // LinkedList<phone_id>, useful for calling many people at once
 	bool:callSpeaker
 }
@@ -38,6 +39,41 @@ stock AppCall_Perform(from_phone, to_phone) {
 	linked_list_add_arr(stats[callRemotePhoneList], stats);
 	return 1;
 }
+
+stock AppCall_GetPerformOffset(id) {
+	if(!AppCall_HasPerformStats(id)) {
+		return 0;
+	}
+	new stats[CallPerformStats];
+	map_get_arr(m_performStats, id, stats);
+	return stats[callOffset];
+}
+
+stock AppCall_GetPerformRemoteSize(id) {
+	if(!AppCall_HasPerformStats(id)) {
+		return 0;
+	}
+	new stats[CallPerformStats];
+	map_get_arr(m_performStats, id, stats);
+	if(!linked_list_valid(stats[callRemotePhoneList])) {
+		return 0;
+	}
+	return linked_list_size(stats[callRemotePhoneList]);
+}
+
+stock Iter:AppCall_GetPerformRemoteIter(id, offset = 0) {
+	new Iter:it = Iter:-1;
+	if(AppCall_HasPerformStats(id)) {
+		new stats[CallPerformStats];
+		map_get_arr(m_performStats, id, stats);
+		if(linked_list_valid(stats[callRemotePhoneList])) {
+			it = linked_list_iter(stats[callRemotePhoneList], offset);
+			iter_acquire(it);
+		}
+	}
+	return it;
+}
+
 
 #include <YSI_Coding\y_hooks>
 

@@ -369,7 +369,7 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	return 1;
 }
 
-hook AppCall_OnContAdded(id, saved_sim, const saved_name[]) {
+hook AppCall_OnContAdded@0(id, saved_sim, const saved_name[]) {
 	if(!map_valid(m_contactUI)) {
 		return 1;
 	}
@@ -404,7 +404,7 @@ hook AppCall_OnContDeleted(id) {
 	return 1;
 }
 
-hook AppCall_OnPreDialed(from_sim, to_number[]) {
+hook AppCall_OnPreDialed@0(from_sim, to_number[]) {
 	if(!map_valid(m_contactUI)) {
 		return 1;
 	}

@@ -209,9 +209,18 @@ stock AppCall_UpdateDialExtraText(id, playerid, const text[]) {
 	return 1;
 }
 
+stock Iter:AppCall_GetDialUIMapIter(offset = 0) {
+	new Iter:it = Iter:-1;
+	if(map_valid(m_dialUI)) {
+		it = map_iter(m_dialUI, offset);
+		iter_acquire(it);
+	}
+	return it;
+}
+
 #include <YSI_Coding\y_hooks>
 
-HOOK__ AppCall_OnPreDialed(from_sim, const to_number[]) {
+hook AppCall_OnPreDialed(from_sim, const to_number[]) {
 	new key[Key];
 	AppCall_GetContactUIKeyBySim(from_sim, key);
 	if(key[ItemId] != -1 && key[PlayerId] != -1) {
@@ -257,7 +266,7 @@ hook AppCall_OnDialError(from_phone, error) {
 	return 1;
 }
 
-hook AppCall_OnDialed(from_phone, const to_number[]) {
+hook AppCall_OnDialed@0(from_phone, const to_number[]) {
 	new phone = ISim_GetPhoneWithNumber(to_number);
 	if(phone != -1) {
 		task_unblock(1);
@@ -333,7 +342,7 @@ hook AppCall_OnInCallCancel(id) {
 	return 1;
 }
 
-HOOK__ AppCall_OnInCallAccept(id) {
+hook AppCall_OnInCallAccept@(id) {
 	if(!map_valid(m_dialUI)) {
 		return 0;
 	}

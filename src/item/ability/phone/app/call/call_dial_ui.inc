@@ -316,6 +316,11 @@ hook AppCall_OnInCallCancel(id) {
 			if(key[ItemId] == phone) {
 				AppCall_KillDialingEffect(key[ItemId], key[PlayerId]);
 				AppCall_UpdateDialExtraText(key[ItemId], key[PlayerId], "da tu choi cuoc goi...");
+
+				task_unblock(1);
+				await task_ms(floatround(float(APP_CALL_DIAL_DELAY_MS) / 2.0, floatround_ceil));
+				AppCall_DestroyDialUI(id, playerid);
+				AppCall_UpdateContactUI(id, playerid);
 				break;
 			}
 		}

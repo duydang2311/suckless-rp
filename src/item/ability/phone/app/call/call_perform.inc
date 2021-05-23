@@ -38,3 +38,17 @@ stock AppCall_Perform(from_phone, to_phone) {
 	linked_list_add_arr(stats[callRemotePhoneList], stats);
 	return 1;
 }
+
+#include <YSI_Coding\y_hooks>
+
+hook AppCall_OnInCallAccept(id) {
+	new
+		number[SIM_NUMBER_SIZE],
+		phone;
+	AppCall_GetIncomingNumber(id, number);
+	phone = ISim_GetPhoneWithNumber(number);
+	if(phone != -1) {
+		AppCall_Perform(id, phone);
+	}
+	return 1;
+}

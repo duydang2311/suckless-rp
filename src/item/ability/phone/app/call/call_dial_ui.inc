@@ -320,8 +320,12 @@ hook AppCall_OnInCallCancel(id) {
 				task_unblock(1);
 				await task_ms(floatround(float(APP_CALL_DIAL_DELAY_MS) / 2.0, floatround_ceil));
 				AppCall_DestroyDialUI(key[ItemId], key[PlayerId]);
-				AppCall_UpdateContactUI(key[ItemId], key[PlayerId]);
-				AppCall_UpdateContactButtonUI(key[ItemId], key[PlayerId]);
+				if(!AppCall_HasContactUIKey(key)) {
+					AppCall_UpdateContactUI(key[ItemId], key[PlayerId]);
+				}
+				if(!AppCall_HasButtonUIKey(key)) {
+					AppCall_UpdateContactButtonUI(key[ItemId], key[PlayerId]);
+				}
 				break;
 			}
 		}

@@ -315,7 +315,7 @@ hook AppCall_OnInCallCancel(id) {
 			iter_get_arr(it, key);
 			if(key[ItemId] == phone) {
 				AppCall_KillDialingEffect(key[ItemId], key[PlayerId]);
-				AppCall_UpdateDialExtraText(id, playerid, "da tu choi cuoc goi...");
+				AppCall_UpdateDialExtraText(key[ItemId], key[PlayerId], "da tu choi cuoc goi...");
 				break;
 			}
 		}

@@ -118,6 +118,10 @@ stock ISim_GetPhoneWithNumber(const number[]) {
 }
 
 stock ISim_GetSimWithNumber(const number[]) {
+	if(isnull(number)) {
+		return -1;
+	}
+
 	if(!map_valid(m_phoneByNumber) || !map_has_str_key(m_phoneByNumber, number)) {
 		return -1;
 	}

@@ -321,7 +321,7 @@ hook AppCall_OnInCallCancel(id) {
 	new phone = ISim_GetPhoneWithNumber(number);
 	if(phone != -1) {
 		for(new Iter:it = map_iter(m_dialUI), key[Key]; iter_inside(it); iter_move_next(it)) {
-			iter_get_arr(it, key);
+			iter_get_key_arr(it, key);
 			if(key[ItemId] == phone) {
 				AppCall_KillDialingEffect(key[ItemId], key[PlayerId]);
 				AppCall_UpdateDialExtraText(key[ItemId], key[PlayerId], "da tu choi cuoc goi...");

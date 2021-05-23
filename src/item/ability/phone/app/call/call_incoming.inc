@@ -7,7 +7,6 @@
 static Map:m_incoming; // { phone_id: sim_number }
 
 stock AppCall_HasIncoming(id) {
-	printf("AppCall_HasIncoming(%d) ? %d", id, (map_valid(m_incoming) && map_has_key(m_incoming, id)));
 	return (map_valid(m_incoming) && map_has_key(m_incoming, id));
 }
 

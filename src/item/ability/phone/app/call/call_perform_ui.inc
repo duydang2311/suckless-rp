@@ -108,7 +108,8 @@ stock AppCall_UpdatePerformUI(id, playerid) {
 
 	const
 		Float:SIM_NUMBER_TEXT_SIZE = 5.00,
-		Float:SIM_NUMBER_TEXT_GAP = 3.00;
+		Float:SIM_NUMBER_TEXT_GAP = 3.00,
+		Float:SPEAKER_BUTTON_SIZE = 15.00;
 
 	new
 		Float:anc[2],
@@ -123,7 +124,7 @@ stock AppCall_UpdatePerformUI(id, playerid) {
 		Float:first_y;
 	IPModel_GetSafeScreenOffset(id, safe_min[0], safe_min[1], safe_max[0], safe_max[1]);
 	IPUI_GetAnchor(id, playerid, anc[0], anc[1]);
-	safe_max[1] -= 25.0;
+	safe_max[1] -= SPEAKER_BUTTON_SIZE + SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP;
 	first_x = anc[0] + safe_min[0] + (safe_max[0] - safe_min[0]) / 2.0;
 	first_y = anc[1] + safe_min[1] + (safe_max[1] - safe_min[1]) / 2.0 + SIM_NUMBER_TEXT_SIZE;
 
@@ -146,8 +147,23 @@ stock AppCall_UpdatePerformUI(id, playerid) {
 
 	ui[uiRemoteNumberList] = linked_list_new();
 	if(iter_valid(it) && iter_release(it)) {
-		for(new PlayerText:remoteNumber, cnt = 0, number[SIM_NUMBER_SIZE]; iter_inside(it) && cnt != remote_cnt; iter_move_next(it), cnt++) {
-			iter_get_str(it, number);
+		for(new PlayerText:remoteNumber, cnt = 0, phone, number[SIM_NUMBER_SIZE], Iter:phone_it; iter_inside(it) && cnt != remote_cnt; iter_move_next(it), cnt++) {
+			phone = iter_get(it);
+			if(!IPhone_Has(phone) || !IGroup_Has(phone)) {
+				continue;
+			}
+			phone_it = IGroup_GetIter(phone);
+			if(!iter_valid(phone_it)) {
+				continue;
+			}
+			iter_release(phone_it);
+			for(new sim; iter_inside(phone_it); iter_move_next(phone_it)) {
+				sim = iter_get(phone_it);
+				if(ISim_Has(sim)) {
+					ISim_GetNumber(sim, number);
+					break;
+				}
+			}
 			remoteNumber = CreatePlayerTextDraw(playerid, first_x, first_y, number);
 			PlayerTextDrawFont(playerid, remoteNumber, 3);
 			PlayerTextDrawLetterSize(playerid, remoteNumber, 0.150000, 0.600000);
@@ -182,19 +198,19 @@ stock AppCall_UpdatePerformUI(id, playerid) {
 	PlayerTextDrawSetSelectable(playerid, ui[uiCallTimer], 0);
 	first_y += SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP;
 
-	ui[uiCallTimer] = CreatePlayerTextDraw(playerid, first_x - (15.0 / 2.0), first_y, "app:menu");
-	PlayerTextDrawFont(playerid, ui[uiCallTimer], 2);
-	PlayerTextDrawLetterSize(playerid, ui[uiCallTimer], 0.0000, 0.0000);
-	PlayerTextDrawTextSize(playerid, ui[uiCallTimer], 15.0000, 15.0000);
-	PlayerTextDrawSetOutline(playerid, ui[uiCallTimer], 1);
-	PlayerTextDrawSetShadow(playerid, ui[uiCallTimer], 0);
-	PlayerTextDrawAlignment(playerid, ui[uiCallTimer], 2);
-	PlayerTextDrawColor(playerid, ui[uiCallTimer], -1);
-	PlayerTextDrawBackgroundColor(playerid, ui[uiCallTimer], 255);
-	PlayerTextDrawBoxColor(playerid, ui[uiCallTimer], 50);
-	PlayerTextDrawUseBox(playerid, ui[uiCallTimer], 0);
-	PlayerTextDrawSetProportional(playerid, ui[uiCallTimer], 1);
-	PlayerTextDrawSetSelectable(playerid, ui[uiCallTimer], 1);
+	ui[uiSpeakerBtn] = CreatePlayerTextDraw(playerid, first_x - (15.0 / 2.0), first_y, "app:menu");
+	PlayerTextDrawFont(playerid, ui[uiSpeakerBtn], 4);
+	PlayerTextDrawLetterSize(playerid, ui[uiSpeakerBtn], 0.0000, 0.0000);
+	PlayerTextDrawTextSize(playerid, ui[uiSpeakerBtn], 15.0000, 15.0000);
+	PlayerTextDrawSetOutline(playerid, ui[uiSpeakerBtn], 1);
+	PlayerTextDrawSetShadow(playerid, ui[uiSpeakerBtn], 0);
+	PlayerTextDrawAlignment(playerid, ui[uiSpeakerBtn], 2);
+	PlayerTextDrawColor(playerid, ui[uiSpeakerBtn], -1);
+	PlayerTextDrawBackgroundColor(playerid, ui[uiSpeakerBtn], 255);
+	PlayerTextDrawBoxColor(playerid, ui[uiSpeakerBtn], 50);
+	PlayerTextDrawUseBox(playerid, ui[uiSpeakerBtn], 0);
+	PlayerTextDrawSetProportional(playerid, ui[uiSpeakerBtn], 1);
+	PlayerTextDrawSetSelectable(playerid, ui[uiSpeakerBtn], 1);
 
 	PlayerTextDrawShow(playerid, ui[uiCallTimer]);
 	PlayerTextDrawShow(playerid, ui[uiSpeakerBtn]);
@@ -208,13 +224,10 @@ stock AppCall_UpdatePerformUI(id, playerid) {
 #include <YSI_Coding\y_hooks>
 
 hook AppCall_OnInCallAccept(id) {
-	printf("perform_ui AppCall_OnInCallAccept(%d)", id);
 	new Iter:it = AppCall_GetIncomingUIMapIter();
 	if(iter_valid(it) && iter_release(it)) {
-		print("AppCall_GetIncomingUIMapIter valid");
 		for(new key[Key]; iter_inside(it); iter_move_next(it)) {
 			iter_get_key_arr(it, key);
-			printf("key{%d, %d} == %d", key[ItemId], key[PlayerId], id);
 			if(key[ItemId] == id) {
 				AppCall_UpdatePerformUI(key[ItemId], key[PlayerId]);
 				break;
@@ -234,6 +247,7 @@ hook AppCall_OnInCallAccept(id) {
 			print("AppCall_GetDialUIMapIter valid");
 			for(new key[Key]; iter_inside(it); iter_move_next(it)) {
 				iter_get_key_arr(it, key);
+				printf("key{%d, %d} == %d", key[ItemId], key[PlayerId], remote);
 				if(key[ItemId] == remote) {
 					AppCall_UpdatePerformUI(key[ItemId], key[PlayerId]);
 					break;

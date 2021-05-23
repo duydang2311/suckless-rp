@@ -354,7 +354,7 @@ hook AppCall_OnInCallAccept@(id) {
 	phone = ISim_GetPhoneWithNumber(number);
 	if(phone != -1) {
 		for(new Iter:it = map_iter(m_dialUI), key[Key]; iter_inside(it); iter_move_next(it)) {
-			iter_get_arr(it, key);
+			iter_get_key_arr(it, key);
 			if(key[ItemId] == phone) {
 				AppCall_DestroyDialUI(key[ItemId], key[PlayerId]);
 				break;

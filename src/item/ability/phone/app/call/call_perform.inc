@@ -6,7 +6,7 @@
 
 static enum _:CallPerformStats {
 	callOffset,
-	LinkedList:callRemotePhoneList, // LinkedList<phone_id>, useful for calling many people at once
+	LinkedList:callRemotePhoneList, // LinkedList<phone_id>, use case is calling many people at once
 	bool:callSpeaker
 }
 
@@ -34,9 +34,9 @@ stock AppCall_Perform(from_phone, to_phone) {
 	}
 
 	map_get_arr(m_performStats, from_phone, stats);
-	linked_list_add_arr(stats[callRemotePhoneList], stats);
+	linked_list_add(stats[callRemotePhoneList], to_phone);
 	map_get_arr(m_performStats, to_phone, stats);
-	linked_list_add_arr(stats[callRemotePhoneList], stats);
+	linked_list_add(stats[callRemotePhoneList], from_phone);
 	return 1;
 }
 

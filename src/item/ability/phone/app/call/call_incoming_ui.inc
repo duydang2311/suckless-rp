@@ -124,6 +124,8 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 			case PhoneButtonHangup: {
 				AppCall_DestroyIncomingUI(id, playerid);
 				AppCall_CancelIncoming(id);
+				AppCall_UpdateContactUI(id, playerid);
+				AppCall_UpdateContactButtonUI(id, playerid);
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;

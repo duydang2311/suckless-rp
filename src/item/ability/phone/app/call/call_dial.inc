@@ -7,8 +7,7 @@
 const APP_CALL_DIAL_DELAY_MS = 4000;
 
 enum _:CallDialStats {
-	dialSimNumber[SIM_NUMBER_SIZE],
-	bool:dialUsingSpeaker
+	dialSimNumber[SIM_NUMBER_SIZE]
 }
 
 enum _:DialErrors {
@@ -44,16 +43,6 @@ stock AppCall_GetDialSimNumber(id, number[SIM_NUMBER_SIZE]) {
 	return 1;
 }
 
-stock bool:AppCall_IsDialUsingSpeaker(id) {
-	if(!AppCall_HasDialStats(id)) {
-		return false;
-	}
-
-	new stats[CallDialStats];
-	map_get_arr(m_dialStats, id, stats);
-	return stats[dialUsingSpeaker];
-}
-
 stock AppCall_Dial(id, const to_number[]) {
 	if(!IPhone_Has(id) || !IGroup_Has(id)) {
 		return 0;
@@ -69,7 +58,6 @@ stock AppCall_Dial(id, const to_number[]) {
 				if(isnull(stats[dialSimNumber])) {
 					strcat(stats[dialSimNumber], "Unknown");
 				}
-				stats[dialUsingSpeaker] = false;
 				if(!map_valid(m_dialStats)) {
 					m_dialStats = map_new();
 				}

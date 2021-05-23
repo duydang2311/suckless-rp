@@ -301,3 +301,13 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 	AppCall_CancelDial(id);
 	return 1;
 }
+
+hook AppCall_OnInCallCancel(id) {
+	new number[SIM_NUMBER_SIZE];
+	AppCall_GetIncomingNumber(id, number);
+	new phone = ISim_GetPhoneWithNumber(number);
+	if(phone != -1 && AppCall_HasDialStats(phone)) {
+		AppCall_CancelDial(phone);
+	}
+	return 1;
+}

@@ -118,8 +118,10 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	if(AppCall_HasIncomingUIKey(key)) {
 		switch(button) {
 			case PhoneButtonCall: {
+
 			}
 			case PhoneButtonHangup: {
+
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;

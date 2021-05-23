@@ -118,8 +118,16 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	if(AppCall_HasIncomingUIKey(key)) {
 		switch(button) {
 			case PhoneButtonCall: {
+				new
+					number[SIM_NUMBER_SIZE],
+					phone;
+				AppCall_GetIncomingNumber(id, number);
+				phone = ISim_GetPhoneWithNumber(number);
 				AppCall_DestroyIncomingUI(id, playerid);
 				AppCall_AcceptIncoming(id);
+				if(phone != -1) {
+					AppCall_Perform(id, phone);
+				}
 			}
 			case PhoneButtonHangup: {
 				AppCall_DestroyIncomingUI(id, playerid);

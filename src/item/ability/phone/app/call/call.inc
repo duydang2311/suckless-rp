@@ -7,6 +7,7 @@
 #include ".\item\ability\phone\app\call\call_contact.inc"
 #include ".\item\ability\phone\app\call\call_dial.inc"
 #include ".\item\ability\phone\app\call\call_incoming.inc"
+#include ".\item\ability\phone\app\call\call_perform.inc"
 #include ".\item\ability\phone\app\call\call_button.inc"
 #include ".\item\ability\phone\app\call\call_incoming_ui.inc"
 #include ".\item\ability\phone\app\call\call_dial_ui.inc"

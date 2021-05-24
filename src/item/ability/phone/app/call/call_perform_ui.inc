@@ -16,53 +16,51 @@ static enum _:PerformUI {
 	PlayerText:uiSpeakerBtnCircle
 }
 
-static enum _:TimerEffect {
+static enum _:PerformTimer {
 	tmStartTime,
 	tmTimer
 }
 
 static
 	Map:m_performUI, // { {Key}: {PerformUI} }
-	Map:m_timerEffect; // { {Key}: {TimerEffect} }
+	Map:m_performTimer; // { {Key}: {PerformTimer} }
 
-// forward AppCall_DialingEffectHandler(id, playerid);
-// public AppCall_DialingEffectHandler(id, playerid) {
-// 	new key[Key];
-// 	key[ItemId] = id;
-// 	key[PlayerId] = playerid;
-// 	if(!AppCall_HasPerformUIKey(key)) {
-// 		if(map_valid(m_timerEffect) && map_has_arr_key(m_timerEffect, key)) {
-// 			new eff[TimerEffect];
-// 			map_arr_get_arr(m_timerEffect, key, eff);
-// 			DeletePreciseTimer(eff[effTimer]);
-// 			map_arr_remove(m_timerEffect, key);
-// 			if(!map_size(m_timerEffect)) {
-// 				map_delete(m_timerEffect);
-// 				m_timerEffect = Map:-1;
-// 			}
-// 		}
-// 		return 0;
-// 	}
+forward AppCall_PerformTimerHandler(id, playerid);
+public AppCall_PerformTimerHandler(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!AppCall_HasPerformUIKey(key)) {
+		if(map_valid(m_performTimer) && map_has_arr_key(m_performTimer, key)) {
+			new tm[PerformTimer];
+			map_arr_get_arr(m_performTimer, key, tm);
+			DeletePreciseTimer(tm[tmTimer]);
+			map_arr_remove(m_performTimer, key);
+			if(!map_size(m_performTimer)) {
+				map_delete(m_performTimer);
+				m_performTimer = Map:-1;
+			}
+		}
+		return 0;
+	}
 
-// 	if(!map_valid(m_timerEffect) || !map_has_arr_key(m_timerEffect, key)) {
-// 		return 0;
-// 	}
+	if(!map_valid(m_performTimer) || !map_has_arr_key(m_performTimer, key)) {
+		return 0;
+	}
 
-// 	new
-// 		eff[TimerEffect],
-// 		ui[PerformUI],
-// 		extra_text[24] = "dialing";
-// 	map_arr_get_arr(m_timerEffect, key, eff);
-// 	map_arr_get_arr(m_performUI, key, ui);
-// 	for(new i = 0; i != eff[effStage]; i++) {
-// 		strins(extra_text, ".", 0);
-// 		strcat(extra_text, ".");
-// 	}
-// 	PlayerTextDrawSetString(playerid, ui[uiCallTimer], extra_text);
-// 	PlayerTextDrawShow(playerid, ui[uiCallTimer]);
-// 	map_arr_set_cell(m_timerEffect, key, effStage, (eff[effStage] + 1) % (3 + 1));
-// 	return 1;
-// }
+	new
+		ui[PerformUI],
+		tm[PerformTimer],
+		elapsed_sec,
+		time_format[11];
+	map_arr_get_arr(m_performTimer, key, tm);
+	map_arr_get_arr(m_performUI, key, ui);
+	elapsed_sec = gettime() - tm[tmStartTime];
+	format(time_format, sizeof(time_format), "%02d:%02d", floatround(float(elapsed_sec) / 60.0, floatround_floor), elapsed_sec % 60);
+	PlayerTextDrawSetString(playerid, ui[uiCallTimer], time_format);
+	PlayerTextDrawShow(playerid, ui[uiCallTimer]);
+	return 1;
+}
 
 stock AppCall_HasPerformUIKey(const key[Key]) {
 	return (map_valid(m_performUI) && map_has_arr_key(m_performUI, key));
@@ -238,6 +236,47 @@ stock AppCall_UpdatePerformUI(id, playerid) {
 	return 1;
 }
 
+stock AppCall_RunPerformTimer(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!AppCall_HasPerformUIKey(key)) {
+		return 0;
+	}
+
+	new tm[PerformTimer];
+	if(!map_valid(m_performTimer)) {
+		m_performTimer = map_new();
+	} else if(map_has_arr_key(m_performTimer, key)) {
+		map_arr_get_arr(m_performTimer, key, tm);
+		DeletePreciseTimer(tm[tmTimer]);
+	}
+
+	tm[tmStartTime] = gettime();
+	tm[tmTimer] = SetPreciseTimer("AppCall_PerformTimerHandler", 1000, true, "ii", id, playerid);
+	map_arr_set_arr(m_performTimer, key, tm);
+	return 1;
+}
+
+stock AppCall_KillPerformTimer(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!map_valid(m_performTimer) || !map_has_arr_key(m_performTimer, key)) {
+		return 0;
+	}
+
+	new tm[PerformTimer];
+	map_arr_get_arr(m_performTimer, key, tm);
+	DeletePreciseTimer(tm[tmTimer]);
+	map_arr_remove(m_performTimer, key);
+	if(!map_size(m_performTimer)) {
+		map_delete(m_performTimer);
+		m_performTimer = Map:-1;
+	}
+	return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook AppCall_OnInCallAccept(id) {
@@ -247,6 +286,7 @@ hook AppCall_OnInCallAccept(id) {
 			iter_get_key_arr(it, key);
 			if(key[ItemId] == id) {
 				AppCall_UpdatePerformUI(key[ItemId], key[PlayerId]);
+				AppCall_RunPerformTimer(key[ItemId], key[PlayerId]);
 				break;
 			}
 		}
@@ -264,6 +304,7 @@ hook AppCall_OnInCallAccept(id) {
 				iter_get_key_arr(it, key);
 				if(key[ItemId] == remote) {
 					AppCall_UpdatePerformUI(key[ItemId], key[PlayerId]);
+					AppCall_RunPerformTimer(key[ItemId], key[PlayerId]);
 					break;
 				}
 			}

@@ -312,3 +312,32 @@ hook AppCall_OnInCallAccept(id) {
 	}
 	return 1;
 }
+
+hook IPUI_OnButtonClicked(id, playerid, button) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(AppCall_HasIncomingUIKey(key)) {
+		switch(button) {
+			case PhoneButtonHangup: {
+				AppCall_QuitPerform(id);
+				AppCall_DestroyPerformUI(id, playerid);
+				AppCall_UpdateContactUI(id, playerid);
+				AppCall_UpdateContactButtonUI(id, playerid);
+			}
+		}
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
+
+hook IPA_OnUIHideAttempt(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(AppCall_HasIncomingUIKey(key)) {
+		AppCall_CancelIncoming(id);
+	}
+	AppCall_DestroyIncomingUI(id, playerid);
+	return 1;
+}

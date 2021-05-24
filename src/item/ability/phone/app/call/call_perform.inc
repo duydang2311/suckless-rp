@@ -40,6 +40,15 @@ stock AppCall_Perform(from_phone, to_phone) {
 	return 1;
 }
 
+stock AppCall_QuitPerform(id) {
+	if(!AppCall_HasPerformStats(id)) {
+		return 0;
+	}
+
+
+	return 1;
+}
+
 stock AppCall_GetPerformOffset(id) {
 	if(!AppCall_HasPerformStats(id)) {
 		return 0;

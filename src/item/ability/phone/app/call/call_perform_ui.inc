@@ -257,14 +257,11 @@ hook AppCall_OnInCallAccept(id) {
 		remote;
 	AppCall_GetIncomingNumber(id, number);
 	remote = ISim_GetPhoneWithNumber(number);
-	printf("perform_ui: id %d, remote %d", id, remote);
 	if(remote != -1) {
 		it = AppCall_GetDialUIMapIter();
 		if(iter_valid(it) && iter_release(it)) {
-			print("AppCall_GetDialUIMapIter valid");
 			for(new key[Key]; iter_inside(it); iter_move_next(it)) {
 				iter_get_key_arr(it, key);
-				printf("key{%d, %d} == %d", key[ItemId], key[PlayerId], remote);
 				if(key[ItemId] == remote) {
 					AppCall_UpdatePerformUI(key[ItemId], key[PlayerId]);
 					break;

@@ -12,7 +12,8 @@ static enum _:Key {
 static enum _:PerformUI {
 	LinkedList:uiRemoteNumberList, // LinkedList<PlayerText:>
 	PlayerText:uiCallTimer,
-	PlayerText:uiSpeakerBtn
+	PlayerText:uiSpeakerBtn,
+	PlayerText:uiSpeakerBtnCircle
 }
 
 static enum _:TimerEffect {
@@ -84,6 +85,7 @@ stock AppCall_DestroyPerformUI(id, playerid) {
 	}
 	PlayerTextDrawDestroy(playerid, ui[uiCallTimer]);
 	PlayerTextDrawDestroy(playerid, ui[uiSpeakerBtn]);
+	PlayerTextDrawDestroy(playerid, ui[uiSpeakerBtnCircle]);
 	map_arr_remove_deep(m_performUI, key);
 	if(!map_size(m_performUI)) {
 		map_delete(m_performUI);
@@ -109,7 +111,7 @@ stock AppCall_UpdatePerformUI(id, playerid) {
 	const
 		Float:SIM_NUMBER_TEXT_SIZE = 5.00,
 		Float:SIM_NUMBER_TEXT_GAP = 3.00,
-		Float:SPEAKER_BUTTON_SIZE = 15.00;
+		Float:SPEAKER_BUTTON_SIZE = 20.00;
 
 	new
 		Float:anc[2],
@@ -198,14 +200,28 @@ stock AppCall_UpdatePerformUI(id, playerid) {
 	PlayerTextDrawSetSelectable(playerid, ui[uiCallTimer], 0);
 	first_y += SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP;
 
-	ui[uiSpeakerBtn] = CreatePlayerTextDraw(playerid, first_x - (15.0 / 2.0), first_y, "app:menu");
+	ui[uiSpeakerBtnCircle] = CreatePlayerTextDraw(playerid, first_x - (SPEAKER_BUTTON_SIZE / 2.0), first_y, "shape:circle");
+	PlayerTextDrawFont(playerid, ui[uiSpeakerBtnCircle], 4);
+	PlayerTextDrawLetterSize(playerid, ui[uiSpeakerBtnCircle], 0.0000, 0.0000);
+	PlayerTextDrawTextSize(playerid, ui[uiSpeakerBtnCircle], SPEAKER_BUTTON_SIZE, SPEAKER_BUTTON_SIZE);
+	PlayerTextDrawSetOutline(playerid, ui[uiSpeakerBtnCircle], 1);
+	PlayerTextDrawSetShadow(playerid, ui[uiSpeakerBtnCircle], 0);
+	PlayerTextDrawAlignment(playerid, ui[uiSpeakerBtnCircle], 2);
+	PlayerTextDrawColor(playerid, ui[uiSpeakerBtnCircle], 0x131313FF);
+	PlayerTextDrawBackgroundColor(playerid, ui[uiSpeakerBtnCircle], 255);
+	PlayerTextDrawBoxColor(playerid, ui[uiSpeakerBtnCircle], 50);
+	PlayerTextDrawUseBox(playerid, ui[uiSpeakerBtnCircle], 0);
+	PlayerTextDrawSetProportional(playerid, ui[uiSpeakerBtnCircle], 1);
+	PlayerTextDrawSetSelectable(playerid, ui[uiSpeakerBtnCircle], 0);
+
+	ui[uiSpeakerBtn] = CreatePlayerTextDraw(playerid, first_x - ((SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0)) / 2.0), first_y + (SPEAKER_BUTTON_SIZE / 2.0) - ((SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0)) / 2.0), "appcall:speaker");
 	PlayerTextDrawFont(playerid, ui[uiSpeakerBtn], 4);
 	PlayerTextDrawLetterSize(playerid, ui[uiSpeakerBtn], 0.0000, 0.0000);
-	PlayerTextDrawTextSize(playerid, ui[uiSpeakerBtn], 15.0000, 15.0000);
+	PlayerTextDrawTextSize(playerid, ui[uiSpeakerBtn], SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0), SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0));
 	PlayerTextDrawSetOutline(playerid, ui[uiSpeakerBtn], 1);
 	PlayerTextDrawSetShadow(playerid, ui[uiSpeakerBtn], 0);
 	PlayerTextDrawAlignment(playerid, ui[uiSpeakerBtn], 2);
-	PlayerTextDrawColor(playerid, ui[uiSpeakerBtn], -1);
+	PlayerTextDrawColor(playerid, ui[uiSpeakerBtn], 0xFFFFFF77);
 	PlayerTextDrawBackgroundColor(playerid, ui[uiSpeakerBtn], 255);
 	PlayerTextDrawBoxColor(playerid, ui[uiSpeakerBtn], 50);
 	PlayerTextDrawUseBox(playerid, ui[uiSpeakerBtn], 0);
@@ -214,6 +230,7 @@ stock AppCall_UpdatePerformUI(id, playerid) {
 
 	PlayerTextDrawShow(playerid, ui[uiCallTimer]);
 	PlayerTextDrawShow(playerid, ui[uiSpeakerBtn]);
+	PlayerTextDrawShow(playerid, ui[uiSpeakerBtnCircle]);
 	if(!map_valid(m_performUI)) {
 		m_performUI = map_new();
 	}

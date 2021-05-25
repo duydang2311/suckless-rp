@@ -6,6 +6,10 @@
 
 #define CALL_SESSION_TEST
 
+enum _:CallSessionErrors {
+	ssErrorDifferentSession
+}
+
 enum _:CallSessionStats {
 	ssOffset,
 	ssCreatedTime
@@ -109,20 +113,30 @@ stock AppCall_GetSessionOffset(Ref<LinkedList>:ssref) {
 hook AppCall_OnInCallAccept(id) {
 	new
 		number[SIM_NUMBER_SIZE],
-		Ref<LinkedList>:ssref,
 		phone;
 	AppCall_GetIncomingNumber(id, number);
 	phone = ISim_GetPhoneWithNumber(number);
 	if(phone != -1) {
-		ssref = AppCall_GetPhoneSessionRef(id);
-		if(ssref == Ref<LinkedList>:-1) {
-			ssref = AppCall_GetPhoneSessionRef(phone);
-			if(ssref == Ref<LinkedList>:-1) {
-				ssref = AppCall_CreateSession();
+		new
+			Ref<LinkedList>:ref1 = AppCall_GetPhoneSessionRef(id),
+			Ref<LinkedList>:ref2 = AppCall_GetPhoneSessionRef(phone);
+		if(ref1 == ref2) {
+			if(ref1 == Ref<LinkedList>:-1) {
+				ref1 = AppCall_CreateSession();
+			} else {
+				CallLocalFunction("AppCall_OnSessionJoinError", "iii", id, phone, ssErrorDifferentSession);
+				return 1;
 			}
+		} else {
+			if(ref1 != Ref<LinkedList>:-1 && ref2 != Ref<LinkedList>:-1) {
+				CallLocalFunction("AppCall_OnSessionJoinError", "iii", id, phone, ssErrorDifferentSession);
+				return 1;
+			}
+			ref1 = (ref1 == Ref<LinkedList>:-1) ? ref2 : ref1;
 		}
-		AppCall_JoinSession(id, ssref);
-		AppCall_JoinSession(phone, ssref);
+		AppCall_JoinSession(id, ref1);
+		AppCall_JoinSession(phone, ref1);
+		return 1;
 	}
 	return 1;
 }

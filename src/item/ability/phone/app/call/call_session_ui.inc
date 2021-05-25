@@ -1,0 +1,348 @@
+#if defined app_call_session_ui_included
+	#endinput
+#endif
+
+#define app_call_session_ui_included
+
+#if defined app_call_perform_ui_included
+	#endinput
+#endif
+
+#define app_call_perform_ui_included
+
+static enum _:Key {
+	ItemId,
+	PlayerId
+}
+
+static enum _:PerformUI {
+	LinkedList:uiSessionNumbers, // LinkedList<PlayerText:>
+	PlayerText:uiSessionTimer,
+	PlayerText:uiSpeakerBtn,
+	PlayerText:uiSpeakerBtnCircle
+}
+
+static
+	Map:m_sessionUI, // { {Key}: {PerformUI} }
+	Map:m_sessionTimer; // { {Key}: int }
+
+forward AppCall_SessionTimerHandler(id, playerid);
+public AppCall_SessionTimerHandler(id, playerid) {
+	new
+		key[Key],
+		Ref<LinkedList>:ss_ref = AppCall_GetPhoneSessionRef(id);
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!AppCall_HasSessionUIKey(key) || ss_ref == Ref<LinkedList>:-1) {
+		if(map_valid(m_sessionTimer) && map_has_arr_key(m_sessionTimer, key)) {
+			DeletePreciseTimer(map_arr_get(m_sessionTimer, key));
+			map_arr_remove(m_sessionTimer, key);
+			if(!map_size(m_sessionTimer)) {
+				map_delete(m_sessionTimer);
+				m_sessionTimer = Map:-1;
+			}
+		}
+		return 0;
+	}
+
+	if(!map_valid(m_sessionTimer) || !map_has_arr_key(m_sessionTimer, key)) {
+		return 0;
+	}
+
+	new
+		ui[PerformUI],
+		elapsed_sec = gettime() - AppCall_GetSessionCreatedTime(ss_ref),
+		time_format[11];
+	format(time_format, sizeof(time_format), "%02d:%02d", floatround(float(elapsed_sec) / 60.0, floatround_floor), elapsed_sec % 60);
+	PlayerTextDrawSetString(playerid, ui[uiSessionTimer], time_format);
+	PlayerTextDrawShow(playerid, ui[uiSessionTimer]);
+	return 1;
+}
+
+stock AppCall_HasSessionUIKey(const key[Key]) {
+	return (map_valid(m_sessionUI) && map_has_arr_key(m_sessionUI, key));
+}
+
+stock AppCall_DestroySessionUI(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!AppCall_HasSessionUIKey(key)) {
+		return 0;
+	}
+
+	new ui[PerformUI];
+	map_arr_get_arr(m_sessionUI, key, ui);
+	if(linked_list_valid(ui[uiSessionNumbers])) {
+		for(new Iter:it = linked_list_iter(ui[uiSessionNumbers]); iter_inside(it); iter_release(it)) {
+			PlayerTextDrawDestroy(playerid, PlayerText:iter_get(it));
+		}
+	}
+	PlayerTextDrawDestroy(playerid, ui[uiSessionTimer]);
+	PlayerTextDrawDestroy(playerid, ui[uiSpeakerBtn]);
+	PlayerTextDrawDestroy(playerid, ui[uiSpeakerBtnCircle]);
+	map_arr_remove_deep(m_sessionUI, key);
+	if(!map_size(m_sessionUI)) {
+		map_delete(m_sessionUI);
+		m_sessionUI = Map:-1;
+	}
+	return 1;
+}
+
+stock AppCall_UpdateSessionUI(id, playerid) {
+	new Ref<LinkedList>:ss_ref = AppCall_GetPhoneSessionRef(id);
+	if(ss_ref == Ref<LinkedList>:-1) {
+		return 0;
+	}
+
+	new LinkedList:participantList = pawn_unref<LinkedList>(ss_ref);
+	if(!linked_list_valid(participantList)) {
+		return 0;
+	}
+
+	new
+		key[Key],
+		ui[PerformUI];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(AppCall_HasSessionUIKey(key)) {
+		AppCall_DestroySessionUI(id, playerid);
+	}
+
+	const
+		Float:SIM_NUMBER_TEXT_SIZE = 5.00,
+		Float:SIM_NUMBER_TEXT_GAP = 3.00,
+		Float:SPEAKER_BUTTON_SIZE = 20.00;
+
+	new
+		Float:anc[2],
+		Float:safe_min[2],
+		Float:safe_max[2],
+		Float:first_x,
+		remote_cnt,
+		Float:remote_gap,
+		size = linked_list_size(participantList),
+		offset = AppCall_GetSessionOffset(ss_ref),
+		Float:first_y;
+	IPModel_GetSafeScreenOffset(id, safe_min[0], safe_min[1], safe_max[0], safe_max[1]);
+	IPUI_GetAnchor(id, playerid, anc[0], anc[1]);
+	safe_max[1] -= SPEAKER_BUTTON_SIZE + SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP;
+	first_x = anc[0] + safe_min[0] + (safe_max[0] - safe_min[0]) / 2.0;
+	first_y = anc[1] + safe_min[1] + (safe_max[1] - safe_min[1]) / 2.0 + SIM_NUMBER_TEXT_SIZE;
+
+	remote_cnt = floatround((safe_max[1] - safe_min[1]) / (SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP), floatround_floor);
+	if((size - offset) < remote_cnt) {
+		remote_cnt = (size - offset);
+	}
+
+	remote_gap = (safe_max[1] - safe_min[1] - remote_cnt * (SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP)) / remote_cnt;
+	if(remote_gap > (2.0 * SIM_NUMBER_TEXT_GAP)) {
+		remote_gap = (2.0 * SIM_NUMBER_TEXT_GAP);
+	}
+
+	first_y = anc[1] + safe_min[1] + (safe_max[1] - safe_min[1]) / 2.0 - (SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP) / 2.0; // center position of the screen because textdraw is displayed from top to bottom without vertical centering
+	if(remote_cnt % 2 == 0) {
+		first_y -= (SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP) / 2.0 + (floatround(float(remote_cnt - 1) / 2.0, floatround_floor)) * (SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP);
+	} else {
+		first_y -= (floatround(float(remote_cnt - 1) / 2.0, floatround_floor)) * (SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP);
+	}
+
+	ui[uiSessionNumbers] = linked_list_new();
+	for(new Iter:it = linked_list_iter(participantList), PlayerText:numberTd, cnt = 0, phone, number[SIM_NUMBER_SIZE], Iter:phone_it; iter_inside(it) && cnt != remote_cnt; iter_move_next(it), cnt++) {
+		phone = iter_get(it);
+		if(!IPhone_Has(phone) || !IGroup_Has(phone)) {
+			continue;
+		}
+		phone_it = IGroup_GetIter(phone);
+		if(!iter_valid(phone_it)) {
+			continue;
+		}
+		iter_release(phone_it);
+		for(new sim; iter_inside(phone_it); iter_move_next(phone_it)) {
+			sim = iter_get(phone_it);
+			if(ISim_Has(sim)) {
+				ISim_GetNumber(sim, number);
+				break;
+			}
+		}
+		numberTd = CreatePlayerTextDraw(playerid, first_x, first_y, number);
+		PlayerTextDrawFont(playerid, numberTd, 3);
+		PlayerTextDrawLetterSize(playerid, numberTd, 0.150000, 0.600000);
+		PlayerTextDrawTextSize(playerid, numberTd, SIM_NUMBER_TEXT_SIZE, (safe_max[0] - safe_min[0]));
+		PlayerTextDrawSetOutline(playerid, numberTd, 1);
+		PlayerTextDrawSetShadow(playerid, numberTd, 0);
+		PlayerTextDrawAlignment(playerid, numberTd, 2);
+		PlayerTextDrawColor(playerid, numberTd, -1);
+		PlayerTextDrawBackgroundColor(playerid, numberTd, 255);
+		PlayerTextDrawBoxColor(playerid, numberTd, 50);
+		PlayerTextDrawUseBox(playerid, numberTd, 0);
+		PlayerTextDrawSetProportional(playerid, numberTd, 1);
+		PlayerTextDrawSetSelectable(playerid, numberTd, 0);
+		PlayerTextDrawShow(playerid, numberTd);
+		first_y += SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP;
+		linked_list_add(ui[uiSessionNumbers], _:numberTd);
+	}
+
+	ui[uiSessionTimer] = CreatePlayerTextDraw(playerid, first_x, first_y, "00:00");
+	PlayerTextDrawFont(playerid, ui[uiSessionTimer], 2);
+	PlayerTextDrawLetterSize(playerid, ui[uiSessionTimer], 0.120000, 0.4800000);
+	PlayerTextDrawTextSize(playerid, ui[uiSessionTimer], SIM_NUMBER_TEXT_SIZE - 2.0, (safe_max[0] - safe_min[0]));
+	PlayerTextDrawSetOutline(playerid, ui[uiSessionTimer], 1);
+	PlayerTextDrawSetShadow(playerid, ui[uiSessionTimer], 0);
+	PlayerTextDrawAlignment(playerid, ui[uiSessionTimer], 2);
+	PlayerTextDrawColor(playerid, ui[uiSessionTimer], -1);
+	PlayerTextDrawBackgroundColor(playerid, ui[uiSessionTimer], 255);
+	PlayerTextDrawBoxColor(playerid, ui[uiSessionTimer], 50);
+	PlayerTextDrawUseBox(playerid, ui[uiSessionTimer], 0);
+	PlayerTextDrawSetProportional(playerid, ui[uiSessionTimer], 1);
+	PlayerTextDrawSetSelectable(playerid, ui[uiSessionTimer], 0);
+	first_y += SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP;
+
+	ui[uiSpeakerBtnCircle] = CreatePlayerTextDraw(playerid, first_x - (SPEAKER_BUTTON_SIZE / 2.0), first_y, "shape:circle");
+	PlayerTextDrawFont(playerid, ui[uiSpeakerBtnCircle], 4);
+	PlayerTextDrawLetterSize(playerid, ui[uiSpeakerBtnCircle], 0.0000, 0.0000);
+	PlayerTextDrawTextSize(playerid, ui[uiSpeakerBtnCircle], SPEAKER_BUTTON_SIZE, SPEAKER_BUTTON_SIZE);
+	PlayerTextDrawSetOutline(playerid, ui[uiSpeakerBtnCircle], 1);
+	PlayerTextDrawSetShadow(playerid, ui[uiSpeakerBtnCircle], 0);
+	PlayerTextDrawAlignment(playerid, ui[uiSpeakerBtnCircle], 2);
+	PlayerTextDrawColor(playerid, ui[uiSpeakerBtnCircle], 0x131313FF);
+	PlayerTextDrawBackgroundColor(playerid, ui[uiSpeakerBtnCircle], 255);
+	PlayerTextDrawBoxColor(playerid, ui[uiSpeakerBtnCircle], 50);
+	PlayerTextDrawUseBox(playerid, ui[uiSpeakerBtnCircle], 0);
+	PlayerTextDrawSetProportional(playerid, ui[uiSpeakerBtnCircle], 1);
+	PlayerTextDrawSetSelectable(playerid, ui[uiSpeakerBtnCircle], 0);
+
+	ui[uiSpeakerBtn] = CreatePlayerTextDraw(playerid, first_x - ((SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0)) / 2.0), first_y + (SPEAKER_BUTTON_SIZE / 2.0) - ((SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0)) / 2.0), "appcall:speaker");
+	PlayerTextDrawFont(playerid, ui[uiSpeakerBtn], 4);
+	PlayerTextDrawLetterSize(playerid, ui[uiSpeakerBtn], 0.0000, 0.0000);
+	PlayerTextDrawTextSize(playerid, ui[uiSpeakerBtn], SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0), SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0));
+	PlayerTextDrawSetOutline(playerid, ui[uiSpeakerBtn], 1);
+	PlayerTextDrawSetShadow(playerid, ui[uiSpeakerBtn], 0);
+	PlayerTextDrawAlignment(playerid, ui[uiSpeakerBtn], 2);
+	PlayerTextDrawColor(playerid, ui[uiSpeakerBtn], 0xFFFFFF77);
+	PlayerTextDrawBackgroundColor(playerid, ui[uiSpeakerBtn], 255);
+	PlayerTextDrawBoxColor(playerid, ui[uiSpeakerBtn], 50);
+	PlayerTextDrawUseBox(playerid, ui[uiSpeakerBtn], 0);
+	PlayerTextDrawSetProportional(playerid, ui[uiSpeakerBtn], 1);
+	PlayerTextDrawSetSelectable(playerid, ui[uiSpeakerBtn], 1);
+
+	PlayerTextDrawShow(playerid, ui[uiSessionTimer]);
+	PlayerTextDrawShow(playerid, ui[uiSpeakerBtn]);
+	PlayerTextDrawShow(playerid, ui[uiSpeakerBtnCircle]);
+	if(!map_valid(m_sessionUI)) {
+		m_sessionUI = map_new();
+	}
+	map_arr_set_arr(m_sessionUI, key, ui);
+	return 1;
+}
+
+stock AppCall_RunSessionTimer(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!AppCall_HasSessionUIKey(key)) {
+		return 0;
+	}
+
+	if(!map_valid(m_sessionTimer)) {
+		m_sessionTimer = map_new();
+	} else if(map_has_arr_key(m_sessionTimer, key)) {
+		DeletePreciseTimer(map_arr_get(m_sessionTimer, key));
+	}
+
+	map_arr_set(m_sessionTimer, key, SetPreciseTimer("AppCall_SessionTimerHandler", 1000, true, "ii", id, playerid));
+	return 1;
+}
+
+stock AppCall_KillSessionTimer(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!map_valid(m_sessionTimer) || !map_has_arr_key(m_sessionTimer, key)) {
+		return 0;
+	}
+
+	DeletePreciseTimer(map_arr_get(m_sessionTimer, key));
+	if(!map_size(m_sessionTimer)) {
+		map_delete(m_sessionTimer);
+		m_sessionTimer = Map:-1;
+	}
+	return 1;
+}
+
+#include <YSI_Coding\y_hooks>
+
+hook AppCall_OnInCallAccept(id) {
+	new Iter:it = AppCall_GetIncomingUIMapIter();
+	if(iter_valid(it) && iter_release(it)) {
+		for(new key[Key]; iter_inside(it); iter_move_next(it)) {
+			iter_get_key_arr(it, key);
+			if(key[ItemId] == id) {
+				AppCall_UpdateSessionUI(key[ItemId], key[PlayerId]);
+				AppCall_RunSessionTimer(key[ItemId], key[PlayerId]);
+				break;
+			}
+		}
+	}
+
+	new
+		number[SIM_NUMBER_SIZE],
+		remote;
+	AppCall_GetIncomingNumber(id, number);
+	remote = ISim_GetPhoneWithNumber(number);
+	if(remote != -1) {
+		it = AppCall_GetDialUIMapIter();
+		if(iter_valid(it) && iter_release(it)) {
+			for(new key[Key]; iter_inside(it); iter_move_next(it)) {
+				iter_get_key_arr(it, key);
+				if(key[ItemId] == remote) {
+					AppCall_UpdateSessionUI(key[ItemId], key[PlayerId]);
+					AppCall_RunSessionTimer(key[ItemId], key[PlayerId]);
+					break;
+				}
+			}
+		}
+	}
+	return 1;
+}
+
+hook IPUI_OnButtonClicked(id, playerid, button) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(AppCall_HasSessionUIKey(key)) {
+		switch(button) {
+			case PhoneButtonHangup: {
+				new
+					Ref<LinkedList>:ssref = AppCall_GetPhoneSessionRef(id),
+					result = AppCall_QuitSession(id);
+				AppCall_DestroySessionUI(id, playerid);
+				AppCall_UpdateContactUI(id, playerid);
+				AppCall_UpdateContactButtonUI(id, playerid);
+				if(result && ssref != Ref<LinkedList>:-1) {
+					new LinkedList:ll = pawn_unref<LinkedList>(ssref);
+					if(linked_list_valid(ll)) {
+						if(linked_list_size(ll) <= 1) {
+							AppCall_DeleteSession(ssref);
+						} else {
+							// TODO: update session ui for all participants here.
+						}
+					}
+				}
+			}
+		}
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
+
+hook IPA_OnUIHideAttempt(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(AppCall_HasSessionUIKey(key)) {
+		AppCall_CancelIncoming(id);
+	}
+	AppCall_DestroyIncomingUI(id, playerid);
+	return 1;
+}

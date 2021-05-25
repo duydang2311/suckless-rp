@@ -7,6 +7,7 @@
 #define CALL_SESSION_TEST
 
 enum _:CallSessionStats {
+	ssOffset,
 	ssCreatedTime
 }
 
@@ -15,8 +16,8 @@ static
 	Map:m_sessionStats, // { Ref<LinkedList>: int }
 	Map:m_phoneCSessionRef; // { phone_id: Ref<LinkedList> }
 
-stock AppCall_HasSessionRef(Ref<LinkedList>:ss_ref) {
-	return (map_valid(m_sessionStats) && map_has_key(m_sessionStats, _:ss_ref));
+stock AppCall_HasSessionRef(Ref<LinkedList>:ssref) {
+	return (map_valid(m_sessionStats) && map_has_key(m_sessionStats, _:ssref));
 }
 
 stock Ref<LinkedList>:AppCall_GetPhoneSessionRef(id) {
@@ -26,22 +27,23 @@ stock Ref<LinkedList>:AppCall_GetPhoneSessionRef(id) {
 	return Ref<LinkedList>:map_get(m_phoneCSessionRef, id);
 }
 
-stock AppCall_GetSessionCreatedTime(Ref<LinkedList>:ss_ref) {
-	if(!AppCall_HasSessionRef(ss_ref)) {
+stock AppCall_GetSessionCreatedTime(Ref<LinkedList>:ssref) {
+	if(!AppCall_HasSessionRef(ssref)) {
 		return 0;
 	}
 
 	new stats[CallSessionStats];
-	map_get_arr(m_sessionStats, _:ss_ref, stats);
+	map_get_arr(m_sessionStats, _:ssref, stats);
 	return stats[ssCreatedTime];
 }
 
 stock Ref<LinkedList>:AppCall_CreateSession() {
 	new
 		LinkedList:session = linked_list_new(),
-		Ref<LinkedList>:ss_ref = pawn_ref<LinkedList>(session),
+		Ref<LinkedList>:ssref = pawn_ref<LinkedList>(session),
 		stats[CallSessionStats];
 	stats[ssCreatedTime] = gettime();
+	stats[ssOffset] = 0;
 	if(!linked_list_valid(ll_callSessions)) {
 		ll_callSessions = linked_list_new();
 	}
@@ -49,8 +51,8 @@ stock Ref<LinkedList>:AppCall_CreateSession() {
 		m_sessionStats = map_new();
 	}
 	linked_list_add(ll_callSessions, _:session);
-	map_set_arr(m_sessionStats, _:ss_ref, stats);
-	return ss_ref;
+	map_set_arr(m_sessionStats, _:ssref, stats);
+	return ssref;
 }
 
 stock AppCall_JoinSession(id, Ref<LinkedList>:session_ref) {
@@ -87,25 +89,40 @@ stock AppCall_QuitSession(id) {
 	return 0;
 }
 
+stock AppCall_DeleteSession(Ref<LinkedList>:ssref) {
+
+	return 1;
+}
+
+stock AppCall_GetSessionOffset(Ref<LinkedList>:ssref) {
+	if(!AppCall_HasSessionRef(ssref)) {
+		return 0;
+	}
+
+	new stats[CallSessionStats];
+	map_get_arr(m_sessionStats, _:ssref, stats);
+	return stats[ssOffset];
+}
+
 #include <YSI_Coding\y_hooks>
 
 hook AppCall_OnInCallAccept(id) {
 	new
 		number[SIM_NUMBER_SIZE],
-		Ref<LinkedList>:ss_ref,
+		Ref<LinkedList>:ssref,
 		phone;
 	AppCall_GetIncomingNumber(id, number);
 	phone = ISim_GetPhoneWithNumber(number);
 	if(phone != -1) {
-		ss_ref = AppCall_GetPhoneSessionRef(id);
-		if(ss_ref == Ref<LinkedList>:-1) {
-			ss_ref = AppCall_GetPhoneSessionRef(phone);
-			if(ss_ref == Ref<LinkedList>:-1) {
-				ss_ref = AppCall_CreateSession();
+		ssref = AppCall_GetPhoneSessionRef(id);
+		if(ssref == Ref<LinkedList>:-1) {
+			ssref = AppCall_GetPhoneSessionRef(phone);
+			if(ssref == Ref<LinkedList>:-1) {
+				ssref = AppCall_CreateSession();
 			}
 		}
-		AppCall_JoinSession(id, ss_ref);
-		AppCall_JoinSession(phone, ss_ref);
+		AppCall_JoinSession(id, ssref);
+		AppCall_JoinSession(phone, ssref);
 	}
 	return 1;
 }

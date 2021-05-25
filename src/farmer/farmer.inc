@@ -5,7 +5,7 @@
 #define farmer_included
 
 #include <a_samp>
-#include <ColAndreas>
+#include <colandreas>
 #include <FCNPC>
 #include <Pawn.CMD>
 

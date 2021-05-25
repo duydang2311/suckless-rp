@@ -21,7 +21,7 @@
 #include <chrono>
 #include <samp-precise-timers>
 #include <skintags>
-#include <ColAndreas>
+#include <colandreas>
 
 #include <config/colors>
 

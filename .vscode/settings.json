@@ -8,11 +8,11 @@
 			"previewLimit": 50,
 			"server": "localhost",
 			"port": 3306,
+			"askForPassword": true,
 			"driver": "MariaDB",
-			"name": "sunday",
+			"name": "sundaydb",
 			"database": "sundaydb",
-			"username": "root",
-			"password": "123456"
+			"username": "root"
 		}
 	]
 }

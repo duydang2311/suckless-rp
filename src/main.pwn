@@ -27,6 +27,7 @@
 
 #define PP_SYNTAX_AWAIT
 #define PP_SYNTAX_GENERIC
+#define YSI_NO_KEYWORD_List
 #define YSI_YES_HEAP_MALLOC
 #define YSI_NO_MODE_CACHE
 #define CGEN_MEMORY 20000

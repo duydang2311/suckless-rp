@@ -192,7 +192,7 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 		for(new PlayerText:msgTd; iter_inside(it); iter_move_next(it)) {
 			if(height < scr_height) {
 				iter_get_arr(it, stats);
-				width = 0;
+				width = 0.0;
 				line = 1;
 				msg_cnt++;
 				content[0] = EOS;

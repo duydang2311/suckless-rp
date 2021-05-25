@@ -7,7 +7,7 @@
 #define CALL_SESSION_TEST
 
 enum _:CallSessionErrors {
-	ssErrorDifferentSession
+	ssErrorAlreadyInASession
 }
 
 enum _:CallSessionStats {
@@ -124,19 +124,22 @@ hook AppCall_OnInCallAccept(id) {
 			if(ref1 == Ref<LinkedList>:-1) {
 				ref1 = AppCall_CreateSession();
 			} else {
-				CallLocalFunction("AppCall_OnSessionJoinError", "iii", id, phone, ssErrorDifferentSession);
+				CallLocalFunction("AppCall_OnSsJoinError", "ii", id, ssErrorAlreadyInASession);
+				CallLocalFunction("AppCall_OnSsJoinError", "ii", phone, ssErrorAlreadyInASession);
 				return 1;
 			}
 		} else {
 			if(ref1 != Ref<LinkedList>:-1 && ref2 != Ref<LinkedList>:-1) {
-				CallLocalFunction("AppCall_OnSessionJoinError", "iii", id, phone, ssErrorDifferentSession);
+				CallLocalFunction("AppCall_OnSsJoinError", "ii", id, ssErrorAlreadyInASession);
+				CallLocalFunction("AppCall_OnSsJoinError", "ii", phone, ssErrorAlreadyInASession);
 				return 1;
 			}
 			ref1 = (ref1 == Ref<LinkedList>:-1) ? ref2 : ref1;
 		}
 		AppCall_JoinSession(id, ref1);
 		AppCall_JoinSession(phone, ref1);
-		return 1;
+		CallLocalFunction("AppCall_OnSessionJoined", "ii", id);
+		CallLocalFunction("AppCall_OnSessionJoined", "ii", phone);
 	}
 	return 1;
 }

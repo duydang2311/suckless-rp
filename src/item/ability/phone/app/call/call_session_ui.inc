@@ -4,12 +4,6 @@
 
 #define app_call_session_ui_included
 
-#if defined app_call_perform_ui_included
-	#endinput
-#endif
-
-#define app_call_perform_ui_included
-
 static enum _:Key {
 	ItemId,
 	PlayerId
@@ -25,6 +19,11 @@ static enum _:PerformUI {
 static
 	Map:m_sessionUI, // { {Key}: {PerformUI} }
 	Map:m_sessionTimer; // { {Key}: int }
+
+PhoneDialog:CallSessionJoinError(id, playerid, response) {
+	AppCall_UpdateContactUI(id, playerid);
+	return 1;
+}
 
 forward AppCall_SessionTimerHandler(id, playerid);
 public AppCall_SessionTimerHandler(id, playerid) {
@@ -275,7 +274,45 @@ stock AppCall_KillSessionTimer(id, playerid) {
 
 #include <YSI_Coding\y_hooks>
 
-hook AppCall_OnInCallAccept(id) {
+hook AppCall_OnSsJoinError(id, error) {
+	new
+		Iter:it = AppCall_GetIncomingUIMapIter(),
+		saved_key[Key] = {-1, -1};
+	if(iter_valid(it) && iter_release(it)) {
+		for(new key[Key]; iter_inside(it); iter_move_next(it)) {
+			iter_get_key_arr(it, key);
+			if(key[ItemId] == id) {
+				saved_key = key;
+				return 1;
+			}
+		}
+	}
+
+	if(saved_key[ItemId] == -1) {
+		it = AppCall_GetDialUIMapIter();
+		if(iter_valid(it) && iter_release(it)) {
+			for(new key[Key]; iter_inside(it); iter_move_next(it)) {
+				iter_get_key_arr(it, key);
+				if(key[ItemId] == id) {
+					saved_key = key;
+					break;
+				}
+			}
+		}
+	}
+
+	if(saved_key[ItemId] != -1) {
+		switch(error) {
+			case ssErrorAlreadyInASession: {
+				IPDialog_New(saved_key[ItemId], CallSessionJoinError, "Ban hoac doi phuong dang tham gia hai cuoc goi khac nhau, mot trong hai can phai roi cuoc goi de co the goi.");
+				IPDialog_UpdateUI(saved_key[ItemId], saved_key[PlayerId]);
+			}
+		}
+	}
+	return 1;
+}
+
+hook AppCall_OnSessionJoined(id) {
 	new
 		number[SIM_NUMBER_SIZE],
 		Ref<LinkedList>:ssref = AppCall_GetPhoneSessionRef(id),

@@ -1,44 +1,57 @@
-#if defined phone_system_error_ui_included
+#if defined phone_system_dialog_ui_included
 	#endinput
 #endif
 
-#define phone_system_error_ui_included
-
-#define IPError_Show(%0,%1,%2,%3) _prv_IPError_Show(%0,#%1,%2,%3)
-#define PhoneError:%0(%1) \
-	forward phErr_%0(%1); \
-	public phErr_%0(%1)
+#define phone_system_dialog_ui_included
 
 static enum _:Key {
 	ItemId,
 	PlayerId
 }
 
-enum _:PhoneErrorUI {
+enum _:PhoneDialogUI {
 	PlayerText:uiText
 }
 
-static Map:m_errorUI; // { {Key}: {PhoneErrorUI} }
+static Map:m_dialogUI; // { {Key}: {PhoneDialogUI} }
 
-stock IPError_HasUIKey(const key[], size = sizeof(key)) {
-	return (map_valid(m_errorUI) && map_has_arr_key(m_errorUI, key, size));
+stock IPDialog_HasUIKey(const key[], size = sizeof(key)) {
+	return (map_valid(m_dialogUI) && map_has_arr_key(m_dialogUI, key, size));
 }
 
-stock IPError_UpdateUI(id, playerid) {
-	if(!IPError_Has(id)) {
+stock IPDialog_DestroyUI(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!IPDialog_HasUIKey(key)) {
+		return 0;
+	}
+
+	new ui[PhoneDialogUI];
+	map_arr_get_arr(m_dialogUI, key, ui);
+	PlayerTextDrawDestroy(playerid, ui[uiText]);
+	map_arr_remove(m_dialogUI, key);
+	if(!map_size(m_dialogUI)) {
+		map_delete(m_dialogUI);
+		m_dialogUI = Map:-1;
+	}
+	return 1;
+}
+
+stock IPDialog_UpdateUI(id, playerid) {
+	if(!IPDialog_Has(id)) {
 		return 0;
 	}
 
 	new
 		key[Key],
-		number[SIM_NUMBER_SIZE],
-		errorText[ERROR_TEXT_SIZE],
-		ui[PhoneErrorUI];
-	IPError_GetText(id, errorText);
+		errorText[DIALOG_TEXT_SIZE],
+		ui[PhoneDialogUI];
+	IPDialog_GetText(id, errorText);
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
-	if(IPError_HasUIKey(key)) {
-		IPError_DestroyUI(id, playerid);
+	if(IPDialog_HasUIKey(key)) {
+		IPDialog_DestroyUI(id, playerid);
 	}
 
 	const Float:TEXT_SIZE_Y = 5.0000;
@@ -53,8 +66,10 @@ stock IPError_UpdateUI(id, playerid) {
 		Float:first_y,
 		Float:scr_width,
 		Float:scr_height,
+		content[DIALOG_TEXT_SIZE + 24],
 		line,
-		length;
+		length,
+		idx;
 	IPModel_GetSafeScreenOffset(id, safe_min[0], safe_min[1], safe_max[0], safe_max[1]);
 	IPUI_GetAnchor(id, playerid, anc[0], anc[1]);
 	scr_width = safe_max[0] - safe_min[0] - 3.0;
@@ -70,7 +85,6 @@ stock IPError_UpdateUI(id, playerid) {
 				content[idx - 3] = '.';
 				content[idx - 2] = '.';
 				content[idx - 1] = '.';
-				msg_cnt--;
 				break;
 			} else {
 				height += TEXT_SIZE_Y;
@@ -89,7 +103,7 @@ stock IPError_UpdateUI(id, playerid) {
 	ui[uiText] = CreatePlayerTextDraw(playerid, first_x, first_y, errorText);
 	PlayerTextDrawFont(playerid, ui[uiText], 1);
 	PlayerTextDrawLetterSize(playerid, ui[uiText], 0.150000, 0.600000);
-	PlayerTextDrawTextSize(playerid, ui[uiText], SIM_NUMBER_TEXT_SIZE, (safe_max[0] - safe_min[0]));
+	PlayerTextDrawTextSize(playerid, ui[uiText], TEXT_SIZE_Y, (safe_max[0] - safe_min[0]));
 	PlayerTextDrawSetOutline(playerid, ui[uiText], 1);
 	PlayerTextDrawSetShadow(playerid, ui[uiText], 0);
 	PlayerTextDrawAlignment(playerid, ui[uiText], 2);
@@ -99,12 +113,38 @@ stock IPError_UpdateUI(id, playerid) {
 	PlayerTextDrawUseBox(playerid, ui[uiText], 0);
 	PlayerTextDrawSetProportional(playerid, ui[uiText], 1);
 	PlayerTextDrawSetSelectable(playerid, ui[uiText], 0);
-	first_y += SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP;
 
 	PlayerTextDrawShow(playerid, ui[uiText]);
-	if(!map_valid(m_errorUI)) {
-		m_errorUI = map_new();
+	if(!map_valid(m_dialogUI)) {
+		m_dialogUI = map_new();
 	}
-	map_arr_set_arr(m_errorUI, key, ui);
+	map_arr_set_arr(m_dialogUI, key, ui);
+	return 1;
+}
+
+#include <YSI_Coding\y_hooks>
+
+hook IPUI_OnButtonClicked(id, playerid, button) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(IPDialog_HasUIKey(key)) {
+		IPDialog_DestroyUI(id, playerid);
+		if(IPDialog_Has(id)) {
+			new callback[DIALOG_CALLBACK_SIZE];
+			IPDialog_GetCallback(id, callback);
+			if(!isnull(callback)) {
+				switch(button) {
+					case PhoneButtonCall: {
+						CallLocalFunction(callback, "iii", id, playerid, 1);
+					}
+					case PhoneButtonHangup: {
+						CallLocalFunction(callback, "iii", id, playerid, 0);
+					}
+				}
+			}
+		}
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
 	return 1;
 }

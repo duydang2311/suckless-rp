@@ -102,7 +102,10 @@ stock AppCall_UpdateSessionUI(id, playerid) {
 
 	new
 		key[Key],
-		ui[PerformUI];
+		ui[PerformUI],
+		elapsed_sec = gettime() - AppCall_GetSessionCreatedTime(ss_ref),
+		time_format[11];
+	format(time_format, sizeof(time_format), "%02d:%02d", floatround(float(elapsed_sec) / 60.0, floatround_floor), elapsed_sec % 60);
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
 	if(AppCall_HasSessionUIKey(key)) {
@@ -148,7 +151,7 @@ stock AppCall_UpdateSessionUI(id, playerid) {
 	}
 
 	ui[uiSessionNumbers] = linked_list_new();
-	for(new Iter:it = linked_list_iter(participantList), PlayerText:numberTd, cnt = 0, phone, number[SIM_NUMBER_SIZE], Iter:phone_it; iter_inside(it) && cnt != remote_cnt; iter_move_next(it), cnt++) {
+	for(new Iter:it = linked_list_iter(participantList, offset), PlayerText:numberTd, cnt = 0, phone, number[SIM_NUMBER_SIZE], Iter:phone_it; iter_inside(it) && cnt != remote_cnt; iter_move_next(it), cnt++) {
 		phone = iter_get(it);
 		if(!IPhone_Has(phone) || !IGroup_Has(phone)) {
 			continue;
@@ -183,7 +186,7 @@ stock AppCall_UpdateSessionUI(id, playerid) {
 		linked_list_add(ui[uiSessionNumbers], _:numberTd);
 	}
 
-	ui[uiSessionTimer] = CreatePlayerTextDraw(playerid, first_x, first_y, "00:00");
+	ui[uiSessionTimer] = CreatePlayerTextDraw(playerid, first_x, first_y, time_format);
 	PlayerTextDrawFont(playerid, ui[uiSessionTimer], 2);
 	PlayerTextDrawLetterSize(playerid, ui[uiSessionTimer], 0.120000, 0.4800000);
 	PlayerTextDrawTextSize(playerid, ui[uiSessionTimer], SIM_NUMBER_TEXT_SIZE - 2.0, (safe_max[0] - safe_min[0]));
@@ -273,6 +276,34 @@ stock AppCall_KillSessionTimer(id, playerid) {
 #include <YSI_Coding\y_hooks>
 
 hook AppCall_OnInCallAccept(id) {
+	new
+		number[SIM_NUMBER_SIZE],
+		Ref<LinkedList>:ssref = AppCall_GetPhoneSessionRef(id),
+		size = 0,
+		remote;
+	AppCall_GetIncomingNumber(id, number);
+	remote = ISim_GetPhoneWithNumber(number);
+
+	if(map_valid(m_sessionUI)) {
+		{
+			new LinkedList:ll = pawn_unref<LinkedList>(ssref);
+			if(linked_list_valid(ll)) {
+				size = linked_list_size(ll) - 2;
+			}
+		}
+		for(new Iter:it = map_iter(m_sessionUI), key[Key], cnt = 0; iter_inside(it) && cnt != size; iter_move_next(it)) {
+			iter_get_key_arr(it, key);
+			if(key[ItemId] == remote || key[ItemId] == id) {
+				continue;
+			}
+
+			if(AppCall_GetPhoneSessionRef(key[ItemId]) == ssref) {
+				AppCall_UpdateSessionUI(key[ItemId], key[PlayerId]);
+				cnt++;
+			}
+		}
+	}
+
 	new Iter:it = AppCall_GetIncomingUIMapIter();
 	if(iter_valid(it) && iter_release(it)) {
 		for(new key[Key]; iter_inside(it); iter_move_next(it)) {
@@ -285,11 +316,6 @@ hook AppCall_OnInCallAccept(id) {
 		}
 	}
 
-	new
-		number[SIM_NUMBER_SIZE],
-		remote;
-	AppCall_GetIncomingNumber(id, number);
-	remote = ISim_GetPhoneWithNumber(number);
 	if(remote != -1) {
 		it = AppCall_GetDialUIMapIter();
 		if(iter_valid(it) && iter_release(it)) {
@@ -313,22 +339,10 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 	if(AppCall_HasSessionUIKey(key)) {
 		switch(button) {
 			case PhoneButtonHangup: {
-				new
-					Ref<LinkedList>:ssref = AppCall_GetPhoneSessionRef(id),
-					result = AppCall_QuitSession(id);
+				AppCall_QuitSession(id);
 				AppCall_DestroySessionUI(id, playerid);
 				AppCall_UpdateContactUI(id, playerid);
 				AppCall_UpdateContactButtonUI(id, playerid);
-				if(result && ssref != Ref<LinkedList>:-1) {
-					new LinkedList:ll = pawn_unref<LinkedList>(ssref);
-					if(linked_list_valid(ll)) {
-						if(linked_list_size(ll) <= 1) {
-							AppCall_DeleteSession(ssref);
-						} else {
-							// TODO: update session ui for all participants here.
-						}
-					}
-				}
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;
@@ -344,5 +358,24 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 		AppCall_CancelIncoming(id);
 	}
 	AppCall_DestroyIncomingUI(id, playerid);
+	return 1;
+}
+
+hook AppCall_OnSessionQuit(Ref<LinkedList>:ssref, id) {
+	new LinkedList:ll = pawn_unref<LinkedList>(ssref);
+	if(linked_list_valid(ll)) {
+		new size = linked_list_size(ll);
+		if(size <= 1) {
+			AppCall_DeleteSession(ssref);
+		} else if(map_valid(m_sessionUI)) {
+			for(new Iter:it = map_iter(m_sessionUI), key[Key], cnt = 0; iter_inside(it) && cnt != size; iter_move_next(it)) {
+				iter_get_key_arr(it, key);
+				if(AppCall_GetPhoneSessionRef(key[ItemId]) == ssref) {
+					AppCall_UpdateSessionUI(key[ItemId], key[PlayerId]);
+					cnt++;
+				}
+			}
+		}
+	}
 	return 1;
 }

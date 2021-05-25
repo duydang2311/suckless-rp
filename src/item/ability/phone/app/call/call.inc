@@ -23,4 +23,5 @@
 // #include ".\item\ability\phone\app\call\call_perform.inc"
 // #include ".\item\ability\phone\app\call\call_perform_ui.inc"
 #include ".\item\ability\phone\app\call\call_session.inc"
+#include ".\item\ability\phone\app\call\call_session_tests.inc"
 #include ".\item\ability\phone\app\call\call_button.inc"

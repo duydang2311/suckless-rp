@@ -100,6 +100,25 @@ stock AppCall_DeleteSession(Ref<LinkedList>:ssref) {
 	}
 
 	CallLocalFunction("AppCall_OnSessDeleted", "i", _:ssref);
+
+	// remove from m_sessionStats
+	map_remove(m_sessionStats, _:ssref);
+	if(!map_size(m_sessionStats)) {
+		map_delete(m_sessionStats);
+		m_sessionStats = Map:-1;
+	}
+
+	// getting phone ids in session and remove phone ids from m_phoneCSessionRef
+	new LinkedList:ll = pawn_unref<LinkedList>(ssref);
+	if(linked_list_valid(ll)) {
+		for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
+			if(map_valid(m_phoneCSessionRef) && map_has_key(m_phoneCSessionRef, iter_get(it))) {
+				map_remove(m_phoneCSessionRef, iter_get(it));
+			}
+		}
+	}
+
+	// in ll_callSessions, find the session which has the Ref equals to ssref, then erase from ll_callSessions and delete that session LinkedList
 	if(linked_list_valid(ll_callSessions)) {
 		for(new Iter:it = linked_list_iter(ll_callSessions); iter_inside(it); iter_move_next(it)) {
 			if(pawn_ref<LinkedList>(LinkedList:iter_get(it)) == ssref) {

@@ -41,6 +41,7 @@ stock AppCall_DestroyIncomingUI(id, playerid) {
 }
 
 stock AppCall_UpdateIncomingUI(id, playerid) {
+	printf("AppCall_UpdateIncomingUI(%d, %d), has %d", id, playerid, AppCall_HasIncoming(id));
 	if(!AppCall_HasIncoming(id)) {
 		return 0;
 	}
@@ -59,6 +60,7 @@ stock AppCall_UpdateIncomingUI(id, playerid) {
 	AppCall_GetIncomingNumber(id, number);
 	task_unblock(1);
 	await_arr(contact_name) Contact_NameByNumberAsync(id, number);
+	printf("AppCall_UpdateIncomingUI(%d, %d), has %d, contact name %s", id, playerid, AppCall_HasIncoming(id), contact_name);
 	const
 		Float:SIM_NUMBER_TEXT_SIZE = 5.00,
 		Float:SIM_NUMBER_TEXT_GAP = 3.00;
@@ -216,19 +218,23 @@ hook AppCall_OnDialCancel(id) {
 
 hook AppCall_OnDialed@0(from_phone, const to_number[]) {
 	new phone = ISim_GetPhoneWithNumber(to_number);
+	printf("AppCall_OnDialed@0(%d, %s) -> phone %d", from_phone, to_number, phone);
 	if(phone != -1) {
 		task_unblock(1);
 		new id = await Player_RetrieveIdByHandItem(phone);
+		printf("AppCall_OnDialed@0(%d, %s) -> phone %d, player id %d", from_phone, to_number, phone, id);
 		if(id == -1) {
 			task_unblock(1);
 			id = await Inventory_RetrievePlayerByItem(phone);
 		}
 		if(id != -1) {
 			new playerid = Player_GetById(id);
+			printf("AppCall_OnDialed@0(%d, %s) -> phone %d, player id %d, player ingame id %d", from_phone, to_number, phone, id, playerid);
 			if(playerid != -1) {
+				printf("AppCall_OnDialed@0(%d, %s) -> phone %d, player id %d, player ingame id %d, ipui phone %d", from_phone, to_number, phone, id, playerid, IPUI_GetPlayerPhone(playerid));
 				if(IPUI_GetPlayerPhone(playerid) == phone) {
-					IPApp_HideUIForPlayer(id, playerid);
-					AppCall_UpdateIncomingUI(id, playerid);
+					IPApp_HideUIForPlayer(phone, playerid);
+					AppCall_UpdateIncomingUI(phone, playerid);
 				} else {
 					SubtitleText_Show(playerid, "~g~Chuong dien thoai dang rung len...");
 				}

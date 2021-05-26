@@ -86,9 +86,11 @@ stock AppCall_DestroyDialUI(id, playerid) {
 	return 1;
 }
 
-stock AppCall_UpdateDialUI(id, playerid) {
+stock Task:AppCall_UpdateDialUI(id, playerid) {
+	new Task:t = task_new();
 	if(!AppCall_HasDialStats(id)) {
-		return 0;
+		task_set_result_ms(t, 0, 1);
+		return t;
 	}
 
 	new
@@ -103,7 +105,7 @@ stock AppCall_UpdateDialUI(id, playerid) {
 	}
 
 	AppCall_GetDialSimNumber(id, number);
-	task_unblock(1);
+	task_unblock(t);
 	await_arr(contact_name) Contact_NameByNumberAsync(id, number);
 	const
 		Float:SIM_NUMBER_TEXT_SIZE = 5.00,
@@ -120,7 +122,7 @@ stock AppCall_UpdateDialUI(id, playerid) {
 	first_x = anc[0] + safe_min[0] + (safe_max[0] - safe_min[0]) / 2.0;
 	first_y = anc[1] + safe_min[1] + SIM_NUMBER_TEXT_SIZE;
 
-	ui[uiDialNumberText] = CreatePlayerTextDraw(playerid, first_x, first_y, number);
+	ui[uiDialNumberText] = CreatePlayerTextDraw(playerid, first_x, first_y, contact_name);
 	PlayerTextDrawFont(playerid, ui[uiDialNumberText], 3);
 	PlayerTextDrawLetterSize(playerid, ui[uiDialNumberText], 0.150000, 0.600000);
 	PlayerTextDrawTextSize(playerid, ui[uiDialNumberText], SIM_NUMBER_TEXT_SIZE, (safe_max[0] - safe_min[0]));
@@ -155,7 +157,8 @@ stock AppCall_UpdateDialUI(id, playerid) {
 		m_dialUI = map_new();
 	}
 	map_arr_set_arr(m_dialUI, key, ui);
-	return 1;
+	task_set_result(t, 1);
+	return Task:0;
 }
 
 stock AppCall_RunDialingEffect(id, playerid) {
@@ -228,8 +231,7 @@ hook AppCall_OnPreDialed(from_sim, const to_number[]) {
 	AppCall_GetContactUIKeyBySim(from_sim, key);
 	if(key[ItemId] != -1 && key[PlayerId] != -1) {
 		task_unblock(1);
-		await task_ticks(1);
-		AppCall_UpdateDialUI(key[ItemId], key[PlayerId]);
+		await AppCall_UpdateDialUI(key[ItemId], key[PlayerId]);
 		AppCall_RunDialingEffect(key[ItemId], key[PlayerId]);
 	}
 	return 1;

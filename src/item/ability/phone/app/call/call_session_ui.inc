@@ -102,16 +102,21 @@ stock AppCall_DestroySessionUI(id, playerid) {
 	return 1;
 }
 
-stock AppCall_UpdateSessionUI(id, playerid) {
-	new Ref<LinkedList>:ss_ref = AppCall_GetPhoneSessionRef(id);
+stock Task:AppCall_UpdateSessionUI(id, playerid) {
+	new
+		Ref<LinkedList>:ss_ref = AppCall_GetPhoneSessionRef(id),
+		Task:t = task_new();
 	if(ss_ref == Ref<LinkedList>:-1) {
-		return 0;
+		task_set_result_ms(t, 0, 1);
+		return t;
 	}
 
 	new LinkedList:participantList = pawn_unref<LinkedList>(ss_ref);
 	if(!linked_list_valid(participantList)) {
-		return 0;
+		task_set_result_ms(t, 0, 1);
+		return t;
 	}
+	task_yield(t);
 
 	new
 		key[Key],
@@ -164,7 +169,9 @@ stock AppCall_UpdateSessionUI(id, playerid) {
 	}
 
 	ui[uiSessionNumbers] = linked_list_new();
-	for(new Iter:it = linked_list_iter(participantList, offset), PlayerText:numberTd, cnt = 0, phone, number[SIM_NUMBER_SIZE], contact_name[CONTACT_NAME_SIZE], Iter:phone_it; iter_inside(it) && cnt != remote_cnt; iter_move_next(it), cnt++) {
+	new Iter:it = linked_list_iter(participantList, offset);
+	iter_acquire(it);
+	for(new PlayerText:numberTd, cnt = 0, phone, number[SIM_NUMBER_SIZE], contact_name[CONTACT_NAME_SIZE], Iter:phone_it; iter_inside(it) && cnt != remote_cnt; iter_move_next(it), cnt++) {
 		number[0] = EOS;
 		phone = iter_get(it);
 		if(!IPhone_Has(phone) || !IGroup_Has(phone)) {
@@ -182,7 +189,7 @@ stock AppCall_UpdateSessionUI(id, playerid) {
 				break;
 			}
 		}
-		task_unblock(1);
+		task_unblock(t);
 		await_arr(contact_name) Contact_NameByNumberAsync(id, number);
 		numberTd = CreatePlayerTextDraw(playerid, first_x, first_y, contact_name);
 		PlayerTextDrawFont(playerid, numberTd, 3);
@@ -201,6 +208,7 @@ stock AppCall_UpdateSessionUI(id, playerid) {
 		first_y += SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP;
 		linked_list_add(ui[uiSessionNumbers], _:numberTd);
 	}
+	iter_release(it);
 
 	ui[uiSessionTimer] = CreatePlayerTextDraw(playerid, first_x, first_y, time_format);
 	PlayerTextDrawFont(playerid, ui[uiSessionTimer], 2);
@@ -252,7 +260,8 @@ stock AppCall_UpdateSessionUI(id, playerid) {
 		m_sessionUI = map_new();
 	}
 	map_arr_set_arr(m_sessionUI, key, ui);
-	return 1;
+	task_set_result(t, 1);
+	return t;
 }
 
 stock AppCall_RunSessionTimer(id, playerid) {
@@ -360,14 +369,15 @@ hook AppCall_OnSessionJoined(id) {
 		}
 	}
 
-	new Iter:it = AppCall_GetIncomingUIMapIter();
+	new
+		Iter:it = AppCall_GetIncomingUIMapIter(),
+		saved_key[2][Key] = {{-1, -1}, ...};
 	if(iter_valid(it) && iter_release(it)) {
 		for(new key[Key]; iter_inside(it); iter_move_next(it)) {
 			iter_get_key_arr(it, key);
 			if(key[ItemId] == id) {
 				printf("AppCall_OnSessionJoined(%d), update for %d", id, key[ItemId]);
-				AppCall_UpdateSessionUI(key[ItemId], key[PlayerId]);
-				AppCall_RunSessionTimer(key[ItemId], key[PlayerId]);
+				saved_key[0] = key;
 				break;
 			}
 		}
@@ -380,11 +390,18 @@ hook AppCall_OnSessionJoined(id) {
 				iter_get_key_arr(it, key);
 				if(key[ItemId] == remote) {
 					printf("AppCall_OnSessionJoined(%d), update for %d", id, key[ItemId]);
-					AppCall_UpdateSessionUI(key[ItemId], key[PlayerId]);
-					AppCall_RunSessionTimer(key[ItemId], key[PlayerId]);
+					saved_key[1] = key;
 					break;
 				}
 			}
+		}
+	}
+
+	for(new i = 0; i != sizeof(saved_key); i++) {
+		if(saved_key[i][ItemId] != -1 && saved_key[i][PlayerId] != -1) {
+			task_unblock(1);
+			await AppCall_UpdateSessionUI(saved_key[i][ItemId], saved_key[i][PlayerId]);
+			AppCall_RunSessionTimer(saved_key[i][ItemId], saved_key[i][PlayerId]);
 		}
 	}
 	return 1;

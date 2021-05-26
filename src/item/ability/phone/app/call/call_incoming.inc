@@ -73,6 +73,7 @@ hook AppCall_OnDialed(from_phone, const to_number[]) {
 	}
 
 	new to_phone = ISim_GetPhoneWithNumber(to_number);
+	printf("AppCall_OnDialed(%d, %s), to_phone %d", from_phone, to_number, to_phone);
 	if(to_phone == -1) {
 		return 1;
 	}
@@ -80,10 +81,12 @@ hook AppCall_OnDialed(from_phone, const to_number[]) {
 	new Iter:phone_it = IGroup_GetIter(from_phone);
 	if(iter_valid(phone_it) && iter_release(phone_it)) {
 		for(new sim; iter_inside(phone_it); iter_move_next(phone_it)) {
+			printf("AppCall_OnDialed(%d, %s), to_phone %d, iterating sim %d", from_phone, to_number, to_phone, sim);
 			sim = iter_get(phone_it);
 			if(ISim_Has(sim)) {
 				new number[SIM_NUMBER_SIZE];
 				ISim_GetNumber(sim, number);
+				printf("AppCall_OnDialed(%d, %s), to_phone %d, iterating sim %d, number %s", from_phone, to_number, to_phone, sim, number);
 				if(!map_valid(m_incoming)) {
 					m_incoming = map_new();
 				}

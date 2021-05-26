@@ -94,6 +94,7 @@ stock AppCall_UpdateDialUI(id, playerid) {
 	new
 		key[Key],
 		number[SIM_NUMBER_SIZE],
+		contact_name[CONTACT_NAME_SIZE],
 		ui[DialUI];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
@@ -102,6 +103,8 @@ stock AppCall_UpdateDialUI(id, playerid) {
 	}
 
 	AppCall_GetDialSimNumber(id, number);
+	task_unblock(1);
+	await_arr(contact_name) Contact_NameByNumberAsync(id, number);
 	const
 		Float:SIM_NUMBER_TEXT_SIZE = 5.00,
 		Float:SIM_NUMBER_TEXT_GAP = 3.00;

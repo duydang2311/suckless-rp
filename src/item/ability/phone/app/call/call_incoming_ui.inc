@@ -48,6 +48,7 @@ stock AppCall_UpdateIncomingUI(id, playerid) {
 	new
 		key[Key],
 		number[SIM_NUMBER_SIZE],
+		contact_name[CONTACT_NAME_SIZE],
 		ui[IncomingUI];
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
@@ -56,6 +57,8 @@ stock AppCall_UpdateIncomingUI(id, playerid) {
 	}
 
 	AppCall_GetIncomingNumber(id, number);
+	task_unblock(1);
+	await_arr(contact_name) Contact_NameByNumberAsync(id, number);
 	const
 		Float:SIM_NUMBER_TEXT_SIZE = 5.00,
 		Float:SIM_NUMBER_TEXT_GAP = 3.00;
@@ -71,7 +74,7 @@ stock AppCall_UpdateIncomingUI(id, playerid) {
 	first_x = anc[0] + safe_min[0] + (safe_max[0] - safe_min[0]) / 2.0;
 	first_y = anc[1] + safe_min[1] + SIM_NUMBER_TEXT_SIZE;
 
-	ui[uiIncNumberText] = CreatePlayerTextDraw(playerid, first_x, first_y, number);
+	ui[uiIncNumberText] = CreatePlayerTextDraw(playerid, first_x, first_y, contact_name);
 	PlayerTextDrawFont(playerid, ui[uiIncNumberText], 3);
 	PlayerTextDrawLetterSize(playerid, ui[uiIncNumberText], 0.150000, 0.600000);
 	PlayerTextDrawTextSize(playerid, ui[uiIncNumberText], SIM_NUMBER_TEXT_SIZE, (safe_max[0] - safe_min[0]));

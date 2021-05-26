@@ -15,6 +15,7 @@
 // #include ".\item\ability\phone\app\call\call_contact_ui.inc"
 
 #include ".\item\ability\phone\app\call\call_contact.inc"
+#include ".\item\ability\phone\app\call\call_contact_wrapper.inc"
 #include ".\item\ability\phone\app\call\call_contact_ui.inc"
 #include ".\item\ability\phone\app\call\call_dial.inc"
 #include ".\item\ability\phone\app\call\call_dial_ui.inc"

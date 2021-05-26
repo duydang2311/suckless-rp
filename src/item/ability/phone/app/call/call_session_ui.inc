@@ -164,7 +164,8 @@ stock AppCall_UpdateSessionUI(id, playerid) {
 	}
 
 	ui[uiSessionNumbers] = linked_list_new();
-	for(new Iter:it = linked_list_iter(participantList, offset), PlayerText:numberTd, cnt = 0, phone, number[SIM_NUMBER_SIZE], Iter:phone_it; iter_inside(it) && cnt != remote_cnt; iter_move_next(it), cnt++) {
+	for(new Iter:it = linked_list_iter(participantList, offset), PlayerText:numberTd, cnt = 0, phone, number[SIM_NUMBER_SIZE], contact_name[CONTACT_NAME_SIZE], Iter:phone_it; iter_inside(it) && cnt != remote_cnt; iter_move_next(it), cnt++) {
+		number[0] = EOS;
 		phone = iter_get(it);
 		if(!IPhone_Has(phone) || !IGroup_Has(phone)) {
 			continue;
@@ -181,7 +182,9 @@ stock AppCall_UpdateSessionUI(id, playerid) {
 				break;
 			}
 		}
-		numberTd = CreatePlayerTextDraw(playerid, first_x, first_y, number);
+		task_unblock(1);
+		await_arr(contact_name) Contact_NameByNumberAsync(id, number);
+		numberTd = CreatePlayerTextDraw(playerid, first_x, first_y, contact_name);
 		PlayerTextDrawFont(playerid, numberTd, 3);
 		PlayerTextDrawLetterSize(playerid, numberTd, 0.150000, 0.600000);
 		PlayerTextDrawTextSize(playerid, numberTd, SIM_NUMBER_TEXT_SIZE, (safe_max[0] - safe_min[0]));

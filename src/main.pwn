@@ -30,7 +30,7 @@
 #define YSI_NO_KEYWORD_List
 #define YSI_YES_HEAP_MALLOC
 #define YSI_NO_MODE_CACHE
-#define CGEN_MEMORY 20000
+#define CGEN_MEMORY 30000
 
 #define task_unblock(%0) \
 	task_detach(); \

@@ -73,7 +73,7 @@ stock AppCall_DestroySessionUI(id, playerid) {
 	new ui[PerformUI];
 	map_arr_get_arr(m_sessionUI, key, ui);
 	if(linked_list_valid(ui[uiSessionNumbers])) {
-		for(new Iter:it = linked_list_iter(ui[uiSessionNumbers]); iter_inside(it); iter_release(it)) {
+		for(new Iter:it = linked_list_iter(ui[uiSessionNumbers]); iter_inside(it); iter_move_next(it)) {
 			PlayerTextDrawDestroy(playerid, PlayerText:iter_get(it));
 		}
 	}

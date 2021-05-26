@@ -168,10 +168,11 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 	return 1;
 }
 
-hook AppCall_OnUIShowAttempt(id, playerid, &bool:busy) {
+hook IPUI_OnShown(id, playerid) {
 	if(AppCall_HasIncoming(id)) {
+		await IPApp_InitStatsAsync(id, AppCall);
 		AppCall_UpdateIncomingUI(id, playerid);
-		busy = true; // means that when app call initiates, it won't show the contact ui but show this incoming call ui instead
+		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;
 }
@@ -203,6 +204,30 @@ hook AppCall_OnDialCancel(id) {
 						AppCall_UpdateContactButtonUI(key[ItemId], key[PlayerId]);
 					}
 					break;
+				}
+			}
+		}
+	}
+	return 1;
+}
+
+hook AppCall_OnDialed@0(from_phone, const to_number[]) {
+	new phone = ISim_GetPhoneWithNumber(to_number);
+	if(phone != -1) {
+		task_unblock(1);
+		new id = await Player_RetrieveIdByHandItem(phone);
+		if(id == -1) {
+			task_unblock(1);
+			id = await Inventory_RetrievePlayerByItem(phone);
+		}
+		if(id != -1) {
+			new playerid = Player_GetById(id);
+			if(playerid != -1) {
+				if(IPUI_GetPlayerPhone(playerid) == phone) {
+					IPApp_HideUIForPlayer(id, playerid);
+					AppCall_UpdateIncomingUI(id, playerid);
+				} else {
+					SubtitleText_Show(playerid, "~g~Chuong dien thoai dang rung len...");
 				}
 			}
 		}

@@ -140,6 +140,13 @@ stock IPApp_Ensure(app, const name[], const sprite[], bool:external = true) {
 
 #include <YSI_Coding\y_hooks>
 
+hook IPUI_OnShown@(id, playerid) {
+	task_unblock(1);
+	await IPApp_InitStatsAsync(id, AppMenu);
+	IPApp_ShowUIForPlayer(id, AppMenu, playerid);
+	return 1;
+}
+
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS app_stats (\
 		created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\

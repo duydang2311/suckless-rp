@@ -281,12 +281,8 @@ hook IPA_OnUIShowAttempt(id, app, playerid) {
 	}
 
 	if(app == AppCall) {
-		new bool:busy = false;
-		CallLocalFunction("AppCall_OnUIShowAttempt", "iii", id, playerid, ref(busy));
-		if(!busy) {
-			AppCall_UpdateContactUI(id, playerid);
-			AppCall_UpdateContactButtonUI(id, playerid);
-		}
+		AppCall_UpdateContactUI(id, playerid);
+		AppCall_UpdateContactButtonUI(id, playerid);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

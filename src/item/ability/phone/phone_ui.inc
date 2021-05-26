@@ -23,6 +23,7 @@ stock IPUI_ShowForPlayer(id, playerid, Float:x, Float:y) {
 	}
 	map_set(m_playerPhone, playerid, id);
 	CallLocalFunction("IPUI_OnShowAttempt", "iiff", id, playerid, x, y);
+	CallLocalFunction("IPUI_OnShown", "ii", id, playerid);
 	return 1;
 }
 

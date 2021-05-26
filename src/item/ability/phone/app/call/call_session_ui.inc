@@ -52,6 +52,7 @@ public AppCall_SessionTimerHandler(id, playerid) {
 		ui[PerformUI],
 		elapsed_sec = gettime() - AppCall_GetSessionCreatedTime(ss_ref),
 		time_format[11];
+	map_arr_get_arr(m_sessionUI, key, ui);
 	format(time_format, sizeof(time_format), "%02d:%02d", floatround(float(elapsed_sec) / 60.0, floatround_floor), elapsed_sec % 60);
 	PlayerTextDrawSetString(playerid, ui[uiSessionTimer], time_format);
 	PlayerTextDrawShow(playerid, ui[uiSessionTimer]);

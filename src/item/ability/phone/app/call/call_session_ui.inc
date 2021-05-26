@@ -430,9 +430,9 @@ hook IPA_OnUIHideAttempt(id, playerid) {
 	key[ItemId] = id;
 	key[PlayerId] = playerid;
 	if(AppCall_HasSessionUIKey(key)) {
-		AppCall_CancelIncoming(id);
+		AppCall_QuitSession(id);
 	}
-	AppCall_DestroyIncomingUI(id, playerid);
+	AppCall_DestroySessionUI(id, playerid);
 	return 1;
 }
 

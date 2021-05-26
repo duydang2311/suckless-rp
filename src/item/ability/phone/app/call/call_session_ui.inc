@@ -20,18 +20,21 @@ static
 	Map:m_sessionUI, // { {Key}: {PerformUI} }
 	Map:m_sessionTimer; // { {Key}: int }
 
-PhoneDialog:CallSessionJoinError(id, playerid, response) {
+PhoneDialog:CallSessionJoinErrorDlg(id, playerid, response) {
 	if(AppCall_GetPhoneSessionRef(id) != Ref<LinkedList>:-1) {
 		AppCall_UpdateSessionUI(id, playerid);
 		return 1;
 	}
 
 	AppCall_UpdateContactUI(id, playerid);
+	AppCall_UpdateContactButtonUI(id, playerid);
 	return 1;
 }
 
-PhoneDialog:CallSessionDeletedDialog(id, playerid, response) {
+PhoneDialog:CallSessionDeletedDlg(id, playerid, response) {
 	AppCall_UpdateContactUI(id, playerid);
+	AppCall_UpdateContactButtonUI(id, playerid);
+	return 1;
 }
 
 forward AppCall_SessionTimerHandler(id, playerid);
@@ -315,7 +318,7 @@ hook AppCall_OnSsJoinError(id, error) {
 	if(saved_key[ItemId] != -1) {
 		switch(error) {
 			case ssErrorAlreadyInASession: {
-				IPDialog_New(saved_key[ItemId], CallSessionJoinError, "Ban hoac doi phuong dang tham gia hai cuoc goi khac nhau, mot trong hai can phai roi cuoc goi de co the goi.");
+				IPDialog_New(saved_key[ItemId], CallSessionJoinErrorDlg, "Ban hoac doi phuong dang tham gia hai cuoc goi khac nhau, mot trong hai can phai roi cuoc goi de co the goi.");
 				IPDialog_UpdateUI(saved_key[ItemId], saved_key[PlayerId]);
 			}
 		}
@@ -441,7 +444,7 @@ hook AppCall_OnSessDeleted(Ref<LinkedList>:ssref) {
 				iter_get_key_arr(map_it, key);
 				if(key[ItemId] == iter_get(it)) {
 					AppCall_DestroySessionUI(key[ItemId], key[PlayerId]);
-					IPDialog_New(key[ItemId], CallSessionDeletedDialog, "Cuoc goi da ket thuc...");
+					IPDialog_New(key[ItemId], CallSessionDeletedDlg, "Cuoc goi da ket thuc...");
 					IPDialog_UpdateUI(key[ItemId], key[PlayerId]);
 					cnt++;
 					break;

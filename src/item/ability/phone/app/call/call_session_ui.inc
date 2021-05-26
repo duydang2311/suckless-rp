@@ -327,6 +327,7 @@ hook AppCall_OnSsJoinError(id, error) {
 }
 
 hook AppCall_OnSessionJoined(id) {
+	printf("AppCall_OnSessionJoined(%d)", id);
 	new
 		number[SIM_NUMBER_SIZE],
 		Ref<LinkedList>:ssref = AppCall_GetPhoneSessionRef(id),
@@ -350,6 +351,7 @@ hook AppCall_OnSessionJoined(id) {
 
 			if(AppCall_GetPhoneSessionRef(key[ItemId]) == ssref) {
 				AppCall_UpdateSessionUI(key[ItemId], key[PlayerId]);
+				printf("AppCall_OnSessionJoined(%d), update for %d", id, key[ItemId]);
 				cnt++;
 			}
 		}
@@ -360,6 +362,7 @@ hook AppCall_OnSessionJoined(id) {
 		for(new key[Key]; iter_inside(it); iter_move_next(it)) {
 			iter_get_key_arr(it, key);
 			if(key[ItemId] == id) {
+				printf("AppCall_OnSessionJoined(%d), update for %d", id, key[ItemId]);
 				AppCall_UpdateSessionUI(key[ItemId], key[PlayerId]);
 				AppCall_RunSessionTimer(key[ItemId], key[PlayerId]);
 				break;
@@ -373,6 +376,7 @@ hook AppCall_OnSessionJoined(id) {
 			for(new key[Key]; iter_inside(it); iter_move_next(it)) {
 				iter_get_key_arr(it, key);
 				if(key[ItemId] == remote) {
+					printf("AppCall_OnSessionJoined(%d), update for %d", id, key[ItemId]);
 					AppCall_UpdateSessionUI(key[ItemId], key[PlayerId]);
 					AppCall_RunSessionTimer(key[ItemId], key[PlayerId]);
 					break;

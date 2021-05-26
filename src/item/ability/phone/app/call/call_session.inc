@@ -63,15 +63,18 @@ stock AppCall_JoinSession(id, Ref<LinkedList>:session_ref) {
 	if(AppCall_GetPhoneSessionRef(id) != Ref<LinkedList>:-1) {
 		return 0;
 	}
+	printf("AppCall_JoinSession(%d, %d), passed condition 1", id, _:session_ref);
 	new LinkedList:ll = pawn_unref<LinkedList>(session_ref);
 	if(!linked_list_valid(ll)) {
 		return 0;
 	}
+	printf("AppCall_JoinSession(%d, %d), passed condition 2", id, _:session_ref);
 	linked_list_add(ll, id);
 	if(!map_valid(m_phoneCSessionRef)) {
 		m_phoneCSessionRef = map_new();
 	}
 	map_set(m_phoneCSessionRef, id, _:session_ref);
+	printf("AppCall_JoinSession(%d, %d)", id, _:session_ref);
 	return 1;
 }
 
@@ -81,6 +84,9 @@ stock AppCall_QuitSession(id) {
 		return 0;
 	}
 
+	if(map_valid(m_phoneCSessionRef) && map_has_key(m_phoneCSessionRef, id)) {
+		map_remove(m_phoneCSessionRef, id);
+	}
 	new LinkedList:ll = pawn_unref<LinkedList>(ssref);
 	if(linked_list_valid(ll)) {
 		for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
@@ -113,6 +119,7 @@ stock AppCall_DeleteSession(Ref<LinkedList>:ssref) {
 	if(linked_list_valid(ll)) {
 		for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
 			if(map_valid(m_phoneCSessionRef) && map_has_key(m_phoneCSessionRef, iter_get(it))) {
+				printf("AppCall_DeleteSession(%d), remove phone %d from phone csessionref", _:ssref, iter_get(it));
 				map_remove(m_phoneCSessionRef, iter_get(it));
 			}
 		}
@@ -156,6 +163,7 @@ hook AppCall_OnInCallAccept(id) {
 		new
 			Ref<LinkedList>:ref1 = AppCall_GetPhoneSessionRef(id),
 			Ref<LinkedList>:ref2 = AppCall_GetPhoneSessionRef(phone);
+		printf("AppCall_OnInCallAccept(%d), ref1 %d, ref 2 %d", id, _:ref1, _:ref2);
 		if(ref1 == ref2) {
 			if(ref1 == Ref<LinkedList>:-1) {
 				ref1 = AppCall_CreateSession();
@@ -174,8 +182,8 @@ hook AppCall_OnInCallAccept(id) {
 		}
 		AppCall_JoinSession(id, ref1);
 		AppCall_JoinSession(phone, ref1);
-		CallLocalFunction("AppCall_OnSessionJoined", "ii", id);
-		CallLocalFunction("AppCall_OnSessionJoined", "ii", phone);
+		CallLocalFunction("AppCall_OnSessionJoined", "i", id);
+		CallLocalFunction("AppCall_OnSessionJoined", "i", phone);
 	}
 	return 1;
 }

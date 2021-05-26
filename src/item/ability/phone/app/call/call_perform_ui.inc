@@ -80,6 +80,7 @@ stock AppCall_DestroyPerformUI(id, playerid) {
 		for(new Iter:it = linked_list_iter(ui[uiRemoteNumberList]); iter_inside(it); iter_release(it)) {
 			PlayerTextDrawDestroy(playerid, PlayerText:iter_get(it));
 		}
+		linked_list_delete(ui[uiRemoteNumberList]);
 	}
 	PlayerTextDrawDestroy(playerid, ui[uiCallTimer]);
 	PlayerTextDrawDestroy(playerid, ui[uiSpeakerBtn]);

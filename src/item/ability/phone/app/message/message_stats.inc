@@ -355,6 +355,11 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 hook IPA_OnStatsTermnAttempt(id, app) {
 	if(app == AppMessage) {
 		if(AppMsg_HasDetailStats(id)) {
+			new stats[AppMsgStats];
+			map_get_arr(m_detailStats, id, stats);
+			if(linked_list_valid(stats[msgList])) {
+				linked_list_delete(stats[msgList]);
+			}
 			map_remove_deep(m_detailStats, id);
 			if(!map_size(m_detailStats)) {
 				map_delete(m_detailStats);
@@ -362,6 +367,11 @@ hook IPA_OnStatsTermnAttempt(id, app) {
 			}
 		}
 		if(AppMsg_HasListStats(id)) {
+			new stats[AppMsgStats];
+			map_get_arr(m_listStats, id, stats);
+			if(linked_list_valid(stats[msgList])) {
+				linked_list_delete(stats[msgList]);
+			}
 			map_remove_deep(m_listStats, id);
 			if(!map_size(m_listStats)) {
 				map_delete(m_listStats);

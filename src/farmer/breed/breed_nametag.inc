@@ -66,7 +66,7 @@ hook OnPlayerDisconnect(playerid, reason) {
 			}
 		}
 	}
-	map_remove_deep(m_nametagForPlayerId, playerid);
+	linked_list_delete(ll);
 	if(!map_size(m_nametagForPlayerId)) {
 		map_delete(m_nametagForPlayerId);
 		m_nametagForPlayerId = Map:-1;

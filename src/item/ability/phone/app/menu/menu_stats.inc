@@ -157,6 +157,9 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 hook IPA_OnStatsTermnAttempt(id, app) {
 	if(app == AppMenu) {
 		if(AppMenu_HasStats(id)) {
+			new stats[AppMenuStats];
+			map_get_arr(m_menuStats, id, stats);
+			linked_list_delete(stats[appList]);
 			map_remove_deep(m_menuStats, id);
 			if(!map_size(m_menuStats)) {
 				map_delete(m_menuStats);

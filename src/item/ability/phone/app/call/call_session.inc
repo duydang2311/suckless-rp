@@ -86,6 +86,7 @@ stock AppCall_QuitSession(id) {
 		for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
 			if(iter_get(it) == id) {
 				iter_erase(it);
+				CallLocalFunction("AppCall_OnSessionQuit", "ii", _:ssref, id);
 				return 1;
 			}
 		}
@@ -94,7 +95,23 @@ stock AppCall_QuitSession(id) {
 }
 
 stock AppCall_DeleteSession(Ref<LinkedList>:ssref) {
+	if(!AppCall_HasSessionRef(ssref)) {
+		return 0;
+	}
 
+	CallLocalFunction("AppCall_OnSessDeleted", "i", _:ssref);
+	if(linked_list_valid(ll_callSessions)) {
+		for(new Iter:it = linked_list_iter(ll_callSessions); iter_inside(it); iter_move_next(it)) {
+			if(pawn_ref<LinkedList>(LinkedList:iter_get(it)) == ssref) {
+				new LinkedList:ll = pawn_unref<LinkedList>(ssref);
+				iter_erase_deep(it);
+				if(linked_list_valid(ll)) {
+					linked_list_delete(ll);
+				}
+				break;
+			}
+		}
+	}
 	return 1;
 }
 

@@ -36,6 +36,7 @@ stock AppMsg_DestroyListUI(id, playerid) {
 			PlayerTextDrawDestroy(playerid, component[lsHeaderTd]);
 			PlayerTextDrawDestroy(playerid, component[lsMessageTd]);
 		}
+		linked_list_delete(ui[lsComponentList]);
 	}
 	map_arr_remove_deep(m_listUI, key);
 	return 1;

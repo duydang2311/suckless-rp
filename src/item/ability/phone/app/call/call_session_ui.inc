@@ -77,6 +77,7 @@ stock AppCall_DestroySessionUI(id, playerid) {
 		for(new Iter:it = linked_list_iter(ui[uiSessionNumbers]); iter_inside(it); iter_move_next(it)) {
 			PlayerTextDrawDestroy(playerid, PlayerText:iter_get(it));
 		}
+		linked_list_delete(ui[uiSessionNumbers]);
 	}
 	PlayerTextDrawDestroy(playerid, ui[uiSessionTimer]);
 	PlayerTextDrawDestroy(playerid, ui[uiSpeakerBtn]);

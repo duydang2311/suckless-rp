@@ -52,6 +52,7 @@ stock AppStore_DestroyUI(id, playerid) {
 		for(new Iter:it = linked_list_iter(ll); iter_inside(it); iter_move_next(it)) {
 			PlayerTextDrawDestroy(playerid, PlayerText:iter_get(it));
 		}
+		linked_list_delete(ll);
 		map_arr_remove_deep(m_mainPageTd, key);
 		if(!map_size(m_mainPageTd)) {
 			map_delete(m_mainPageTd);

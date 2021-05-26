@@ -222,6 +222,9 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 hook IPA_OnStatsTermnAttempt(id, app) {
 	if(app == AppCall) {
 		if(AppCall_HasStats(id)) {
+			new stats[ContactListPage];
+			map_get_arr(m_pageStats, id, stats);
+			linked_list_delete(stats[pageContactList]);
 			map_remove_deep(m_pageStats, id);
 			if(!map_size(m_pageStats)) {
 				map_delete(m_pageStats);

@@ -64,7 +64,6 @@ stock Faction_HasMember(id, member_id) {
 
 hook Faction_OnDeleted(id) {
 	if(map_has_key(m_factionMembers, id)) {
-		new LinkedList:ll = LinkedList:map_get(m_factionMembers, id);
 		map_remove_deep(m_factionMembers, id);
 	}
 	return 1;

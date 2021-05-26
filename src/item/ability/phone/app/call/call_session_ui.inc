@@ -21,8 +21,17 @@ static
 	Map:m_sessionTimer; // { {Key}: int }
 
 PhoneDialog:CallSessionJoinError(id, playerid, response) {
+	if(AppCall_GetPhoneSessionRef(id) != Ref<LinkedList>:-1) {
+		AppCall_UpdateSessionUI(id, playerid);
+		return 1;
+	}
+
 	AppCall_UpdateContactUI(id, playerid);
 	return 1;
+}
+
+PhoneDialog:CallSessionDeletedDialog(id, playerid, response) {
+	AppCall_UpdateContactUI(id, playerid);
 }
 
 forward AppCall_SessionTimerHandler(id, playerid);
@@ -412,6 +421,30 @@ hook AppCall_OnSessionQuit(Ref<LinkedList>:ssref, id) {
 				if(AppCall_GetPhoneSessionRef(key[ItemId]) == ssref) {
 					AppCall_UpdateSessionUI(key[ItemId], key[PlayerId]);
 					cnt++;
+				}
+			}
+		}
+	}
+	return 1;
+}
+
+hook AppCall_OnSessDeleted(Ref<LinkedList>:ssref) {
+	if(!map_valid(m_sessionUI)) {
+		return 1;
+	}
+
+	new LinkedList:ll = pawn_unref<LinkedList>(ssref);
+	if(linked_list_valid(ll)) {
+		new size = linked_list_size(ll);
+		for(new Iter:it = linked_list_iter(ll), Iter:map_it, key[Key], cnt = 0; iter_inside(it) && cnt != size; iter_move_next(it)) {
+			for(map_it = map_iter(m_sessionUI); iter_inside(map_it); iter_move_next(map_it)) {
+				iter_get_key_arr(map_it, key);
+				if(key[ItemId] == iter_get(it)) {
+					AppCall_DestroySessionUI(key[ItemId], key[PlayerId]);
+					IPDialog_New(key[ItemId], CallSessionDeletedDialog, "Cuoc goi da ket thuc...");
+					IPDialog_UpdateUI(key[ItemId], key[PlayerId]);
+					cnt++;
+					break;
 				}
 			}
 		}

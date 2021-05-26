@@ -129,10 +129,10 @@ stock AppCall_DeleteSession(Ref<LinkedList>:ssref) {
 	if(linked_list_valid(ll_callSessions)) {
 		for(new Iter:it = linked_list_iter(ll_callSessions); iter_inside(it); iter_move_next(it)) {
 			if(pawn_ref<LinkedList>(LinkedList:iter_get(it)) == ssref) {
-				new LinkedList:ll = pawn_unref<LinkedList>(ssref);
+				new LinkedList:sessionll = pawn_unref<LinkedList>(ssref);
 				iter_erase_deep(it);
-				if(linked_list_valid(ll)) {
-					linked_list_delete(ll);
+				if(linked_list_valid(sessionll)) {
+					linked_list_delete(sessionll);
 				}
 				break;
 			}

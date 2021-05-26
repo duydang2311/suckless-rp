@@ -38,6 +38,11 @@ stock _prv_IPDialog_New(id, const callback[], const text[]) {
 	return 1;
 }
 
+stock IPDialog_Delete(id) {
+
+	return 1;
+}
+
 stock IPDialog_GetText(id, text[], size = sizeof(text)) {
 	if(!IPDialog_Has(id)) {
 		return 0;

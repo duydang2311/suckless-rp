@@ -62,6 +62,7 @@ hook OnPlayerClickTD(playerid, Text:clickedid) {
 				}
 			}
 			IPApp_HideUIForPlayer(id, playerid);
+			IPSystem_HideUIForPlayer(id, playerid);
 			IPUI_HideForPlayer(id, playerid);
 		}
 	}

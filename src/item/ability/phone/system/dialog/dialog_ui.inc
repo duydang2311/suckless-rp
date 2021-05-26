@@ -136,15 +136,28 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 			if(!isnull(callback)) {
 				switch(button) {
 					case PhoneButtonCall: {
+						IPDialog_Delete(id);
 						CallLocalFunction(callback, "iii", id, playerid, 1);
 					}
 					case PhoneButtonHangup: {
+						IPDialog_Delete(id);
 						CallLocalFunction(callback, "iii", id, playerid, 0);
 					}
 				}
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
+}
+
+hook IPSystem_OnUIHide(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(IPDialog_HasUIKey(key)) {
+		IPDialog_Delete(id);
+		IPDialog_DestroyUI(id, playerid);
 	}
 	return 1;
 }

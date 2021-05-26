@@ -153,8 +153,12 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 			case PhoneButtonHangup: {
 				AppCall_CancelIncoming(id);
 				AppCall_DestroyIncomingUI(id, playerid);
-				AppCall_UpdateContactUI(id, playerid);
-				AppCall_UpdateContactButtonUI(id, playerid);
+				if(AppCall_GetPhoneSessionRef(id) != Ref<LinkedList>:-1) {
+					AppCall_UpdateSessionUI(id, playerid);
+				} else {
+					AppCall_UpdateContactUI(id, playerid);
+					AppCall_UpdateContactButtonUI(id, playerid);
+				}
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;

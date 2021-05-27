@@ -47,3 +47,10 @@ stock AppCall_DeleteSettings(id) {
 	}
 	return 1;
 }
+
+#include <YSI_Coding\y_hooks>
+
+hook AppCall_OnSessionQuit(Ref<LinkedList>:ssref, id) {
+	AppCall_DeleteSettings(id);
+	return 1;
+}

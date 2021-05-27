@@ -41,10 +41,49 @@ stock Player_BroadcastMsg(playerid, Float:range, from_color, to_color, const str
             if(dist <= range) {
                 ratio = dist / range;
                 Util_Hex(new_color, from_r + floatround((to_r - from_r) * ratio), from_g + floatround((to_g - from_g) * ratio), from_b + floatround((to_b - from_b) * ratio), 255);
-				if(source_color != -1 && i == playerid) {
-					Player_Msg(i, new_color, string);
-				}
+				Player_Msg(i, new_color, string);
             }
+        }
+    }
+    return 1;
+}
+
+stock Player_BroadcastDamagedMsg(playerid, Float:range, from_color, to_color, const string[], const damaged[], source_color = -1) {
+    new
+		Float:player_pos[3],
+        Float:dist,
+        new_color,
+        Float:ratio,
+        from_r,
+        from_g,
+        from_b,
+        to_r,
+        to_g,
+        to_b,
+        unused;
+
+    Util_RGBA(from_color, from_r, from_g, from_b, unused);
+    Util_RGBA(to_color, to_r, to_g, to_b, unused);
+
+    GetPlayerPos(playerid, player_pos[0], player_pos[1], player_pos[2]);
+    foreach(new i : Player) {
+        if(Player_IsStatsLoaded(i)) {
+			if(i == playerid) {
+				if(source_color != -1) {
+					Player_Msg(i, source_color, string);
+				} else {
+					Player_Msg(i, from_color, string);
+				}
+				continue;
+			}
+            dist = GetPlayerDistanceFromPoint(i, player_pos[0], player_pos[1], player_pos[2]);
+            if(dist <= range) {
+                ratio = dist / range;
+                Util_Hex(new_color, from_r + floatround((to_r - from_r) * ratio), from_g + floatround((to_g - from_g) * ratio), from_b + floatround((to_b - from_b) * ratio), 255);
+				Player_Msg(i, new_color, string);
+            } else if(dist <= (range * 1.2)) {
+				Player_Msg(i, to_color, damaged);
+			}
         }
     }
     return 1;

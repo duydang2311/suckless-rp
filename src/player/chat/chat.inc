@@ -4,9 +4,7 @@
 
 #define player_chat_included
 
-const
-	PLAYER_CHAT_BADGE_SIZE = 32,
-	PLAYER_CHAT_TEXT_SIZE = 144;
+#include <chat\chat.h>
 
 forward Player_OnChat(playerid, badge[], text[]);
 public Player_OnChat(playerid, badge[], text[]) {

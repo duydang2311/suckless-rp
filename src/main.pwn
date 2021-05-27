@@ -46,7 +46,8 @@ DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 // DEFINE_HOOK_REPLACEMENT__(IPApp, IPA);
 
 #include <inventory_forward>
-#include <hand/hand_forward>
+#include <hand\hand_forward>
+#include <chat\chat.h>
 
 #include <mysql>
 #include <vehicle>

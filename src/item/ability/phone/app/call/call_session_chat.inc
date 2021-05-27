@@ -7,6 +7,7 @@
 #include <YSI_Coding\y_hooks>
 
 hook Player_OnChat(playerid, badge[], text[]) {
+	new local_text[PLAYER_CHAT_TEXT_SIZE];
 	for(new i = 1, phone, Ref<LinkedList>:ssref; i != -1; i--) {
 		phone = Player_GetHandItemId(playerid, i);
 		if(phone != -1 && IPhone_Has(phone) && AppCall_GetPhoneSessionRef(phone) != Ref<LinkedList>:-1) {
@@ -24,19 +25,27 @@ hook Player_OnChat(playerid, badge[], text[]) {
 						msg[PLAYER_CHAT_BADGE_SIZE + PLAYER_CHAT_BADGE_SIZE + MAX_PLAYER_NAME + 10],
 						name[MAX_PLAYER_NAME + 1];
 					for(new Iter:it = linked_list_iter(ll), it_phone; iter_inside(it); iter_move_next(it)) {
+						local_text[0] = EOS;
+						strcat(local_text, text);
 						it_phone = iter_get(it);
 						if(it_phone == phone) {
 							continue;
 						}
 
 						foreach(new p : Player) {
-							if(GetPlayerSpecialAction(p) == SPECIAL_ACTION_USECELLPHONE) {
-								if(Player_GetHandItemId(p, 1) == it_phone || Player_GetHandItemId(p, 0) == it_phone) {
-									GetPlayerName(p, name);
-									format(msg, sizeof(msg), "(%s)'s phone: %s", name, text);
+							if(Player_GetHandItemId(p, 1) == it_phone || Player_GetHandItemId(p, 0) == it_phone) {
+								GetPlayerName(p, name);
+								if(AppCall_GetSpeakerSetting(it_phone)) {
+									format(msg, sizeof(msg), "(%s)'s phone: %s", name, local_text);
+									Player_BroadcastMsg(p, 7.0, COLOR_FADE2, COLOR_FADE7, msg, COLOR_LIGHTYELLOW);
+								} else {
+									if(GetPlayerSpecialAction(playerid) != SPECIAL_ACTION_USECELLPHONE) {
+										Util_DamageString(local_text, 0.6, '_');
+									}
+									format(msg, sizeof(msg), "(%s)'s phone: %s", name, local_text);
 									Player_Msg(p, COLOR_LIGHTYELLOW, msg);
-									break;
 								}
+								break;
 							}
 						}
 					}

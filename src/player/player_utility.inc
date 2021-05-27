@@ -9,7 +9,7 @@ stock Player_Msg(playerid, color, const message[]) {
 	return 1;
 }
 
-stock Player_BroadcastMsg(playerid, Float:range, from_color, to_color, const string[]) {
+stock Player_BroadcastMsg(playerid, Float:range, from_color, to_color, const string[], source_color = -1) {
     new
 		Float:player_pos[3],
         Float:dist,
@@ -29,11 +29,21 @@ stock Player_BroadcastMsg(playerid, Float:range, from_color, to_color, const str
     GetPlayerPos(playerid, player_pos[0], player_pos[1], player_pos[2]);
     foreach(new i : Player) {
         if(Player_IsStatsLoaded(i)) {
+			if(i == playerid) {
+				if(source_color != -1) {
+					Player_Msg(i, source_color, string);
+				} else {
+					Player_Msg(i, from_color, string);
+				}
+				continue;
+			}
             dist = GetPlayerDistanceFromPoint(i, player_pos[0], player_pos[1], player_pos[2]);
             if(dist <= range) {
                 ratio = dist / range;
                 Util_Hex(new_color, from_r + floatround((to_r - from_r) * ratio), from_g + floatround((to_g - from_g) * ratio), from_b + floatround((to_b - from_b) * ratio), 255);
-                Player_Msg(i, new_color, string);
+				if(source_color != -1 && i == playerid) {
+					Player_Msg(i, new_color, string);
+				}
             }
         }
     }

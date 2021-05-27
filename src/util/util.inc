@@ -55,3 +55,13 @@ stock Util_RGBA(color, &rr, &gg, &bb, &aa) {
 stock Util_Hex(&color, rr, gg, bb, aa) {
 	color = (aa & 0xFF) | ((bb & 0xFF) << 8) | ((gg & 0xFF) << 16) | (rr << 24);
 }
+
+stock Util_DamageString(text[], Float:percent, damaged_char) {
+    new
+        length = strlen(text),
+        cnt = floatround(float(length) * percent, floatround_floor);
+    while(cnt--) {
+        text[random(length)] = damaged_char;
+    }
+    return 1;
+}

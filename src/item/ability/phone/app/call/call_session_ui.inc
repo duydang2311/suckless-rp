@@ -9,7 +9,7 @@ static enum _:Key {
 	PlayerId
 }
 
-static enum _:PerformUI {
+static enum _:SessionUI {
 	LinkedList:uiSessionNumbers, // LinkedList<PlayerText:>
 	PlayerText:uiSessionTimer,
 	PlayerText:uiSpeakerBtn,
@@ -17,7 +17,7 @@ static enum _:PerformUI {
 }
 
 static
-	Map:m_sessionUI, // { {Key}: {PerformUI} }
+	Map:m_sessionUI, // { {Key}: {SessionUI} }
 	Map:m_sessionTimer; // { {Key}: int }
 
 PhoneDialog:CallSessionJoinErrorDlg(id, playerid, response) {
@@ -61,7 +61,7 @@ public AppCall_SessionTimerHandler(id, playerid) {
 	}
 
 	new
-		ui[PerformUI],
+		ui[SessionUI],
 		elapsed_sec = gettime() - AppCall_GetSessionCreatedTime(ss_ref),
 		time_format[11];
 	map_arr_get_arr(m_sessionUI, key, ui);
@@ -75,6 +75,25 @@ stock AppCall_HasSessionUIKey(const key[Key]) {
 	return (map_valid(m_sessionUI) && map_has_arr_key(m_sessionUI, key));
 }
 
+stock AppCall_UpdateSessionSpeakerUI(id, playerid) {
+	new key[Key];
+	key[ItemId] = id;
+	key[PlayerId] = playerid;
+	if(!AppCall_HasSessionUIKey(key)) {
+		return 0;
+	}
+
+	new ui[SessionUI];
+	map_arr_get_arr(m_sessionUI, key, ui);
+	if(AppCall_GetSpeakerSetting(id)) {
+		PlayerTextDrawColor(playerid, ui[uiSpeakerBtn], 0xFFFFFFFF);
+	} else {
+		PlayerTextDrawColor(playerid, ui[uiSpeakerBtn], 0xFFFFF44);
+	}
+	PlayerTextDrawShow(playerid, ui[uiSpeakerBtn]);
+	return 1;
+}
+
 stock AppCall_DestroySessionUI(id, playerid) {
 	new key[Key];
 	key[ItemId] = id;
@@ -83,7 +102,7 @@ stock AppCall_DestroySessionUI(id, playerid) {
 		return 0;
 	}
 
-	new ui[PerformUI];
+	new ui[SessionUI];
 	map_arr_get_arr(m_sessionUI, key, ui);
 	if(linked_list_valid(ui[uiSessionNumbers])) {
 		for(new Iter:it = linked_list_iter(ui[uiSessionNumbers]); iter_inside(it); iter_move_next(it)) {
@@ -120,7 +139,7 @@ stock Task:AppCall_UpdateSessionUI(id, playerid) {
 
 	new
 		key[Key],
-		ui[PerformUI],
+		ui[SessionUI],
 		elapsed_sec = gettime() - AppCall_GetSessionCreatedTime(ss_ref),
 		time_format[11];
 	format(time_format, sizeof(time_format), "%02d:%02d", floatround(float(elapsed_sec) / 60.0, floatround_floor), elapsed_sec % 60);
@@ -246,7 +265,11 @@ stock Task:AppCall_UpdateSessionUI(id, playerid) {
 	PlayerTextDrawSetOutline(playerid, ui[uiSpeakerBtn], 1);
 	PlayerTextDrawSetShadow(playerid, ui[uiSpeakerBtn], 0);
 	PlayerTextDrawAlignment(playerid, ui[uiSpeakerBtn], 2);
-	PlayerTextDrawColor(playerid, ui[uiSpeakerBtn], 0xFFFFFF77);
+	if(AppCall_GetSpeakerSetting(id)) {
+		PlayerTextDrawColor(playerid, ui[uiSpeakerBtn], 0xFFFFFFFF);
+	} else {
+		PlayerTextDrawColor(playerid, ui[uiSpeakerBtn], 0xFFFFF44);
+	}
 	PlayerTextDrawBackgroundColor(playerid, ui[uiSpeakerBtn], 255);
 	PlayerTextDrawBoxColor(playerid, ui[uiSpeakerBtn], 50);
 	PlayerTextDrawUseBox(playerid, ui[uiSpeakerBtn], 0);
@@ -474,6 +497,25 @@ hook AppCall_OnSessDeleted(Ref<LinkedList>:ssref) {
 					break;
 				}
 			}
+		}
+	}
+	return 1;
+}
+
+hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
+	new key[Key];
+	key[ItemId] = IPUI_GetPlayerPhone(playerid);
+	if(key[ItemId] == -1) {
+		return 1;
+	}
+	key[PlayerId] = playerid;
+	if(AppCall_HasSessionUIKey(key)) {
+		new ui[SessionUI];
+		map_arr_get_arr(m_sessionUI, key, ui);
+		if(playertextid == ui[uiSpeakerBtn]) {
+			AppCall_SetSpeakerSetting(key[ItemId], !AppCall_GetSpeakerSetting(key[ItemId]));
+			AppCall_UpdateSessionSpeakerUI(key[ItemId], key[PlayerId]);
+			return Y_HOOKS_BREAK_RETURN_1;
 		}
 	}
 	return 1;

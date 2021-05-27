@@ -23,7 +23,7 @@ stock bool:AppCall_GetSpeakerSetting(id) {
 	return settings[Speaker];
 }
 
-stock AppCall_SetSpeakerSetting(id) {
+stock AppCall_SetSpeakerSetting(id, bool:value) {
 	if(!map_valid(m_settings)) {
 		m_settings = map_new();
 	}
@@ -32,7 +32,7 @@ stock AppCall_SetSpeakerSetting(id) {
 		settings[Speaker] = false;
 		map_set_arr(m_settings, id, settings);
 	}
-	map_set_cell(m_settings, id, Speaker, settings);
+	map_set_cell(m_settings, id, Speaker, value);
 	return 1;
 }
 

@@ -33,6 +33,7 @@
 #include "./player_spawn.inc"
 #include "./hand/hand.inc"
 #include "./phone/phone.inc"
+#include "./chat/chat.inc"
 
 #include "./player_death.inc"
 

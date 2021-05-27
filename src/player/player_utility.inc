@@ -9,6 +9,37 @@ stock Player_Msg(playerid, color, const message[]) {
 	return 1;
 }
 
+stock Player_BroadcastMsg(playerid, Float:range, from_color, to_color, const string[]) {
+    new
+		Float:player_pos[3],
+        Float:dist,
+        new_color,
+        Float:ratio,
+        from_r,
+        from_g,
+        from_b,
+        to_r,
+        to_g,
+        to_b,
+        unused;
+
+    Util_RGBA(from_color, from_r, from_g, from_b, unused);
+    Util_RGBA(to_color, to_r, to_g, to_b, unused);
+
+    GetPlayerPos(playerid, player_pos[0], player_pos[1], player_pos[2]);
+    foreach(new i : Player) {
+        if(Player_IsStatsLoaded(i)) {
+            dist = GetPlayerDistanceFromPoint(i, player_pos[0], player_pos[1], player_pos[2]);
+            if(dist <= range) {
+                ratio = dist / range;
+                Util_Hex(new_color, from_r + floatround((to_r - from_r) * ratio), from_g + floatround((to_g - from_g) * ratio), from_b + floatround((to_b - from_b) * ratio), 255);
+                Player_Msg(i, new_color, string);
+            }
+        }
+    }
+    return 1;
+}
+
 stock Player_KickMsg(playerid, const message[]) {
 	if(!IsPlayerConnected(playerid)) return 1;
 	Player_Msg(playerid, COLOR_RED, message);

@@ -44,3 +44,14 @@ stock Util_FloatClamp(&Float:value, Float:min, Float:max) {
     }
     return 1;
 }
+
+stock Util_RGBA(color, &rr, &gg, &bb, &aa) {
+	rr = color >>> 24;
+	gg = (color >>> 16) & 0xFF;
+	bb = (color >>> 8) & 0xFF;
+	aa = color & 0xFF;
+}
+
+stock Util_Hex(&color, rr, gg, bb, aa) {
+	color = (aa & 0xFF) | ((bb & 0xFF) << 8) | ((gg & 0xFF) << 16) | (rr << 24);
+}

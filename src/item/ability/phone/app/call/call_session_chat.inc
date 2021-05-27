@@ -35,6 +35,7 @@ hook Player_OnChat(playerid, badge[], text[]) {
 									GetPlayerName(p, name);
 									format(msg, sizeof(msg), "(%s)'s phone: %s", name, text);
 									Player_Msg(p, COLOR_LIGHTYELLOW, msg);
+									break;
 								}
 							}
 						}

@@ -441,6 +441,9 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 				AppCall_DestroySessionUI(id, playerid);
 				AppCall_UpdateContactUI(id, playerid);
 				AppCall_UpdateContactButtonUI(id, playerid);
+				if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USECELLPHONE) {
+					SetPlayerSpecialAction(playerid, SPECIAL_ACTION_STOPUSECELLPHONE);
+				}
 			}
 			case PhoneButtonCall: {
 				if(GetPlayerSpecialAction(playerid) != SPECIAL_ACTION_USECELLPHONE) {

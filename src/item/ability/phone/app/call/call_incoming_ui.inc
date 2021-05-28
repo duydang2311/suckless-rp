@@ -238,6 +238,7 @@ hook AppCall_OnDialed@0(from_phone, const to_number[]) {
 				printf("AppCall_OnDialed@0(%d, %s) -> phone %d, player id %d, player ingame id %d, ipui phone %d", from_phone, to_number, phone, id, playerid, IPUI_GetPlayerPhone(playerid));
 				if(IPUI_GetPlayerPhone(playerid) == phone) {
 					IPApp_HideUIForPlayer(phone, playerid);
+					IPApp_InitStats(phone, AppCall);
 					AppCall_UpdateIncomingUI(phone, playerid);
 				} else {
 					SubtitleText_Show(playerid, "~g~Chuong dien thoai dang rung len...");

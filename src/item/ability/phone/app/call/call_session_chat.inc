@@ -37,11 +37,11 @@ hook Player_OnChat(playerid, badge[], text[]) {
 							if(Player_GetHandItemId(p, 1) == it_phone || Player_GetHandItemId(p, 0) == it_phone) {
 								GetPlayerName(p, name);
 								if(AppCall_GetSpeakerSetting(it_phone)) {
-									format(msg, sizeof(msg), "(%s)'s phone: %s", name, text);
-									format(dmg_msg, sizeof(dmg_msg), "(%s)'s phone: %s", name, dmg);
+									format(msg, sizeof(msg), "(%s)'s phone *speaker*: %s", name, text);
+									format(dmg_msg, sizeof(dmg_msg), "(%s)'s phone *speaker*: %s", name, dmg);
 									Player_BroadcastDamagedMsg(p, 7.0, COLOR_FADE2, COLOR_FADE7, msg, dmg_msg, COLOR_LIGHTYELLOW);
 								} else {
-									if(GetPlayerSpecialAction(playerid) != SPECIAL_ACTION_USECELLPHONE) {
+									if(GetPlayerSpecialAction(p) != SPECIAL_ACTION_USECELLPHONE) {
 										format(msg, sizeof(msg), "(%s)'s phone: %s", name, dmg);
 									} else {
 										format(msg, sizeof(msg), "(%s)'s phone: %s", name, text);

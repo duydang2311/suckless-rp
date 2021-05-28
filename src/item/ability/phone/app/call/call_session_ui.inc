@@ -442,6 +442,13 @@ hook IPUI_OnButtonClicked(id, playerid, button) {
 				AppCall_UpdateContactUI(id, playerid);
 				AppCall_UpdateContactButtonUI(id, playerid);
 			}
+			case PhoneButtonCall: {
+				if(GetPlayerSpecialAction(playerid) != SPECIAL_ACTION_USECELLPHONE) {
+					SetPlayerSpecialAction(playerid, SPECIAL_ACTION_USECELLPHONE);
+				} else {
+					SetPlayerSpecialAction(playerid, SPECIAL_ACTION_STOPUSECELLPHONE);
+				}
+			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;
 	}

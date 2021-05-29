@@ -6,7 +6,7 @@
 
 const
 	SG_PARTNER_NAME_SIZE = 32,
-	GOODS_PARTNER_NAME_SIZE = 32;
+	SG_GOODS_NAME_SIZE = 32;
 
 static enum _:Goods {
 	GName[SG_GOODS_NAME_SIZE],
@@ -36,12 +36,7 @@ hook AppStore_OnStatsInit() {
 
 hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 	if(app == AppStore) {
-		if(!map_valid(m_sungoStats)) {
-			m_sungoStats = map_new();
-		}
-		new stats[AppStoreStats];
-		stats[appIndexOffset] = 0;
-		map_set_arr(m_sungoStats, id, stats);
+
 		if(task_valid(result)) {
 			task_unblock(Y_HOOKS_BREAK_RETURN_1);
 			await task_ms(1);
@@ -53,23 +48,17 @@ hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 }
 
 hook IPA_OnStatsTermnAttempt(id, app) {
-	if(app == AppSungo) {
-		if(AppSungo_HasStats(id)) {
-			map_remove_deep(m_sungoStats, id);
-			if(!map_size(m_sungoStats)) {
-				map_delete(m_sungoStats);
-				m_sungoStats = Map:-1;
-			}
-		}
+	if(app == AppSunGo) {
+
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;
 }
 
 hook IPA_OnAppsGetAttempt(id, bool:arr[], size) {
-	if(AppSungo < size && AppSungo_HasStats(id)) {
-		arr[AppSungo] = true;
-	}
+	// if(AppSunGo < size && AppSunGo_HasStats(id)) {
+	// 	arr[AppSunGo] = true;
+	// }
 	return 1;
 }
 

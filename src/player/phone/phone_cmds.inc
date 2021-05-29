@@ -22,7 +22,7 @@ CMD:phone(playerid) {
 				}
 			}
 			IPUI_ShowForPlayer(item, playerid, RandomFloat(200.0, 470.0), RandomFloat(150.0, 230.0));
-			SelectTextDraw(playerid, 0x115599AA);
+			SelectTextDraw(playerid, 0xFFFFFFAA);
 			break;
 		}
 	}

@@ -195,9 +195,9 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 				new Iter:app_it = AppMenu_GetAppListIter(id, index);
 				if(iter_valid(app_it) && iter_release(app_it)) {
 					new app = iter_get(app_it);
+					IPApp_HideUIForPlayer(id, playerid);
 					task_unblock(Y_HOOKS_BREAK_RETURN_1);
 					await IPApp_InitStatsAsync(id, app);
-					IPApp_HideUIForPlayer(id, playerid);
 					IPApp_ShowUIForPlayer(id, app, playerid);
 				}
 				return Y_HOOKS_BREAK_RETURN_1;

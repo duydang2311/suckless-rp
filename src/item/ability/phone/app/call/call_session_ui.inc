@@ -34,6 +34,9 @@ PhoneDialog:CallSessionJoinErrorDlg(id, playerid, response) {
 PhoneDialog:CallSessionDeletedDlg(id, playerid, response) {
 	AppCall_UpdateContactUI(id, playerid);
 	AppCall_UpdateContactButtonUI(id, playerid);
+	if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USECELLPHONE) {
+		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_STOPUSECELLPHONE);
+	}
 	return 1;
 }
 

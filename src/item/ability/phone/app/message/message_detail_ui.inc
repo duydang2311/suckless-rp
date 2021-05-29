@@ -141,14 +141,19 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 			Float:safe_min[2],
 			Float:safe_max[2],
 			from_sim = AppMsg_GetSimFromDetail(id),
-			from_sim_number[SIM_NUMBER_SIZE];
+			from_sim_number[SIM_NUMBER_SIZE],
+			contact[CONTACT_NAME_SIZE];
 		IPModel_GetSafeScreenOffset(id, safe_min[0], safe_min[1], safe_max[0], safe_max[1]);
 		IPUI_GetAnchor(id, playerid, anc[0], anc[1]);
 
-		new Task:t = ISim_RetrieveNumber(from_sim);
 		task_unblock(1);
-		task_wait(t);
-		task_get_result_str(t, from_sim_number);
+		await_arr(from_sim_number) ISim_RetrieveNumber(from_sim);
+		task_unblock(1);
+		await_arr(contact) Contact_NameByNumberAsync(id, from_sim_number);
+		// new Task:t = ISim_RetrieveNumber(from_sim);
+		// task_unblock(1);
+		// task_wait(t);
+		// task_get_result_str(t, from_sim_number);
 
 		key[ItemId] = id;
 		key[PlayerId] = playerid;
@@ -160,7 +165,7 @@ stock AppMsg_UpdateDetailUI(id, playerid) {
 		}
 		ui[dtlMessageTdList] = linked_list_new();
 
-		ui[dtlHeaderTd] = CreatePlayerTextDraw(playerid, anc[0] + safe_min[0] + (safe_max[0] - safe_min[0]) / 2.0, anc[1] + safe_min[1], from_sim_number);
+		ui[dtlHeaderTd] = CreatePlayerTextDraw(playerid, anc[0] + safe_min[0] + (safe_max[0] - safe_min[0]) / 2.0, anc[1] + safe_min[1], contact);
 		PlayerTextDrawFont(playerid, ui[dtlHeaderTd], 0);
 		PlayerTextDrawLetterSize(playerid, ui[dtlHeaderTd], 0.200000, 0.800000);
 		PlayerTextDrawTextSize(playerid, ui[dtlHeaderTd], 400.000000, 82.000000);

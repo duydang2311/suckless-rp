@@ -104,23 +104,27 @@ stock AppMsg_UpdateListUI(id, playerid) {
 		ui[lsComponentList] = linked_list_new();
 		ui[lsComponentCount] = component_cnt;
 		map_arr_set_arr(m_listUI, key, ui);
-		for(new cnt = 0, component[ListTdComponent], number[SIM_NUMBER_SIZE], stats[MessageStats], Task:t, length, Float:scr_width = safe_max[0] - safe_min[0] - 3.0; iter_inside(it) && cnt != component_cnt; iter_move_next(it), cnt++) {
+		for(new cnt = 0, component[ListTdComponent], number[SIM_NUMBER_SIZE], contact[CONTACT_NAME_SIZE], stats[MessageStats], length, Float:scr_width = safe_max[0] - safe_min[0] - 3.0; iter_inside(it) && cnt != component_cnt; iter_move_next(it), cnt++) {
 			iter_get_arr(it, stats);
+			// t = ISim_RetrieveNumber(stats[msgFromSim]);
+			// task_unblock(1);
+			// task_wait(t);
+			// task_get_result_str(t, number);
 			task_unblock(1);
-			t = ISim_RetrieveNumber(stats[msgFromSim]);
-			task_wait(t);
-			task_get_result_str(t, number);
+			await_arr(number) ISim_RetrieveNumber(stats[msgFromSim]);
+			task_unblock(1);
+			await_arr(contact) Contact_NameByNumberAsync(id, number);
 
-			length = strlen(number);
+			length = strlen(contact);
 			for(new i = 0, Float:width = 0.0; i != length; i++) {
-				width += GetTextDrawCharacterWidth(number[i], 3) * 0.15;
+				width += GetTextDrawCharacterWidth(contact[i], 3) * 0.15;
 				if(width > scr_width) {
-					strdel(number, i - 3, length);
-					strcat(number, "...");
+					strdel(contact, i - 3, length);
+					strcat(contact, "...");
 					break;
 				}
 			}
-			component[lsHeaderTd] = CreatePlayerTextDraw(playerid, first_x, first_y + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), number);
+			component[lsHeaderTd] = CreatePlayerTextDraw(playerid, first_x, first_y + cnt * (HEADER_SIZE + HEADER_TO_TEXT_GAP + TEXT_SIZE + component_gap), contact);
 			PlayerTextDrawFont(playerid, component[lsHeaderTd], 3);
 			PlayerTextDrawLetterSize(playerid, component[lsHeaderTd], 0.150000, 0.600000);
 			PlayerTextDrawTextSize(playerid, component[lsHeaderTd], 593.000000, HEADER_SIZE);

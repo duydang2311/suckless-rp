@@ -36,7 +36,6 @@ hook AppStore_OnStatsInit() {
 
 hook IPA_OnStatsInitAttempt(id, app, Task:result) {
 	if(app == AppStore) {
-
 		if(task_valid(result)) {
 			task_unblock(Y_HOOKS_BREAK_RETURN_1);
 			await task_ms(1);

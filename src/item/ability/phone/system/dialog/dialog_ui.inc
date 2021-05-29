@@ -9,7 +9,7 @@ static enum _:Key {
 	PlayerId
 }
 
-enum _:PhoneDialogUI {
+static enum _:PhoneDialogUI {
 	PlayerText:uiText
 }
 

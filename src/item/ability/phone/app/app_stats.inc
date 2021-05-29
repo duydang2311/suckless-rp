@@ -13,7 +13,10 @@ enum _:App {
 	AppStore,
 	AppMessage,
 	AppCall,
-	AppSunGo
+	AppSunGoPartner,
+	AppSunGoDelivery,
+	AppSunGoServer,
+	AppSunGo,
 }
 
 enum _:AppStats {

@@ -4,6 +4,7 @@
 
 #define app_sungo_partner_included
 
+#include ".\item\ability\phone\app\sungo_partner\hotline.inc"
 #include ".\item\ability\phone\app\sungo_partner\product.inc"
 #include ".\item\ability\phone\app\sungo_partner\partner.inc"
 #include ".\item\ability\phone\app\sungo_partner\entry_ui.inc"
@@ -50,11 +51,5 @@ hook IPA_OnAppsGetAttempt(id, bool:arr[], size) {
 	if(AppSunGoPartner < size && AppSunGoPartner_Has(id)) {
 		arr[AppSunGoPartner] = true;
 	}
-	return 1;
-}
-
-hook OnGameModeInit@() {
-	cache_delete(mysql_query(MySQL_Connection(), "INSERT INTO item_sim (number) VALUES ('1729') ON DUPLICATE KEY UPDATE id = VALUES(id)", true));
-	printf("INFO: SunGo Partner registered sim numbered '1729'");
 	return 1;
 }

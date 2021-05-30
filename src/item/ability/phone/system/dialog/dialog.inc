@@ -39,7 +39,15 @@ stock _prv_IPDialog_New(id, const callback[], const text[]) {
 }
 
 stock IPDialog_Delete(id) {
+	if(!IPDialog_Has(id)) {
+		return 0;
+	}
 
+	map_remove(m_dialogStats, id);
+	if(!map_size(m_dialogStats)) {
+		map_delete(m_dialogStats);
+		m_dialogStats = Map:-1;
+	}
 	return 1;
 }
 

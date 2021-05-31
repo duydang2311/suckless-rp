@@ -37,7 +37,7 @@ stock Task:SGoPartner_RemovePartner(sim) {
 		Task:t = task_new(),
 		query[128];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM sungo_partner WHERE sim = %d LIMIT 1", sim);
-	mysql_pquery(MySQL_Connection(), query, "_prv_SGoPartner_OnPartnerRemoved", "i", _:t);
+	mysql_pquery(MySQL_Connection(), query, "_prv_SGoPartner_OnPartnerRmvd", "i", _:t);
 	return t;
 }
 
@@ -57,8 +57,8 @@ public _prv_SGoPartner_OnPartnerAdded(Task:t) {
 	return 1;
 }
 
-forward _prv_SGoPartner_OnPartnerRemoved(Task:t);
-public _prv_SGoPartner_OnPartnerRemoved(Task:t) {
+forward _prv_SGoPartner_OnPartnerRmvd(Task:t);
+public _prv_SGoPartner_OnPartnerRmvd(Task:t) {
 	if(task_valid(t)) {
 		task_set_result(t, cache_affected_rows());
 	}

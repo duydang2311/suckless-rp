@@ -27,7 +27,8 @@ public OnPlayerRequestDownload(playerid, type, crc)
 
     if (foundfilename) {
         format(fullurl,256,"%s/%s",baseurl,dlfilename);
-        RedirectDownload(playerid,fullurl);
+        printf("INFO: Downloading %s", fullurl);
+        RedirectDownload(playerid, fullurl);
     }
 
     return 0;

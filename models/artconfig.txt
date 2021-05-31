@@ -2,4 +2,7 @@ AddCharModel(2, 20001, "cow.dff", "cow_1.txd");
 AddCharModel(2, 20002, "cow.dff", "cow_2.txd");
 AddCharModel(2, 20003, "cow.dff", "cow_3.txd");
 AddCharModel(2, 20004, "cow.dff", "cow_4.txd");
-AddSimpleModel(-1, 11735, -1000, "sneaker.dff", "sneaker.txd");
+AddSimpleModel(-1, 19475, -1000, "object.dff", "phone.txd");
+AddSimpleModel(-1, 19475, -1001, "object.dff", "app.txd");
+AddSimpleModel(-1, 19475, -1002, "object.dff", "appcall.txd");
+AddSimpleModel(-1, 19475, -1003, "object.dff", "shape.txd");

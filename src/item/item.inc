@@ -15,6 +15,7 @@
 #include <samp-precise-timers>
 #include <td-string-width>
 #include <easyDialog>
+#include <bcrypt>
 
 #include <config\colors>
 #include <config\cmd_flags>

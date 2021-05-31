@@ -247,7 +247,7 @@ stock Task:AppCall_UpdateSessionUI(id, playerid) {
 	PlayerTextDrawSetSelectable(playerid, ui[uiSessionTimer], 0);
 	first_y += SIM_NUMBER_TEXT_SIZE + SIM_NUMBER_TEXT_GAP;
 
-	ui[uiSpeakerBtnCircle] = CreatePlayerTextDraw(playerid, first_x - (SPEAKER_BUTTON_SIZE / 2.0), first_y, "shape:circle");
+	ui[uiSpeakerBtnCircle] = CreatePlayerTextDraw(playerid, first_x - (SPEAKER_BUTTON_SIZE / 2.0), first_y, "mdl-1003:circle");
 	PlayerTextDrawFont(playerid, ui[uiSpeakerBtnCircle], 4);
 	PlayerTextDrawLetterSize(playerid, ui[uiSpeakerBtnCircle], 0.0000, 0.0000);
 	PlayerTextDrawTextSize(playerid, ui[uiSpeakerBtnCircle], SPEAKER_BUTTON_SIZE, SPEAKER_BUTTON_SIZE);
@@ -261,7 +261,7 @@ stock Task:AppCall_UpdateSessionUI(id, playerid) {
 	PlayerTextDrawSetProportional(playerid, ui[uiSpeakerBtnCircle], 1);
 	PlayerTextDrawSetSelectable(playerid, ui[uiSpeakerBtnCircle], 0);
 
-	ui[uiSpeakerBtn] = CreatePlayerTextDraw(playerid, first_x - ((SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0)) / 2.0), first_y + (SPEAKER_BUTTON_SIZE / 2.0) - ((SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0)) / 2.0), "appcall:speaker");
+	ui[uiSpeakerBtn] = CreatePlayerTextDraw(playerid, first_x - ((SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0)) / 2.0), first_y + (SPEAKER_BUTTON_SIZE / 2.0) - ((SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0)) / 2.0), "mdl-1002:speaker");
 	PlayerTextDrawFont(playerid, ui[uiSpeakerBtn], 4);
 	PlayerTextDrawLetterSize(playerid, ui[uiSpeakerBtn], 0.0000, 0.0000);
 	PlayerTextDrawTextSize(playerid, ui[uiSpeakerBtn], SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0), SPEAKER_BUTTON_SIZE - (SPEAKER_BUTTON_SIZE / 2.0));

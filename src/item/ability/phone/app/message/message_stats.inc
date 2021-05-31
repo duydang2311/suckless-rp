@@ -308,7 +308,7 @@ public AppMsg_OnSentAsync(Task:t) {
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
-	IPApp_Ensure(AppMessage, "Message", "app:message", false);
+	IPApp_Ensure(AppMessage, "Message", "mdl-1001:message", false);
 	return 1;
 }
 

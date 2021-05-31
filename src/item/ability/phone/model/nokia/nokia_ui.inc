@@ -69,7 +69,7 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		stats[UIX] = x;
 		stats[UIY] = y;
 
-		stats[UIScreen] = CreatePlayerTextDraw(playerid, x + 13.000000, y + 24.500000, "phone:screen");
+		stats[UIScreen] = CreatePlayerTextDraw(playerid, x + 13.000000, y + 24.500000, "mdl-1000:screen");
 		PlayerTextDrawFont(playerid, stats[UIScreen], 4);
 		PlayerTextDrawLetterSize(playerid, stats[UIScreen], 0.600000, 2.000000);
 		PlayerTextDrawTextSize(playerid, stats[UIScreen], 84.000000, 84.000000);
@@ -83,7 +83,7 @@ hook IPUI_OnShowAttempt(id, playerid, Float:x, Float:y) {
 		PlayerTextDrawSetProportional(playerid, stats[UIScreen], 1);
 		PlayerTextDrawSetSelectable(playerid, stats[UIScreen], 0);
 
-		stats[UIBody] = CreatePlayerTextDraw(playerid, x, y, "phone:body_trans");
+		stats[UIBody] = CreatePlayerTextDraw(playerid, x, y, "mdl-1000:body_trans");
 		PlayerTextDrawFont(playerid, stats[UIBody], 4);
 		PlayerTextDrawLetterSize(playerid, stats[UIBody], 0.600000, 2.000000);
 		PlayerTextDrawTextSize(playerid, stats[UIBody], 110.000000, 220.000000);

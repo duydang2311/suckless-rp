@@ -199,7 +199,7 @@ public AppCall_OnContRetrieved(Task:t) {
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
-	IPApp_Ensure(AppCall, "Call", "app:call", false);
+	IPApp_Ensure(AppCall, "Call", "mdl-1001:call", false);
 	return 1;
 }
 

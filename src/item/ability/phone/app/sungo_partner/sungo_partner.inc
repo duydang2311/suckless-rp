@@ -18,7 +18,7 @@ stock AppSunGoPartner_Has(id) {
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
-	IPApp_Ensure(AppSunGoPartner, "SunGo Partner", "app:sungo", true);
+	IPApp_Ensure(AppSunGoPartner, "SunGo Partner", "mdl-1001:sungo", true);
 	return 1;
 }
 

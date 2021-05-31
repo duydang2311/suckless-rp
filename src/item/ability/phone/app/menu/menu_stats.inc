@@ -132,7 +132,7 @@ stock Task:AppMenu_AddAppAsync(id, app) {
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
-	IPApp_Ensure(AppMenu, "App Menu", "app:menu", false);
+	IPApp_Ensure(AppMenu, "App Menu", "mdl-1001:menu", false);
 	return 1;
 }
 

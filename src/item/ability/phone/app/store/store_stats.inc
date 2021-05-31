@@ -68,7 +68,7 @@ stock AppStore_GetLLAppStatsSize() {
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
-	IPApp_Ensure(AppStore, "App Store", "app:store", false);
+	IPApp_Ensure(AppStore, "App Store", "mdl-1001:store", false);
 	return 1;
 }
 

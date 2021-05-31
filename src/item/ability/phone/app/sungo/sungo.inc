@@ -25,7 +25,7 @@ static LinkedList:sungo; // LinkedList<Partner>
 #include <YSI_Coding\y_hooks>
 
 hook IPA_OnEnsureRequest() {
-	IPApp_Ensure(AppSunGo, "SunGo", "app:sungo", true);
+	IPApp_Ensure(AppSunGo, "SunGo", "mdl-1001:sungo", true);
 	return 1;
 }
 

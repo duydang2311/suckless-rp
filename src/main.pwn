@@ -49,6 +49,8 @@ DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 #include <hand\hand_forward>
 #include <chat\chat.h>
 
+#include <download>
+
 #include <mysql>
 #include <vehicle>
 #include <item>

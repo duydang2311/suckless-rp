@@ -4,7 +4,7 @@
 
 #define app_call_session_included
 
-#define CALL_SESSION_TEST
+// #define CALL_SESSION_TEST
 
 enum _:CallSessionErrors {
 	ssErrorAlreadyInASession

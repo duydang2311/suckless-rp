@@ -31,13 +31,13 @@ Happy Pawning!
 Simply install to your project:
 
 ```bash
-sampctl package install sundayproject/sunday
+sampctl package install duydang2311/suckless-rp
 ```
 
 Include in your code and begin using the library:
 
 ```pawn
-#include <sunday>
+#include <suckless-rp>
 ```
 
 ## Usage

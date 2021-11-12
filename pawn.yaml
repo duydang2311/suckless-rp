@@ -1,6 +1,6 @@
 site: ""
-user: sundayproject
-repo: sunday
+user: duydang2311
+repo: suckless-rp
 entry: src/main.pwn
 output: gamemodes/main.amx
 dependencies:

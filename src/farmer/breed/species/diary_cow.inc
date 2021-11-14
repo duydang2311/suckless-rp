@@ -58,7 +58,7 @@ hook Breed_OnRemoved(id) {
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS diary_cow_stats(\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED PRIMARY KEY,\
 	milk FLOAT(11, 4) DEFAULT 0.0000,\
 	FOREIGN KEY (id) REFERENCES breed_stats(id) ON UPDATE CASCADE ON DELETE CASCADE\

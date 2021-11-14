@@ -263,7 +263,7 @@ hook AppCall_OnContAdded(id, saved_sim, const saved_name[]) {
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS appcall_stats (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	sim INT UNSIGNED,\
 	saved_sim INT UNSIGNED,\
 	saved_name VARCHAR(33) DEFAULT '',\

@@ -24,14 +24,14 @@ hook IPA_OnUIShowAttempt(id, app, playerid) {
 	}
 
 	if(app == AppSunGoPartner) {
-		AppSGoPartner_UpdateEntryUI(id, playerid);
+		//AppSGoPartner_UpdateEntryUI(id, playerid);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;
 }
 
 hook IPA_OnUIHideAttempt(id, playerid) {
-	AppSGoPartner_DestroyEntryUI(id, playerid);
+	//AppSGoPartner_DestroyEntryUI(id, playerid);
 	return 1;
 }
 

@@ -71,7 +71,7 @@ hook OnGameModeInit@1() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_group (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	group_id INT UNSIGNED,\
 	member_id INT UNSIGNED PRIMARY KEY,\
 	FOREIGN KEY (group_id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE,\

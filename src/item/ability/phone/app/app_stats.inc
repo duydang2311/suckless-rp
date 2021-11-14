@@ -153,7 +153,7 @@ hook IPUI_OnShown@(id, playerid) {
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS app_stats (\
 		created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-		modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+		modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 		app TINYINT UNSIGNED PRIMARY KEY,\
 		name VARCHAR(32) DEFAULT '',\
 		sprite VARCHAR(64) DEFAULT '',\

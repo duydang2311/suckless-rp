@@ -15,7 +15,7 @@ hook OnGameModeInit@7() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_carry_attach (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	ability TINYINT UNSIGNED PRIMARY KEY,\
 	offset_x FLOAT(11, 4) DEFAULT 0.0000,\
 	offset_y FLOAT(11, 4) DEFAULT 0.0000,\

@@ -7,7 +7,7 @@ dependencies:
 - sampctl/samp-stdlib
 - Zeex/samp-plugin-crashdetect:v4.20
 - pawn-lang/YSI-Includes@5.x
-- IllidanS4/PawnPlus:v1.3.2
+- IllidanS4/PawnPlus:v1.4.0.1
 - pBlueG/SA-MP-MySQL:R41-4
 - dakyskye/pawn-env:1.1.1
 - Awsomedude/easyDialog

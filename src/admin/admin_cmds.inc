@@ -15,10 +15,6 @@ CMD:aveh(playerid, params[]) {
 		return 1;
 	}
 
-	if(!linked_list_valid(ll_adminVehicles)) {
-		ll_adminVehicles = linked_list_new();
-	}
-
 	new
 		Float:x,
 		Float:y,
@@ -32,6 +28,10 @@ CMD:aveh(playerid, params[]) {
 	if(vehicleid == INVALID_VEHICLE_ID) {
 		Player_Msg(playerid, COLOR_RED, "Server da dat gioi han phuong tien.");
 		return 1;
+	}
+
+	if(!linked_list_valid(ll_adminVehicles)) {
+		ll_adminVehicles = linked_list_new();
 	}
 
 	linked_list_add(ll_adminVehicles, vehicleid);
@@ -69,6 +69,27 @@ CMD:adestroyvehicle(playerid, params[]) {
 	return 1;
 }
 alias:adestroyvehicle("adesveh", "adesv", "adestroyveh")
+
+CMD:agetinveh(playerid, params[]) {
+	new vehicleid, seatid;
+	sscanf(params, "I(0)I(0)", vehicleid, seatid);
+	if(!vehicleid) {
+		if(seatid <= 4 && seatid > 0) {
+			Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /agetinveh (vehicleid) (seatid)");
+			Player_Msg(playerid, COLOR_FADE2, "[!] Ban co the su dung lenh nay de ngoi tren mot phuong tien duoc nhap.");
+		}
+	} else {
+		Player_Msg(playerid, COLOR_RED, "Phuong tien nay khong ton tai, hay thu lai.");
+		return 1;
+	}
+
+	if(Vehicle_GetInSeat(playerid, vehicleid, seatid) == 0) {
+		Player_Msg(playerid, COLOR_RED, "Seat Index nay da co nguoi ngoi.");
+	} else {
+		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Ban da di chuyen den Vehicleid & Seatid da nhap.");
+	}
+	return 1;
+}
 
 flags:askin(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
 CMD:askin(playerid, params[]) {

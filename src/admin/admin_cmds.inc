@@ -2,7 +2,7 @@ static LinkedList:ll_adminVehicles;
 
 static temp_object = 0;
 
-flags:aveh(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
+//flags:aveh(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
 CMD:aveh(playerid, params[]) {
 	new
 		model,
@@ -72,14 +72,19 @@ alias:adestroyvehicle("adesveh", "adesv", "adestroyveh")
 
 CMD:agetinveh(playerid, params[]) {
 	new vehicleid, seatid;
-	sscanf(params, "I(0)I(0)", vehicleid, seatid);
-	if(!vehicleid) {
-		if(seatid <= 4 && seatid > 0) {
-			Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /agetinveh (vehicleid) (seatid)");
-			Player_Msg(playerid, COLOR_FADE2, "[!] Ban co the su dung lenh nay de ngoi tren mot phuong tien duoc nhap.");
+	if(sscanf(params, "ii", vehicleid, seatid)) {
+		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /agetinveh (vehicleid) (seatid)");
+		Player_Msg(playerid, COLOR_FADE2, "[!] Ban co the su dung lenh nay de ngoi tren mot phuong tien duoc nhap.");
+		return 1;
+	}
+	
+	if(vehicleid) {
+		if(seatid > 4 || seatid < 0) {
+			Player_Msg(playerid, COLOR_RED, "Seat Index khong hop le, vui long thu lai.");
+			return 1;
 		}
 	} else {
-		Player_Msg(playerid, COLOR_RED, "Phuong tien nay khong ton tai, hay thu lai.");
+		Player_Msg(playerid, COLOR_RED, "Khong ton tai phuong tien trong may chu.");
 		return 1;
 	}
 

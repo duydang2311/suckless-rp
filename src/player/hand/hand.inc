@@ -109,7 +109,7 @@ hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS player_hands (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	player_id INT UNSIGNED,\
 	item_id INT UNSIGNED PRIMARY KEY,\
 	hand_index BOOLEAN DEFAULT FALSE,\

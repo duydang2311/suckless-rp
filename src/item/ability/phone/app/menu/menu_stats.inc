@@ -186,7 +186,7 @@ hook AppMenu_RequestInstall(id, app, &Task:t) {
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS appmenu_apps (\
 		created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-		modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+		modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 		id INT UNSIGNED,\
 		app TINYINT UNSIGNED,\
 		FOREIGN KEY (id) REFERENCES item_phone(id) ON UPDATE CASCADE ON DELETE CASCADE\

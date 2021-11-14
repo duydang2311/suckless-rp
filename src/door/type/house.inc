@@ -32,7 +32,7 @@ hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS house_doors (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	door_id INT UNSIGNED PRIMARY KEY,\
 	house_id INT UNSIGNED,\
 	FOREIGN KEY (door_id) REFERENCES door_stats(id) ON UPDATE CASCADE ON DELETE CASCADE,\

@@ -400,7 +400,7 @@ hook IPA_OnAppsGetAttempt(id, bool:arr[], size) {
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS appmsg_stats (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
 	from_sim INT UNSIGNED,\
 	to_sim INT UNSIGNED,\

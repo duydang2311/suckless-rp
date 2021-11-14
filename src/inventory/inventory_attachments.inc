@@ -210,7 +210,7 @@ hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS inventory_attachments (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	item_id INT UNSIGNED PRIMARY KEY,\
 	attached BOOLEAN DEFAULT FALSE,\
 	bone TINYINT UNSIGNED,\

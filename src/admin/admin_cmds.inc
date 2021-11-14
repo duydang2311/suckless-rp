@@ -2,7 +2,7 @@ static LinkedList:ll_adminVehicles;
 
 static temp_object = 0;
 
-//flags:aveh(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
+flags:aveh(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
 CMD:aveh(playerid, params[]) {
 	new
 		model,
@@ -70,6 +70,7 @@ CMD:adestroyvehicle(playerid, params[]) {
 }
 alias:adestroyvehicle("adesveh", "adesv", "adestroyveh")
 
+flags:aveh(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
 CMD:agetinveh(playerid, params[]) {
 	new vehicleid, seatid;
 	if(sscanf(params, "ii", vehicleid, seatid)) {

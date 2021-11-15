@@ -78,6 +78,21 @@ stock Player_IsStatsLoaded(playerid) {
 	return (map_valid(m_playerStats) && map_has_key(m_playerStats, playerid));
 }
 
+stock Player_PutInVehicle(playerid, vehicleid, seatid) {
+	foreach(new i : Player) {
+		if(i != playerid) {
+			if(GetPlayerVehicleID(i) == vehicleid) {
+				if(GetPlayerVehicleSeat(i) == seatid) {
+					return 0;
+				}
+			}
+		} 
+	}
+
+	PutPlayerInVehicle(playerid, vehicleid, seatid);
+	return 1;
+}
+
 Dialog:StatsSetupSkin(playerid, response, listitem, inputtext[]) {
 	if(response) {
 		extract inputtext -> new model; else {

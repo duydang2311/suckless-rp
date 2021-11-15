@@ -36,18 +36,3 @@ stock Vehicle_GetName(model, name[], size = sizeof(name)) {
 	}
 	return 0;
 }
-
-stock Vehicle_GetInSeat(playerid, vehicleid, seatid) {
-	foreach(new i : Player) {
-		if(i != playerid) {
-			if(GetPlayerVehicleID(i) == vehicleid) {
-				if(GetPlayerVehicleSeat(i) == seatid) {
-					return 0;
-				}
-			}
-		} 
-	}
-
-	PutPlayerInVehicle(playerid, vehicleid, seatid);
-	return 1;
-}

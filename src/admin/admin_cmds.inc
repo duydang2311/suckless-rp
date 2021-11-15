@@ -70,7 +70,7 @@ CMD:adestroyvehicle(playerid, params[]) {
 }
 alias:adestroyvehicle("adesveh", "adesv", "adestroyveh")
 
-flags:aveh(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
+flags:agetinveh(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
 CMD:agetinveh(playerid, params[]) {
 	new vehicleid, seatid;
 	if(sscanf(params, "ii", vehicleid, seatid)) {
@@ -89,7 +89,7 @@ CMD:agetinveh(playerid, params[]) {
 		return 1;
 	}
 
-	if(Vehicle_GetInSeat(playerid, vehicleid, seatid) == 0) {
+	if(Player_PutInVehicle(playerid, vehicleid, seatid) == 0) {
 		Player_Msg(playerid, COLOR_RED, "Seat Index nay da co nguoi ngoi.");
 	} else {
 		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Ban da di chuyen den Vehicleid & Seatid da nhap.");

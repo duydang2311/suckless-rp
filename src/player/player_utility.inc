@@ -150,6 +150,21 @@ stock Player_GetFreeAttachmentSlot(playerid, bool:use = false) {
 	return -1;
 }
 
+stock Player_PutInVehicle(playerid, vehicleid, seatid) {
+	foreach(new i : Player) {
+		if(i != playerid) {
+			if(GetPlayerVehicleID(i) == vehicleid) {
+				if(GetPlayerVehicleSeat(i) == seatid) {
+					return 0;
+				}
+			}
+		} 
+	}
+
+	PutPlayerInVehicle(playerid, vehicleid, seatid);
+	return 1;
+}
+
 forward Player_ToggleControllable(playerid, bool:toggle);
 public Player_ToggleControllable(playerid, bool:toggle) {
 	TogglePlayerControllable(playerid, toggle);

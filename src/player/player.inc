@@ -15,8 +15,8 @@
 #include <strlib>
 #include <easyDialog>
 #include <zmessage>
+ #include <YSI_Extra\y_inline_bcrypt>
 #include <YSI_Extra\y_inline_mysql>
-#include <YSI_Extra\y_inline_bcrypt>
 #include <YSI_Coding\y_utils>
 #include <chrono>
 #include <samp-precise-timers>

@@ -8,4 +8,4 @@
 #include <YSI_Data\y_iterate>
 #include <PawnPlus>
 
-#include "./vehicle_name.inc"
+#include "./vehicle_stats.inc"

@@ -13,14 +13,14 @@ public Player_OnChat(playerid, badge[], text[]) {
 			format_text[PLAYER_CHAT_BADGE_SIZE + PLAYER_CHAT_BADGE_SIZE + MAX_PLAYER_NAME + 10],
 			name[MAX_PLAYER_NAME + 1];
 		GetPlayerName(playerid, name);
-		format(format_text, sizeof(format_text), "%s (%s): %s", name, badge, text);
+		format(format_text, sizeof(format_text), "%s (%s) says: %s", name, badge, text);
 		Player_BroadcastMsg(playerid, 20.0, COLOR_WHITE, COLOR_FADE7, format_text);
 	} else {
 		new
 			format_text[PLAYER_CHAT_BADGE_SIZE + MAX_PLAYER_NAME + 10],
 			name[MAX_PLAYER_NAME + 1];
 		GetPlayerName(playerid, name);
-		format(format_text, sizeof(format_text), "%s: %s", name, text);
+		format(format_text, sizeof(format_text), "%s says: %s", name, text);
 		Player_BroadcastMsg(playerid, 20.0, COLOR_WHITE, COLOR_FADE7, format_text);
 	}
 	return 1;

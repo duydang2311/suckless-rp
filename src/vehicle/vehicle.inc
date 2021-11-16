@@ -9,3 +9,4 @@
 #include <PawnPlus>
 
 #include "./vehicle_name.inc"
+#include "./vehicle_stats.inc"

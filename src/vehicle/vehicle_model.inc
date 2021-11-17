@@ -36,6 +36,25 @@ static enum _:E_VEHICLE_MODEL_DATA {
 	vehicleSeat
 };
 
+stock Task:TVehicle_GetName(model) {
+	new Task:t = task_new();
+	task_detach();
+	
+	new query[30 + 1];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM `vehicle_stats`");
+	mysql_tquery(MySQL_Connection(), query, "OnVehicleModelGetName", "dd", _:t, model);
+	return t;
+}
+
+stock Vehicle_GetName(model, name[], size = sizeof(name)) {
+	name[0] = EOS;
+	new Task:t = task_new();
+	t = TVehicle_GetName(model);
+	task_wait(t);
+	task_get_result_str(t, name, size);
+	return 1;
+}
+
 stock Vehicle_GetTypeName(VehicleModelType:type, name[], size = sizeof(name)) {
 	name[0] = EOS;
 	switch(type) {
@@ -106,4 +125,22 @@ hook OnGameModeInit() {
 	printf("Loaded %d/%d rows of vehicle_stats", rows, MAX_VEHICLES_DATA_LIST);
 	cache_delete(result);
 	return 1;
+}
+
+forward OnVehicleModelGetName(Task:task, modelid);
+public OnVehicleModelGetName(Task:task, modelid) {
+	new rows = cache_num_rows();
+	if(rows > 0) {
+		for(new i = 0; i < rows; i++) {
+			new value_index, model_name[MAX_VEHICLE_MODEL_NAME];
+			cache_get_value_index_int(i, 0, value_index);
+			if(value_index == modelid) {
+				cache_get_value_name(i, "name", model_name);
+				task_set_result_str(task, model_name);
+				break;
+			}
+		}
+	} else {
+		task_set_result_str(task, "Error");
+	}
 }

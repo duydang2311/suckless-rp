@@ -2,6 +2,8 @@
 
 [![sampctl](https://img.shields.io/badge/sampctl-sunday-2f2f2f.svg?style=for-the-badge)](https://github.com/sundayproject/sunday)
 
+[![sampctl](https://github.com/duydang2311/suckless-rp/actions/workflows/sampctl.yml/badge.svg)](https://github.com/duydang2311/suckless-rp/actions/workflows/sampctl.yml)
+
 <!--
 Short description of your library, why it's useful, some examples, pictures or
 videos. Link to your forum release thread too.

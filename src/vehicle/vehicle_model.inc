@@ -5,7 +5,7 @@
 #define vehicle_stats_included
 
 
-const MAX_VEHICLES_DATA_LIST = 184;
+const MAX_VEHICLE_MODELS = 184;
 const MAX_VEHICLE_MODEL_NAME = 22;
 
 enum VehicleModelType {
@@ -36,26 +36,25 @@ static enum _:E_VEHICLE_MODEL_DATA {
 	vehicleSeat
 };
 
-stock Task:TVehicle_GetName(model) {
+stock Task:Vehicle_GetModelName(model) {
 	new Task:t = task_new();
 	task_detach();
 	
-	new query[30 + 1];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM `vehicle_stats`");
-	mysql_tquery(MySQL_Connection(), query, "OnVehicleModelGetName", "dd", _:t, model);
+	new query[62 + 2];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `model`, `name` FROM `vehicle_stats` WHERE `model` = %d", model);
+	mysql_tquery(MySQL_Connection(), query, "Vehicle_OnModelNameGet", "dd", _:t, model);
 	return t;
 }
 
 stock Vehicle_GetName(model, name[], size = sizeof(name)) {
 	name[0] = EOS;
-	new Task:t = task_new();
-	t = TVehicle_GetName(model);
+	new Task:t = Vehicle_GetModelName(model);
 	task_wait(t);
 	task_get_result_str(t, name, size);
 	return 1;
 }
 
-stock Vehicle_GetTypeName(VehicleModelType:type, name[], size = sizeof(name)) {
+stock Vehicle_GetModelTypeName(VehicleModelType:type, name[], size = sizeof(name)) {
 	name[0] = EOS;
 	switch(type) {
 		case SportsCars: strcat(name, "Sports Cars", size);
@@ -76,7 +75,7 @@ stock Vehicle_GetTypeName(VehicleModelType:type, name[], size = sizeof(name)) {
 		case RemoteControl: strcat(name, "Remote Control", size);
 		case Miscellaneous: strcat(name, "Miscellaneous", size);
 		case Trailers: strcat(name, "Trailers", size);
-		default: strcat(name, "Error!", size);	
+		default: strcat(name, "", size);	
 	}
 	return 0;
 }
@@ -89,7 +88,7 @@ hook OnGameModeInit() {
 	name VARCHAR(22) DEFAULT '',\
 	seats TINYINT DEFAULT 2)", false);	
 
-	new rows = 0, Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM `vehicle_stats`");
+	new rows = 0, Cache:result = mysql_query(MySQL_Connection(), "SELECT `model` FROM `vehicle_stats`");
 	cache_get_row_count(rows);
 	if(rows == 0) {
 		new query[4100];
@@ -120,27 +119,21 @@ hook OnGameModeInit() {
 		mysql_tquery(MySQL_Connection(), query);
 	}
 
-	result = mysql_query(MySQL_Connection(), "SELECT * FROM `vehicle_stats`");
+	result = mysql_query(MySQL_Connection(), "SELECT `model` FROM `vehicle_stats`;");
 	cache_get_row_count(rows);
-	printf("Loaded %d/%d rows of vehicle_stats", rows, MAX_VEHICLES_DATA_LIST);
+	printf("Loaded %d/%d rows of vehicle_stats", rows, MAX_VEHICLE_MODELS);
 	cache_delete(result);
 	return 1;
 }
 
-forward OnVehicleModelGetName(Task:task, modelid);
-public OnVehicleModelGetName(Task:task, modelid) {
+forward Vehicle_OnModelNameGet(Task:task, modelid);
+public Vehicle_OnModelNameGet(Task:task, modelid) {
 	new rows = cache_num_rows();
 	if(rows > 0) {
-		for(new i = 0; i < rows; i++) {
-			new value_index, model_name[MAX_VEHICLE_MODEL_NAME];
-			cache_get_value_index_int(i, 0, value_index);
-			if(value_index == modelid) {
-				cache_get_value_name(i, "name", model_name);
-				task_set_result_str(task, model_name);
-				break;
-			}
-		}
+		new model_name[MAX_VEHICLE_MODEL_NAME];
+		cache_get_value_name(0, "name", model_name);
+		task_set_result_str(task, model_name);
 	} else {
-		task_set_result_str(task, "Error");
+		task_set_result_str(task, "");
 	}
 }

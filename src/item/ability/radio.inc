@@ -7,16 +7,16 @@
 static Map:m_radioStats;
 
 enum _:ItemRadioStats {
-    Float:radioFrequency
+    radioFrequency
 };
 
-stock Task:IRadio_Create(Float:frequency = 0.0) {
+stock Task:IRadio_Create(frequency = 0) {
     new Task:t = task_new();
     task_detach();
 
     new query[83 + 3 + 11 + 3 - 8 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", _:ITEM_ABILITY:iAbilityMelee, reliability, occupied_space);
-    mysql_pquery(MySQL_Connection(), query, "AbilityItem_OnRadioCreated", "f", frequency);
+    mysql_pquery(MySQL_Connection(), query, "AbilityItem_OnRadioCreated", "d", frequency);
 	task_set_result_ms(t, -1, 2000);
     return t;
 }
@@ -33,8 +33,8 @@ public IRadio_OnDeleted(id) {
     return 1;
 }
 
-forward AbilityItem_OnRadioCreated(Float:frequency);
-public AbilityItem_OnRadioCreated(Float:frequency) {
+forward AbilityItem_OnRadioCreated(frequency);
+public AbilityItem_OnRadioCreated(frequency) {
     new insert_id = -1;
     if(cache_affected_rows()) {
         if(!map_valid(m_radioStats)) {
@@ -42,11 +42,12 @@ public AbilityItem_OnRadioCreated(Float:frequency) {
         }
 
         insert_id = cache_insert_id();
-        new stats[ItemRadioStats] = {0.0};
+        new stats[ItemRadioStats];
+        stats[radioFrequency] = frequency;
         map_set_arr(m_radioStats, insert_id, stats);
 
         new query[58 + 10 + 11 - 6 + 1];
-        mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO `item_radio` (id, frequency) VALUES (%d, %.4f)", insert_id, frequency);
+        mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO `item_radio` (id, frequency) VALUES (%d, %d)", insert_id, frequency);
         mysql_pquery(MySQL_Connection(), query);
         CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityRadio, 1.0, 2);
     }
@@ -60,7 +61,7 @@ hook OnGameModeInit@6() {
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
-    frequency FLOAT(11, 4) DEFAULT 0.0000)", false);
+    frequency INT UNSIGNED DEFAULT 0)", false);
     return 1;
 }
 

@@ -80,7 +80,11 @@ stock Vehicle_GetModelTypeName(VehicleModelType:type, name[], size = sizeof(name
 	return 0;
 }
 
-stock Task:Vehicle_GetModelSeats(modelid) {
+stock Task:Vehicle_GetSeats(modelid) {
+	if(modelid < 400 || modelid > 611) {
+		return Task:0;
+	}
+
 	new Task:t = task_new();
 	task_detach();
 

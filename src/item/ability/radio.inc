@@ -48,9 +48,6 @@ hook OnGameModeInit@6() {
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
-	ability TINYINT UNSIGNED DEFAULT 0,\
-	reliability FLOAT(11, 4) DEFAULT 0.0000,\
-	occupied_space TINYINT UNSIGNED DEFAULT 0,\
     frequency FLOAT(11, 4) DEFAULT 0.0000)", false);
     return 1;
 }

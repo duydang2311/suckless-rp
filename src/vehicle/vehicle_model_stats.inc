@@ -41,7 +41,7 @@ stock Task:Vehicle_GetModelName(model) {
 	task_detach();
 	
 	new query[62 + 2];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `model`, `name` FROM `vehicle_stats` WHERE `model` = %d", model);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `model`, `name` FROM `vehicle_stats` WHERE `model` = %d LIMIT 1", model);
 	mysql_tquery(MySQL_Connection(), query, "Vehicle_OnModelNameGet", "dd", _:t, model);
 	return t;
 }
@@ -119,10 +119,16 @@ hook OnGameModeInit() {
 		mysql_tquery(MySQL_Connection(), query);
 	}
 
-	result = mysql_query(MySQL_Connection(), "SELECT `model` FROM `vehicle_stats`;");
+	result = mysql_query(MySQL_Connection(), "SELECT `model` FROM `vehicle_stats`");
 	cache_get_row_count(rows);
 	printf("Loaded %d/%d rows of vehicle_stats", rows, MAX_VEHICLE_MODELS);
 	cache_delete(result);
+
+	for(new i = 0; i < 10; i++) {
+		new vehicle[22];
+		Vehicle_GetName(400 + i, vehicle);
+		printf("%s", vehicle);
+	}
 	return 1;
 }
 

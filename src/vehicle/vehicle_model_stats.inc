@@ -123,12 +123,6 @@ hook OnGameModeInit() {
 	cache_get_value_name_int(0, "COUNT(model)", rows);
 	printf("Loaded %d/%d rows of vehicle_stats", rows, MAX_VEHICLE_MODELS);
 	cache_delete(result);
-
-	for(new i = 0; i < 10; i++) {
-		new vehicle[22];
-		Vehicle_GetName(400 + i, vehicle);
-		printf("%s", vehicle);
-	}
 	return 1;
 }
 

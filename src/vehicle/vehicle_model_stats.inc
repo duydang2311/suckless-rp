@@ -157,9 +157,13 @@ public Vehicle_OnModelNameGet(Task:task, modelid) {
 		new model_name[MAX_VEHICLE_MODEL_NAME];
 		cache_get_value_name(0, "name", model_name);
 		task_set_result_str(task, model_name);
+		return 1;
 	} else {
 		task_set_result_str(task, "");
+		return 1;
 	}
+
+	return 0;
 }
 
 forward Vehicle_OnModelSeatsGet(Task:task, modelid);
@@ -169,7 +173,12 @@ public Vehicle_OnModelSeatsGet(Task:task, modelid) {
 		new seats = 0;
 		cache_get_value_name_int(0, "seats", seats);
 		task_set_result(task, seats);
+		return 1;
 	} else {
 		task_set_result(task, 0);
+		return 1;
 	}
+
+	return 0;
+
 }

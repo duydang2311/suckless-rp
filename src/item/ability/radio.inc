@@ -25,6 +25,7 @@ stock Task:IRadio_Create(Float:reliability = 1.0, occupied_space = 2) {
 
             insert_id = cache_insert_id();
             new stats[ItemRadioStats] = {1.0, 2, 0.0};
+            map_set_arr(m_radioStats, insert_id, stats);
 
             new query[80 + 10 + 10 + 3 - 7 + 1];
             mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO `item_radio` (id, reliability, occupied_space) VALUES (%d, %d, %.4f)", insert_id, reliability, occupied_space);

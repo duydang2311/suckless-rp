@@ -48,7 +48,7 @@ public AbilityItem_OnRadioCreated(Float:frequency) {
         new query[58 + 10 + 11 - 6 + 1];
         mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO `item_radio` (id, frequency) VALUES (%d, %.4f)", insert_id, frequency);
         mysql_pquery(MySQL_Connection(), query);
-        CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityRadio, reliability, occupied_space);
+        CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityRadio, 1.0, 2);
     }
 
     return 1;

@@ -159,3 +159,15 @@ public Vehicle_OnModelNameGet(Task:task, modelid) {
 		task_set_result_str(task, "");
 	}
 }
+
+forward Vehicle_OnModelSeatsGet(Task:task, modelid);
+public Vehicle_OnModelSeatsGet(Task:task, modelid) {
+	new rows = cache_num_rows();
+	if(rows > 0) {
+		new seats = 0;
+		cache_get_value_name_int(0, "seats", seats);
+		task_set_result(task, seats);
+	} else {
+		task_set_result(task, 0);
+	}
+}

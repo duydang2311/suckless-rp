@@ -40,7 +40,7 @@ stock Task:Vehicle_GetModelName(model) {
 	new Task:t = task_new();
 	task_detach();
 	
-	new query[70 + 2];
+	new query[70 + 11 - 2 + 1];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `model`, `name` FROM `vehicle_model_stats` WHERE `model` = %d LIMIT 1", model);
 	mysql_tquery(MySQL_Connection(), query, "Vehicle_OnModelNameGet", "dd", _:t, model);
 	return t;
@@ -88,7 +88,7 @@ stock Task:Vehicle_GetSeats(modelid) {
 	new Task:t = task_new();
 	task_detach();
 
-	new query[64 + 3 + 1];
+	new query[68 + 11 - 2 + 1];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `seats` FROM `vehicle_model_stats` WHERE `model` = %d LIMIT 1", modelid);
 	mysql_tquery(MySQL_Connection(), query, "Vehicle_OnModelSeatsGet", "dd", _:t, modelid);
 	return t;

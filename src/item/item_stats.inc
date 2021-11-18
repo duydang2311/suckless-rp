@@ -13,6 +13,7 @@ enum _:ItemAbility {
 	iAbilityWhisk,
 	iAbilityPhone,
 	iAbilitySim,
+	iAbilityRadio,
 	iAbilitySize
 }
 

@@ -12,7 +12,7 @@ enum _:ItemRadioStats {
 
 stock Task:IRadio_Create(Float:reliability = 1.0, occupied_space = 2) {
     new Task:t = task_new();
-    task_detech();
+    task_detach();
 
     new query[83 + 10 + 11 + 3 + 11 - 7 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", _:ITEM_ABILITY:iAbilityMelee, reliability, occupied_space);
@@ -52,6 +52,8 @@ hook OnGameModeInit@6() {
 	reliability FLOAT(11, 4) DEFAULT 0.0000,\
 	occupied_space TINYINT UNSIGNED DEFAULT 0,\
     frequency FLOAT(11, 4) DEFAULT 0.0000)", false);
+
+    new id = await IRadio_Create(1.0, 2);
     return 1;
 }
 

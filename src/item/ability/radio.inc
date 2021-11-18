@@ -15,7 +15,7 @@ stock Task:IRadio_Create(frequency = 0) {
     task_detach();
 
     new query[83 + 3 + 11 + 3 - 8 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", _:ITEM_ABILITY:iAbilityMelee, reliability, occupied_space);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", _:ITEM_ABILITY:iAbilityRadio, reliability, occupied_space);
     mysql_pquery(MySQL_Connection(), query, "IRadio_OnCreated", "d", frequency);
 	task_set_result_ms(t, -1, 2000);
     return t;

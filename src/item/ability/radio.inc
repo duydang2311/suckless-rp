@@ -21,6 +21,18 @@ stock Task:IRadio_Create(Float:reliability = 1.0, occupied_space = 2) {
     return t;
 }
 
+forward IRadio_OnDeleted(id);
+public IRadio_OnDeleted(id) {
+    if(map_valid(m_radioStats) && map_has_key(m_radioStats, id)) {
+        map_remove(m_radioStats, id);
+        if(!map_size(m_radioStats)) {
+            map_delete(m_radioStats);
+            m_radioStats = Map:-1;
+        }
+    }
+    return 1;
+}
+
 forward AbilityItem_OnRadioCreated(Float:reliability, occupied_space);
 public AbilityItem_OnRadioCreated(Float:reliability, occupied_space) {
     new insert_id = -1;

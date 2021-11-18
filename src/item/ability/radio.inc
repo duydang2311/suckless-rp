@@ -21,6 +21,10 @@ stock Task:IRadio_Create(frequency = 0) {
     return t;
 }
 
+stock IRadio_GetModel() {
+    return 19942;
+}
+
 forward IRadio_OnDeleted(id);
 public IRadio_OnDeleted(id) {
     if(map_valid(m_radioStats) && map_has_key(m_radioStats, id)) {
@@ -72,4 +76,14 @@ hook OnGameModeExit@6() {
         m_radioStats = Map:-1;
     }
     return 1;
+}
+
+#include <YSI_Coding\y_hooks>
+
+hook Item_OnModelGetAttempt(id, &model) {
+	if(Item_GetAbility(id) == iAbilityRadio) {
+		model = IRadio_GetModel();
+		return Y_HOOKS_BREAK_RETURN_1;
+	}
+	return 1;
 }

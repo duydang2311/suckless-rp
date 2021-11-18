@@ -80,6 +80,28 @@ stock Vehicle_GetModelTypeName(VehicleModelType:type, name[], size = sizeof(name
 	return 0;
 }
 
+stock Task:Vehicle_GetModelSeats(modelid) {
+	new Task:t = task_new();
+	task_detach();
+
+	new query[64 + 3 + 1];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `seats` FROM `vehicle_stats` WHERE `modelid` = %d LIMIT 1", modelid);
+	mysql_tquery(MySQL_Connection(), query, "Vehicle_OnModelSeatsGet", "dd", _:t, modelid);
+	return t;
+}
+
+stock Vehicle_GetSeats(modelid) {
+	if(modelid >= 400 && modelid <= 611) {
+		new seats = await Vehicle_GetModelSeats(modelid);
+		if(seats < 0 || seats > 4) {
+			printf("[debug] seats id < 0 && > 4, check it out again main. [modelid: %d]", modelid);
+			return 0;
+		}
+	}
+
+	return 0;
+}
+
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS vehicle_stats (\

@@ -16,7 +16,7 @@ stock Task:IRadio_Create(frequency = 0) {
 
     new query[83 + 3 + 11 + 3 - 8 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", _:ITEM_ABILITY:iAbilityMelee, reliability, occupied_space);
-    mysql_pquery(MySQL_Connection(), query, "AbilityItem_OnRadioCreated", "d", frequency);
+    mysql_pquery(MySQL_Connection(), query, "IRadio_OnCreated", "d", frequency);
 	task_set_result_ms(t, -1, 2000);
     return t;
 }
@@ -33,8 +33,8 @@ public IRadio_OnDeleted(id) {
     return 1;
 }
 
-forward AbilityItem_OnRadioCreated(frequency);
-public AbilityItem_OnRadioCreated(frequency) {
+forward IRadio_OnCreated(frequency);
+public IRadio_OnCreated(frequency) {
     new insert_id = -1;
     if(cache_affected_rows()) {
         if(!map_valid(m_radioStats)) {

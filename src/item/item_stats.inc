@@ -49,6 +49,9 @@ stock Item_Delete(id) {
 		case iAbilityBackpack: {
 			CallLocalFunction("IBackpack_OnDeleted", "i", id);
 		}
+		case iAbilityRadio: {
+			CallLocalFunction("IRadio_OnDeleted", "i", id);
+		}
 	}
 	map_remove(m_itemStats, id);
 	if(!map_size(m_itemStats)) {

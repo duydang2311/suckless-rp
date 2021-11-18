@@ -61,7 +61,8 @@ hook OnGameModeInit@6() {
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
-    frequency INT UNSIGNED DEFAULT 0)", false);
+    frequency INT UNSIGNED DEFAULT 0,\
+    FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE)", false);
     return 1;
 }
 

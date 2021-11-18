@@ -85,7 +85,7 @@ stock Task:Vehicle_GetModelSeats(modelid) {
 	task_detach();
 
 	new query[64 + 3 + 1];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `seats` FROM `vehicle_stats` WHERE `modelid` = %d LIMIT 1", modelid);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `seats` FROM `vehicle_stats` WHERE `model` = %d LIMIT 1", modelid);
 	mysql_tquery(MySQL_Connection(), query, "Vehicle_OnModelSeatsGet", "dd", _:t, modelid);
 	return t;
 }
@@ -147,6 +147,7 @@ hook OnGameModeInit() {
 	cache_get_value_name_int(0, "COUNT(model)", rows);
 	printf("Loaded %d/%d rows of vehicle_stats", rows, MAX_VEHICLE_MODELS);
 	cache_delete(result);
+	printf("%d", Vehicle_GetSeats(411));
 	return 1;
 }
 

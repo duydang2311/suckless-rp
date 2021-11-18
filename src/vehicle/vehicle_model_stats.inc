@@ -88,8 +88,8 @@ hook OnGameModeInit() {
 	name VARCHAR(22) DEFAULT '',\
 	seats TINYINT DEFAULT 2)", false);	
 
-	new rows = 0, Cache:result = mysql_query(MySQL_Connection(), "SELECT `model` FROM `vehicle_stats`");
-	cache_get_row_count(rows);
+	new rows = 0, Cache:result = mysql_query(MySQL_Connection(), "SELECT COUNT(model) FROM `vehicle_stats`");
+	cache_get_value_name_int(0, "COUNT(model)", rows);
 	if(rows == 0) {
 		new query[4100];
 		mysql_format(MySQL_Connection(), query, sizeof(query), 
@@ -119,8 +119,8 @@ hook OnGameModeInit() {
 		mysql_tquery(MySQL_Connection(), query);
 	}
 
-	result = mysql_query(MySQL_Connection(), "SELECT `model` FROM `vehicle_stats`");
-	cache_get_row_count(rows);
+	result = mysql_query(MySQL_Connection(), "SELECT COUNT(model) FROM `vehicle_stats`");
+	cache_get_value_name_int(0, "COUNT(model)", rows);
 	printf("Loaded %d/%d rows of vehicle_stats", rows, MAX_VEHICLE_MODELS);
 	cache_delete(result);
 

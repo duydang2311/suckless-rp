@@ -52,8 +52,6 @@ hook OnGameModeInit@6() {
 	reliability FLOAT(11, 4) DEFAULT 0.0000,\
 	occupied_space TINYINT UNSIGNED DEFAULT 0,\
     frequency FLOAT(11, 4) DEFAULT 0.0000)", false);
-
-    new id = await IRadio_Create(1.0, 2);
     return 1;
 }
 

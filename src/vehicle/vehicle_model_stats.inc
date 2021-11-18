@@ -90,20 +90,6 @@ stock Task:Vehicle_GetModelSeats(modelid) {
 	return t;
 }
 
-stock Vehicle_GetSeats(modelid) {
-	if(modelid >= 400 && modelid <= 611) {
-		new seats = await Vehicle_GetModelSeats(modelid);
-		if(seats < 0 || seats > 4) {
-			printf("[debug] seats id < 0 && > 4, check it out again main. [modelid: %d]", modelid);
-			return 0;
-		}
-		
-		return seats;
-	}
-
-	return 0;
-}
-
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS vehicle_model_stats (\

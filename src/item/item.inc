@@ -33,6 +33,7 @@
 #include "./ability/backpack.inc"
 #include "./ability/whisk.inc"
 #include "./ability/sim.inc"
+#include "./ability/radio.inc"
 #include "./ability/phone/phone.inc"
 
 #include "./item_ground.inc"

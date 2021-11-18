@@ -33,8 +33,8 @@ public IRadio_OnDeleted(id) {
     return 1;
 }
 
-forward AbilityItem_OnRadioCreated(Float:reliability, occupied_space);
-public AbilityItem_OnRadioCreated(Float:reliability, occupied_space) {
+forward AbilityItem_OnRadioCreated();
+public AbilityItem_OnRadioCreated() {
     new insert_id = -1;
     if(cache_affected_rows()) {
         if(!map_valid(m_radioStats)) {
@@ -46,7 +46,7 @@ public AbilityItem_OnRadioCreated(Float:reliability, occupied_space) {
         map_set_arr(m_radioStats, insert_id, stats);
 
         new query[97 + 10 + 11 + 3 + 11 - 12 + 1];
-        mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO `item_radio` (id, reliability, occupied_space, frequency) VALUES (%d, %d, %.4f, %.4f)", insert_id, 1.0, 2, 0.0);
+        mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO `item_radio` (id, frequency) VALUES (%d, %.4f)", insert_id, 0.0);
         mysql_pquery(MySQL_Connection(), query);
         CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityRadio, reliability, occupied_space);
     }

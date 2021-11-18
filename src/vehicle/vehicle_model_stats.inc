@@ -1,8 +1,8 @@
-#if defined vehicle_stats_included
+#if defined vehicle_model_stats_included
 	#endinput
 #endif
 
-#define vehicle_stats_included
+#define vehicle_model_stats_included
 
 
 const MAX_VEHICLE_MODELS = 184;
@@ -41,7 +41,7 @@ stock Task:Vehicle_GetModelName(model) {
 	task_detach();
 	
 	new query[70 + 2];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `model`, `name` FROM `vehicle_stats` WHERE `model` = %d LIMIT 1", model);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `model`, `name` FROM `vehicle_model_stats` WHERE `model` = %d LIMIT 1", model);
 	mysql_tquery(MySQL_Connection(), query, "Vehicle_OnModelNameGet", "dd", _:t, model);
 	return t;
 }
@@ -85,7 +85,7 @@ stock Task:Vehicle_GetModelSeats(modelid) {
 	task_detach();
 
 	new query[64 + 3 + 1];
-	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `seats` FROM `vehicle_stats` WHERE `model` = %d LIMIT 1", modelid);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `seats` FROM `vehicle_model_stats` WHERE `model` = %d LIMIT 1", modelid);
 	mysql_tquery(MySQL_Connection(), query, "Vehicle_OnModelSeatsGet", "dd", _:t, modelid);
 	return t;
 }
@@ -106,18 +106,18 @@ stock Vehicle_GetSeats(modelid) {
 
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
-	"CREATE TABLE IF NOT EXISTS vehicle_stats (\
+	"CREATE TABLE IF NOT EXISTS vehicle_model_stats (\
 	model SMALLINT UNSIGNED PRIMARY KEY,\
 	type TINYINT UNSIGNED DEFAULT 0,\
 	name VARCHAR(22) DEFAULT '',\
 	seats TINYINT DEFAULT 2)", false);	
 
-	new rows = 0, Cache:result = mysql_query(MySQL_Connection(), "SELECT COUNT(model) FROM `vehicle_stats`");
+	new rows = 0, Cache:result = mysql_query(MySQL_Connection(), "SELECT COUNT(model) FROM `vehicle_model_stats`");
 	cache_get_value_name_int(0, "COUNT(model)", rows);
 	if(rows == 0) {
 		new query[4100];
 		mysql_format(MySQL_Connection(), query, sizeof(query), 
-			"INSERT INTO `vehicle_stats` VALUES\
+			"INSERT INTO `vehicle_model_stats` VALUES\
 			(402, 1, 'Buffalo', 2), (411, 1, 'Infernus', 2), (415, 1, 'Cheetah', 2), (429, 1, 'Banshee', 2), (434, 1, 'Hotknife', 2), (451, 1, 'Turismo', 2), (477, 1, 'ZR-350', 2), (480, 1, 'Comet', 2), (506, 1, 'Super GT', 2), (541, 1, 'Bullet', 2), (555, 1, 'Windsor', 2), (587, 1, 'Euros', 2), (602, 1, 'Alpha', 2), (603, 1, 'Phoenix', 2),\
 			(400, 2, 'Landstalker', 4), (422, 2, 'Bobcat', 2), (444, 2, 'Monster', 2), (470, 2, 'Patriot', 4), (478, 2, 'Walton', 2), (489, 2, 'Rancher', 2), (495, 2, 'Sandking', 2), (500, 2, 'Mesa', 2), (543, 2, 'Salder', 2), (554, 2, 'Yosemite', 2), (579, 2, 'Huntley', 4), (600, 2, 'Picador', 2),\
 			(536, 3, 'Blade', 2), (575, 3, 'Broadway', 2), (412, 3, 'Voodoo', 2), (534, 3, 'Remington', 2), (535, 3, 'Slamvan', 2), (566, 3, 'Tahoma', 4), (567, 3, 'Savanna', 4), (576, 3, 'Tornado', 2),\
@@ -138,14 +138,14 @@ hook OnGameModeInit() {
 		
 		// above, a lot of lines in format that can't read all of thems, i need to create another one.
 		mysql_format(MySQL_Connection(), query, sizeof(query), 
-			"INSERT INTO `vehicle_stats` VALUES (499, 17, 'Benson', 2), (609, 17, 'Boxville', 2), (524, 17, 'Cement Truck', 2), (532, 17, 'Harvester', 2), (578, 17, 'DFT-30', 2), (406, 17, 'Dumper', 2), (455, 17, 'Flatbed', 2),  (530, 17, 'Forklift', 1), (403, 17, 'Linerunner', 2), (414, 17, 'Mule', 2), (443, 17, 'Packer', 2), (515, 17, 'Roadtrain', 2), (514, 17, 'Tanker', 2), (456, 17, 'Yanke', 2),\
+			"INSERT INTO `vehicle_model_stats` VALUES (499, 17, 'Benson', 2), (609, 17, 'Boxville', 2), (524, 17, 'Cement Truck', 2), (532, 17, 'Harvester', 2), (578, 17, 'DFT-30', 2), (406, 17, 'Dumper', 2), (455, 17, 'Flatbed', 2),  (530, 17, 'Forklift', 1), (403, 17, 'Linerunner', 2), (414, 17, 'Mule', 2), (443, 17, 'Packer', 2), (515, 17, 'Roadtrain', 2), (514, 17, 'Tanker', 2), (456, 17, 'Yanke', 2),\
 			(472, 18, 'Coastguard', 4), (473, 18, 'Dinghy', 4), (493, 18, 'Jetmax', 4), (595, 18, 'Launch', 4), (484, 18, 'Marquis', 4), (430, 18, 'Predator', 4), (453, 18, 'Reefer', 4), (452, 18, 'Speeder', 4), (446, 18, 'Squallo', 4), (454, 18, 'Tropic', 4)");
 		mysql_tquery(MySQL_Connection(), query);
 	}
 
-	result = mysql_query(MySQL_Connection(), "SELECT COUNT(model) FROM `vehicle_stats`");
+	result = mysql_query(MySQL_Connection(), "SELECT COUNT(model) FROM `vehicle_model_stats`");
 	cache_get_value_name_int(0, "COUNT(model)", rows);
-	printf("Loaded %d/%d rows of vehicle_stats", rows, MAX_VEHICLE_MODELS);
+	printf("Loaded %d/%d rows of vehicle_model_stats", rows, MAX_VEHICLE_MODELS);
 	cache_delete(result);
 	return 1;
 }

@@ -97,6 +97,8 @@ stock Vehicle_GetSeats(modelid) {
 			printf("[debug] seats id < 0 && > 4, check it out again main. [modelid: %d]", modelid);
 			return 0;
 		}
+		
+		return seats;
 	}
 
 	return 0;

@@ -40,7 +40,7 @@ stock Task:Vehicle_GetModelName(model) {
 	new Task:t = task_new();
 	task_detach();
 	
-	new query[62 + 2];
+	new query[70];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `model`, `name` FROM `vehicle_stats` WHERE `model` = %d LIMIT 1", model);
 	mysql_tquery(MySQL_Connection(), query, "Vehicle_OnModelNameGet", "dd", _:t, model);
 	return t;

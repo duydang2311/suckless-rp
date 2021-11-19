@@ -7,13 +7,13 @@
 static Map:m_radioStats;
 
 enum ItemRadioModel {
-    minimalRadio,
-    proRadio
+    minimalModelRadio,
+    proModelRadio
 }
 
 enum _:ItemRadioStats {
     radioFrequency,
-    ItemRadioModel:radioType
+    ItemRadioModel:radioModelType
 };
 
 stock Task:IRadio_Create(frequency = 0, ItemRadioModel:type) {
@@ -22,7 +22,7 @@ stock Task:IRadio_Create(frequency = 0, ItemRadioModel:type) {
 
     new query[83 + 3 + 11 + 3 - 8 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", _:ITEM_ABILITY:iAbilityRadio, reliability, occupied_space);
-    mysql_pquery(MySQL_Connection(), query, "IRadio_OnCreated", "d", frequency);
+    mysql_pquery(MySQL_Connection(), query, "IRadio_OnCreated", "dd", frequency, _:type);
 	task_set_result_ms(t, -1, 2000);
     return t;
 }
@@ -43,8 +43,8 @@ public IRadio_OnDeleted(id) {
     return 1;
 }
 
-forward IRadio_OnCreated(frequency);
-public IRadio_OnCreated(frequency) {
+forward IRadio_OnCreated(frequency, ItemRadioModel:type);
+public IRadio_OnCreated(frequency, ItemRadioModel:type) {
     new insert_id = -1;
     if(cache_affected_rows()) {
         if(!map_valid(m_radioStats)) {
@@ -54,6 +54,7 @@ public IRadio_OnCreated(frequency) {
         insert_id = cache_insert_id();
         new stats[ItemRadioStats];
         stats[radioFrequency] = frequency;
+        stats[radioModelType] = type;
         map_set_arr(m_radioStats, insert_id, stats);
 
         new query[58 + 10 + 11 - 6 + 1];
@@ -92,4 +93,23 @@ hook Item_OnModelGetAttempt(id, &model) {
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;
+}
+
+hook Item_OnNameGetAttempt(id, name[], size) {
+    if(Item_GetAbility(id) == iAbilityRadio) { 
+        new stats[ItemRadioStats];
+        if(map_get_arr_safe(m_radioStats, id, stats)) {
+            name[0] = EOS;
+            if(stats[radioModelType] == minimalModelRadio) {
+                strcat(name, "Back 'n Forth Minimal Radio", size);
+            } else if(stats[radioModelType] == proModelRadio) {
+                strcat(name, "Back 'n Forth Pro Radio", size);
+            } else {
+                strcat(name, "", size);
+            }
+
+            return Y_HOOKS_BREAK_RETURN_1;
+        }
+    }
+    return 1;
 }

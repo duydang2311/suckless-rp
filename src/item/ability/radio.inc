@@ -10,27 +10,27 @@ static const Float:iReliabilityRadio = 1.0;
 static const occupiedSpaceRadio = 2;
 
 enum ItemRadioModel {
-    minimalModelRadio,
-    proModelRadio
+    modelBnFMinimal,
+    modelBnFPro
 }
 
 enum _:ItemRadioStats {
     radioFrequency,
-    ItemRadioModel:radioModelType
+    ItemRadioModel:radioModel
 };
 
-stock Task:IRadio_Create(frequency = 0, ItemRadioModel:type) {
+stock Task:IRadio_Create(frequency = 0, ItemRadioModel:model) {
     new Task:t = task_new();
     task_detach();
 
     new query[83 + 3 + 11 + 3 - 8 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", _:ITEM_ABILITY:iAbilityRadio, iReliabilityRadio, occupiedSpaceRadio);
-    mysql_pquery(MySQL_Connection(), query, "IRadio_OnCreated", "dd", frequency, _:type);
+    mysql_pquery(MySQL_Connection(), query, "IRadio_OnCreated", "dd", frequency, _:model);
 	task_set_result_ms(t, -1, 2000);
     return t;
 }
 
-stock IRadio_GetObjectModel() {
+stock IRadio_GetModel() {
     return 19942;
 }
 
@@ -46,22 +46,22 @@ public IRadio_OnDeleted(id) {
     return 1;
 }
 
-forward IRadio_OnCreated(frequency, ItemRadioModel:type);
-public IRadio_OnCreated(frequency, ItemRadioModel:type) {
+forward IRadio_OnCreated(frequency, ItemRadioModel:model);
+public IRadio_OnCreated(frequency, ItemRadioModel:model) {
     new insert_id = -1;
     if(cache_affected_rows()) {
         if(!map_valid(m_radioStats)) {
-            m_radioStats = map_new();
+            m_radioStats = map_new();   
         }
 
         insert_id = cache_insert_id();
         new stats[ItemRadioStats];
         stats[radioFrequency] = frequency;
-        stats[radioModelType] = type;
+        stats[radioModel] = model;
         map_set_arr(m_radioStats, insert_id, stats);
 
         new query[67 + 11 + 3 + 11 - 6 + 1];
-        mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO `item_radio` (id, model, frequency) VALUES (%d, %d, %d)", insert_id, _:type, frequency);
+        mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO `item_radio` (id, model, frequency) VALUES (%d, %d, %d)", insert_id, _:model, frequency);
         mysql_pquery(MySQL_Connection(), query);
         CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityRadio, iReliabilityRadio, occupiedSpaceRadio);
     }
@@ -77,10 +77,10 @@ public IRadio_OnStatsRetrieving(id, Task:t) {
         }
 
         new stats[ItemRadioStats];
-        cache_get_value_name_int(0, "model", _:stats[radioModelType]);
+        cache_get_value_name_int(0, "model", _:stats[radioModel]);
         cache_get_value_name_int(0, "frequency", stats[radioFrequency]);
         map_set_arr(m_radioStats, id, stats);
-        printf("[debug] Map size: %d | type: %d | frequency: %d", map_size(m_radioStats), _:stats[radioModelType], stats[radioFrequency]);
+        printf("[debug] Map size: %d | model: %d | frequency: %d", map_size(m_radioStats), _:stats[radioModel], stats[radioFrequency]);
     }
     if(task_valid(t)) {
         task_set_result(t, 1);
@@ -113,7 +113,7 @@ hook OnGameModeExit@6() {
 hook Item_OnStatsRetrieved(id, Task:t) {
 	if(Item_GetAbility(id) == iAbilityRadio) {
 		new query[128];
-		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_radio WHERE id = %d LIMIT 1", id);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `model`, `frequency` FROM item_radio WHERE id = %d LIMIT 1", id);
 		mysql_pquery(MySQL_Connection(), query, "IRadio_OnStatsRetrieving", "ii", id, _:t);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -122,7 +122,7 @@ hook Item_OnStatsRetrieved(id, Task:t) {
 
 hook Item_OnModelGetAttempt(id, &model) {
 	if(Item_GetAbility(id) == iAbilityRadio) {
-		model = IRadio_GetObjectModel();
+		model = IRadio_GetModel();
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;
@@ -133,9 +133,9 @@ hook Item_OnNameGetAttempt(id, name[], size) {
         new stats[ItemRadioStats];
         if(map_get_arr_safe(m_radioStats, id, stats)) {
             name[0] = EOS;
-            if(stats[radioModelType] == minimalModelRadio) {
+            if(stats[radioModel] == modelBnFMinimal) {
                 strcat(name, "Back 'n Forth Minimal Radio", size);
-            } else if(stats[radioModelType] == proModelRadio) {
+            } else if(stats[radioModel] == modelBnFPro) {
                 strcat(name, "Back 'n Forth Pro Radio", size);
             } else {
                 strcat(name, "", size);

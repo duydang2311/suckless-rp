@@ -6,17 +6,17 @@
 
 static Map:m_radioStats;
 
-enum ItemRadioType {
+enum ItemRadioModel {
     minimalRadio,
     proRadio
 }
 
 enum _:ItemRadioStats {
     radioFrequency,
-    ItemRadioType:radioType
+    ItemRadioModel:radioType
 };
 
-stock Task:IRadio_Create(frequency = 0) {
+stock Task:IRadio_Create(frequency = 0, ItemRadioModel:type) {
     new Task:t = task_new();
     task_detach();
 

@@ -21,7 +21,7 @@ stock Task:IRadio_Create(frequency = 0) {
     return t;
 }
 
-stock IRadio_GetModel() {
+stock IRadio_GetObjectModel() {
     return 19942;
 }
 
@@ -82,7 +82,7 @@ hook OnGameModeExit@6() {
 
 hook Item_OnModelGetAttempt(id, &model) {
 	if(Item_GetAbility(id) == iAbilityRadio) {
-		model = IRadio_GetModel();
+		model = IRadio_GetObjectModel();
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

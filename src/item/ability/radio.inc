@@ -6,6 +6,9 @@
 
 static Map:m_radioStats;
 
+static const Float:iReliabilityRadio = 1.0;
+static const occupiedSpaceRadio = 2;
+
 enum ItemRadioModel {
     minimalModelRadio,
     proModelRadio
@@ -21,7 +24,7 @@ stock Task:IRadio_Create(frequency = 0, ItemRadioModel:type) {
     task_detach();
 
     new query[83 + 3 + 11 + 3 - 8 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", _:ITEM_ABILITY:iAbilityRadio, reliability, occupied_space);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", _:ITEM_ABILITY:iAbilityRadio, iReliabilityRadio, occupiedSpaceRadio);
     mysql_pquery(MySQL_Connection(), query, "IRadio_OnCreated", "dd", frequency, _:type);
 	task_set_result_ms(t, -1, 2000);
     return t;
@@ -77,6 +80,7 @@ public IRadio_OnStatsRetrieving(id, Task:t) {
         cache_get_value_name_int(0, "model", _:stats[radioModelType]);
         cache_get_value_name_int(0, "frequency", stats[radioFrequency]);
         map_set_arr(m_radioStats, id, stats);
+        printf("[debug] Map size: %d | type: %d | frequency: %d", map_size(m_radioStats), _:stats[radioModelType], stats[radioFrequency]);
     }
     if(task_valid(t)) {
         task_set_result(t, 1);

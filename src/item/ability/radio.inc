@@ -63,7 +63,7 @@ public IRadio_OnCreated(frequency, ItemRadioModel:type) {
         new query[67 + 11 + 3 + 11 - 6 + 1];
         mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO `item_radio` (id, model, frequency) VALUES (%d, %d, %d)", insert_id, _:type, frequency);
         mysql_pquery(MySQL_Connection(), query);
-        CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityRadio, 1.0, 2);
+        CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityRadio, iReliabilityRadio, occupiedSpaceRadio);
     }
 
     return 1;

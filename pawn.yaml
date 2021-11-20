@@ -83,6 +83,7 @@ build:
   - src/session
   - src/faction
   - src/farmer
+  - src/frequency
   - src/subtitle
   - src/util
   - src/vehicle

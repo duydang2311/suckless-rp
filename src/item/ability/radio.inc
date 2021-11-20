@@ -25,9 +25,17 @@ stock Task:IRadio_Create(frequency = 0, ItemRadioModel:model) {
 
     new query[83 + 3 + 11 + 3 - 8 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_stats (ability, reliability, occupied_space) VALUES (%d, %.4f, %d)", _:ITEM_ABILITY:iAbilityRadio, iReliabilityRadio, occupiedSpaceRadio);
-    mysql_pquery(MySQL_Connection(), query, "IRadio_OnCreated", "dd", frequency, _:model);
+    mysql_pquery(MySQL_Connection(), query, "IRadio_OnCreated", "ddd", frequency, _:model, _:t);
 	task_set_result_ms(t, -1, 2000);
     return t;
+}
+
+stock ItemRadioModel:IRadio_GetModelType(model) {
+    if(model == 0) {
+        return modelBnFMinimal;
+    }
+
+    return modelBnFPro;
 }
 
 stock IRadio_GetModel() {
@@ -46,8 +54,8 @@ public IRadio_OnDeleted(id) {
     return 1;
 }
 
-forward IRadio_OnCreated(frequency, ItemRadioModel:model);
-public IRadio_OnCreated(frequency, ItemRadioModel:model) {
+forward IRadio_OnCreated(frequency, ItemRadioModel:model, Task:t);
+public IRadio_OnCreated(frequency, ItemRadioModel:model, Task:t) {
     new insert_id = -1;
     if(cache_affected_rows()) {
         if(!map_valid(m_radioStats)) {
@@ -64,6 +72,7 @@ public IRadio_OnCreated(frequency, ItemRadioModel:model) {
         mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO `item_radio` (id, model, frequency) VALUES (%d, %d, %d)", insert_id, _:model, frequency);
         mysql_pquery(MySQL_Connection(), query);
         CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityRadio, iReliabilityRadio, occupiedSpaceRadio);
+        task_set_result(t, insert_id);
     }
 
     return 1;
@@ -97,6 +106,8 @@ hook OnGameModeInit@6() {
     model TINYINT UNSIGNED DEFAULT 0,\
     frequency INT UNSIGNED DEFAULT 0,\
     FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE)", false);
+    new id = await IRadio_Create(0, modelBnFMinimal);
+    printf("id: %d", id);
     return 1;
 }
 

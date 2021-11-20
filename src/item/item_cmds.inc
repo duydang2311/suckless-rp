@@ -146,6 +146,7 @@ cmd:agivesim(playerid, params[]) {
 	return 1;
 }
 
+flags:agiveradio(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
 CMD:agiveradio(playerid, params[])  {
 	extract params -> new targetid, model; else {
 		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /agiveradio [targetid] [model]");
@@ -165,7 +166,7 @@ CMD:agiveradio(playerid, params[])  {
 
 	task_unblock(1);
 	new id = await IRadio_Create(0, IRadio_GetModelType(model));
-	printf("ID: %d", id);
+	printf("[debug] Item Debug - Radio ID has been created: %d", id);
 	new 
 		string[128],
 		name[MAX_PLAYER_NAME + 1];

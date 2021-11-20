@@ -5,6 +5,6 @@
 #define frequency_included
 
 #include <a_samp>
-#include <PawmPlus>
+#include <PawnPlus>
 
 #include "./frequency_stats.inc"

@@ -62,19 +62,20 @@ public IRadio_OnCreated(frequency, ItemRadioModel:model, Task:t) {
             m_radioStats = map_new();   
         }
 
-        insert_id = cache_insert_id();
-        new stats[ItemRadioStats];
-        stats[radioFrequency] = frequency;
-        stats[radioModel] = model;
-        map_set_arr(m_radioStats, insert_id, stats);
+        new 
+            radio_stats[ItemRadioStats],
+            query[67 + 11 + 3 + 11 - 6 + 1];
 
-        new query[67 + 11 + 3 + 11 - 6 + 1];
+        insert_id = cache_insert_id();
         mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO `item_radio` (id, model, frequency) VALUES (%d, %d, %d)", insert_id, _:model, frequency);
         mysql_pquery(MySQL_Connection(), query);
+
+        radio_stats[radioFrequency] = frequency;
+        radio_stats[radioModel] = model;
+        map_set_arr(m_radioStats, insert_id, radio_stats);
         CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityRadio, iReliabilityRadio, occupiedSpaceRadio);
         task_set_result(t, insert_id);
     }
-
     return 1;
 }
 
@@ -106,8 +107,14 @@ hook OnGameModeInit@6() {
     model TINYINT UNSIGNED DEFAULT 0,\
     frequency INT UNSIGNED DEFAULT 0,\
     FOREIGN KEY (id) REFERENCES item_stats(id) ON UPDATE CASCADE ON DELETE CASCADE)", false);
-    new id = await IRadio_Create(0, modelBnFMinimal);
-    printf("id: %d", id);
+
+    new query[150];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM item_stats WHERE NOT EXISTS ( SELECT * FROM item_radio WHERE item_stats.id = item_radio.id ) AND item_stats.ability = %d", iAbilityRadio);
+	new Cache:result = mysql_query(MySQL_Connection(), query, true);
+	if(cache_affected_rows()) {
+		printf("INFO: Deleted %d rows with non-existing referenced `id` to item_radio in item_stats.", cache_affected_rows());
+	}
+	cache_delete(result);
     return 1;
 }
 

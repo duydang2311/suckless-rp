@@ -7,7 +7,7 @@
 static Map:m_radioStats;
 
 static const Float:iReliabilityRadio = 1.0;
-static const occupiedSpaceRadio = 2;
+static const occupiedSpaceRadio = 1;
 
 enum ItemRadioModel {
     modelBnFMinimal,

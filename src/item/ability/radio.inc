@@ -76,6 +76,8 @@ public IRadio_OnCreated(frequency, ItemRadioModel:model, Task:t) {
         CallLocalFunction("Item_OnCreated", "iifi", insert_id, iAbilityRadio, iReliabilityRadio, occupiedSpaceRadio);
         task_set_result(t, insert_id);
     }
+
+    task_set_result(t, -1);
     return 1;
 }
 

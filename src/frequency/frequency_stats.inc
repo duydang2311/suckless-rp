@@ -35,6 +35,22 @@ stock Frequency_Create(playerid, frequency) {
     return map_size(m_frequencyStats);
 }
 
+stock Frequency_Delete(frequency) {
+    if(!map_has_key(m_frequencyStats, frequency)) {
+        return 0;
+    }   
+
+    new LinkedList:ll_frequency_players = linked_list_new();
+    if(map_get_safe(m_frequencyStats, ll_frequency_players)) {
+        for(new Iter:it = linked_list_iter(ll_frequency_players); iter_inside(it);) {
+            iter_erase(it);
+        }
+
+        map_remove_deep(m_frequencyStats, frequency);
+    }
+    return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
     m_frequencyStats = map_new();

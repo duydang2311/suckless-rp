@@ -4,16 +4,24 @@
 
 #define frequency_stats_included
 
+#define                     MAX_LENGTH_FREQUENCY_PASSWORD                   22
+
+enum _:FrequencyStats {
+    frequencyOwnerID,
+    frequencyPassword[MAX_LENGTH_FREQUENCY_PASSWORD]
+};
+
 static Map:m_frequencyStats;
 
-stock Frequency_Create(frequency) {
-    if(!map_valid(m_frequencyStats)) {
-        m_frequencyStats = map_new();
-    }
+stock Task:Frequency_Create(frequency) {
+    new Task:t = task_new();
+    task_detach();
 
-
-
-    return map_size(m_frequencyStats);
+    new query[68 + 11 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `frequency_v` FROM `frequency_stats` WHERE `frequency_v` = %d", frequency);
+    mysql_tquery(MySQL_Connection(), query, "OnFrequencyCreated", "i", frequency);
+    task_set_result_ms(t, -1, 2000);    
+    return t;
 }
 
 #include <YSI_Coding\y_hooks>

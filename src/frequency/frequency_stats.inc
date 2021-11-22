@@ -17,9 +17,15 @@ stock Task:Frequency_Create(frequency) {
     new Task:t = task_new();
     task_detach();
 
-    new query[68 + 11 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `frequency_v` FROM `frequency_stats` WHERE `frequency_v` = %d", frequency);
-    mysql_tquery(MySQL_Connection(), query, "OnFrequencyCreated", "i", frequency);
+    if(!map_valid(m_frequencyStats)) {
+        m_frequencyStats = map_new();
+    }
+
+    if(map_has_key(m_frequencyStats, frequency)) {
+        task_set_result(t, frequencyy);
+        return t;
+    }
+
     task_set_result_ms(t, -1, 2000);    
     return t;
 }

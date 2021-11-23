@@ -4,13 +4,6 @@
 
 #define frequency_stats_included
 
-#define                     MAX_LENGTH_FREQUENCY_PASSWORD                   22
-
-enum _:FrequencyStats {
-    frequencyOwnerID,
-    frequencyPassword[MAX_LENGTH_FREQUENCY_PASSWORD]
-};
-
 stock Task:Frequency_Has(frequency) {
     new Task:t = task_new();
     task_detach();

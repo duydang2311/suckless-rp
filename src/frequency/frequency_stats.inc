@@ -11,6 +11,13 @@ stock Frequency_Create(frequency) {
     return 1;
 }
 
+stock Frequency_Delete(frequency) {
+    new query[53 + 11 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM `frequency_stats` WHERE `id` = %d LIMIT 1", frequency);
+    mysql_tquery(MySQL_Connection(), query);
+    return 1;
+}
+
 stock Task:Frequency_Has(frequency) {
     new Task:t = task_new();
     task_detach();

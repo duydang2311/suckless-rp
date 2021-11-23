@@ -25,6 +25,13 @@ stock Frequency_SetOwnerID(frequency, ownerid) {
     return 1;
 }
 
+stock Frequency_SetPassword(frequency, const password[]) {
+    new query[70 + 22 - 4 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE `frequency_stats` SET `password` = '%e' WHERE `id` = %d LIMIT 1", password, frequency);
+    mysql_tquery(MySQL_Connection(), query);
+    return 1;
+}
+
 stock Task:Frequency_Has(frequency) {
     new Task:t = task_new();
     task_detach();

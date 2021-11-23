@@ -37,20 +37,22 @@ stock Task:Frequency_Has(frequency) {
     task_detach();
 
     new query[50 + 11 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `id` FROM `frequency_stats` WHERE `id` = %d", frequency);
-    mysql_pquery(MySQL_Connection(), query, "Frequency_OnCheckingEmpty", "d", _:t); 
-    task_set_result_ms(t, -1, 1000);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(id) FROM frequency_stats WHERE id = %d LIMIT 1", frequency);
+    mysql_pquery(MySQL_Connection(), query, "Frequency_OnCheck", "d", _:t); 
     return t;
 }   
 
 forward Frequency_OnCheck(Task:t);
 public Frequency_OnCheck(Task:t) {
-    if(cache_num_rows()) {
-        task_set_result_ms(t, true, 1000);
+    new count;
+    cache_get_value_name_int(0, "COUNT(id)", count);
+
+    if(count > 0) {
+        task_set_result(t, true);
         return 1;
     }
 
-    task_set_result_ms(t, false, 1000);
+    task_set_result(t, false);
     return 1;
 }
 

@@ -4,6 +4,13 @@
 
 #define frequency_stats_included
 
+stock Frequency_Create(frequency) {
+    new query[76 + 11 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO frequency_stats (id) VALUES (%d) ON DUPLICATE KEY UPDATE id = %d", frequency, frequency);
+    mysql_pquery(MySQL_Connection(), query);
+    return 1;
+}
+
 stock Task:Frequency_Has(frequency) {
     new Task:t = task_new();
     task_detach();
@@ -14,13 +21,6 @@ stock Task:Frequency_Has(frequency) {
     task_set_result_ms(t, -1, 1000);
     return t;
 }   
-
-stock Frequency_Create(frequency) {
-    new query[76 + 11 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO frequency_stats (id) VALUES (%d) ON DUPLICATE KEY UPDATE id = %d", frequency, frequency);
-    mysql_pquery(MySQL_Connection(), query);
-    return 1;
-}
 
 forward Frequency_OnCheck(Task:t);
 public Frequency_OnCheck(Task:t) {

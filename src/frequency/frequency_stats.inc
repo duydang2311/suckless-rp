@@ -18,6 +18,13 @@ stock Frequency_Delete(frequency) {
     return 1;
 }
 
+stock Frequency_SetOwnerID(frequency, ownerid) {
+    new query[65 + 11 + 11 - 4 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE `frequency_stats` SET `owner` = %d WHERE `id` = %d LIMIT 1", ownerid, frequency);
+    mysql_tquery(MySQL_Connection(), query);
+    return 1;
+}
+
 stock Task:Frequency_Has(frequency) {
     new Task:t = task_new();
     task_detach();

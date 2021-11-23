@@ -11,6 +11,28 @@ enum _:FrequencyStats {
     frequencyPassword[MAX_LENGTH_FREQUENCY_PASSWORD]
 };
 
+stock Task:Frequency_Has(frequency) {
+    new Task:t = task_new();
+    task_detach();
+
+    new query[50 + 11 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `id` FROM `frequency_stats` WHERE `id` = %d", frequency);
+    mysql_pquery(MySQL_Connection(), query, "Frequency_OnCheckingEmpty", "d", _:t); 
+    task_set_result_ms(t, -1, 1000);
+    return t;
+}   
+
+forward Frequency_OnCheck(Task:t);
+public Frequency_OnCheck(Task:t) {
+    if(cache_num_rows()) {
+        task_set_result_ms(t, true, 1000);
+        return 1;
+    }
+
+    task_set_result_ms(t, false, 1000);
+    return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
     mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS frequency_stats(\

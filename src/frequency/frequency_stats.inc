@@ -14,11 +14,14 @@ stock Task:Frequency_Create(frequency) {
     return t;
 }
 
-stock Frequency_Delete(frequency) {
+stock Task:Frequency_Delete(frequency) {
+    new Task:t = task_new();
+    task_detach();
+
     new query[53 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM `frequency_stats` WHERE `id` = %d LIMIT 1", frequency);
-    mysql_tquery(MySQL_Connection(), query);
-    return 1;
+    mysql_tquery(MySQL_Connection(), query, "Frequency_OnDeleted", "d", _:t);
+    return t;
 }
 
 stock Frequency_SetOwnerID(frequency, ownerid) {
@@ -67,6 +70,17 @@ public Frequency_OnCreated(Task:t, frequency) {
     }
 
     task_set_result(t, -1);
+    return 1;
+}
+
+forward Frequency_OnDeleted(Task:t);
+public Frequency_OnDeleted(Task:t) {
+    if(cache_affected_rows()) {
+        task_set_result(t, 1);
+        return 1;
+    }
+
+    task_set_result(t, 0);
     return 1;
 }
 

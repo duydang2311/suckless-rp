@@ -4,11 +4,14 @@
 
 #define frequency_stats_included
 
-stock Frequency_Create(frequency) {
+stock Task:Frequency_Create(frequency) {
+    new Task:t = task_new();
+    task_detach();
+
     new query[76 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO frequency_stats (id) VALUES (%d) ON DUPLICATE KEY UPDATE id = %d", frequency, frequency);
-    mysql_pquery(MySQL_Connection(), query);
-    return 1;
+    mysql_tquery(MySQL_Connection(), query, "Frequency_OnCreated", "dd", _:t, frequency);
+    return t;
 }
 
 stock Frequency_Delete(frequency) {
@@ -53,6 +56,17 @@ public Frequency_OnCheck(Task:t) {
     }
 
     task_set_result(t, false);
+    return 1;
+}
+
+forward Frequency_OnCreated(Task:t, frequency);
+public Frequency_OnCreated(Task:t, frequency) {
+    if(cache_affected_rows()) {
+        task_set_result(t, frequency);
+        return 1;
+    }
+
+    task_set_result(t, -1);
     return 1;
 }
 

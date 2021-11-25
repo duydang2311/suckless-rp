@@ -24,11 +24,14 @@ stock Task:Frequency_Delete(frequency) {
     return t;
 }
 
-stock Frequency_SetOwnerID(frequency, ownerid) {
+stock Task:Frequency_SetOwnerID(frequency, ownerid) {
+    new Task:t = task_new();
+    task_detach();
+
     new query[65 + 11 + 11 - 4 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE `frequency_stats` SET `owner` = %d WHERE `id` = %d LIMIT 1", ownerid, frequency);
-    mysql_tquery(MySQL_Connection(), query);
-    return 1;
+    mysql_tquery(MySQL_Connection(), query, "Frequency_OnSetOwner", "d", _:t);
+    return t;
 }
 
 stock Frequency_SetPassword(frequency, const password[]) {
@@ -75,6 +78,17 @@ public Frequency_OnCreated(Task:t, frequency) {
 
 forward Frequency_OnDeleted(Task:t);
 public Frequency_OnDeleted(Task:t) {
+    if(cache_affected_rows()) {
+        task_set_result(t, 1);
+        return 1;
+    }
+
+    task_set_result(t, 0);
+    return 1;
+}
+
+forward Frequency_OnSetOwner(Task:t);
+public Frequency_OnSetOwner(Task:t) {
     if(cache_affected_rows()) {
         task_set_result(t, 1);
         return 1;

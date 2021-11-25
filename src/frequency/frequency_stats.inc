@@ -68,6 +68,16 @@ public Frequency_OnCheck(Task:t) {
     return 1;
 }
 
+stock Task:Frequency_GetOwnerID(frequency) {
+    new Task:t = task_new();
+    task_detach();
+
+    new query[53 + 11 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `owner` FROM `frequency_stats` WHERE `id` = %d", frequency);
+    mysql_tquery(MySQL_Connection(), query, "Frequency_OnGetOwner", "d", _:t);
+    return t;
+}
+
 forward Frequency_OnCreated(Task:t, frequency);
 public Frequency_OnCreated(Task:t, frequency) {
     if(cache_affected_rows()) {
@@ -110,6 +120,19 @@ public Frequency_OnSetPassword(Task:t) {
 
     task_set_result(t, 0);
     return 1;
+}
+
+forward Frequency_OnGetOwner(Task:t);
+public Frequency_OnGetOwner(Task:t) {
+    if(cache_num_rows()) {
+        new value;
+        cache_get_value_name_int(0, "owner", value);
+        task_set_result(t, value);
+        return 1;
+    }
+
+    task_set_result(t, 0);
+    return 1;   
 }
 
 #include <YSI_Coding\y_hooks>

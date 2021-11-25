@@ -75,7 +75,7 @@ stock Task:Frequency_GetOwnerID(frequency) {
     task_detach();
 
     new query[53 + 11 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `owner` FROM `frequency_stats` WHERE `id` = %d", frequency);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `owner` FROM `frequency_stats` WHERE `id` = %d LIMIT 1", frequency);
     mysql_tquery(MySQL_Connection(), query, "Frequency_OnGetOwner", "d", _:t);
     return t;
 }
@@ -85,7 +85,7 @@ stock Task:Frequency_GetPassword(frequency) {
     task_detach();
 
     new query[56 + 11 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `password` FROM `frequency_stats` WHERE `id` = %d", frequency);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `password` FROM `frequency_stats` WHERE `id` = %d LIMIT 1", frequency);
     mysql_tquery(MySQL_Connection(), query, "Frequency_OnGetPassword", "d", _:t);
     return t;
 }

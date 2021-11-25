@@ -169,9 +169,5 @@ hook OnGameModeInit@() {
     owner INT UNSIGNED,\
     password VARCHAR(22) DEFAULT '',\
     FOREIGN KEY (owner) REFERENCES player_auth(id) ON UPDATE CASCADE ON DELETE CASCADE)", false);
-    new Task:t, password[MAX_FREQUENCY_PASSWORD_LENGTH];
-    t = Frequency_GetPassword(0);
-    task_wait(t);
-    task_get_result_str(t, password); 
     return 1;   
 }

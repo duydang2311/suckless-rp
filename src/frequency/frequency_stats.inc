@@ -4,6 +4,8 @@
 
 #define frequency_stats_included
 
+#define                         MAX_FREQUENCY_PASSWORD_LENGTH              22
+
 stock Task:Frequency_Create(frequency) {
     new Task:t = task_new();
     task_detach();
@@ -78,6 +80,16 @@ stock Task:Frequency_GetOwnerID(frequency) {
     return t;
 }
 
+stock Task:Frequency_GetPassword(frequency) {
+    new Task:t = task_new();
+    task_detach();
+
+    new query[56 + 11 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `password` FROM `frequency_stats` WHERE `id` = %d", frequency);
+    mysql_tquery(MySQL_Connection(), query, "Frequency_OnGetPassword", "d", _:t);
+    return t;
+}
+
 forward Frequency_OnCreated(Task:t, frequency);
 public Frequency_OnCreated(Task:t, frequency) {
     if(cache_affected_rows()) {
@@ -135,6 +147,19 @@ public Frequency_OnGetOwner(Task:t) {
     return 1;   
 }
 
+forward Frequency_OnGetPassword(Task:t);
+public Frequency_OnGetPassword(Task:t) {
+    if(cache_num_rows()) {
+        new value[MAX_FREQUENCY_PASSWORD_LENGTH + 1];
+        cache_get_value_name(0, "password", value);
+        task_set_result_str(t, value);
+        return 1;
+    }
+
+    task_set_result_str(t, "");
+    return 1;   
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
     mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS frequency_stats(\
@@ -144,5 +169,9 @@ hook OnGameModeInit@() {
     owner INT UNSIGNED,\
     password VARCHAR(22) DEFAULT '',\
     FOREIGN KEY (owner) REFERENCES player_auth(id) ON UPDATE CASCADE ON DELETE CASCADE)", false);
+    new Task:t, password[MAX_FREQUENCY_PASSWORD_LENGTH];
+    t = Frequency_GetPassword(0);
+    task_wait(t);
+    task_get_result_str(t, password); 
     return 1;   
 }

@@ -143,7 +143,7 @@ public Frequency_OnGetOwner(Task:t) {
         return 1;
     }
 
-    task_set_result(t, 0);
+    task_set_result(t, -1);
     return 1;   
 }
 

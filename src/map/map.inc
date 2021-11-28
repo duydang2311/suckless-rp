@@ -1,6 +1,6 @@
 #include "./farm/farm_map.inc"
 #include "./farm/farm_reagan.inc"
-#include ".ffarm/farm_fern.inc"
+#include "./farm/farm_fern.inc"
 #include "./farm/TheFarm.inc"
 
 #include <YSI_Coding\y_hooks>

@@ -88,5 +88,6 @@ build:
   - src/util
   - src/vehicle
   - src/download
+  - src/map
   - src/
   - libraries/

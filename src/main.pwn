@@ -63,6 +63,7 @@ DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 #include <faction>
 #include <farmer>
 #include <frequency>
+#include <map>
 
 main() {}
 

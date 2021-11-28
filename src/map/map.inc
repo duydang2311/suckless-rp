@@ -3,7 +3,7 @@
 #include "./farm/TheFarm.inc"
 
 #include <YSI_Coding\y_hooks>
-hook OnGameModeInit() {
+hook OnGameModeInit@() {
     // Farm Mapping
     TheFarm_OnGameModeInit();
     return 1;

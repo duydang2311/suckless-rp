@@ -71,6 +71,7 @@ build:
   - -;+
   - -(+
   - -Z+
+  - -l
   includes:
   - src/mysql
   - src/player

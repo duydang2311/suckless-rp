@@ -64,6 +64,7 @@ DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 #include <farmer>
 #include <frequency>
 #include <map>
+#include <street>
 
 main() {}
 

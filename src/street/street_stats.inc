@@ -59,6 +59,23 @@ stock Street_SetName(id, const name[], size = sizeof(name)) {
     return 1;
 }
 
+stock Street_SetNumber(id, number) {
+    if(!map_has_key(m_streetStats, id)) {
+        return 0;
+    }
+
+    new arr_street_stats[StreetStats];
+    if(map_get_arr_safe(m_streetStats, id, arr_street_stats)) {
+        arr_street_stats[streetNumber] = number;
+        map_set_arr(m_streetStats, id, arr_street_stats);
+
+        new query[61 + 11 + 11 - 4 + 1];
+        mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `number` = %d WHERE `id` = %d LIMIT 1", number, id);
+        mysql_tquery(MySQL_Connection(), query);
+    }
+    return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
     mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS street_stats(\
@@ -69,12 +86,5 @@ hook OnGameModeInit@() {
     type TINYINT UNSIGNED,\
     name VARCHAR(22) DEFAULT '')", false);
     m_streetStats = map_new();
-    Street_Create(0, 113, strTypeAve, "HS Hustle Tripping");
-    Street_Create(1, 114, strTypeST, "HS Hustle 2");
-    Street_SetName(0, "Test");
-    new arraytest[StreetStats];
-    if(map_get_arr_safe(m_streetStats, 0, arraytest)) {
-        printf("[debug] %d %d %d %s", arraytest[streetID], arraytest[streetNumber], _:arraytest[streetType], arraytest[streetName]);
-    }
     return 1;
 }

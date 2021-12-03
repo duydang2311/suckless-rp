@@ -110,6 +110,16 @@ stock Street_GetTypeName(id, name[], size = sizeof(name)) {
     return 1;
 }
 
+stock Street_GetNumber(id) {
+    if(!map_has_key(m_streetStats, id)) {
+        return (-1);
+    }
+    
+    new arr_street_stats[StreetStats];
+    map_get_arr_safe(m_streetStats, id, arr_street_stats);
+    return arr_street_stats[streetNumber];
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
     mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS street_stats(\

@@ -11,13 +11,13 @@ enum StreetType {
     Street
 };
 
-stock Task:IsValidStreet(id) {
+stock Task:Street_Has(id) {
     new Task:t = task_new();
     task_detach();
 
     new query[51 + 11 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT id FROM street_signs WHERE `id` = %d LIMIT 1", id);
-    mysql_tquery(MySQL_Connection(), query, "OnCheckValidStreet", "d", _:t);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(id) FROM street_signs WHERE `id` = %d LIMIT 1", id);
+    mysql_tquery(MySQL_Connection(), query, "Street_OnHasCheck", "d", _:t);
     return t;
 }
 
@@ -42,7 +42,7 @@ stock Task:Street_Delete(id) {
 }
 
 stock Task:Street_SetName(id, const name[], size = sizeof(name)) {
-    if(!IsValidStreet(id)) {
+    if(!Street_Has(id)) {
         return Task:0;
     }
 
@@ -56,7 +56,7 @@ stock Task:Street_SetName(id, const name[], size = sizeof(name)) {
 }
 
 stock Task:Street_SetNumber(id, number) {
-    if(!IsValidStreet(id)) {
+    if(!Street_Has(id)) {
         return Task:0;
     }
 
@@ -70,7 +70,7 @@ stock Task:Street_SetNumber(id, number) {
 }
 
 stock Task:Street_SetType(id, StreetType:type) {
-    if(!IsValidStreet(id)) {
+    if(!Street_Has(id)) {
         return Task:0;
     }
 
@@ -84,7 +84,7 @@ stock Task:Street_SetType(id, StreetType:type) {
 }
 
 stock Task:Street_GetTypeName(id) {
-    if(!IsValidStreet(id)) {
+    if(!Street_Has(id)) {
         return Task:0;
     }
 
@@ -98,7 +98,7 @@ stock Task:Street_GetTypeName(id) {
 }
 
 stock Task:Street_GetNumber(id) {
-    if(!IsValidStreet(id)) {
+    if(!Street_Has(id)) {
         return Task:0;
     }
     
@@ -112,7 +112,7 @@ stock Task:Street_GetNumber(id) {
 }
 
 stock Task:Street_GetName(id) {
-    if(!IsValidStreet(id)) {
+    if(!Street_Has(id)) {
         return Task:0;
     }
 
@@ -125,9 +125,12 @@ stock Task:Street_GetName(id) {
     return t;   
 }
 
-forward OnCheckValidStreet(Task:t);
-public OnCheckValidStreet(Task:t) {
-    if(cache_num_rows() > 0) {
+forward Street_OnHasCheck(Task:t);
+public Street_OnHasCheck(Task:t) {
+    new count;
+    cache_get_value_name_int(0, "COUNT(id)", count);
+
+    if(count > 0)
         task_set_result(t, 0);
         return 1;
     }

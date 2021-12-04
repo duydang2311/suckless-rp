@@ -20,25 +20,11 @@ enum _:StreetSigns {
 
 static Map:m_StreetSigns;
 
-stock Street_Create(id, number, StreetType:type, const name[], size = sizeof(name)) {
-    if(!map_valid(m_StreetSigns)) {
-        m_StreetSigns = map_new();
-    }
-
-    if(map_has_key(m_StreetSigns, id)) {
-        return 0;
-    }
-
-    new arr_street_stats[StreetSigns];
-    arr_street_stats[streetID] = id;
-    arr_street_stats[streetNumber] = number;
-    arr_street_stats[streetType] = type;
-    strcat(arr_street_stats[streetName], name, size);
-
+stock Street_Create(id, number, StreetType:type, const name[]) {
     new query[75 + 11 + 11 + 11 + 22 - 14 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_stats (id, number, type, name) VALUES (%d, %d, %d, '%e')", id, number, _:type, name);
-    mysql_pquery(MySQL_Connection(), query);
-    return map_set_arr(m_StreetSigns, id, arr_street_stats);
+    mysql_tquery(MySQL_Connection(), query);
+    return 1;
 }
 
 stock Street_SetName(id, const name[], size = sizeof(name)) {

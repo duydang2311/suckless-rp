@@ -4,7 +4,7 @@
 
 #define street_stats_included
 
-#define                 MAX_STREET_NAME_LENGTH                      22
+const MAX_STREET_NAME_LENGTH = 22;
 
 enum StreetStatsType {
     strTypeAve,

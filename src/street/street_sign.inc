@@ -28,7 +28,7 @@ stock Task:Street_Create(number, StreetType:type, const name[]) {
         
     new query[71 + 11 + 11 + 22 - 8 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_signs (number, type, name) VALUES (%d, %d, '%e')", number, _:type, name);
-    mysql_pquery(MySQL_Connection(), query, "OnStreetCreate", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, "Street_OnCreated", "d", _:t);
     return t;
 }
 
@@ -141,8 +141,8 @@ public Street_OnHasCheck(Task:t) {
     return 1;
 }
 
-forward OnStreetCreate(Task:t);
-public OnStreetCreate(Task:t) {
+forward Street_OnCreated(Task:t);
+public Street_OnCreated(Task:t) {
     if(cache_affected_rows()) {
         task_set_result(t, 1);
         return 1;

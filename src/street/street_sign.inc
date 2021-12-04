@@ -253,5 +253,11 @@ hook OnGameModeInit@() {
     number SMALLINT,\
     type TINYINT UNSIGNED,\
     name VARCHAR(22) DEFAULT '')", false);
+
+    new Cache:result = mysql_query(MySQL_Connection(), "SELECT COUNT(id) FROM street_signs", true);
+    if(cache_num_rows() == 0) {
+        mysql_query(MySQL_Connection(), "ALTER TABLE street_signs AUTO_INCREMENT = 0", true);
+    }
+    cache_delete(result);
     return 1;
 }

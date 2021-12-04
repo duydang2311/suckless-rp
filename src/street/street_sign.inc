@@ -53,11 +53,6 @@ stock Task:Street_SetName(id, const name[]) {
 }
 
 stock Task:Street_SetNumber(id, number) {
-    new check = await Street_Has(id);
-    if(!check) {
-        return Task:0;
-    }
-
     new Task:t= task_new();
     task_detach();
 
@@ -68,11 +63,6 @@ stock Task:Street_SetNumber(id, number) {
 }
 
 stock Task:Street_SetType(id, StreetType:type) {
-    new check = await Street_Has(id);
-    if(!check) {
-        return Task:0;
-    }
-
     new Task:t= task_new();
     task_detach();
 
@@ -83,11 +73,6 @@ stock Task:Street_SetType(id, StreetType:type) {
 }
 
 stock Task:Street_GetTypeName(id) {
-    new check = await Street_Has(id);
-    if(!check) {
-        return Task:0;
-    }
-
     new Task:t = task_new();
     task_detach();
 
@@ -98,11 +83,6 @@ stock Task:Street_GetTypeName(id) {
 }
 
 stock Task:Street_GetNumber(id) {
-    new check = await Street_Has(id);
-    if(!check) {
-        return Task:0;
-    }
-    
     new Task:t = task_new();
     task_detach();
 
@@ -113,11 +93,6 @@ stock Task:Street_GetNumber(id) {
 }
 
 stock Task:Street_GetName(id) {
-    new check = await Street_Has(id);
-    if(!check) {
-        return Task:0;
-    }
-
     new Task:t = task_new();
     task_detach();
 

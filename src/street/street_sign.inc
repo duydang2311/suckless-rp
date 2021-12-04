@@ -79,19 +79,35 @@ stock Task:Street_SetType(id, StreetType:type) {
     return 1;
 }
 
-stock Street_GetTypeName(id, name[], size = sizeof(name)) {
-    if(!map_has_key(m_StreetSigns, id)) {
-        return 0;
+stock Task:Street_GetTypeName(id) {
+    if(!IsValidStreet(id)) {
+        return Task:0;
     }
 
-    new arr_street_stats[StreetSigns];
-    if(map_get_arr_safe(m_StreetSigns, id, arr_street_stats)) {
-        name[0] = EOS;
-        strcat(name, size, "Street");
-        if(arr_street_stats[streetType] == Avenue) {
-            strcat(name, size, "Avenue");
-        } 
+    new Task:t = task_new();
+    task_detach();
+
+    new query[53 + 11 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT type FROM street_stats WHERE `id` = %d LIMIT 1", id);
+    mysql_pquery(MySQL_Connection(), query, "OnStreetGetTypeName", "d", _:t);
+    return t;
+}
+
+forward OnStreetGetTypeName(Task:t);
+public OnStreetGetTypeName(Task:t) {
+    if(cache_num_rows()) {
+        new type;
+        cache_get_value_name_int(0, "type", type);
+        if(type == _:Avenue) {
+            task_set_result_str(t, "Avenue");
+            return 1;
+        }
+
+        task_set_result_str(t, "Street");
+        return 1;
     }
+
+    task_set_result_str(t, "");
     return 1;
 }
 

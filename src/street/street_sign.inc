@@ -98,7 +98,7 @@ stock Task:Street_GetName(id) {
 
     new query[55 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT name FROM street_signs WHERE `id` = %d LIMIT 1", id);
-    mysql_pquery(MySQL_Connection(), query, "OnStreetGetName", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, "Street_OnNameGet", "d", _:t);
     return t;   
 }
 
@@ -201,8 +201,8 @@ public Street_OnNumberGet(Task:t) {
     return 1;
 }
 
-forward OnStreetGetName(Task:t);
-public OnStreetGetName(Task:t) {
+forward Street_OnNameGet(Task:t);
+public Street_OnNameGet(Task:t) {
     if(cache_num_rows()) {
         new name[STREET_NAME_LENGTH];
         cache_get_value_name(0, "name", name);

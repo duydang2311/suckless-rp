@@ -93,14 +93,18 @@ stock Task:Street_GetTypeName(id) {
     return t;
 }
 
-stock Street_GetNumber(id) {
-    if(!map_has_key(m_StreetSigns, id)) {
-        return (-1);
+stock Task:Street_GetNumber(id) {
+    if(!IsValidStreet(id)) {
+        return Task:0;
     }
     
-    new arr_street_stats[StreetSigns];
-    map_get_arr_safe(m_StreetSigns, id, arr_street_stats);
-    return arr_street_stats[streetNumber];
+    new Task:t = task_new();
+    task_detach();
+
+    new query[55 + 11 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT number FROM street_stats WHERE `id` = %d LIMIT 1", id);
+    mysql_pquery(MySQL_Connection(), query, "OnStreetGetNumber", "d", _:t);
+    return t;
 }
 
 forward OnCheckValidStreet(Task:t);
@@ -162,6 +166,18 @@ public OnStreetGetTypeName(Task:t) {
     }
 
     task_set_result_str(t, "");
+    return 1;
+}
+
+forward OnStreetGetNumber(Task:t);
+public OnStreetGetNumber(Task:t) {
+    if(cache_num_rows() > 0) {
+        new number;
+        cache_get_value_name_int(0, "number", number);
+        task_set_result(t, number);
+    }
+
+    task_set_result(t, -1);
     return 1;
 }
 

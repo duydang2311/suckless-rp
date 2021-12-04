@@ -38,7 +38,7 @@ stock Task:Street_Delete(id) {
 
     new query[48 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM street_signs WHERE `id` = %d LIMIT 1", id);
-    mysql_pquery(MySQL_Connection(), query, "OnStreetDelete", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, "Street_OnDeleted", "d", _:t);
     return t;
 }
 
@@ -152,8 +152,8 @@ public Street_OnCreated(Task:t) {
     return 1;
 }
 
-forward OnStreetDelete(Task:t);
-public OnStreetDelete(Task:t) {
+forward Street_OnDeleted(Task:t);
+public Street_OnDeleted(Task:t) {
     if(cache_affected_rows()) {
         task_set_result(t, 1);
         return 1;

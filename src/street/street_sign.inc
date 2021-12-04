@@ -111,6 +111,20 @@ stock Task:Street_GetNumber(id) {
     return t;
 }
 
+stock Task:Street_GetName(id) {
+    if(!IsValidStreet(id)) {
+        return Task:0;
+    }
+
+    new Task:t = task_new();
+    task_detach();
+
+    new query[55 + 11 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT name FROM street_signs WHERE `id` = %d LIMIT 1", id);
+    mysql_pquery(MySQL_Connection(), query, "OnStreetGetName", "d", _:t);
+    return t;   
+}
+
 forward OnCheckValidStreet(Task:t);
 public OnCheckValidStreet(Task:t) {
     if(cache_num_rows() > 0) {
@@ -204,6 +218,19 @@ public OnStreetGetNumber(Task:t) {
     }
 
     task_set_result(t, -1);
+    return 1;
+}
+
+forward OnStreetGetName(Task:t);
+public OnStreetGetName(Task:t) {
+    if(cache_num_rows()) {
+        new name[STREET_NAME_LENGTH];
+        cache_get_value_name(0, "name", name);
+        task_set_result_str(t, name);
+        return 1;
+    }
+
+    task_set_result_str(t, "");
     return 1;
 }
 

@@ -34,7 +34,7 @@ stock Task:Street_Create(number, StreetType:type, const name[]) {
 
 stock Task:Street_Delete(id) {
     new Task:t = task_new();
-    task_delete(t);
+    task_detach(t);
 
     new query[48 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM street_signs WHERE `id` = %d LIMIT 1", id);

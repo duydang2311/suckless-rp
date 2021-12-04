@@ -42,18 +42,13 @@ stock Task:Street_Delete(id) {
     return t;
 }
 
-stock Task:Street_SetName(id, const name[], size = sizeof(name)) {
-    new check = await Street_Has(id);
-    if(!check) {
-        return Task:0;
-    }
-
+stock Task:Street_SetName(id, const name[]) {
     new Task:t = task_new();
     task_detach();
 
     new query[61 + 22 + 11 - 4 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_signs SET `name` = '%e' WHERE `id` = %d LIMIT 1", name, id);
-    mysql_pquery(MySQL_Connection(), query, "OnStreetSetName", "d", _:t);   
+    mysql_pquery(MySQL_Connection(), query, "Street_OnNameSet", "d", _:t);   
     return t;
 }
 
@@ -168,8 +163,8 @@ public OnStreetDelete(Task:t) {
     return 1;
 }
 
-forward OnStreetSetName(Task:t);
-public OnStreetSetName(Task:t) {
+forward Street_OnNameSet(Task:t);
+public Street_OnNameSet(Task:t) {
     if(cache_affected_rows()) {
         task_set_result(t, 1);
         return 1;

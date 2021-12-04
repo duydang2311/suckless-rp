@@ -125,7 +125,7 @@ hook OnGameModeInit@() {
     mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS street_stats(\
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
-    id INT UNSIGNED PRIMARY KEY,\
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
     number SMALLINT,\
     type TINYINT UNSIGNED,\
     name VARCHAR(22) DEFAULT '')", false);

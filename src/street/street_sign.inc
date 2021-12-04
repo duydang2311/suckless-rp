@@ -22,12 +22,12 @@ stock Task:Street_Has(id) {
     return t;
 }
 
-stock Task:Street_Create(id, number, StreetType:type, const name[]) {
+stock Task:Street_Create(number, StreetType:type, const name[]) {
     new Task:t = task_new();
     task_detach();
         
-    new query[75 + 11 + 11 + 11 + 22 - 14 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_signs (id, number, type, name) VALUES (%d, %d, %d, '%e')", id, number, _:type, name);
+    new query[71 + 11 + 11 + 22 - 8 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_signs (number, type, name) VALUES (%d, %d, '%e')", number, _:type, name);
     mysql_pquery(MySQL_Connection(), query, "OnStreetCreate", "d", _:t);
     return t;
 }
@@ -259,5 +259,6 @@ hook OnGameModeInit@() {
         mysql_query(MySQL_Connection(), "ALTER TABLE street_signs AUTO_INCREMENT = 0", true);
     }
     cache_delete(result);
+    Street_Create(113, Avenue, "Test");
     return 1;
 }

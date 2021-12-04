@@ -136,7 +136,7 @@ public Street_OnHasCheck(Task:t) {
     new count;
     cache_get_value_name_int(0, "COUNT(id)", count);
 
-    if(count > 0) 
+    if(count > 0) {
         task_set_result(t, 0);
         return 1;
     }

@@ -58,7 +58,7 @@ stock Task:Street_SetNumber(id, number) {
 
     new query[61 + 11 + 11 - 4 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_signs SET `number` = %d WHERE `id` = %d LIMIT 1", number, id);
-    mysql_pquery(MySQL_Connection(), query, "OnStreetSetNumber", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, "Street_OnNumberSet", "d", _:t);
     return 1;
 }
 
@@ -149,8 +149,8 @@ public Street_OnNameSet(Task:t) {
     return 1;
 }
 
-forward OnStreetSetNumber(Task:t);
-public OnStreetSetNumber(Task:t) {
+forward Street_OnNumberSet(Task:t);
+public Street_OnNumberSet(Task:t) {
     if(cache_affected_rows()) {
         task_set_result(t, 1);
         return 1;

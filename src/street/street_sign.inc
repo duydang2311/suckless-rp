@@ -78,7 +78,7 @@ stock Task:Street_GetTypeName(id) {
 
     new query[53 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT type FROM street_signs WHERE `id` = %d LIMIT 1", id);
-    mysql_pquery(MySQL_Connection(), query, "Street_OnTypeNameSet", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, "Street_OnTypeNameGet", "d", _:t);
     return t;
 }
 
@@ -171,8 +171,8 @@ public Street_OnTypeSet(Task:t) {
     return 1;
 }
 
-forward Street_OnTypeNameSet(Task:t);
-public Street_OnTypeNameSet(Task:t) {
+forward Street_OnTypeNameGet(Task:t);
+public Street_OnTypeNameGet(Task:t) {
     if(cache_num_rows()) {
         new type;
         cache_get_value_name_int(0, "type", type);

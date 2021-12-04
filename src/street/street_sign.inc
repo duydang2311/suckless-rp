@@ -42,7 +42,8 @@ stock Task:Street_Delete(id) {
 }
 
 stock Task:Street_SetName(id, const name[], size = sizeof(name)) {
-    if(!Street_Has(id)) {
+    new check = await Street_Has(id);
+    if(!check) {
         return Task:0;
     }
 
@@ -56,7 +57,8 @@ stock Task:Street_SetName(id, const name[], size = sizeof(name)) {
 }
 
 stock Task:Street_SetNumber(id, number) {
-    if(!Street_Has(id)) {
+    new check = await Street_Has(id);
+    if(!check) {
         return Task:0;
     }
 
@@ -70,7 +72,8 @@ stock Task:Street_SetNumber(id, number) {
 }
 
 stock Task:Street_SetType(id, StreetType:type) {
-    if(!Street_Has(id)) {
+    new check = await Street_Has(id);
+    if(!check) {
         return Task:0;
     }
 
@@ -84,7 +87,8 @@ stock Task:Street_SetType(id, StreetType:type) {
 }
 
 stock Task:Street_GetTypeName(id) {
-    if(!Street_Has(id)) {
+    new check = await Street_Has(id);
+    if(!check) {
         return Task:0;
     }
 
@@ -98,7 +102,8 @@ stock Task:Street_GetTypeName(id) {
 }
 
 stock Task:Street_GetNumber(id) {
-    if(!Street_Has(id)) {
+    new check = await Street_Has(id);
+    if(!check) {
         return Task:0;
     }
     
@@ -112,7 +117,8 @@ stock Task:Street_GetNumber(id) {
 }
 
 stock Task:Street_GetName(id) {
-    if(!Street_Has(id)) {
+    new check = await Street_Has(id);
+    if(!check) {
         return Task:0;
     }
 
@@ -130,7 +136,7 @@ public Street_OnHasCheck(Task:t) {
     new count;
     cache_get_value_name_int(0, "COUNT(id)", count);
 
-    if(count > 0)
+    if(count > 0) 
         task_set_result(t, 0);
         return 1;
     }

@@ -4,9 +4,9 @@
 
 #define street_stats_included
 
-const MAX_STREET_NAME_LENGTH = 22;
+const STREET_NAME_LENGTH = 22;
 
-enum StreetStatsType {
+enum StreetStatsType {  
     strTypeAve,
     strTypeST
 }
@@ -15,7 +15,7 @@ enum _:StreetStats {
     streetID,
     streetNumber,
     StreetStatsType:streetType,
-    streetName[MAX_STREET_NAME_LENGTH]
+    streetName[STREET_NAME_LENGTH]
 }
 
 static Map:m_streetStats;

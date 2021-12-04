@@ -65,7 +65,7 @@ stock Task:Street_SetNumber(id, number) {
     return 1;
 }
 
-stock Task:TStreet_SetType(id, StreetType:type) {
+stock Task:Street_SetType(id, StreetType:type) {
     if(!IsValidStreet(id)) {
         return Task:-1;
     }

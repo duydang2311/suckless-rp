@@ -31,6 +31,16 @@ stock Task:Street_Create(id, number, StreetType:type, const name[]) {
     return t;
 }
 
+stock Task:Street_Delete(id) {
+    new Task:t = task_new();
+    task_delete(t);
+
+    new query[48 + 11 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM street_stats WHERE `id` = %d LIMIT 1", id);
+    mysql_pquery(MySQL_Connection(), query, "OnStreetDelete", "d", _:t);
+    return t;
+}
+
 stock Task:Street_SetName(id, const name[], size = sizeof(name)) {
     if(!IsValidStreet(id)) {
         return Task:0;
@@ -114,6 +124,17 @@ public OnCheckValidStreet(Task:t) {
 
 forward OnStreetCreate(Task:t);
 public OnStreetCreate(Task:t) {
+    if(cache_affected_rows()) {
+        task_set_result(t, 1);
+        return 1;
+    }
+
+    task_set_result(t, 0);
+    return 1;
+}
+
+forward OnStreetDelete(Task:t);
+public OnStreetDelete(Task:t) {
     if(cache_affected_rows()) {
         task_set_result(t, 1);
         return 1;

@@ -38,7 +38,7 @@ stock Street_Create(id, number, StreetType:type, const name[]) {
 }
 
 stock Task:Street_SetName(id, const name[], size = sizeof(name)) {
-    if(IsValidStreet(id)) {
+    if(!IsValidStreet(id)) {
         return Task:-1;
     }
 

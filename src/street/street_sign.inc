@@ -11,15 +11,6 @@ enum StreetType {
     Street
 };
 
-enum _:StreetSigns {
-    streetID,
-    streetNumber,
-    StreetType:streetType,
-    streetName[STREET_NAME_LENGTH]
-}
-
-static Map:m_StreetSigns;
-
 stock Task:IsValidStreet(id) {
     new Task:t = task_new();
     task_detach();
@@ -190,6 +181,5 @@ hook OnGameModeInit@() {
     number SMALLINT,\
     type TINYINT UNSIGNED,\
     name VARCHAR(22) DEFAULT '')", false);
-    m_StreetSigns = map_new();
     return 1;
 }

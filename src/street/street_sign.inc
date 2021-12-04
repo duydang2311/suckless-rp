@@ -18,6 +18,7 @@ stock Task:Street_Has(id) {
     new query[51 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(id) FROM street_signs WHERE `id` = %d LIMIT 1", id);
     mysql_tquery(MySQL_Connection(), query, "Street_OnHasCheck", "d", _:t);
+    task_set_result_ms(t, -1, 1000);
     return t;
 }
 
@@ -137,11 +138,11 @@ public Street_OnHasCheck(Task:t) {
     cache_get_value_name_int(0, "COUNT(id)", count);
 
     if(count > 0) {
-        task_set_result(t, 0);
+        task_set_result(t, 1);
         return 1;
     }
 
-    task_set_result(t, 1);
+    task_set_result(t, 0);
     return 1;
 }
 

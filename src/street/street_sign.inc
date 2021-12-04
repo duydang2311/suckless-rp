@@ -11,25 +11,25 @@ enum StreetType {
     Street
 };
 
-enum _:StreetStats {
+enum _:StreetSigns {
     streetID,
     streetNumber,
     StreetType:streetType,
     streetName[STREET_NAME_LENGTH]
 }
 
-static Map:m_streetStats;
+static Map:m_StreetSigns;
 
 stock Street_Create(id, number, StreetType:type, const name[], size = sizeof(name)) {
-    if(!map_valid(m_streetStats)) {
-        m_streetStats = map_new();
+    if(!map_valid(m_StreetSigns)) {
+        m_StreetSigns = map_new();
     }
 
-    if(map_has_key(m_streetStats, id)) {
+    if(map_has_key(m_StreetSigns, id)) {
         return 0;
     }
 
-    new arr_street_stats[StreetStats];
+    new arr_street_stats[StreetSigns];
     arr_street_stats[streetID] = id;
     arr_street_stats[streetNumber] = number;
     arr_street_stats[streetType] = type;
@@ -38,19 +38,19 @@ stock Street_Create(id, number, StreetType:type, const name[], size = sizeof(nam
     new query[75 + 11 + 11 + 11 + 22 - 14 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_stats (id, number, type, name) VALUES (%d, %d, %d, '%e')", id, number, _:type, name);
     mysql_pquery(MySQL_Connection(), query);
-    return map_set_arr(m_streetStats, id, arr_street_stats);
+    return map_set_arr(m_StreetSigns, id, arr_street_stats);
 }
 
 stock Street_SetName(id, const name[], size = sizeof(name)) {
-    if(!map_has_key(m_streetStats, id)) {
+    if(!map_has_key(m_StreetSigns, id)) {
         return 0;
     }
 
-    new arr_street_stats[StreetStats];
-    if(map_get_arr_safe(m_streetStats, id, arr_street_stats)) {
+    new arr_street_stats[StreetSigns];
+    if(map_get_arr_safe(m_StreetSigns, id, arr_street_stats)) {
         arr_street_stats[streetName][0] = EOS;
         strcat(arr_street_stats[streetName], name, size);
-        map_set_arr(m_streetStats, id, arr_street_stats);
+        map_set_arr(m_StreetSigns, id, arr_street_stats);
 
         new query[61 + 22 + 11 - 4 - 2 + 1];
         mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `name` = '%e' WHERE `id` = %d LIMIT 1", name, id);
@@ -60,14 +60,14 @@ stock Street_SetName(id, const name[], size = sizeof(name)) {
 }
 
 stock Street_SetNumber(id, number) {
-    if(!map_has_key(m_streetStats, id)) {
+    if(!map_has_key(m_StreetSigns, id)) {
         return 0;
     }
 
-    new arr_street_stats[StreetStats];
-    if(map_get_arr_safe(m_streetStats, id, arr_street_stats)) {
+    new arr_street_stats[StreetSigns];
+    if(map_get_arr_safe(m_StreetSigns, id, arr_street_stats)) {
         arr_street_stats[streetNumber] = number;
-        map_set_arr(m_streetStats, id, arr_street_stats);
+        map_set_arr(m_StreetSigns, id, arr_street_stats);
 
         new query[61 + 11 + 11 - 4 + 1];
         mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `number` = %d WHERE `id` = %d LIMIT 1", number, id);
@@ -77,14 +77,14 @@ stock Street_SetNumber(id, number) {
 }
 
 stock Street_SetType(id, StreetType:type) {
-    if(!map_has_key(m_streetStats, id)) {
+    if(!map_has_key(m_StreetSigns, id)) {
         return 0;
     }
 
-    new arr_street_stats[StreetStats];
-    if(map_get_arr_safe(m_streetStats, id, arr_street_stats)) {
+    new arr_street_stats[StreetSigns];
+    if(map_get_arr_safe(m_StreetSigns, id, arr_street_stats)) {
         arr_street_stats[streetNumber] = type;
-        map_set_arr(m_streetStats, id, arr_street_stats);
+        map_set_arr(m_StreetSigns, id, arr_street_stats);
 
         new query[59 + 11 + 11 - 4 + 1];
         mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `type` = %d WHERE `id` = %d LIMIT 1", _:type, id);
@@ -94,12 +94,12 @@ stock Street_SetType(id, StreetType:type) {
 }
 
 stock Street_GetTypeName(id, name[], size = sizeof(name)) {
-    if(!map_has_key(m_streetStats, id)) {
+    if(!map_has_key(m_StreetSigns, id)) {
         return 0;
     }
 
-    new arr_street_stats[StreetStats];
-    if(map_get_arr_safe(m_streetStats, id, arr_street_stats)) {
+    new arr_street_stats[StreetSigns];
+    if(map_get_arr_safe(m_StreetSigns, id, arr_street_stats)) {
         name[0] = EOS;
         strcat(name, size, "Street");
         if(arr_street_stats[streetType] == Avenue) {
@@ -110,12 +110,12 @@ stock Street_GetTypeName(id, name[], size = sizeof(name)) {
 }
 
 stock Street_GetNumber(id) {
-    if(!map_has_key(m_streetStats, id)) {
+    if(!map_has_key(m_StreetSigns, id)) {
         return (-1);
     }
     
-    new arr_street_stats[StreetStats];
-    map_get_arr_safe(m_streetStats, id, arr_street_stats);
+    new arr_street_stats[StreetSigns];
+    map_get_arr_safe(m_StreetSigns, id, arr_street_stats);
     return arr_street_stats[streetNumber];
 }
 
@@ -128,6 +128,6 @@ hook OnGameModeInit@() {
     number SMALLINT,\
     type TINYINT UNSIGNED,\
     name VARCHAR(22) DEFAULT '')", false);
-    m_streetStats = map_new();
+    m_StreetSigns = map_new();
     return 1;
 }

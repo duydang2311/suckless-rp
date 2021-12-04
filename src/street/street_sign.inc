@@ -14,13 +14,13 @@ enum StreetType {
 enum _:StreetStats {
     streetID,
     streetNumber,
-    StreetStatsType:streetType,
+    StreetType:streetType,
     streetName[STREET_NAME_LENGTH]
 }
 
 static Map:m_streetStats;
 
-stock Street_Create(id, number, StreetStatsType:type, const name[], size = sizeof(name)) {
+stock Street_Create(id, number, StreetType:type, const name[], size = sizeof(name)) {
     if(!map_valid(m_streetStats)) {
         m_streetStats = map_new();
     }
@@ -76,7 +76,7 @@ stock Street_SetNumber(id, number) {
     return 1;
 }
 
-stock Street_SetType(id, StreetStatsType:type) {
+stock Street_SetType(id, StreetType:type) {
     if(!map_has_key(m_streetStats, id)) {
         return 0;
     }

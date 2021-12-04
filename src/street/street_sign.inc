@@ -93,24 +93,6 @@ stock Task:Street_GetTypeName(id) {
     return t;
 }
 
-forward OnStreetGetTypeName(Task:t);
-public OnStreetGetTypeName(Task:t) {
-    if(cache_num_rows()) {
-        new type;
-        cache_get_value_name_int(0, "type", type);
-        if(type == _:Avenue) {
-            task_set_result_str(t, "Avenue");
-            return 1;
-        }
-
-        task_set_result_str(t, "Street");
-        return 1;
-    }
-
-    task_set_result_str(t, "");
-    return 1;
-}
-
 stock Street_GetNumber(id) {
     if(!map_has_key(m_StreetSigns, id)) {
         return (-1);
@@ -162,6 +144,24 @@ public OnStreetSetType(Task:t) {
     }
 
     task_set_result(t, 0);
+    return 1;
+}
+
+forward OnStreetGetTypeName(Task:t);
+public OnStreetGetTypeName(Task:t) {
+    if(cache_num_rows()) {
+        new type;
+        cache_get_value_name_int(0, "type", type);
+        if(type == _:Avenue) {
+            task_set_result_str(t, "Avenue");
+            return 1;
+        }
+
+        task_set_result_str(t, "Street");
+        return 1;
+    }
+
+    task_set_result_str(t, "");
     return 1;
 }
 

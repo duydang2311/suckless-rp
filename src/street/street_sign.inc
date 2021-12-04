@@ -20,6 +20,16 @@ enum _:StreetSigns {
 
 static Map:m_StreetSigns;
 
+stock Task:IsValidStreet(id) {
+    new Task:t = task_new();
+    task_detach();
+
+    new query[51 + 11 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT id FROM street_stats WHERE `id` = %d LIMIT 1", id);
+    mysql_tquery(MySQL_Connection(), query, "OnCheckValidStreet", "d", _:t);
+    return t;
+}
+
 stock Street_Create(id, number, StreetType:type, const name[]) {
     new query[75 + 11 + 11 + 11 + 22 - 14 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_stats (id, number, type, name) VALUES (%d, %d, %d, '%e')", id, number, _:type, name);
@@ -103,6 +113,17 @@ stock Street_GetNumber(id) {
     new arr_street_stats[StreetSigns];
     map_get_arr_safe(m_StreetSigns, id, arr_street_stats);
     return arr_street_stats[streetNumber];
+}
+
+forward OnCheckValidStreet(Task:t);
+public OnCheckValidStreet(Task:t) {
+    if(cache_num_rows() > 0) {
+        task_set_result(t, 0);
+        return 1;
+    }
+
+    task_set_result(t, 1);
+    return 1;
 }
 
 #include <YSI_Coding\y_hooks>

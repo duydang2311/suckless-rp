@@ -30,7 +30,7 @@ stock Street_Create(id, number, StreetType:type, const name[]) {
 
 stock Task:Street_SetName(id, const name[], size = sizeof(name)) {
     if(!IsValidStreet(id)) {
-        return Task:-1;
+        return Task:0;
     }
 
     new Task:t = task_new();
@@ -44,7 +44,7 @@ stock Task:Street_SetName(id, const name[], size = sizeof(name)) {
 
 stock Task:Street_SetNumber(id, number) {
     if(!IsValidStreet(id)) {
-        return Task:-1;
+        return Task:0;
     }
 
     new Task:t= task_new();
@@ -58,7 +58,7 @@ stock Task:Street_SetNumber(id, number) {
 
 stock Task:Street_SetType(id, StreetType:type) {
     if(!IsValidStreet(id)) {
-        return Task:-1;
+        return Task:0;
     }
 
     new Task:t= task_new();

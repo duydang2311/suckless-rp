@@ -37,22 +37,18 @@ stock Street_Create(id, number, StreetType:type, const name[]) {
     return 1;
 }
 
-stock Street_SetName(id, const name[], size = sizeof(name)) {
-    if(!map_has_key(m_StreetSigns, id)) {
-        return 0;
+stock Task:Street_SetName(id, const name[], size = sizeof(name)) {
+    if(IsValidStreet(id)) {
+        return Task:-1;
     }
 
-    new arr_street_stats[StreetSigns];
-    if(map_get_arr_safe(m_StreetSigns, id, arr_street_stats)) {
-        arr_street_stats[streetName][0] = EOS;
-        strcat(arr_street_stats[streetName], name, size);
-        map_set_arr(m_StreetSigns, id, arr_street_stats);
+    new Task:t = task_new();
+    task_detach();
 
-        new query[61 + 22 + 11 - 4 - 2 + 1];
-        mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `name` = '%e' WHERE `id` = %d LIMIT 1", name, id);
-        mysql_tquery(MySQL_Connection(), query);
-    }   
-    return 1;
+    new query[61 + 22 + 11 - 4 - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `name` = '%e' WHERE `id` = %d LIMIT 1", name, id);
+    mysql_pquery(MySQL_Connection(), query, "OnStreetSetName", "d", _:t);   
+    return t;
 }
 
 stock Street_SetNumber(id, number) {
@@ -123,6 +119,17 @@ public OnCheckValidStreet(Task:t) {
     }
 
     task_set_result(t, 1);
+    return 1;
+}
+
+forward OnStreetSetName(Task:t);
+public OnStreetSetName(Task:t) {
+    if(cache_affected_rows()) {
+        task_set_result(t, 1);
+        return 1;
+    }
+
+    task_set_result(t, 0);
     return 1;
 }
 

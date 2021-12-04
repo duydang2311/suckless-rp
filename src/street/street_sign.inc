@@ -21,11 +21,14 @@ stock Task:IsValidStreet(id) {
     return t;
 }
 
-stock Street_Create(id, number, StreetType:type, const name[]) {
+stock Task:Street_Create(id, number, StreetType:type, const name[]) {
+    new Task:t = task_new();
+    task_detach();
+        
     new query[75 + 11 + 11 + 11 + 22 - 14 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_stats (id, number, type, name) VALUES (%d, %d, %d, '%e')", id, number, _:type, name);
-    mysql_tquery(MySQL_Connection(), query);
-    return 1;
+    mysql_pquery(MySQL_Connection(), query, "OnStreetCreate", "d", _:t);
+    return t;
 }
 
 stock Task:Street_SetName(id, const name[], size = sizeof(name)) {
@@ -106,6 +109,17 @@ public OnCheckValidStreet(Task:t) {
     }
 
     task_set_result(t, 1);
+    return 1;
+}
+
+forward OnStreetCreate(Task:t);
+public OnStreetCreate(Task:t) {
+    if(cache_affected_rows()) {
+        task_set_result(t, 1);
+        return 1;
+    }
+
+    task_set_result(t, 0);
     return 1;
 }
 

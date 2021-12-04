@@ -6,10 +6,10 @@
 
 const STREET_NAME_LENGTH = 22;
 
-enum StreetStatsType {  
-    strTypeAve,
-    strTypeST
-}
+enum StreetType {  
+    Avenue,
+    Street
+};
 
 enum _:StreetStats {
     streetID,
@@ -102,7 +102,7 @@ stock Street_GetTypeName(id, name[], size = sizeof(name)) {
     if(map_get_arr_safe(m_streetStats, id, arr_street_stats)) {
         name[0] = EOS;
         strcat(name, size, "Street");
-        if(arr_street_stats[streetType] == strTypeAve) {
+        if(arr_street_stats[streetType] == Avenue) {
             strcat(name, size, "Avenue");
         } 
     }

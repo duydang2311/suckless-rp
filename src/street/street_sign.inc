@@ -13,7 +13,6 @@ enum StreetType {
 
 stock Task:Street_Has(id) {
     new Task:t = task_new();
-    task_detach();
 
     new query[51 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(id) FROM street_signs WHERE `id` = %d LIMIT 1", id);
@@ -24,7 +23,6 @@ stock Task:Street_Has(id) {
 
 stock Task:Street_Create(number, StreetType:type, const name[]) {
     new Task:t = task_new();
-    task_detach();
         
     new query[71 + 11 + 11 + 22 - 8 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_signs (number, type, name) VALUES (%d, %d, '%e')", number, _:type, name);
@@ -34,7 +32,6 @@ stock Task:Street_Create(number, StreetType:type, const name[]) {
 
 stock Task:Street_Delete(id) {
     new Task:t = task_new();
-    task_detach(t);
 
     new query[48 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM street_signs WHERE `id` = %d LIMIT 1", id);
@@ -44,7 +41,6 @@ stock Task:Street_Delete(id) {
 
 stock Task:Street_SetName(id, const name[]) {
     new Task:t = task_new();
-    task_detach();
 
     new query[61 + 22 + 11 - 4 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_signs SET `name` = '%e' WHERE `id` = %d LIMIT 1", name, id);
@@ -53,8 +49,7 @@ stock Task:Street_SetName(id, const name[]) {
 }
 
 stock Task:Street_SetNumber(id, number) {
-    new Task:t= task_new();
-    task_detach();
+    new Task:t= task_new();   
 
     new query[61 + 11 + 11 - 4 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_signs SET `number` = %d WHERE `id` = %d LIMIT 1", number, id);
@@ -64,7 +59,6 @@ stock Task:Street_SetNumber(id, number) {
 
 stock Task:Street_SetType(id, StreetType:type) {
     new Task:t= task_new();
-    task_detach();
 
     new query[59 + 11 + 11 - 4 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_signs SET `type` = %d WHERE `id` = %d LIMIT 1", _:type, id);
@@ -74,7 +68,6 @@ stock Task:Street_SetType(id, StreetType:type) {
 
 stock Task:Street_GetTypeName(id) {
     new Task:t = task_new();
-    task_detach();
 
     new query[53 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT type FROM street_signs WHERE `id` = %d LIMIT 1", id);
@@ -84,7 +77,6 @@ stock Task:Street_GetTypeName(id) {
 
 stock Task:Street_GetNumber(id) {
     new Task:t = task_new();
-    task_detach();
 
     new query[55 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT number FROM street_signs WHERE `id` = %d LIMIT 1", id);
@@ -94,7 +86,6 @@ stock Task:Street_GetNumber(id) {
 
 stock Task:Street_GetName(id) {
     new Task:t = task_new();
-    task_detach();
 
     new query[55 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT name FROM street_signs WHERE `id` = %d LIMIT 1", id);

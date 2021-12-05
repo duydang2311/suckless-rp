@@ -110,7 +110,7 @@ public Street_OnHasCheck(Task:t) {
 forward Street_OnCreated(Task:t);
 public Street_OnCreated(Task:t) {
     if(cache_affected_rows()) {
-        task_set_result(t, 1);
+        task_set_result(t, cache_insert_id());
         return 1;
     }
 

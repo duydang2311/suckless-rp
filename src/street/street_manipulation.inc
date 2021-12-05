@@ -50,10 +50,10 @@ public StreetManipulate_OnAreaCreated(Task:task, id, Float:xMin, Float:yMin, Flo
         new areaid = CreateDynamicRectangle(xMin, yMin, xMax, yMax, worldid, interior);
         map_set(m_streetAreaId, id, areaid);
         Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, streetManipulateExtraId);
-        task_set_result(t, 1);
+        task_set_result(task, 1);
     }
 
-    task_set_result(t, 0);
+    task_set_result(task, 0);
     return 1;
 }
 

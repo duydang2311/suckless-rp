@@ -39,6 +39,10 @@ stock Task:StreetManipulate_SetCoordinate(id, Float:xMin, Float:yMin, Float:xMax
     }
 
     new query[113 + 44 - 16 + 1];
+    Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MIN_X, minX);
+    Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MIN_Y, minY);
+    Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_X, maxX);
+    Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_Y, maxY);
     mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_manipulation SET `xmin` = %.4f, `ymin` = %.4f, `xmax` = %.4f, `ymax` = %.4f WHERE `id` = %d LIMIT 1", xMin, yMin, xMax, yMax, id);
     mysql_pquery(MySQL_Connection(), query, "StreetManipulate_OnPositionSet", "d", _:t);
     return t;

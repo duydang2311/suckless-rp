@@ -4,5 +4,5 @@
 
 #define street_included
 
-#include "./street_sign.inc"
+#include "./street_stats.inc"
 #include "./street_manipulation.inc"

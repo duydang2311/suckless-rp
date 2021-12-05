@@ -5,3 +5,4 @@
 #define street_included
 
 #include "./street_sign.inc"
+#include "./street_manipulation.inc"

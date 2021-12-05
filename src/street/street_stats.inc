@@ -1,8 +1,8 @@
-#if defined street_signs_included
+#if defined street_stats_included
 	#endinput
 #endif
 
-#define street_signs_included
+#define street_stats_included
 
 const STREET_NAME_LENGTH = 22;
 
@@ -15,7 +15,7 @@ stock Task:Street_Has(id) {
     new Task:t = task_new();
 
     new query[51 + 11 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(id) FROM street_signs WHERE `id` = %d LIMIT 1", id);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(id) FROM street_stats WHERE `id` = %d LIMIT 1", id);
     mysql_tquery(MySQL_Connection(), query, "Street_OnHasCheck", "d", _:t);
     task_set_result_ms(t, -1, 1000);
     return t;
@@ -25,7 +25,7 @@ stock Task:Street_Create(number, StreetType:type, const name[]) {
     new Task:t = task_new();
         
     new query[71 + 11 + 11 + 22 - 8 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_signs (number, type, name) VALUES (%d, %d, '%e')", number, _:type, name);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_stats (number, type, name) VALUES (%d, %d, '%e')", number, _:type, name);
     mysql_pquery(MySQL_Connection(), query, "Street_OnCreated", "d", _:t);
     return t;
 }
@@ -34,7 +34,7 @@ stock Task:Street_Delete(id) {
     new Task:t = task_new();
 
     new query[48 + 11 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM street_signs WHERE `id` = %d LIMIT 1", id);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM street_stats WHERE `id` = %d LIMIT 1", id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnDeleted", "d", _:t);
     return t;
 }
@@ -43,7 +43,7 @@ stock Task:Street_SetName(id, const name[]) {
     new Task:t = task_new();
 
     new query[61 + 22 + 11 - 4 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_signs SET `name` = '%e' WHERE `id` = %d LIMIT 1", name, id);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `name` = '%e' WHERE `id` = %d LIMIT 1", name, id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnNameSet", "d", _:t);   
     return t;
 }
@@ -52,7 +52,7 @@ stock Task:Street_SetNumber(id, number) {
     new Task:t= task_new();   
 
     new query[61 + 11 + 11 - 4 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_signs SET `number` = %d WHERE `id` = %d LIMIT 1", number, id);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `number` = %d WHERE `id` = %d LIMIT 1", number, id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnNumberSet", "d", _:t);
     return 1;
 }
@@ -61,7 +61,7 @@ stock Task:Street_SetType(id, StreetType:type) {
     new Task:t= task_new();
 
     new query[59 + 11 + 11 - 4 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_signs SET `type` = %d WHERE `id` = %d LIMIT 1", _:type, id);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `type` = %d WHERE `id` = %d LIMIT 1", _:type, id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnTypeSet", "d", _:t);
     return 1;
 }
@@ -70,7 +70,7 @@ stock Task:Street_GetTypeName(id) {
     new Task:t = task_new();
 
     new query[53 + 11 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT type FROM street_signs WHERE `id` = %d LIMIT 1", id);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT type FROM street_stats WHERE `id` = %d LIMIT 1", id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnTypeNameGet", "d", _:t);
     return t;
 }
@@ -79,7 +79,7 @@ stock Task:Street_GetNumber(id) {
     new Task:t = task_new();
 
     new query[55 + 11 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT number FROM street_signs WHERE `id` = %d LIMIT 1", id);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT number FROM street_stats WHERE `id` = %d LIMIT 1", id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnNumberGet", "d", _:t);
     return t;
 }
@@ -88,7 +88,7 @@ stock Task:Street_GetName(id) {
     new Task:t = task_new();
 
     new query[55 + 11 - 2 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT name FROM street_signs WHERE `id` = %d LIMIT 1", id);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT name FROM street_stats WHERE `id` = %d LIMIT 1", id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnNameGet", "d", _:t);
     return t;   
 }
@@ -207,7 +207,7 @@ public Street_OnNameGet(Task:t) {
 
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
-    mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS street_signs(\
+    mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS street_stats(\
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\

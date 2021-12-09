@@ -6,3 +6,4 @@
 
 #include "./street_stats.inc"
 #include "./street_manipulation.inc"
+#include "./street_cmds.inc"

@@ -48,6 +48,26 @@ stock Task:StreetManipulate_SetCoordinate(id, Float:xMin, Float:yMin, Float:xMax
     return t;
 }
 
+stock Task:StreetManipulate_SetInt(id, int) {
+    new Task:t = task_new();
+    if(!map_has_key(m_streetAreaId)) {
+        task_set_result_ms(t, -1, 1);
+        return t;
+    }
+
+    new areaid = map_get(m_streetAreaId, id);
+    if(!IsValidDynamicArea(areaid)) {
+        task_set_result_ms(t, -1, 1);
+        return t;
+    } 
+
+    new query[70 + 11 + 11 - 4 + 1];
+    Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID, int);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_manipulation SET `interior` = %d WHERE `id` = %d LIMIT 1", int, id);
+    mysql_pquery(MySQL_Connection(), query, "StreetManipulate_OnInteriorSet", "d", _:t);
+    return t;
+}
+
 forward StreetManipulate_OnAreaCreated(Task:task, id, Float:xMin, Float:yMin, Float:xMax, Float:yMax, worldid, interior);
 public StreetManipulate_OnAreaCreated(Task:task, id, Float:xMin, Float:yMin, Float:xMax, Float:yMax, worldid, interior) {
     if(cache_affected_rows()) {   
@@ -67,6 +87,15 @@ public StreetManipulate_OnPositionSet(Task:task) {
         task_set_result(task, 1);
     }
 
+    task_set_result(task, 0);
+    return 1;
+}
+
+forward StreetManipulate_OnInteriorSet(Task:task);
+public StreetManipulate_OnInteriorSet(Task:task) {
+    if(cache_affected_rows()) {
+        task_set_result(task, 1);
+    }
     task_set_result(task, 0);
     return 1;
 }

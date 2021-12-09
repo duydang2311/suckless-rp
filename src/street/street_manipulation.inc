@@ -48,14 +48,14 @@ stock Task:StreetManipulate_SetCoordinate(id, Float:xMin, Float:yMin, Float:xMax
     return t;
 }
 
-stock Task:StreetManipulate_SetInt(id, int) {
+stock Task:StreetManipulate_SetInt(streetid, int) {
     new Task:t = task_new();
-    if(!map_has_key(m_streetAreaId)) {
+    if(!map_has_key(m_streetAreaId, streetid)) {
         task_set_result_ms(t, -1, 1);
         return t;
     }
 
-    new areaid = map_get(m_streetAreaId, id);
+    new areaid = map_get(m_streetAreaId, streetid);
     if(!IsValidDynamicArea(areaid)) {
         task_set_result_ms(t, -1, 1);
         return t;
@@ -63,7 +63,7 @@ stock Task:StreetManipulate_SetInt(id, int) {
 
     new query[70 + 11 + 11 - 4 + 1];
     Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID, int);
-    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_manipulation SET `interior` = %d WHERE `id` = %d LIMIT 1", int, id);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_manipulation SET `interior` = %d WHERE `id` = %d LIMIT 1", int, streetid);
     mysql_pquery(MySQL_Connection(), query, "StreetManipulate_OnInteriorSet", "d", _:t);
     return t;
 }

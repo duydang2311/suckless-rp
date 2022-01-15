@@ -16,6 +16,10 @@ static enum _:TempStreetData {
 };
 
 stock StreetManipulate_InitKey(playerid, number, StreetType:type, const name[STREET_NAME_LENGTH]) {
+    if(!map_valid(m_streetPlayerManipulate)) {
+        m_streetPlayerManipulate = map_new();
+    }
+
     if(map_has_key(m_streetPlayerManipulate, playerid)) {
         return 0;
     }
@@ -41,7 +45,11 @@ stock StreetManipulate_RemoveKey(playerid) {
         return 0;
     }
 
-    map_remove(m_streetPlayerManipulate, playerid);
+    map_remove_deep(m_streetPlayerManipulate, playerid);
+    if(!map_size(m_streetPlayerManipulate)) {
+        map_delete(m_streetPlayerManipulate);
+        m_streetPlayerManipulate = Map:-1;
+    }
     return 1;
 }
 
@@ -90,4 +98,9 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     }
 
     return 1;
+}
+
+hook OnPlayerDisconnect(playerid, reason) {
+    StreetManipulate_RemoveKey(playerid);
+    return 1;   
 }

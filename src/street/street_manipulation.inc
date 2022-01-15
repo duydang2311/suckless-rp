@@ -4,9 +4,9 @@
 
 #define street_manipulation_included
 
-static StreetExtraId = 'S' + 'T' + 'R' + 'E' + 'E' + 'T';
-
-static Map:m_streetID;  
+static 
+    Map:m_streetID,
+    StreetExtraId;
 
 stock Task:Street_CreateArea(streetid, Float:xMin, Float:yMin, Float:xMax, Float:yMax, worldid, interior) {
     if(!map_valid(m_streetID)) {
@@ -14,9 +14,9 @@ stock Task:Street_CreateArea(streetid, Float:xMin, Float:yMin, Float:xMax, Float
     }
 
     new 
-        Task:t = task_new();
+        Task:t = task_new(),
         query[500];
-        
+
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_manipulation (id, xmin, ymin, xmax, ymax, interior, vw) VALUES (%d, %.4f, %.4f, %.4f, %.4f, %d, %d)", streetid, xMin, yMin, xMax, yMax, interior, worldid);
     mysql_pquery(MySQL_Connection(), query, "Street_OnAreaCreated", "ddffffdd", _:t, streetid, xMin, yMin, xMax, yMax, worldid, interior);
     return t;
@@ -130,6 +130,7 @@ public Street_OnWorldIdSet(Task:task) {
 
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
+    StreetExtraId = Session_GenerateId();
     mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS street_manipulation (\
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\

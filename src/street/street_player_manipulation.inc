@@ -9,13 +9,13 @@ new Map:m_streetPlayerManipulate;
 static enum _:TempStreetData {
     temp_strCount,
     temp_strNumber,
-    temp_strType,
+    StreetType:temp_strType,
     temp_strName[STREET_NAME_LENGTH],
     Float:temp_strMinPos[2],
     Float:temp_strMaxPos[2]
 };
 
-stock StreetManipulate_InitKey(playerid, number, type, const name[STREET_NAME_LENGTH]) {
+stock StreetManipulate_InitKey(playerid, number, StreetType:type, const name[STREET_NAME_LENGTH]) {
     if(map_has_key(m_streetPlayerManipulate, playerid)) {
         return 0;
     }
@@ -36,6 +36,15 @@ stock StreetManipulate_InitKey(playerid, number, type, const name[STREET_NAME_LE
     return 1;
 }
 
+stock StreetManipulate_RemoveKey(playerid) {
+    if(!map_has_key(m_streetPlayerManipulate, playerid)) {
+        return 0;
+    }
+
+    map_remove(m_streetPlayerManipulate, playerid);
+    return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
     m_streetPlayerManipulate = map_new();
@@ -52,11 +61,13 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 new condition = await StreetManipulate_CreateArea(streetid, temp_array[temp_strMinPos][0], temp_array[temp_strMinPos][1], temp_array[temp_strMaxPos][0], temp_array[temp_strMaxPos][1], GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid));
                 if(condition) {
                     Player_Msg(playerid, COLOR_LIGHTYELLOW, "Ban da tao thanh cong co so cua Street, hay di den buoc tiep theo.");
+                    StreetManipulate_RemoveKey(playerid);
+                    return 1;
+                } else {
+                    StreetManipulate_RemoveKey(playerid);
+                    Player_Msg(playerid, COLOR_FADE2, "He thong khong tim thay ket qua.");
                     return 1;
                 }
-
-                printf("[debug player-manipulation] bi out ra day roi dev oi, cuu toi.");
-                return 0;
             } 
                 
             temp_array[temp_strCount]++;

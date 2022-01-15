@@ -33,7 +33,6 @@ stock StreetManipulate_InitKey(playerid, number, type, const name[STREET_NAME_LE
     
     strcat(temp_array[temp_strName], name, STREET_NAME_LENGTH);
     map_set_arr(m_streetPlayerManipulate, playerid, temp_array);
-    SendClientMessage(playerid, -1, "qua roi chay di ban oi.");
     return 1;
 }
 
@@ -53,7 +52,6 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 new condition = await StreetManipulate_CreateArea(streetid, temp_array[temp_strMinPos][0], temp_array[temp_strMinPos][1], temp_array[temp_strMaxPos][0], temp_array[temp_strMaxPos][1], GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid));
                 if(condition) {
                     Player_Msg(playerid, COLOR_LIGHTYELLOW, "Ban da tao thanh cong co so cua Street, hay di den buoc tiep theo.");
-                    printf("[debug] street id: %d", streetid);
                     return 1;
                 }
 
@@ -75,7 +73,6 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             }
 
             map_set_arr(m_streetPlayerManipulate, playerid, temp_array);
-            SendClientMessage(playerid, -1, "chay vai lon");
         }
     }
 

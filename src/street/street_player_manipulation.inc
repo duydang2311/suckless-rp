@@ -59,11 +59,11 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             if(temp_array[temp_strCount] == 2) {
                 new streetid = await Street_Create(temp_array[temp_strNumber], temp_array[temp_strType], temp_array[temp_strName]);
                 new condition = await Street_CreateArea(streetid, temp_array[temp_strMinPos][0], temp_array[temp_strMinPos][1], temp_array[temp_strMaxPos][0], temp_array[temp_strMaxPos][1], GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid));
-                if(condition) {
+                if(condition >= 0) {
                     Player_Msg(playerid, COLOR_LIGHTYELLOW, "Ban da tao thanh cong co so cua Street, hay di den buoc tiep theo.");
                     StreetManipulate_RemoveKey(playerid);
                     return 1;
-                } else {
+                } else if(condition == -1) {
                     StreetManipulate_RemoveKey(playerid);
                     Player_Msg(playerid, COLOR_FADE2, "He thong khong tim thay ket qua.");
                     return 1;

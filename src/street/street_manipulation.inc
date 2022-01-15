@@ -91,11 +91,11 @@ public Street_OnAreaCreated(Task:task, id, Float:xMin, Float:yMin, Float:xMax, F
         new areaid = CreateDynamicRectangle(xMin, yMin, xMax, yMax, worldid, interior);
         map_set(m_streetID, id, areaid);
         Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, StreetExtraId);
-        task_set_result(task, 1);
+        task_set_result(task, cache_insert_id());
         return 1;
     }
 
-    task_set_result(task, 0);
+    task_set_result(task, -1);
     return 1;
 }
 

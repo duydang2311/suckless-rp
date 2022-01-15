@@ -8,7 +8,7 @@ static
     Map:m_streetID,
     StreetExtraId;
 
-stock Task:Street_CreateArea(streetid, Float:xMin, Float:yMin, Float:xMax, Float:yMax, worldid, interior) {
+stock Task:Street_CreateArea(streetid, Float:min_x, Float:min_y, Float:max_x, Float:max_y, worldid, interior) {
     if(!map_valid(m_streetID)) {
         m_streetID = map_new();
     }
@@ -17,12 +17,12 @@ stock Task:Street_CreateArea(streetid, Float:xMin, Float:yMin, Float:xMax, Float
         Task:t = task_new(),
         query[297 + 500];
 
-    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_manipulation (id, xmin, ymin, xmax, ymax, interior, vw) VALUES (%d, %.4f, %.4f, %.4f, %.4f, %d, %d) ON UPDATE KEY UPDATE id = VALUES(streetid), xmin = VALUES(xMin), ymin = VALUES(yMin), xmax = VALUES(xMax), ymax = VALUES(yMax), interior = VALUES(interior), vw = VALUES (worldid)", streetid, xMin, yMin, xMax, yMax, interior, worldid);
-    mysql_pquery(MySQL_Connection(), query, "Street_OnAreaCreated", "ddffffdd", _:t, streetid, xMin, yMin, xMax, yMax, worldid, interior);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_manipulation (id, min_x, min_y, max_x, max_y, interior, vw) VALUES (%d, %.4f, %.4f, %.4f, %.4f, %d, %d) ON UPDATE KEY UPDATE id = VALUES(streetid), min_x = VALUES(min_x), min_y = VALUES(min_y), max_x = VALUES(max_x), max_y = VALUES(max_y), interior = VALUES(interior), vw = VALUES (worldid)", streetid, min_x, min_y, max_x, max_y, interior, worldid);
+    mysql_pquery(MySQL_Connection(), query, "Street_OnAreaCreated", "ddffffdd", _:t, streetid, min_x, min_y, max_x, max_y, worldid, interior);
     return t;
 }
 
-stock Task:Street_SetCoordinate(streetid, Float:xMin, Float:yMin, Float:xMax, Float:yMax) {
+stock Task:Street_SetCoordinate(streetid, Float:min_x, Float:min_y, Float:max_x, Float:max_y) {
     new Task:t = task_new();
     if(!map_has_key(m_streetID, streetid)) {
         task_set_result_ms(t, 0, 0);
@@ -40,7 +40,7 @@ stock Task:Street_SetCoordinate(streetid, Float:xMin, Float:yMin, Float:xMax, Fl
     Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MIN_Y, minY);
     Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_X, maxX);
     Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_Y, maxY);
-    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_manipulation SET `xmin` = %.4f, `ymin` = %.4f, `xmax` = %.4f, `ymax` = %.4f WHERE `id` = %d LIMIT 1", xMin, yMin, xMax, yMax, id);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_manipulation SET `min_x` = %.4f, `min_y` = %.4f, `max_x` = %.4f, `max_y` = %.4f WHERE `id` = %d LIMIT 1", min_x, min_y, max_x, max_y, id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnPositionSet", "d", _:t);
     return t;
 }
@@ -85,10 +85,10 @@ stock Task:Street_SetWorldId(streetid, worldid) {
     return t;
 }
 
-forward Street_OnAreaCreated(Task:task, id, Float:xMin, Float:yMin, Float:xMax, Float:yMax, interior, worldid);
-public Street_OnAreaCreated(Task:task, id, Float:xMin, Float:yMin, Float:xMax, Float:yMax, interior, worldid) {
+forward Street_OnAreaCreated(Task:task, id, Float:min_x, Float:min_y, Float:max_x, Float:max_y, interior, worldid);
+public Street_OnAreaCreated(Task:task, id, Float:min_x, Float:min_y, Float:max_x, Float:max_y, interior, worldid) {
     if(cache_affected_rows()) {   
-        new areaid = CreateDynamicRectangle(xMin, yMin, xMax, yMax, worldid, interior);
+        new areaid = CreateDynamicRectangle(min_x, min_y, max_x, max_y, worldid, interior);
         map_set(m_streetID, id, areaid);
         Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, StreetExtraId);
         task_set_result(task, cache_insert_id());
@@ -124,10 +124,10 @@ hook OnGameModeInit@() {
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
-    xmin FLOAT(11, 4) DEFAULT 0.0000,\
-    ymin FLOAT(11, 4) DEFAULT 0.0000,\
-    xmax FLOAT(11, 4) DEFAULT 0.0000,\
-    ymax FLOAT(11, 4) DEFAULT 0.0000,\
+    min_x FLOAT(11, 4) DEFAULT 0.0000,\
+    min_y FLOAT(11, 4) DEFAULT 0.0000,\
+    max_x FLOAT(11, 4) DEFAULT 0.0000,\
+    max_y FLOAT(11, 4) DEFAULT 0.0000,\
     interior INT UNSIGNED DEFAULT 0,\
 	vw INT UNSIGNED DEFAULT 0,\
 	FOREIGN KEY (id) REFERENCES street_stats(id) ON UPDATE CASCADE ON DELETE CASCADE)", false);

@@ -119,6 +119,7 @@ public Street_OnWorldIdSet(Task:task) {
 
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
+    m_streetID = map_new();
     StreetExtraId = Session_GenerateId();
     mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS street_manipulation (\
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -131,5 +132,24 @@ hook OnGameModeInit@() {
     interior INT UNSIGNED DEFAULT 0,\
 	vw INT UNSIGNED DEFAULT 0,\
 	FOREIGN KEY (id) REFERENCES street_stats(id) ON UPDATE CASCADE ON DELETE CASCADE)", false);
+
+    new Cache:result = mysql_query(MySQL_Connection(), "SELECT * FROM street_manipulation", true);
+    new rows = cache_num_rows();
+    if(rows) {
+        for(new i = 0, streetid, Float:min_x, Float:min_y, Float:max_x, Float:max_y, interior, worldid; i < rows; ++i) {
+            cache_get_value_name_int(i, "id", streetid);
+            cache_get_value_name_float(i, "min_x", min_x);
+            cache_get_value_name_float(i, "min_y", min_y);
+            cache_get_value_name_float(i, "max_x", max_x);
+            cache_get_value_name_float(i, "max_y", max_y);
+            cache_get_value_name_int(i, "interior", interior);
+            cache_get_value_name_int(i, "vw", worldid);
+
+            new areaid = CreateDynamicRectangle(min_x, min_y, max_x, max_y, worldid, interior);
+            map_set(m_streetID, streetid, areaid);
+        }
+    }
+
+    cache_delete(result);
     return 1;
 }

@@ -6,33 +6,33 @@
 
 static streetManipulateExtraId = 'S' + 'T' + 'R' + 'E' + 'E' + 'T';
 
-static Map:m_streetAreaId;  
+static Map:m_streetID;  
 
-stock Task:StreetManipulate_CreateArea(id, Float:xMin, Float:yMin, Float:xMax, Float:yMax, worldid, interior) {
-    if(!map_valid(m_streetAreaId)) {
-        m_streetAreaId = map_new();
+stock Task:StreetManipulate_CreateArea(streetid, Float:xMin, Float:yMin, Float:xMax, Float:yMax, worldid, interior) {
+    if(!map_valid(m_streetID)) {
+        m_streetID = map_new();
     }
 
     new Task:t = task_new();
-    if(map_has_key(m_streetAreaId, id)) {
+    if(map_has_key(m_streetID, streetid)) {
         task_set_result_ms(t, -1, 1);
         return t;
     }
 
     new query[113 + 77 - 6 - 16 + 1];
-    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_manipulation (id, xmax, ymax, xmin, ymin, vw, int) VALUES (%d, %.4f, %.4f, %.4f, %.4f, %d, %d)", id, xmax, xmin, ymax, ymin, worldid, interior);
-    mysql_pquery(MySQL_Connection(), query, "StreetManipulate_OnAreaCreated", "ddffffdd", _:t, id, xmin, ymin, xmax, ymax, worldid, interior);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_manipulation (id, xmax, ymax, xmin, ymin, vw, int) VALUES (%d, %.4f, %.4f, %.4f, %.4f, %d, %d)", streetid, xmax, xmin, ymax, ymin, worldid, interior);
+    mysql_pquery(MySQL_Connection(), query, "StreetManipulate_OnAreaCreated", "ddffffdd", _:t, streetid, xmin, ymin, xmax, ymax, worldid, interior);
     return t;
 }
 
-stock Task:StreetManipulate_SetCoordinate(id, Float:xMin, Float:yMin, Float:xMax, Float:yMax) {
+stock Task:StreetManipulate_SetCoordinate(streetid, Float:xMin, Float:yMin, Float:xMax, Float:yMax) {
     new Task:t = task_new();
-    if(!map_has_key(m_streetAreaId, id)) {
+    if(!map_has_key(m_streetID, streetid)) {
         task_set_result_ms(t, -1, 1);
         return t;
     }
 
-    new areaid = map_get(m_streetAreaId, id);
+    new areaid = map_get(m_streetID, streetid);
     if(!IsValidDynamicArea(areaid)) {
         task_set_result_ms(t, -1, 1);
         return t;
@@ -50,12 +50,12 @@ stock Task:StreetManipulate_SetCoordinate(id, Float:xMin, Float:yMin, Float:xMax
 
 stock Task:StreetManipulate_SetInt(streetid, int) {
     new Task:t = task_new();
-    if(!map_has_key(m_streetAreaId, streetid)) {
+    if(!map_has_key(m_streetID, streetid)) {
         task_set_result_ms(t, -1, 1);
         return t;
     }
 
-    new areaid = map_get(m_streetAreaId, streetid);
+    new areaid = map_get(m_streetID, streetid);
     if(!IsValidDynamicArea(areaid)) {
         task_set_result_ms(t, -1, 1);
         return t;
@@ -70,12 +70,12 @@ stock Task:StreetManipulate_SetInt(streetid, int) {
 
 stock Task:StreetManipulate_SetWorldId(streetid, worldid) {
     new Task:t = task_new();
-    if(!map_has_key(m_streetAreaId, streetid)) {
+    if(!map_has_key(m_streetID, streetid)) {
         task_set_result_ms(t, -1, 1);
         return t;
     }
 
-    new areaid = map_get(m_streetAreaId, streetid);
+    new areaid = map_get(m_streetID, streetid);
     if(!IsValidDynamicArea(areaid)) {
         task_set_result_ms(t, -1, 1);
         return t;
@@ -92,7 +92,7 @@ forward StreetManipulate_OnAreaCreated(Task:task, id, Float:xMin, Float:yMin, Fl
 public StreetManipulate_OnAreaCreated(Task:task, id, Float:xMin, Float:yMin, Float:xMax, Float:yMax, worldid, interior) {
     if(cache_affected_rows()) {   
         new areaid = CreateDynamicRectangle(xMin, yMin, xMax, yMax, worldid, interior);
-        map_set(m_streetAreaId, id, areaid);
+        map_set(m_streetID, id, areaid);
         Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, streetManipulateExtraId);
         task_set_result(task, 1);
     }

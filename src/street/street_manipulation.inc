@@ -103,6 +103,7 @@ forward Street_OnPositionSet(Task:task);
 public Street_OnPositionSet(Task:task) {
     if(cache_affected_rows()) {
         task_set_result(task, 1);
+        return 1;
     }
 
     task_set_result(task, 0);
@@ -113,6 +114,7 @@ forward Street_OnInteriorSet(Task:task);
 public Street_OnInteriorSet(Task:task) {
     if(cache_affected_rows()) {
         task_set_result(task, 1);
+        return 1;
     }
     task_set_result(task, 0);
     return 1;
@@ -122,6 +124,7 @@ forward Street_OnWorldIdSet(Task:task);
 public Street_OnWorldIdSet(Task:task) {
     if(cache_affected_rows()) {
         task_set_result(task, 1);
+        return 1;
     }
 
     task_set_result(task, 0);

@@ -21,7 +21,7 @@ stock StreetManipulate_InitKey(playerid, number, StreetType:type, const name[STR
     }
 
     new temp_array[TempStreetData];
-    temp_array[temp_strCount] = 0;
+    temp_array[temp_strCount] = 1;
     
     temp_array[temp_strNumber] = number;
     temp_array[temp_strType] = type;
@@ -79,13 +79,13 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             if(temp_array[temp_strCount] == 1) {
                 temp_array[temp_strMinPos][0] = x;
                 temp_array[temp_strMinPos][1] = y;
-                Player_Msg(playerid, COLOR_LIGHTYELLOW, "Hay di den dia diem Max-X/Max-Y va bam chuot trai.");
             } else {
                 temp_array[temp_strMaxPos][0] = x;
                 temp_array[temp_strMaxPos][1] = y;
             }
 
             map_set_arr(m_streetPlayerManipulate, playerid, temp_array);
+            Player_Msg(playerid, COLOR_LIGHTYELLOW, "Hay di den dia diem Max-X/Max-Y va bam chuot trai.");
         }
     }
 

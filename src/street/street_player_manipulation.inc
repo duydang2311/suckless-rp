@@ -58,7 +58,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             map_get_arr(m_streetPlayerManipulate, playerid, temp_array);
             if(temp_array[temp_strCount] == 2) {
                 new streetid = await Street_Create(temp_array[temp_strNumber], temp_array[temp_strType], temp_array[temp_strName]);
-                new condition = await StreetManipulate_CreateArea(streetid, temp_array[temp_strMinPos][0], temp_array[temp_strMinPos][1], temp_array[temp_strMaxPos][0], temp_array[temp_strMaxPos][1], GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid));
+                new condition = await Street_CreateArea(streetid, temp_array[temp_strMinPos][0], temp_array[temp_strMinPos][1], temp_array[temp_strMaxPos][0], temp_array[temp_strMaxPos][1], GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid));
                 if(condition) {
                     Player_Msg(playerid, COLOR_LIGHTYELLOW, "Ban da tao thanh cong co so cua Street, hay di den buoc tiep theo.");
                     StreetManipulate_RemoveKey(playerid);

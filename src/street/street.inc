@@ -4,6 +4,6 @@
 
 #define street_included
 
-#include "./street_stats.inc"
+#include "./street_create.inc"
 #include "./street_manipulation.inc"
 #include "./street_cmds.inc"

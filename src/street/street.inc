@@ -6,4 +6,5 @@
 
 #include "./street_create.inc"
 #include "./street_manipulation.inc"
+#include "./street_player_manipulation.inc"
 #include "./street_cmds.inc"

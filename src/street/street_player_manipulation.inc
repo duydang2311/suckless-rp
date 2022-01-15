@@ -57,6 +57,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             new temp_array[TempStreetData];
             map_get_arr(m_streetPlayerManipulate, playerid, temp_array);
             if(temp_array[temp_strCount] == 2) {
+                Player_Msg(playerid, COLOR_LIGHTYELLOW, "He thong dang khoi tao, vui long doi trong giay lat...");
                 new streetid = await Street_Create(temp_array[temp_strNumber], temp_array[temp_strType], temp_array[temp_strName]);
                 new condition = await Street_CreateArea(streetid, temp_array[temp_strMinPos][0], temp_array[temp_strMinPos][1], temp_array[temp_strMaxPos][0], temp_array[temp_strMaxPos][1], GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid));
                 if(condition >= 0) {
@@ -68,7 +69,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                     Player_Msg(playerid, COLOR_FADE2, "He thong khong tim thay ket qua.");
                     return 1;
                 }
-            } 
+            }
                 
             temp_array[temp_strCount]++;
                 
@@ -78,6 +79,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             if(temp_array[temp_strCount] == 1) {
                 temp_array[temp_strMinPos][0] = x;
                 temp_array[temp_strMinPos][1] = y;
+                Player_Msg(playerid, COLOR_LIGHTYELLOW, "Hay di den dia diem Max-X/Max-Y va bam chuot trai.");
             } else {
                 temp_array[temp_strMaxPos][0] = x;
                 temp_array[temp_strMaxPos][1] = y;

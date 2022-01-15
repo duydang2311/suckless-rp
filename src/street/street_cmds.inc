@@ -33,6 +33,6 @@ CMD:acreatestreet(playerid, params[]) {
     }
 
     StreetManipulate_InitKey(playerid, number, street_type, name);
-    Player_Msg(playerid, COLOR_YELLOW, "Hay di den dia diem Min-X/Min-Y va bam chuoc trai (hay di den dia diem truoc tien).");
+    Player_Msg(playerid, COLOR_YELLOW, "Hay di den dia diem Min-X/Min-Y va bam chuot trai (hay di den dia diem truoc tien).");
     return 1;
 }

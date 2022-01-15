@@ -15,7 +15,7 @@ stock Task:StreetManipulate_CreateArea(streetid, Float:xMin, Float:yMin, Float:x
 
     new Task:t = task_new();
     if(map_has_key(m_streetID, streetid)) {
-        task_set_result_ms(t, -1, 1);
+        task_set_result_ms(t, 0, 0);
         return t;
     }
 
@@ -28,13 +28,13 @@ stock Task:StreetManipulate_CreateArea(streetid, Float:xMin, Float:yMin, Float:x
 stock Task:StreetManipulate_SetCoordinate(streetid, Float:xMin, Float:yMin, Float:xMax, Float:yMax) {
     new Task:t = task_new();
     if(!map_has_key(m_streetID, streetid)) {
-        task_set_result_ms(t, -1, 1);
+        task_set_result_ms(t, 0, 0);
         return t;
     }
 
     new areaid = map_get(m_streetID, streetid);
     if(!IsValidDynamicArea(areaid)) {
-        task_set_result_ms(t, -1, 1);
+        task_set_result_ms(t, 0, 0);
         return t;
     }
 
@@ -51,13 +51,13 @@ stock Task:StreetManipulate_SetCoordinate(streetid, Float:xMin, Float:yMin, Floa
 stock Task:StreetManipulate_SetInt(streetid, int) {
     new Task:t = task_new();
     if(!map_has_key(m_streetID, streetid)) {
-        task_set_result_ms(t, -1, 1);
+        task_set_result_ms(t, 0, 0);
         return t;
     }
 
     new areaid = map_get(m_streetID, streetid);
     if(!IsValidDynamicArea(areaid)) {
-        task_set_result_ms(t, -1, 1);
+        task_set_result_ms(t, 0, 0);
         return t;
     } 
 
@@ -71,13 +71,13 @@ stock Task:StreetManipulate_SetInt(streetid, int) {
 stock Task:StreetManipulate_SetWorldId(streetid, worldid) {
     new Task:t = task_new();
     if(!map_has_key(m_streetID, streetid)) {
-        task_set_result_ms(t, -1, 1);
+        task_set_result_ms(t, 0, 0);
         return t;
     }
 
     new areaid = map_get(m_streetID, streetid);
     if(!IsValidDynamicArea(areaid)) {
-        task_set_result_ms(t, -1, 1);
+        task_set_result_ms(t, 0, 0);
         return t;
     } 
 

@@ -15,9 +15,9 @@ stock Task:Street_CreateArea(streetid, Float:xMin, Float:yMin, Float:xMax, Float
 
     new 
         Task:t = task_new(),
-        query[500];
+        query[297 + 500];
 
-    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_manipulation (id, xmin, ymin, xmax, ymax, interior, vw) VALUES (%d, %.4f, %.4f, %.4f, %.4f, %d, %d)", streetid, xMin, yMin, xMax, yMax, interior, worldid);
+    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO street_manipulation (id, xmin, ymin, xmax, ymax, interior, vw) VALUES (%d, %.4f, %.4f, %.4f, %.4f, %d, %d) ON UPDATE KEY UPDATE id = VALUES(streetid), xmin = VALUES(xMin), ymin = VALUES(yMin), xmax = VALUES(xMax), ymax = VALUES(yMax), interior = VALUES(interior), vw = VALUES (worldid)", streetid, xMin, yMin, xMax, yMax, interior, worldid);
     mysql_pquery(MySQL_Connection(), query, "Street_OnAreaCreated", "ddffffdd", _:t, streetid, xMin, yMin, xMax, yMax, worldid, interior);
     return t;
 }

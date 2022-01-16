@@ -4,7 +4,9 @@
 
 #define door_entrance_included
 
-static doorEntranceExtraId = -1;
+#include <YSI_Coding\y_unique>
+
+const DoorEntranceExtraId = UNIQUE_SYMBOL;
 
 enum _:DoorEntrance {
 	Float:doorEn[4],
@@ -66,7 +68,7 @@ stock Door_UpdateEnAddons(id) {
 	}
 	addon[doorEnAreaId] = CreateDynamicSphere(entrance[doorEn][0], entrance[doorEn][1], entrance[doorEn][2], 2.5, entrance[doorEnVW], entrance[doorEnInt]),
 	addon[doorEnPickupId] = CreateDynamicPickup(entrance[doorEnPickupModel], 0, entrance[doorEn][0], entrance[doorEn][1], entrance[doorEn][2], entrance[doorEnVW], entrance[doorEnInt], .streamdistance = 10.0);
-	Streamer_SetIntData(STREAMER_TYPE_AREA, addon[doorEnAreaId], E_STREAMER_EXTRA_ID, doorEntranceExtraId);
+	Streamer_SetIntData(STREAMER_TYPE_AREA, addon[doorEnAreaId], E_STREAMER_EXTRA_ID, DoorEntranceExtraId);
 	map_set_arr(m_doorEntranceAddons, id, addon);
 	return 1;
 }
@@ -166,10 +168,6 @@ stock Door_GetIdByEntranceAreaId(areaid) {
 	return -1;
 }
 
-stock Door_GetEntranceExtraId() {
-	return doorEntranceExtraId;
-}
-
 #include <YSI_Coding\y_hooks>
 
 hook Door_OnDeleted(id) {
@@ -194,7 +192,6 @@ hook Door_OnDeleted(id) {
 hook OnGameModeInit() {
 	m_doorEntrance = map_new();
 	m_doorEntranceAddons = map_new();
-	doorEntranceExtraId = Session_GenerateId();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS door_entrance (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\

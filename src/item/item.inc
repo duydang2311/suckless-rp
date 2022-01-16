@@ -23,7 +23,6 @@
 #include <util>
 
 #include <mysql>
-#include <session>
 
 #include "./item_stats.inc"
 #include "./item_group.inc"

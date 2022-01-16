@@ -4,14 +4,16 @@
 
 #define item_ground_included
 
+#include <YSI_Coding\y_unique>
+
+const ItemGroundExtraId = UNIQUE_SYMBOL;
+
 enum _:ItemGroundStats {
 	iGrObjectId,
 	Text3D:iGrTextLabelId
 }
 
-static
-	Map:m_iGroundStats,
-	streamerExtraId;
+static Map:m_iGroundStats;
 
 stock Float:CompressRotation(Float:rotation){
 	return (rotation - floatround(rotation/360.0,floatround_floor)*360.0);
@@ -69,7 +71,7 @@ stock IGround_Update(id, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz
 	Item_GetName(id, name);
 	stats[iGrObjectId] = CreateDynamicObject(Item_GetModel(id), x, y, z, rx, ry, rz, vw, int);
 	stats[iGrTextLabelId] = CreateDynamic3DTextLabel(name, COLOR_YELLOW, x, y, z, 10.0, .worldid = vw, .interiorid = int);
-	Streamer_SetIntData(STREAMER_TYPE_OBJECT, stats[iGrObjectId], E_STREAMER_EXTRA_ID, streamerExtraId);
+	Streamer_SetIntData(STREAMER_TYPE_OBJECT, stats[iGrObjectId], E_STREAMER_EXTRA_ID, ItemGroundExtraId);
 	map_set_arr(m_iGroundStats, id, stats);
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO item_ground(id, pos_x, pos_y, pos_z, rot_x, rot_y, rot_z, interior, vw) VALUES (%d, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %d, %d) ON DUPLICATE KEY UPDATE pos_x = VALUES(pos_x), pos_y = VALUES(pos_y), pos_z = VALUES(pos_z), rot_x = VALUES(rot_x), rot_y = VALUES(rot_y), rot_z = VALUES(rot_z), interior = VALUES(interior), vw = VALUES(vw)", id, x, y, z, rx, ry, rz, int, vw);
 	mysql_pquery(MySQL_Connection(), query);
@@ -113,10 +115,6 @@ stock IGround_Delete(id) {
 	return 1;
 }
 
-stock IGround_GetStreamerExtraId() {
-	return streamerExtraId;
-}
-
 stock IGround_GetByObjectId(objectid) {
 	for(new Iter:it = map_iter(m_iGroundStats), stats[ItemGroundStats]; iter_inside(it); iter_move_next(it)) {
 		iter_get_arr(it, stats);
@@ -136,7 +134,6 @@ hook OnGameModeExit@6() {
 }
 
 hook OnGameModeInit@6() {
-	streamerExtraId = Session_GenerateId();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_ground (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -179,7 +176,7 @@ hook OnGameModeInit@6() {
 			Item_GetName(id, name);
 			igStats[iGrObjectId] = CreateDynamicObject(Item_GetModel(id), pos[0], pos[1], pos[2], rot[0], rot[1], rot[2], vw, int);
 			igStats[iGrTextLabelId] = CreateDynamic3DTextLabel(name, COLOR_YELLOW, pos[0], pos[1], pos[2], 10.0, .worldid = vw, .interiorid = int);
-			Streamer_SetIntData(STREAMER_TYPE_OBJECT, igStats[iGrObjectId], E_STREAMER_EXTRA_ID, streamerExtraId);
+			Streamer_SetIntData(STREAMER_TYPE_OBJECT, igStats[iGrObjectId], E_STREAMER_EXTRA_ID, ItemGroundExtraId);
 			if(!map_valid(m_iGroundStats)) {
 				m_iGroundStats = map_new();
 			}

@@ -25,13 +25,13 @@ stock Door_GetPlayerExitDoorId(playerid) {
 #include <YSI_Coding\y_hooks>
 
 hook OnPlayerEnterDynArea(playerid, areaid) {
-	if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == Door_GetEntranceExtraId()) {
+	if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == DoorEntranceExtraId) {
 		if(!map_valid(m_playerEnDoorId)) {
 			m_playerEnDoorId = map_new();
 		}
 		map_set(m_playerEnDoorId, playerid, Door_GetIdByAreaId(areaid));
 		return Y_HOOKS_BREAK_RETURN_1;
-	} else if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == Door_GetExitExtraId()) {
+	} else if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == DoorExitExtraId) {
 		if(!map_valid(m_playerExDoorId)) {
 			m_playerExDoorId = map_new();
 		}
@@ -42,7 +42,7 @@ hook OnPlayerEnterDynArea(playerid, areaid) {
 }
 
 hook OnPlayerLeaveDynArea(playerid, areaid) {
-	if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == Door_GetEntranceExtraId()) {
+	if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == DoorEntranceExtraId) {
 		if(map_valid(m_playerEnDoorId)) {
 			map_remove(m_playerEnDoorId, playerid);
 			if(!map_size(m_playerEnDoorId)) {
@@ -51,7 +51,7 @@ hook OnPlayerLeaveDynArea(playerid, areaid) {
 			}
 		}
 		return Y_HOOKS_BREAK_RETURN_1;
-	} else if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == Door_GetExitExtraId()) {
+	} else if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == DoorExitExtraId) {
 		if(map_valid(m_playerExDoorId)) {
 			map_remove(m_playerExDoorId, playerid);
 			if(!map_size(m_playerExDoorId)) {

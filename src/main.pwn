@@ -56,6 +56,7 @@ DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 #include <item>
 #include <inventory>
 #include <weapon>
+#include <street>
 #include <player>
 #include <admin>
 #include <door>
@@ -64,7 +65,6 @@ DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 #include <farmer>
 #include <frequency>
 #include <map>
-#include <street>
 
 main() {}
 

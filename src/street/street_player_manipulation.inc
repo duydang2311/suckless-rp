@@ -4,9 +4,8 @@
 
 #define street_p_manipulation_defined
 
-static 
-    Map:m_streetPlayerManipulate,
-    Map:m_playerInStreet;
+static Map:m_streetPlayerManipulate;
+new Map:m_playerInStreet;
 
 static enum _:TempStreetData {
     temp_strCount,

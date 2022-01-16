@@ -114,40 +114,25 @@ public Street_OnCreated(Task:t) {
         return 1;
     }
 
-    task_set_result(t, 0);
+    task_set_result(t, -1);
     return 1;
 }
 
 forward Street_OnDeleted(Task:t);
 public Street_OnDeleted(Task:t) {
-    if(cache_affected_rows()) {
-        task_set_result(t, 1);
-        return 1;
-    }
-
-    task_set_result(t, 0);
+    task_set_result(t, cache_affected_rows());
     return 1;
 }
 
 forward Street_OnNameSet(Task:t);
 public Street_OnNameSet(Task:t) {
-    if(cache_affected_rows()) {
-        task_set_result(t, 1);
-        return 1;
-    }
-
-    task_set_result(t, 0);
+    task_set_result(t, cache_affected_rows());
     return 1;
 }
 
 forward Street_OnNumberSet(Task:t);
 public Street_OnNumberSet(Task:t) {
-    if(cache_affected_rows()) {
-        task_set_result(t, 1);
-        return 1;
-    }
-
-    task_set_result(t, 0);
+    task_set_result(t, cache_affected_rows());
     return 1;
 }
 

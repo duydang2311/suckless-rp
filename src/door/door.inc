@@ -11,7 +11,6 @@
 #include <YSI_Extra\y_inline_mysql>
 
 #include <mysql>
-#include <session>
 
 #include "./door_stats.inc"
 #include "./door_entrance.inc"

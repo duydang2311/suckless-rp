@@ -4,6 +4,10 @@
 
 #define door_exit_included
 
+#include <YSI_Coding\y_unique>
+
+const DoorExitExtraId = UNIQUE_SYMBOL;
+
 enum _:DoorExit {
 	Float:doorEx[4],
 	doorExInt,
@@ -141,10 +145,6 @@ stock Door_GetIdByExitAreaId(areaid) {
 	return -1;
 }
 
-stock Door_GetExitExtraId() {
-	return doorExitExtraId;
-}
-
 #include <YSI_Coding\y_hooks>
 
 hook Door_OnDeleted(id) {
@@ -169,7 +169,6 @@ hook Door_OnDeleted(id) {
 hook OnGameModeInit() {
 	m_doorExit = map_new();
 	m_doorExitAddons = map_new();
-	doorExitExtraId = Session_GenerateId();
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS door_exit (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\

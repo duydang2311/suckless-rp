@@ -51,7 +51,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			count = Streamer_GetNearbyItems(x, y, z, STREAMER_TYPE_OBJECT, items, sizeof(items), 2.0, GetPlayerVirtualWorld(playerid));
 			count = (count > sizeof(items)) ? sizeof(items) : count;
 			for(new i = 0; i != count; i++) {
-				if(Streamer_GetIntData(STREAMER_TYPE_OBJECT, items[i], E_STREAMER_EXTRA_ID) == IGround_GetStreamerExtraId()) {
+				if(Streamer_GetIntData(STREAMER_TYPE_OBJECT, items[i], E_STREAMER_EXTRA_ID) == ItemGroundExtraId) {
 					new id = IGround_GetByObjectId(items[i]);
 					if(id != -1) {
 						if(Item_GetOccupiedSpace(id) > 1) {

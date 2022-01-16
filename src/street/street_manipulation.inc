@@ -6,7 +6,7 @@
 
 static 
     Map:m_streetID,
-    StreetExtraId;
+    streetExtraID;
 
 stock Task:Street_CreateArea(streetid, Float:min_x, Float:min_y, Float:max_x, Float:max_y, worldid, interior) {
     if(!map_valid(m_streetID)) {
@@ -85,12 +85,16 @@ stock Task:Street_SetWorldId(streetid, worldid) {
     return t;
 }
 
+stock Street_GetExtraID() {
+    return streetExtraID;
+}
+
 forward Street_OnAreaCreated(Task:task, id, Float:min_x, Float:min_y, Float:max_x, Float:max_y, interior, worldid);
 public Street_OnAreaCreated(Task:task, id, Float:min_x, Float:min_y, Float:max_x, Float:max_y, interior, worldid) {
     if(cache_affected_rows()) {   
         new areaid = CreateDynamicRectangle(min_x, min_y, max_x, max_y, worldid, interior);
         map_set(m_streetID, id, areaid);
-        Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, StreetExtraId);
+        Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, streetExtraID);
         task_set_result(task, cache_insert_id());
         return 1;
     }
@@ -120,7 +124,7 @@ public Street_OnWorldIdSet(Task:task) {
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
     m_streetID = map_new();
-    StreetExtraId = Session_GenerateId();
+    streetExtraID = Session_GenerateId();
     mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS street_manipulation (\
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
@@ -147,6 +151,7 @@ hook OnGameModeInit@() {
 
             new areaid = CreateDynamicRectangle(min_x, min_y, max_x, max_y, worldid, interior);
             map_set(m_streetID, streetid, areaid);
+            Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, streetExtraID);
         }
     }
 

@@ -62,7 +62,7 @@ hook OnGameModeInit@() {
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     if(map_valid(m_streetPlayerManipulate)) {
         if(map_has_key(m_streetPlayerManipulate, playerid)) {
-            if(newkeys == KEY_FIRE) {
+            if(newkeys == KEY_NO) {
                 new temp_array[TempStreetData];
                 map_get_arr(m_streetPlayerManipulate, playerid, temp_array);
                 
@@ -97,7 +97,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 }
 
                 map_set_arr(m_streetPlayerManipulate, playerid, temp_array);
-                Player_Msg(playerid, COLOR_LIGHTYELLOW, "Hay di den dia diem Max-X/Max-Y va bam chuot trai.");
+                Player_Msg(playerid, COLOR_LIGHTYELLOW, "Hay di den dia diem Max-X/Max-Y va bam N de thuc hien buoc tiep theo.");
             }
         }
     }

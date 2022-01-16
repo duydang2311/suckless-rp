@@ -6,6 +6,8 @@
 
 #include <a_zones>
 
+forward bool:Player_IsInStreet(playerid, &streetid);
+
 CMD:acreatestreet(playerid, params[]) {
     new number, type, name[STREET_NAME_LENGTH];
     if(sscanf(params, "iis[22]", number, type, name)) {
@@ -35,5 +37,31 @@ CMD:acreatestreet(playerid, params[]) {
 
     StreetManipulate_InitKey(playerid, number, street_type, name);
     Player_Msg(playerid, COLOR_YELLOW, "Hay di den dia diem Min-X/Min-Y va bam nut N (hay di den dia diem truoc tien).");
+    return 1;
+}
+
+CMD:streetname(playerid) {  
+    new streetid; 
+    if(!Player_IsInStreet(playerid, streetid)) {
+        Player_Msg(playerid, COLOR_FADE2, "Khu pho nay chua duoc dat ten, hay lien he den Administrator de ho tro them.");
+        return 1;
+    }
+
+    new 
+        province[MAX_ZONE_NAME], city[MAX_ZONE_NAME], 
+        number, name[STREET_NAME_LENGTH];
+        
+    task_unblock(1);
+    new Task:t = Street_GetName(streetid);
+    task_await_arr(t, name);
+    task_delete(t);
+
+    number = await Street_GetNumber(streetid);
+    GetPlayer3DProvince(playerid, province, MAX_ZONE_NAME);
+    GetPlayer3DCity(playerid, city, MAX_ZONE_NAME);
+
+    new string[33 + 11 + STREET_NAME_LENGTH + MAX_ZONE_NAME + MAX_ZONE_NAME];
+    format(string, sizeof(string), "Street Name: %d, %s, %s, %s.", number, name, province, city);
+    SendClientMessage(playerid, -1, string);
     return 1;
 }

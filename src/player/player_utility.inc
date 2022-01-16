@@ -165,15 +165,16 @@ stock Player_PutInVehicle(playerid, vehicleid, seatid) {
 	return 1;
 }
 
-stock bool:Player_IsInStreet(playerid) {
+stock bool:Player_IsInStreet(playerid, &streetid) {
 	if(!map_valid(m_playerInStreet)) {
 		return false;
 	}
-	
+
 	if(!map_has_key(m_playerInStreet, playerid)) {
 		return false;
 	}
 
+	streetid = map_get(m_playerInStreet, playerid);
 	return true;	
 }
 

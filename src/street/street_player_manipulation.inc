@@ -107,19 +107,19 @@ hook OnPlayerDisconnect(playerid, reason) {
 }
 
 hook OnPlayerEnterDynArea(playerid, areaid) {
-    if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == Street_GetExtraID()) {
+    if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == StreetExtraID) {
         if(!map_valid(m_playerInStreet)) {
             m_playerInStreet = map_new();
         }
 
         map_set(m_playerInStreet, playerid, Street_GetIDByArea(areaid));
     }
-    
+
     return 1;
 }
 
 hook OnPlayerLeaveDynArea(playerid, areaid) {
-    if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == Street_GetExtraID()) {
+    if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == StreetExtraID) {
         if(!map_valid(m_playerInStreet)) {
             return 0;
         }

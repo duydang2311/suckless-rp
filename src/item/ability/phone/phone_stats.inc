@@ -64,7 +64,7 @@ stock IPhone_GetModel(id) {
 hook OnGameModeInit@8() {
 	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS item_phone (\
 		created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-		modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+		modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 		id INT UNSIGNED PRIMARY KEY,\
 		model TINYINT UNSIGNED DEFAULT 0,\
 		power FLOAT(11, 4) DEFAULT 1.0000,\

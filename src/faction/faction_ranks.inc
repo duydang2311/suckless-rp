@@ -100,7 +100,7 @@ hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS faction_ranks (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED,\
 	rank_order TINYINT UNSIGNED,\
 	rank_name VARCHAR(32) DEFAULT '',\

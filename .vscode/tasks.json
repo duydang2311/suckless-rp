@@ -18,6 +18,7 @@
         {
             "label": "run tests",
             "type": "shell",
+<<<<<<< HEAD
             "options": {
                 "env": {
                     "MYSQL_USER": "root",
@@ -27,6 +28,9 @@
                 }
             },
             "command": "sampctl p run --forceBuild",
+=======
+            "command": "MYSQL_USER=root MYSQL_PASSWORD= MYSQL_HOST=localhost MYSQL_DATABASE=sundaydb sampctl package run",
+>>>>>>> d21c3f78c1089694cf47b6b71f55bbbb859f8dc8
             "group": {
                 "kind": "test",
                 "isDefault": true

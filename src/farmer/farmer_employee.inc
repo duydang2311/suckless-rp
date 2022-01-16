@@ -59,7 +59,7 @@ hook Player_OnStatsRetrieved(playerid) {
 hook OnGameModeInit() {
 	mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS farmer_employees (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	employee_id INT UNSIGNED PRIMARY KEY,\
 	FOREIGN KEY(employee_id) REFERENCES player_auth(id) ON UPDATE CASCADE ON DELETE CASCADE\
 	)", false);

@@ -145,3 +145,34 @@ cmd:agivesim(playerid, params[]) {
 	Player_Msg(playerid, COLOR_GREEN, string);
 	return 1;
 }
+
+flags:agiveradio(ADMIN_FLAGS_1 | ADMIN_FLAGS_2 | ADMIN_FLAGS_3 | ADMIN_FLAGS_4 | ADMIN_FLAGS_5)
+CMD:agiveradio(playerid, params[])  {
+	extract params -> new targetid, model; else {
+		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /agiveradio [targetid] [model]");
+		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Model: 0 (Back 'n Forth Minimal Radio), 1 (Back 'n Forth Pro Radio)");
+		return 1;
+	}
+
+	if(!Player_IsStatsLoaded(targetid)) {
+		Player_Msg(playerid, COLOR_FADE2, "Nguoi choi chua ket noi.");
+		return 1;
+	}
+
+	if(model < 0 || model > 1) {
+		Player_Msg(playerid, COLOR_FADE2, "Khong ton tai Model de tao.");
+		return 1;
+	}
+
+	task_unblock(1);
+	new id = await IRadio_Create(0, IRadio_GetModelType(model));
+	printf("[debug] Item Debug - Radio ID has been created: %d", id);
+	new 
+		string[128],
+		name[MAX_PLAYER_NAME + 1];
+	Inventory_AddItem(targetid, id);
+	GetPlayerName(targetid, name);
+	format(string, sizeof(string), "INFO: Item Radio (ID: %d) da duoc dua vao Inventory cua '%s'", id, name);
+	Player_Msg(playerid, COLOR_GREEN, string);
+	return 1;
+}

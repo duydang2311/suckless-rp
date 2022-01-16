@@ -13,6 +13,7 @@ enum _:ItemAbility {
 	iAbilityWhisk,
 	iAbilityPhone,
 	iAbilitySim,
+	iAbilityRadio,
 	iAbilitySize
 }
 
@@ -47,6 +48,9 @@ stock Item_Delete(id) {
 		}
 		case iAbilityBackpack: {
 			CallLocalFunction("IBackpack_OnDeleted", "i", id);
+		}
+		case iAbilityRadio: {
+			CallLocalFunction("IRadio_OnDeleted", "i", id);
 		}
 	}
 	map_remove(m_itemStats, id);
@@ -190,7 +194,7 @@ hook OnGameModeInit@0() {
 	mysql_query(MySQL_Connection(),
 	"CREATE TABLE IF NOT EXISTS item_stats (\
 	created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
-	modified_date TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\
+	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
 	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
 	ability TINYINT UNSIGNED DEFAULT 0,\
 	reliability FLOAT(11, 4) DEFAULT 0.0000,\

@@ -90,6 +90,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 }
 
                 temp_array[temp_strCount]++;
+
                 temp_array[temp_strMinPos][0] = x;
                 temp_array[temp_strMinPos][1] = y;
         
@@ -104,4 +105,31 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 hook OnPlayerDisconnect(playerid, reason) {
     StreetManipulate_RemoveKey(playerid);
     return 1;   
+}
+
+hook OnPlayerEnterDynArea(playerid, areaid) {
+    if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == Street_GetExtraID()) {
+        if(!map_valid(m_playerInStreet)) {
+            m_playerInStreet = map_new();
+        }
+
+        map_set(m_playerInStreet, playerid, areaid);
+    }
+    return 1;
+}
+
+hook OnPlayerLeaveDynArea(playerid, areaid) {
+    if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == Street_GetExtraID()) {
+        if(!map_valid(m_playerInStreet)) {
+            return 0;
+        }
+
+        map_remove(m_playerInStreet, playerid);
+        if(!map_size(m_playerInStreet)) {
+            map_delete(m_playerInStreet);
+            m_playerInStreet = Map:-1;
+        }
+    }
+
+    return 1;
 }

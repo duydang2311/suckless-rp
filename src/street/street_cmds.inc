@@ -4,10 +4,11 @@
 
 #define street_adm_cmds_included
 
+#include <a_zones>
+
 CMD:acreatestreet(playerid, params[]) {
     new number, type, name[STREET_NAME_LENGTH];
     if(sscanf(params, "iis[22]", number, type, name)) {
-        printf("number: %d, type: %d, name: %s", number, type, name);
         Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /acreatestreet [number] [type] [name]");
         return 1;
     }
@@ -33,6 +34,6 @@ CMD:acreatestreet(playerid, params[]) {
     }
 
     StreetManipulate_InitKey(playerid, number, street_type, name);
-    Player_Msg(playerid, COLOR_YELLOW, "Hay di den dia diem Min-X/Min-Y va bam chuot trai (hay di den dia diem truoc tien).");
+    Player_Msg(playerid, COLOR_YELLOW, "Hay di den dia diem Min-X/Min-Y va bam nut N (hay di den dia diem truoc tien).");
     return 1;
 }

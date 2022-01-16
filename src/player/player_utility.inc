@@ -165,6 +165,18 @@ stock Player_PutInVehicle(playerid, vehicleid, seatid) {
 	return 1;
 }
 
+stock bool:Player_IsInStreet(playerid) {
+	if(!map_valid(m_playerInStreet)) {
+		return false;
+	}
+	
+	if(!map_has_key(m_playerInStreet, playerid)) {
+		return false;
+	}
+
+	return true;	
+}
+
 forward Player_ToggleControllable(playerid, bool:toggle);
 public Player_ToggleControllable(playerid, bool:toggle) {
 	TogglePlayerControllable(playerid, toggle);

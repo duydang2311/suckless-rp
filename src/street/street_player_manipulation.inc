@@ -112,8 +112,9 @@ hook OnPlayerEnterDynArea(playerid, areaid) {
             m_playerInStreet = map_new();
         }
 
-        map_set(m_playerInStreet, playerid, areaid);
+        map_set(m_playerInStreet, playerid, Street_GetIDByArea(areaid));
     }
+    
     return 1;
 }
 

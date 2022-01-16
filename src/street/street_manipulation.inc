@@ -89,6 +89,16 @@ stock Street_GetExtraID() {
     return streetExtraID;
 }
 
+stock Street_GetIDByArea(areaid) {
+    for(new Iter:it = map_iter(m_streetID); iter_inside(it); iter_move_next(it)) {
+        if(iter_get_value(it) == areaid) {
+            return iter_get_key(it);
+        }
+    }
+
+    return (-1);
+}
+
 forward Street_OnAreaCreated(Task:task, id, Float:min_x, Float:min_y, Float:max_x, Float:max_y, interior, worldid);
 public Street_OnAreaCreated(Task:task, id, Float:min_x, Float:min_y, Float:max_x, Float:max_y, interior, worldid) {
     if(cache_affected_rows()) {   

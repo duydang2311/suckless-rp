@@ -186,6 +186,7 @@ public Street_OnNumberGet(Task:t) {
         new number;
         cache_get_value_name_int(0, "number", number);
         task_set_result(t, number);
+        return 1;
     }
 
     task_set_result(t, -1);

@@ -86,6 +86,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                 if(temp_array[temp_strCount] == 2) {
                     Player_Msg(playerid, COLOR_LIGHTYELLOW, "He thong dang khoi tao, vui long doi trong giay lat...");
 
+                    task_unblock(Y_HOOKS_BREAK_RETURN_1);
                     new streetid = await Street_Create(temp_array[temp_strNumber], temp_array[temp_strType], temp_array[temp_strName]);
                     new condition = await Street_CreateArea(streetid, temp_array[temp_strMinPos][0], temp_array[temp_strMinPos][1], x, y, GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid));
                     
@@ -97,7 +98,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                         Player_Msg(playerid, COLOR_FADE2, "He thong khong tim thay ket qua.");
                     }
 
-                    return 1;
+                    return Y_HOOKS_BREAK_RETURN_1;
                 }
 
                 temp_array[temp_strCount]++;
@@ -110,6 +111,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             }
         }
     }
+    
     return 1;
 }
 

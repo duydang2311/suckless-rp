@@ -8,11 +8,11 @@
 
 const StreetExtraID = UNIQUE_SYMBOL;
 
-static Map:m_streetID;
+static Map:m_streetAreaID;
 
 stock Task:Street_CreateArea(streetid, Float:min_x, Float:min_y, Float:max_x, Float:max_y, worldid, interior) {
-    if(!map_valid(m_streetID)) {
-        m_streetID = map_new();
+    if(!map_valid(m_streetAreaID)) {
+        m_streetAreaID = map_new();
     }
 
     new 
@@ -26,12 +26,12 @@ stock Task:Street_CreateArea(streetid, Float:min_x, Float:min_y, Float:max_x, Fl
 
 stock Task:Street_SetCoordinate(streetid, Float:min_x, Float:min_y, Float:max_x, Float:max_y) {
     new Task:t = task_new();
-    if(!map_has_key(m_streetID, streetid)) {
+    if(!map_has_key(m_streetAreaID, streetid)) {
         task_set_result_ms(t, 0, 0);
         return t;
     }
 
-    new areaid = map_get(m_streetID, streetid);
+    new areaid = map_get(m_streetAreaID, streetid);
     if(!IsValidDynamicArea(areaid)) {
         task_set_result_ms(t, 0, 0);
         return t;
@@ -49,12 +49,12 @@ stock Task:Street_SetCoordinate(streetid, Float:min_x, Float:min_y, Float:max_x,
 
 stock Task:Street_SetInt(streetid, int) {
     new Task:t = task_new();
-    if(!map_has_key(m_streetID, streetid)) {
+    if(!map_has_key(m_streetAreaID, streetid)) {
         task_set_result_ms(t, 0, 0);
         return t;
     }
 
-    new areaid = map_get(m_streetID, streetid);
+    new areaid = map_get(m_streetAreaID, streetid);
     if(!IsValidDynamicArea(areaid)) {
         task_set_result_ms(t, 0, 0);
         return t;
@@ -69,12 +69,12 @@ stock Task:Street_SetInt(streetid, int) {
 
 stock Task:Street_SetWorldId(streetid, worldid) {
     new Task:t = task_new();
-    if(!map_has_key(m_streetID, streetid)) {
+    if(!map_has_key(m_streetAreaID, streetid)) {
         task_set_result_ms(t, 0, 0);
         return t;
     }
 
-    new areaid = map_get(m_streetID, streetid);
+    new areaid = map_get(m_streetAreaID, streetid);
     if(!IsValidDynamicArea(areaid)) {
         task_set_result_ms(t, 0, 0);
         return t;
@@ -88,7 +88,7 @@ stock Task:Street_SetWorldId(streetid, worldid) {
 }
 
 stock Street_GetIDByArea(areaid) {
-    for(new Iter:it = map_iter(m_streetID); iter_inside(it); iter_move_next(it)) {
+    for(new Iter:it = map_iter(m_streetAreaID); iter_inside(it); iter_move_next(it)) {
         if(iter_get_value(it) == areaid) {
             return iter_get_key(it);
         }
@@ -101,7 +101,7 @@ forward Street_OnAreaCreated(Task:task, id, Float:min_x, Float:min_y, Float:max_
 public Street_OnAreaCreated(Task:task, id, Float:min_x, Float:min_y, Float:max_x, Float:max_y, interior, worldid) {
     if(cache_affected_rows()) {   
         new areaid = CreateDynamicRectangle(min_x, min_y, max_x, max_y, worldid, interior);
-        map_set(m_streetID, id, areaid);
+        map_set(m_streetAreaID, id, areaid);
         Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, StreetExtraID);
         task_set_result(task, cache_insert_id());
         return 1;
@@ -131,7 +131,7 @@ public Street_OnWorldIdSet(Task:task) {
 
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
-    m_streetID = map_new();
+    m_streetAreaID = map_new();
     mysql_query(MySQL_Connection(), "CREATE TABLE IF NOT EXISTS street_manipulation (\
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
 	modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
@@ -157,7 +157,7 @@ hook OnGameModeInit@() {
             cache_get_value_name_int(i, "vw", worldid);
 
             new areaid = CreateDynamicRectangle(min_x, min_y, max_x, max_y, worldid, interior);
-            map_set(m_streetID, streetid, areaid);
+            map_set(m_streetAreaID, streetid, areaid);
             Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, StreetExtraID);
         }
     }

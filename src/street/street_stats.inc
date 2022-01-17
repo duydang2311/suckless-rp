@@ -5,6 +5,7 @@
 #define street_stats_included
 
 const STREET_NAME_LENGTH = 22;
+const STREET_TYPE_NAME_LENGTH = 7;
 
 enum StreetType {  
     Avenue,
@@ -58,7 +59,7 @@ stock Task:Street_SetNumber(id, number) {
 }
 
 stock Task:Street_SetType(id, StreetType:type) {
-    new Task:t= task_new();
+    new Task:t = task_new();
 
     new query[59 + 11 + 11 - 4 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `type` = %d WHERE `id` = %d LIMIT 1", _:type, id);
@@ -66,20 +67,13 @@ stock Task:Street_SetType(id, StreetType:type) {
     return 1;
 }
 
-stock Street_GetTypeName(id, type[], size = sizeof(type)) {
+stock Task:Street_GetTypeName(id) {
     new Task:t = task_new();
     
     new query[53 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT type FROM street_stats WHERE `id` = %d LIMIT 1", id);
-    mysql_pquery(MySQL_Connection(), query, "Street_OnTypeNameGet", "d", _:t);
-
-    if(!task_valid(t)) {
-        return 0;
-    }
-
-    task_await_arr(t, type, size);
-    task_delete(t);
-    return 1;
+    mysql_pquery(MySQL_Connection(), query, "Street_OnTypeNameGet", "d", _:t);  
+    return t;
 }
 
 stock Task:Street_GetNumber(id) {
@@ -91,20 +85,13 @@ stock Task:Street_GetNumber(id) {
     return t;
 }
 
-stock Street_GetName(id, name[], size = sizeof(name)) {
+stock Task:Street_GetName(id) {
     new Task:t = task_new();
 
     new query[55 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT name FROM street_stats WHERE `id` = %d LIMIT 1", id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnNameGet", "d", _:t);
-
-    if(!task_valid(t)) {
-        return 0;
-    }
-
-    task_await_arr(t, name, size);
-    task_delete(t);
-    return 1;   
+    return t;   
 }
 
 forward Street_OnHasCheck(Task:t);
@@ -162,10 +149,11 @@ public Street_OnTypeSet(Task:t) {
 }
 
 forward Street_OnTypeNameGet(Task:t);
-public Street_OnTypeNameGet(Task:t) {
+public Street_OnTypeNameGet(Task:t) {   
     if(cache_num_rows()) {
         new type;
         cache_get_value_name_int(0, "type", type);
+
         if(type == _:Avenue) {
             task_set_result_str(t, "Avenue");
             return 1;

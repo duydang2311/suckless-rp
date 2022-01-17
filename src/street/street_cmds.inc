@@ -47,19 +47,18 @@ CMD:streetname(playerid) {
 
     new 
         province[MAX_ZONE_NAME], city[MAX_ZONE_NAME], 
-        number, name[STREET_NAME_LENGTH];
+        number, name[STREET_NAME_LENGTH], type[6];
         
     task_unblock(1);
-    new Task:t = Street_GetName(streetid);
-    task_await_arr(t, name);
-    task_delete(t);
+    Street_GetName(streetid, name);
 
     number = await Street_GetNumber(streetid);
     GetPlayer3DProvince(playerid, province, MAX_ZONE_NAME);
     GetPlayer3DCity(playerid, city, MAX_ZONE_NAME);
+    Street_GetTypeName(streetid, type);
 
     new string[33 + 11 + STREET_NAME_LENGTH + MAX_ZONE_NAME + MAX_ZONE_NAME];
-    format(string, sizeof(string), "Street Name: %d, %s, %s, %s.", number, name, province, city);
+    format(string, sizeof(string), "Street Name: %d, %s, (%s), %s, %s.", number, name, type, province, city);
     SendClientMessage(playerid, -1, string);
     return 1;
 }

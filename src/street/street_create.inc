@@ -66,13 +66,20 @@ stock Task:Street_SetType(id, StreetType:type) {
     return 1;
 }
 
-stock Task:Street_GetTypeName(id) {
+stock Street_GetTypeName(id, type[], size = sizeof(type)) {
     new Task:t = task_new();
-
+    
     new query[53 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT type FROM street_stats WHERE `id` = %d LIMIT 1", id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnTypeNameGet", "d", _:t);
-    return t;
+
+    if(!task_valid(t)) {
+        return 0;
+    }
+
+    task_await_arr(t, type, size);
+    task_delete(t);
+    return 1;
 }
 
 stock Task:Street_GetNumber(id) {
@@ -84,13 +91,20 @@ stock Task:Street_GetNumber(id) {
     return t;
 }
 
-stock Task:Street_GetName(id) {
+stock Street_GetName(id, name[], size = sizeof(name)) {
     new Task:t = task_new();
 
     new query[55 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT name FROM street_stats WHERE `id` = %d LIMIT 1", id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnNameGet", "d", _:t);
-    return t;   
+
+    if(!task_valid(t)) {
+        return 0;
+    }
+
+    task_await_arr(t, name, size);
+    task_delete(t);
+    return 1;   
 }
 
 forward Street_OnHasCheck(Task:t);
@@ -166,7 +180,7 @@ public Street_OnTypeNameGet(Task:t) {
 }
 
 forward Street_OnNumberGet(Task:t);
-public Street_OnNumberGet(Task:t) {
+public Street_OnNumberGet(Task:t) { 
     if(cache_num_rows() > 0) {
         new number;
         cache_get_value_name_int(0, "number", number);

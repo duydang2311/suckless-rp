@@ -135,7 +135,7 @@ hook OnPlayerEnterDynArea(playerid, areaid) {
 hook OnPlayerLeaveDynArea(playerid, areaid) {
     if(Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID) == StreetExtraID) {
         if(!map_valid(m_playerInStreet)) {
-            return Y_HOOKS_BREAK_RETURN_0;
+            return Y_HOOKS_BREAK_RETURN_1;
         }
 
         map_remove(m_playerInStreet, playerid);

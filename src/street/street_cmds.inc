@@ -6,8 +6,6 @@
 
 #include <a_zones>
 
-forward bool:Player_IsInStreet(playerid, &streetid);
-
 CMD:acreatestreet(playerid, params[]) {
     new number, type, name[STREET_NAME_LENGTH];
     if(sscanf(params, "iis[22]", number, type, name)) {
@@ -41,8 +39,8 @@ CMD:acreatestreet(playerid, params[]) {
 }
 
 CMD:streetname(playerid) {  
-    new streetid; 
-    if(!Player_IsInStreet(playerid, streetid)) {
+    new streetid = Street_GetByPlayer(playerid); 
+    if(streetid == -1) {
         Player_Msg(playerid, COLOR_FADE2, "Khu pho nay chua duoc dat ten, hay lien he den Administrator de ho tro them.");
         return 1;
     }

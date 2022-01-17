@@ -54,6 +54,18 @@ stock StreetManipulate_RemoveKey(playerid) {
     return 1;
 }
 
+stock Street_GetByPlayer(playerid) {
+    if(!map_valid(m_playerInStreet)) {
+        return (-1);
+    }
+
+    if(!map_has_key(m_playerInStreet, playerid)) {
+        return (-1);
+    }
+
+    return map_get(m_playerInStreet, playerid);
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
     m_streetPlayerManipulate = map_new();

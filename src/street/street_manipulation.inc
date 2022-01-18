@@ -97,6 +97,16 @@ stock Street_GetIDByArea(areaid) {
     return (-1);
 }
 
+stock Iter:Street_GetIter() {
+    new Iter:it = map_iter(m_streetAreaID);
+    if(iter_valid(it) && iter_inside(it)) {
+        iter_acquire(it);
+        return it;
+    }
+
+    return Iter:0;
+} 
+
 stock Street_Count() {
     return map_size(m_streetAreaID);
 }

@@ -97,6 +97,10 @@ stock Street_GetIDByArea(areaid) {
     return (-1);
 }
 
+stock Street_Count() {
+    return map_size(m_streetAreaID);
+}
+
 forward Street_OnAreaCreated(Task:task, id, Float:minX, Float:minY, Float:maxX, Float:maxY, interior, worldid);
 public Street_OnAreaCreated(Task:task, id, Float:minX, Float:minY, Float:maxX, Float:maxY, interior, worldid) {
     if(cache_affected_rows()) {   

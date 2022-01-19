@@ -97,8 +97,8 @@ stock Street_GetIDByArea(areaid) {
     return (-1);
 }
 
-stock Iter:Street_GetIter() {
-    new Iter:it = map_iter(m_streetAreaID);
+stock Iter:Street_GetIter(index = 0) {
+    new Iter:it = map_iter(m_streetAreaID, index);
     if(iter_valid(it) && iter_inside(it)) {
         iter_acquire(it);
         return it;

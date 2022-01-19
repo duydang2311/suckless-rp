@@ -68,3 +68,42 @@ CMD:streetname(playerid) {
     SendClientMessage(playerid, -1, string);
     return 1;
 }
+
+CMD:aliststreet(playerid) {
+    if(Street_Count() == 0) {
+        Player_Msg(playerid, COLOR_FADE2, "Khong co Street nao trong he thong.");
+        return 0;
+    }
+
+    new Iter:it = Street_GetIter();
+    if(iter_valid(it)) {
+        new 
+            string[33 + 1024] = "Index\tType\tNumber\tStreet Name",
+            str[15 + 11] = "Street Lists: ";
+
+        for(; iter_inside(it); iter_move_next(it)) {
+            new 
+                name[STREET_NAME_LENGTH], type[STREET_TYPE_NAME_LENGTH],
+                streetid = iter_get_key(it), number, Task:t = task_new();
+
+            task_unblock(1);
+            number = await Street_GetNumber(streetid);
+
+            t = Street_GetName(streetid);
+            task_await_arr(t, name, STREET_NAME_LENGTH);
+            task_delete(t);
+
+            t = Street_GetTypeName(streetid);
+            task_await_arr(t, type, STREET_TYPE_NAME_LENGTH);
+            task_delete(t);
+
+            format(string, sizeof(string), "%s\n%d\t%s\t%d\t%s", string, streetid, type, number, name);
+        }
+
+        format(str, sizeof(str), "%s%d", str, Street_Count());
+        Dialog_Show(playerid, StreetListDialog, DIALOG_STYLE_TABLIST_HEADERS, str, string, "Close", "Apply");
+    }
+
+    iter_release(it);
+    return 1;
+} 

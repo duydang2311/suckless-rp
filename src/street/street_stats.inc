@@ -6,6 +6,7 @@
 
 const STREET_NAME_LENGTH = 22;
 const STREET_TYPE_NAME_LENGTH = 7;
+const MAX_LINE_STREET_LIST = 30;
 
 enum StreetType {  
     Avenue,

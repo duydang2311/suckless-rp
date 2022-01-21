@@ -57,7 +57,6 @@ stock ShowPlayerStreetListsDialog(playerid, bool:condition, Iter:it, street_coun
 
         format(title, sizeof(title), "%s%d | Pages: %d", title, street_count, pages);
         Dialog_Show(playerid, StreetListDialog, DIALOG_STYLE_TABLIST_HEADERS, title, caption, "Apply", "Close");
-        printf("s: %s | %d", caption, pages);
     } 
 
     iter_release(it);
@@ -113,27 +112,34 @@ Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
         switch(listitem) {
             // Next Pages
             case MAX_LINE_STREET_LIST: {
-                if(pages == (street_count / MAX_LINE_STREET_LIST) - 1) {
-                    Player_Msg(playerid, COLOR_FADE2, "Khong the tien toi.");
-                    return 1;
-                }
+                if(condition == true) {
+                    if(pages == (street_count / MAX_LINE_STREET_LIST) - 1) {
+                        Player_Msg(playerid, COLOR_FADE2, "Khong the tien toi.");
+                        return 1;
+                    }
 
-                StreetLists_SetPages(playerid, pages + 1);
+                    StreetLists_SetPages(playerid, pages + 1);
+                }
             }
 
             // Previous Pages
             case MAX_LINE_STREET_LIST + 1: {
-                if(pages <= 0) {
-                    Player_Msg(playerid, COLOR_FADE2, "Khong the quay lai.");
-                    return 1;
-                }
+                if(condition == true) {
+                    if(pages <= 0) {
+                        Player_Msg(playerid, COLOR_FADE2, "Khong the quay lai.");
+                        return 1;
+                    }
 
-                StreetLists_SetPages(playerid, pages - 1);
+                    StreetLists_SetPages(playerid, pages - 1);
+                }
             }
         }
 
-        Dialog_Close(playerid);
-        ShowPlayerStreetListsDialog(playerid, condition, Iter:0, street_count);
+        if(condition == true) {
+            ShowPlayerStreetListsDialog(playerid, condition, Iter:0, street_count);
+        } else {
+            StreetLists_SetPages(playerid, 0);
+        }
     }
 
     return 1;

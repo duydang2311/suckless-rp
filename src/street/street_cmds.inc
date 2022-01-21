@@ -90,3 +90,26 @@ CMD:aliststreet(playerid) {
     
     return 1;
 } 
+
+CMD:streetsetting(playerid, params[]) {
+    extract params -> new streetid; else { 
+        Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /streetsetting [street id]");
+        return 1;
+    }
+
+    new streetHas = await Street_Has(streetid);
+    if(!streetHas) {
+        Player_Msg(playerid, COLOR_FADE2, "Khong tim thay Index nay o trong he thong, vui long thu lai.");
+        return 1;
+    }
+
+    new playerEditting = Street_GetPlayerEdittingDialog(streetid); 
+    if(IsPlayerConnected(playerEditting)) {
+        Player_Msg(playerid, COLOR_FADE2, "Nguoi choi dang dieu chinh du lieu cua Street nay.");
+        return 1;
+    }
+
+    Street_SetPlayerEdittingDialog(streetid, playerid);
+    ShowPlayerStreetSettingsDialog(playerid);
+    return 1;
+}

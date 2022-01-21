@@ -255,7 +255,7 @@ Dialog:StreetSettingStatsDialog(playerid, response, listitem, inputtext[]) {
                 return 1;
             }
             case 2: {
-                Dialog_Show(playerid, StreetSettingStatsNameInput, DIALOG_STYLE_INPUT, "Input New Name", "Nhap vao day Name moi ma ban muon cho Street", "Apply", "Close");
+                Dialog_Show(playerid, StreetSettingNameInput, DIALOG_STYLE_INPUT, "Input New Name", "Nhap vao day Name moi ma ban muon cho Street", "Apply", "Close");
                 return 1;
             }
         }
@@ -301,6 +301,29 @@ Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
         if(condition == 1) {
             ShowPlayerStreetSettingsDialog(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Number.");
+            return 1;
+        } else {
+            Player_Msg(playerid, COLOR_FADE2, "Dieu chinh khong thanh cong, vui long thu lai.");
+        }
+    }
+
+    ShowPlayerStreetSettingsDialog(playerid);
+    Player_Msg(playerid, COLOR_FADE2, "<< Ban da quay tro lai.");
+    return 1;
+}
+
+Dialog:StreetSettingNameInput(playerid, response, listitem, inputtext[]) {
+    if(response) {
+        if(strlen(inputtext) > STREET_NAME_LENGTH) {
+            ShowPlayerStreetSettingsDialog(playerid);
+            Player_Msg(playerid, COLOR_FADE2, "Ten nay khong hop le, vui long thu lai.");
+            return 1;
+        }
+
+        new condition = await Street_SetName(Street_GetByPlayerEditting(playerid), inputtext);
+        if(condition == 1) {
+            ShowPlayerStreetSettingsDialog(playerid);
+            Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Name cua Street.");
             return 1;
         } else {
             Player_Msg(playerid, COLOR_FADE2, "Dieu chinh khong thanh cong, vui long thu lai.");

@@ -251,7 +251,7 @@ Dialog:StreetSettingStatsDialog(playerid, response, listitem, inputtext[]) {
                 return 1;
             }
             case 1: {
-                Dialog_Show(playerid, StreetSettingStatsTypeSelect, DIALOG_STYLE_LIST, "Select New Type", "Avenue\nStreet", "Apply", "Close");
+                Dialog_Show(playerid, StreetSettingTypeSelect, DIALOG_STYLE_LIST, "Select New Type", "Avenue\nStreet", "Apply", "Close");
                 return 1;
             }
             case 2: {
@@ -271,6 +271,32 @@ Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
         new 
             number = strval(inputtext),
             condition = await Street_SetNumber(Street_GetByPlayerEditting(playerid), number);
+
+        if(condition == 1) {
+            ShowPlayerStreetSettingsDialog(playerid);
+            Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Number.");
+            return 1;
+        } else {
+            Player_Msg(playerid, COLOR_FADE2, "Dieu chinh khong thanh cong, vui long thu lai.");
+        }
+    }
+
+    ShowPlayerStreetSettingsDialog(playerid);
+    Player_Msg(playerid, COLOR_FADE2, "<< Ban da quay tro lai.");
+    return 1;
+}
+
+Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
+    if(response) {
+        new condition = 0;
+        switch(listitem) {
+            case 0: {
+                condition = await Street_SetType(Street_GetByPlayerEditting(playerid), Avenue);
+            }
+            case 1: {
+                condition = await Street_SetType(Street_GetByPlayerEditting(playerid), Street);
+            }
+        }
 
         if(condition == 1) {
             ShowPlayerStreetSettingsDialog(playerid);

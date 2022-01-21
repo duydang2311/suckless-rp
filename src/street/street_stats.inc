@@ -56,7 +56,7 @@ stock Task:Street_SetNumber(id, number) {
     new query[61 + 11 + 11 - 4 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `number` = %d WHERE `id` = %d LIMIT 1", number, id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnNumberSet", "d", _:t);
-    return 1;
+    return t;
 }
 
 stock Task:Street_SetType(id, StreetType:type) {
@@ -65,7 +65,7 @@ stock Task:Street_SetType(id, StreetType:type) {
     new query[59 + 11 + 11 - 4 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE street_stats SET `type` = %d WHERE `id` = %d LIMIT 1", _:type, id);
     mysql_pquery(MySQL_Connection(), query, "Street_OnTypeSet", "d", _:t);
-    return 1;
+    return t;
 }
 
 stock Task:Street_GetTypeName(id) {

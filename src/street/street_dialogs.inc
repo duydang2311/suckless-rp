@@ -4,7 +4,9 @@
 
 #define street_dialogs_included
 
-static Map:m_playerPagesStreetLists;
+static
+    Map:m_playerPagesStreetLists,
+    Map:m_playerSettingStreet;
 
 stock ShowPlayerStreetListsDialog(playerid, bool:condition, Iter:it, street_count) {
     new pages = StreetLists_GetPages(playerid);
@@ -98,6 +100,37 @@ stock StreetLists_GetPages(playerid) {
     return map_get(m_playerPagesStreetLists, playerid);
 }
 
+stock Street_GetPlayerEdittingDialog(streetid) {
+    if(!map_valid(m_playerPagesStreetLists)) {
+        return INVALID_PLAYER_ID;
+    }
+
+    if(!map_has_key(m_playerSettingStreet, streetid)) {
+        return INVALID_PLAYER_ID;
+    }
+
+    return map_get(m_playerSettingStreet, streetid);
+}
+
+stock bool:Street_SetPlayerEdittingDialog(streetid, playerid) {
+    if(!map_valid(m_playerSettingStreet)) {
+        m_playerSettingStreet = map_new();
+    }
+
+    if(playerid == INVALID_PLAYER_ID) {
+        map_remove(m_playerSettingStreet, streetid);
+        if(!map_size(m_playerSettingStreet)) {
+            map_delete(m_playerSettingStreet);
+            m_playerSettingStreet = Map:0;
+        }
+
+        return true;
+    }
+
+    map_set(m_playerSettingStreet, streetid, playerid);
+    return true;
+}
+
 Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
     if(response) { 
         new 
@@ -148,5 +181,6 @@ Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
     m_playerPagesStreetLists = map_new();
+    m_playerSettingStreet = map_new();
     return 1;
 }

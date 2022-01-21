@@ -232,6 +232,40 @@ Dialog:StreetSettingMainDialog(playerid, response, listitem, inputtext[]) {
     return 1;
 }
 
+Dialog:StreetSettingStatsDialog(playerid, response, listitem, inputtext[]) {
+    if(response) {
+        new 
+            streetid = Street_GetByPlayerEditting(playerid),
+            condition = await Street_Has(streetid);
+
+        if(!condition) {
+            Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
+            Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
+            return 1;
+        }
+
+        switch(listitem) {
+            // Number
+            case 0: {
+                Dialog_Show(playerid, StreetSettingStatsNumberInput, DIALOG_STYLE_INPUT, "Input New Number", "Nhap vao day Number ma ban muon cho Street", "Apply", "Close");
+                return 1;
+            }
+            case 1: {
+                Dialog_Show(playerid, StreetSettingStatsTypeSelect, DIALOG_STYLE_LIST, "Select New Type", "Avenue\nStreet", "Apply", "Close");
+                return 1;
+            }
+            case 2: {
+                Dialog_Show(playerid, StreetSettingStatsNameInput, DIALOG_STYLE_INPUT, "Input New Name", "Nhap vao day Name moi ma ban muon cho Street", "Apply", "Close");
+                return 1;
+            }
+        }
+    } 
+    
+    ShowPlayerStreetSettingsDialog(playerid);
+    Player_Msg(playerid, COLOR_FADE2, "<< Ban da quay tro lai.");
+    return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
     m_playerPagesStreetLists = map_new();

@@ -184,3 +184,14 @@ hook OnGameModeInit@() {
     m_playerSettingStreet = map_new();
     return 1;
 }
+
+hook OnPlayerDisconnect(playerid, reason) {
+    for(new Iter:it = map_iter(m_playerSettingStreet); iter_inside(it); iter_move_next(it)) {
+        if(iter_get(it) == playerid) {
+            Street_SetPlayerEdittingDialog(iter_get_key(it), INVALID_PLAYER_ID);
+            return Y_HOOKS_BREAK_RETURN_1;
+        }
+    }
+
+    return 1;
+}   

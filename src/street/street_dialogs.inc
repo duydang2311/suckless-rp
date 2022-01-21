@@ -195,6 +195,43 @@ Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
     return 1;
 }
 
+Dialog:StreetSettingMainDialog(playerid, response, listitem, inputtext[]) {
+    new streetid = Street_GetByPlayerEditting(playerid);
+    if(response) {
+        new condition = await Street_Has(streetid);
+        if(!condition) {
+            Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
+            Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
+            return 1;
+        }
+
+        switch(listitem) {
+            // Street Stats
+            case 0: {
+                new
+                    name[STREET_NAME_LENGTH + 1], type[STREET_TYPE_NAME_LENGTH],
+                    number = await Street_GetNumber(streetid);
+
+                new Task:t = Street_GetName(streetid);
+                task_await_arr(t, name, STREET_NAME_LENGTH);
+                task_delete(t);
+
+                t = Street_GetTypeName(streetid);
+                task_await_arr(t, type, STREET_TYPE_NAME_LENGTH);
+                task_delete(t);
+
+                new caption[39 + 1 + 11 + STREET_NAME_LENGTH + 1 + STREET_TYPE_NAME_LENGTH - 6 + 1];
+                format(caption, sizeof(caption), "Number: %d\nType: %s\nName: %s\n<< Back", number, type, name);
+                Dialog_Show(playerid, StreetSettingStatsDialog, DIALOG_STYLE_LIST, "Street Stats - Editing", caption, "Apply", "Close");
+                return 1;
+            }
+        }
+    } 
+
+    Street_SetPlayerEdittingDialog(streetid, INVALID_PLAYER_ID);
+    return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit@() {
     m_playerPagesStreetLists = map_new();

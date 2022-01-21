@@ -108,7 +108,7 @@ stock StreetLists_GetPages(playerid) {
 }
 
 stock Street_GetPlayerEdittingDialog(streetid) {
-    if(!map_valid(m_playerPagesStreetLists)) {
+    if(!map_valid(m_playerSettingStreet)) {
         return INVALID_PLAYER_ID;
     }
 

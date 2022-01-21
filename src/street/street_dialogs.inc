@@ -234,16 +234,6 @@ Dialog:StreetSettingMainDialog(playerid, response, listitem, inputtext[]) {
 
 Dialog:StreetSettingStatsDialog(playerid, response, listitem, inputtext[]) {
     if(response) {
-        new 
-            streetid = Street_GetByPlayerEditting(playerid),
-            condition = await Street_Has(streetid);
-
-        if(!condition) {
-            Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
-            Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
-            return 1;
-        }
-
         switch(listitem) {
             // Number
             case 0: {
@@ -268,7 +258,10 @@ Dialog:StreetSettingStatsDialog(playerid, response, listitem, inputtext[]) {
 
 Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
     if(response) {
-        new valid = await Street_Has(streetid);
+        new     
+            streetid = Street_GetByPlayerEditting(playerid),
+            valid = await Street_Has(streetid);
+
         if(!valid) {
             Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
             Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
@@ -277,7 +270,7 @@ Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
 
         new 
             number = strval(inputtext),
-            condition = await Street_SetNumber(Street_GetByPlayerEditting(playerid), number);
+            condition = await Street_SetNumber(streetid, number);
 
         if(condition == 1) {
             ShowPlayerStreetSettingsDialog(playerid);
@@ -295,7 +288,10 @@ Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
 
 Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
     if(response) {
-        new valid = await Street_Has(streetid);
+        new     
+            streetid = Street_GetByPlayerEditting(playerid),
+            valid = await Street_Has(streetid);
+
         if(!valid) {
             Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
             Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
@@ -305,10 +301,10 @@ Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
         new condition = 0;
         switch(listitem) {
             case 0: {
-                condition = await Street_SetType(Street_GetByPlayerEditting(playerid), Avenue);
+                condition = await Street_SetType(streetid, Avenue);
             }
             case 1: {
-                condition = await Street_SetType(Street_GetByPlayerEditting(playerid), Street);
+                condition = await Street_SetType(streetid, Street);
             }
         }
 
@@ -328,7 +324,10 @@ Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
 
 Dialog:StreetSettingNameInput(playerid, response, listitem, inputtext[]) {
     if(response) {
-        new valid = await Street_Has(streetid);
+        new     
+            streetid = Street_GetByPlayerEditting(playerid),
+            valid = await Street_Has(streetid);
+
         if(!valid) {
             Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
             Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
@@ -341,7 +340,7 @@ Dialog:StreetSettingNameInput(playerid, response, listitem, inputtext[]) {
             return 1;
         }
 
-        new condition = await Street_SetName(Street_GetByPlayerEditting(playerid), inputtext);
+        new condition = await Street_SetName(streetid, inputtext);
         if(condition == 1) {
             ShowPlayerStreetSettingsDialog(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Name cua Street.");

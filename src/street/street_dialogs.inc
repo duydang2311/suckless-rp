@@ -247,7 +247,7 @@ Dialog:StreetSettingStatsDialog(playerid, response, listitem, inputtext[]) {
         switch(listitem) {
             // Number
             case 0: {
-                Dialog_Show(playerid, StreetSettingStatsNumberInput, DIALOG_STYLE_INPUT, "Input New Number", "Nhap vao day Number ma ban muon cho Street", "Apply", "Close");
+                Dialog_Show(playerid, StreetSettingNumberInput, DIALOG_STYLE_INPUT, "Input New Number", "Nhap vao day Number ma ban muon cho Street", "Apply", "Close");
                 return 1;
             }
             case 1: {
@@ -261,6 +261,26 @@ Dialog:StreetSettingStatsDialog(playerid, response, listitem, inputtext[]) {
         }
     } 
     
+    ShowPlayerStreetSettingsDialog(playerid);
+    Player_Msg(playerid, COLOR_FADE2, "<< Ban da quay tro lai.");
+    return 1;
+}
+
+Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
+    if(response) {
+        new 
+            number = strval(inputtext),
+            condition = await Street_SetNumber(Street_GetByPlayerEditting(playerid), number);
+
+        if(condition == 1) {
+            ShowPlayerStreetSettingsDialog(playerid);
+            Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Number.");
+            return 1;
+        } else {
+            Player_Msg(playerid, COLOR_FADE2, "Dieu chinh khong thanh cong, vui long thu lai.");
+        }
+    }
+
     ShowPlayerStreetSettingsDialog(playerid);
     Player_Msg(playerid, COLOR_FADE2, "<< Ban da quay tro lai.");
     return 1;

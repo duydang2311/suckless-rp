@@ -274,7 +274,7 @@ Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
 
         if(condition == 1) {
             ShowPlayerStreetSettingsDialog(playerid);
-            Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Number.");
+            Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Number cua Street.");
             return 1;
         } else {
             Player_Msg(playerid, COLOR_FADE2, "Dieu chinh khong thanh cong, vui long thu lai.");
@@ -300,7 +300,7 @@ Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
 
         if(condition == 1) {
             ShowPlayerStreetSettingsDialog(playerid);
-            Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Number.");
+            Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Type cua Street.");
             return 1;
         } else {
             Player_Msg(playerid, COLOR_FADE2, "Dieu chinh khong thanh cong, vui long thu lai.");

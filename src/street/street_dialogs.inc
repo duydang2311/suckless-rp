@@ -8,7 +8,7 @@ static
     Map:m_playerPagesStreetLists,
     Map:m_playerSettingStreet;
 
-static const string_streetSetting[71] = {"Street Manipulation Stats\nStreet Position\nTeleporting\nDelete Street"};
+static const string_streetSetting[] = {"Street Stats\nStreet Position\nTeleporting\nDelete Street"};
 
 stock ShowPlayerStreetListsDialog(playerid, bool:condition, Iter:it, street_count) {
     new pages = StreetLists_GetPages(playerid);
@@ -117,6 +117,16 @@ stock Street_GetPlayerEdittingDialog(streetid) {
     }
 
     return map_get(m_playerSettingStreet, streetid);
+}
+
+stock Street_GetByPlayerEditting(playerid) {
+    for(new Iter:it = map_iter(m_playerSettingStreet); iter_inside(it); iter_move_next(it)) {
+        if(iter_get(it) == playerid) {
+            return iter_get_key(it);
+        }
+    }
+    
+    return (-1);
 }
 
 stock bool:Street_SetPlayerEdittingDialog(streetid, playerid) {

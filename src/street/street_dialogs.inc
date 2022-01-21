@@ -8,6 +8,8 @@ static
     Map:m_playerPagesStreetLists,
     Map:m_playerSettingStreet;
 
+static const string_streetSetting[71] = {"Street Manipulation Stats\nStreet Position\nTeleporting\nDelete Street"};
+
 stock ShowPlayerStreetListsDialog(playerid, bool:condition, Iter:it, street_count) {
     new pages = StreetLists_GetPages(playerid);
     if(condition == true) {
@@ -62,6 +64,11 @@ stock ShowPlayerStreetListsDialog(playerid, bool:condition, Iter:it, street_coun
     } 
 
     iter_release(it);
+    return 1;
+}
+
+stock ShowPlayerStreetSettingsDialog(playerid) {
+    Dialog_Show(playerid, StreetSettingMainDialog, DIALOG_STYLE_LIST, "Street Setting", string_streetSetting, "Apply", "Close");
     return 1;
 }
 

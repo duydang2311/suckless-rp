@@ -68,6 +68,7 @@ CMD:streetname(playerid) {
     SendClientMessage(playerid, -1, string);
     return 1;
 }
+alias:streetname("address", "whereami", "street")
 
 CMD:aliststreet(playerid) {
     new street_count = Street_Count();

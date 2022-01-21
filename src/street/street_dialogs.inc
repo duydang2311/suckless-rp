@@ -268,6 +268,13 @@ Dialog:StreetSettingStatsDialog(playerid, response, listitem, inputtext[]) {
 
 Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
     if(response) {
+        new valid = await Street_Has(streetid);
+        if(!valid) {
+            Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
+            Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
+            return 1;
+        }
+
         new 
             number = strval(inputtext),
             condition = await Street_SetNumber(Street_GetByPlayerEditting(playerid), number);
@@ -288,6 +295,13 @@ Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
 
 Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
     if(response) {
+        new valid = await Street_Has(streetid);
+        if(!valid) {
+            Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
+            Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
+            return 1;
+        }
+
         new condition = 0;
         switch(listitem) {
             case 0: {
@@ -314,6 +328,13 @@ Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
 
 Dialog:StreetSettingNameInput(playerid, response, listitem, inputtext[]) {
     if(response) {
+        new valid = await Street_Has(streetid);
+        if(!valid) {
+            Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
+            Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
+            return 1;
+        }
+
         if(strlen(inputtext) > STREET_NAME_LENGTH) {
             ShowPlayerStreetSettingsDialog(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Ten nay khong hop le, vui long thu lai.");

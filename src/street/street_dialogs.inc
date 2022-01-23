@@ -179,7 +179,7 @@ Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
         }
 
         if(condition == true) {
-            ShowPlayerStreetListsDialog(playerid);
+            street_lists_show(playerid);
         } else {
             StreetLists_SetPages(playerid, 0);
         }
@@ -244,7 +244,7 @@ Dialog:StreetSettingStatsDialog(playerid, response, listitem, inputtext[]) {
         }
     } 
     
-    ShowPlayerStreetSettingsDialog(playerid);
+    street_settings_show(playerid);
     Player_Msg(playerid, COLOR_FADE2, "<< Ban da quay tro lai.");
     return 1;
 }
@@ -266,7 +266,7 @@ Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
             condition = await Street_SetNumber(streetid, number);
 
         if(condition == 1) {
-            ShowPlayerStreetSettingsDialog(playerid);
+            street_settings_show(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Number cua Street.");
             return 1;
         } else {
@@ -274,7 +274,7 @@ Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
         }
     }
 
-    ShowPlayerStreetSettingsDialog(playerid);
+    street_settings_show(playerid);
     Player_Msg(playerid, COLOR_FADE2, "<< Ban da quay tro lai.");
     return 1;
 }
@@ -302,7 +302,7 @@ Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
         }
 
         if(condition == 1) {
-            ShowPlayerStreetSettingsDialog(playerid);
+            street_settings_show(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Type cua Street.");
             return 1;
         } else {
@@ -310,7 +310,7 @@ Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
         }
     }
 
-    ShowPlayerStreetSettingsDialog(playerid);
+    street_settings_show(playerid);
     Player_Msg(playerid, COLOR_FADE2, "<< Ban da quay tro lai.");
     return 1;
 }
@@ -328,14 +328,14 @@ Dialog:StreetSettingNameInput(playerid, response, listitem, inputtext[]) {
         }
 
         if(strlen(inputtext) > STREET_NAME_LENGTH) {
-            ShowPlayerStreetSettingsDialog(playerid);
+            street_settings_show(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Ten nay khong hop le, vui long thu lai.");
             return 1;
         }
 
         new condition = await Street_SetName(streetid, inputtext);
         if(condition == 1) {
-            ShowPlayerStreetSettingsDialog(playerid);
+            street_settings_show(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Ban da dieu chinh thanh cong Name cua Street.");
             return 1;
         } else {
@@ -343,7 +343,7 @@ Dialog:StreetSettingNameInput(playerid, response, listitem, inputtext[]) {
         }
     }
 
-    ShowPlayerStreetSettingsDialog(playerid);
+    street_settings_show(playerid);
     Player_Msg(playerid, COLOR_FADE2, "<< Ban da quay tro lai.");
     return 1;
 }

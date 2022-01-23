@@ -101,44 +101,44 @@ stock StreetLists_GetPages(playerid) {
 }
 
 stock Street_GetPlayerEdittingDialog(streetid) {
-    if(!map_valid(m_playerSettingStreet)) {
+    if(!map_valid(m_playerPagesStreetLists)) {
         return INVALID_PLAYER_ID;
     }
 
-    if(!map_has_key(m_playerSettingStreet, streetid)) {
-        return INVALID_PLAYER_ID;
-    }
-
-    return map_get(m_playerSettingStreet, streetid);
-}
-
-stock Street_GetByPlayerEditting(playerid) {
-    for(new Iter:it = map_iter(m_playerSettingStreet); iter_inside(it); iter_move_next(it)) {
-        if(iter_get(it) == playerid) {
+    for(new Iter:it = map_iter(m_playerPagesStreetLists); iter_inside(it); iter_move_next(it)) {
+        if(iter_get_value(it) == streetid) {
             return iter_get_key(it);
         }
     }
-    
-    return (-1);
+
+    return INVALID_PLAYER_ID;
 }
 
-stock bool:Street_SetPlayerEdittingDialog(streetid, playerid) {
+stock Street_GetByPlayerEditting(playerid) {
+    return map_get(m_playerSettingStreet, playerid);
+}
+
+stock Street_SetPlayerEdittingDialog(streetid, playerid) {
     if(!map_valid(m_playerSettingStreet)) {
         m_playerSettingStreet = map_new();
     }
 
-    if(playerid == INVALID_PLAYER_ID) {
-        map_remove(m_playerSettingStreet, streetid);
-        if(!map_size(m_playerSettingStreet)) {
-            map_delete(m_playerSettingStreet);
-            m_playerSettingStreet = Map:0;
-        }
+    map_set(m_playerSettingStreet, playerid, streetid);
+    return 1;
+}
 
-        return true;
+stock Street_DeletePlayerEditting(playerid) {
+    if(!map_valid(m_playerSettingStreet)) {
+        return 0;
     }
 
-    map_set(m_playerSettingStreet, streetid, playerid);
-    return true;
+    map_remove(m_playerSettingStreet, playerid);
+    if(!map_size(m_playerSettingStreet)) {
+        map_delete(m_playerSettingStreet);
+        m_playerSettingStreet = Map:0;
+    }
+
+    return 1;
 }
 
 Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
@@ -193,7 +193,7 @@ Dialog:StreetSettingMainDialog(playerid, response, listitem, inputtext[]) {
     if(response) {
         new condition = await Street_Has(streetid);
         if(!condition) {
-            Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
+            Street_DeletePlayerEditting(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
             return 1;
         }
@@ -256,7 +256,7 @@ Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
             valid = await Street_Has(streetid);
 
         if(!valid) {
-            Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
+            Street_DeletePlayerEditting(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
             return 1;
         }
@@ -286,7 +286,7 @@ Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
             valid = await Street_Has(streetid);
 
         if(!valid) {
-            Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
+            Street_DeletePlayerEditting(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
             return 1;
         }
@@ -322,7 +322,7 @@ Dialog:StreetSettingNameInput(playerid, response, listitem, inputtext[]) {
             valid = await Street_Has(streetid);
 
         if(!valid) {
-            Street_SetPlayerEdittingDialog(playerid, INVALID_PLAYER_ID);
+            Street_DeletePlayerEditting(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
             return 1;
         }

@@ -8,18 +8,13 @@ static
     Map:m_playerPagesStreetLists,
     Map:m_playerSettingStreet;
 
-static const string_streetSetting[] = {"Street Stats\nStreet Position\nTeleporting\nDelete Street"};
+static const string_streetSetting[] = "Street Stats\nStreet Position\nTeleporting\nDelete Street";
 
-stock ShowPlayerStreetListsDialog(playerid, bool:condition, Iter:it, street_count) {
-    new pages = StreetLists_GetPages(playerid);
-    if(condition == true) {
-        if(iter_valid(it) && it != Iter:0) {
-            iter_release(it);
-        }
-
-        it = Street_GetIter(MAX_LINE_STREET_LIST * pages);  
-    }     
-
+stock ShowPlayerStreetListsDialog(playerid) {
+    new 
+        pages = StreetLists_GetPages(playerid),
+        Iter:it = Street_GetIter(MAX_LINE_STREET_LIST * pages); 
+    
     if(iter_valid(it)) {
         new 
             count = 0, number = -1,
@@ -27,23 +22,21 @@ stock ShowPlayerStreetListsDialog(playerid, bool:condition, Iter:it, street_coun
             caption[21 + 16 + 33 + 1500] = "Index\tType\tNumber\tStreet Name", 
             title[15 + 17 + 11 + 11 + 1] = "Street Lists: ";
 
+        new bool:isStreetGreater = false;
+        if(Street_Count() > MAX_LINE_STREET_LIST) {
+            isStreetGreater = true;
+        }
+
         for(; iter_inside(it); iter_move_next(it)) {
             new 
-                streetid = iter_get_key(it), 
-                Task:t = task_new();
+                streetid = iter_get_key(it),    
+                Task:task[3];
 
-            task_unblock(1);
-            number = await Street_GetNumber(streetid);
+            task[0] = Street_GetNumber(streetid); task[1] = Street_GetName(streetid); task[2] = Street_GetTypeName(streetid);
+            await task_all(task[0], task[1], task[2]);
+            task_delete(task[0]); task_delete(task[1]); task_delete(task[1]);
 
-            t = Street_GetName(streetid);
-            task_await_arr(t, name, STREET_NAME_LENGTH);
-            task_delete(t);
-
-            t = Street_GetTypeName(streetid);
-            task_await_arr(t, type, STREET_TYPE_NAME_LENGTH);
-            task_delete(t);
-
-            if(condition == true) {
+            if(isStreetGreater) {
                 if(count == MAX_LINE_STREET_LIST) {
                     break;
                 }
@@ -54,12 +47,12 @@ stock ShowPlayerStreetListsDialog(playerid, bool:condition, Iter:it, street_coun
             format(caption, sizeof(caption), "%s\n%d\t%s\t%d\t%s", caption, streetid, type, number, name);
         }
 
-        if(street_count > MAX_LINE_STREET_LIST) {
+        if(isStreetGreater) {
             format(caption, sizeof(caption), "%s\n>> Next Page", caption);
             format(caption, sizeof(caption), "%s\n<< Previous Page", caption);
         }    
 
-        format(title, sizeof(title), "%s%d | Pages: %d", title, street_count, pages);
+        format(title, sizeof(title), "%s%d | Pages: %d", title, Street_Count(), pages);
         Dialog_Show(playerid, StreetListDialog, DIALOG_STYLE_TABLIST_HEADERS, title, caption, "Apply", "Close");
     } 
 
@@ -186,7 +179,7 @@ Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
         }
 
         if(condition == true) {
-            ShowPlayerStreetListsDialog(playerid, condition, Iter:0, street_count);
+            ShowPlayerStreetListsDialog(playerid);
         } else {
             StreetLists_SetPages(playerid, 0);
         }

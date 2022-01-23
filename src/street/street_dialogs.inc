@@ -10,7 +10,7 @@ static
 
 static const string_streetSetting[] = "Street Stats\nStreet Position\nTeleporting\nDelete Street";
 
-stock ShowPlayerStreetListsDialog(playerid) {
+stock street_lists_show(playerid) {
     new 
         pages = StreetLists_GetPages(playerid),
         Iter:it = Street_GetIter(MAX_LINE_STREET_LIST * pages); 
@@ -60,7 +60,7 @@ stock ShowPlayerStreetListsDialog(playerid) {
     return 1;
 }
 
-stock ShowPlayerStreetSettingsDialog(playerid) {
+stock street_settings_show(playerid) {
     Dialog_Show(playerid, StreetSettingMainDialog, DIALOG_STYLE_LIST, "Street Setting", string_streetSetting, "Apply", "Close");
     return 1;
 }

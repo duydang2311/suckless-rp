@@ -146,16 +146,16 @@ Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
         new 
             street_count = Street_Count(),
             pages = StreetLists_GetPages(playerid),
-            bool:condition = false;
+            bool:hasGreater = false;
 
         if(street_count > MAX_LINE_STREET_LIST) {
-            condition = true;
+            hasGreater = true;
         }
 
         switch(listitem) {
             // Next Pages
             case MAX_LINE_STREET_LIST: {
-                if(condition == true) {
+                if(hasGreater == true) {
                     if(pages == (street_count / MAX_LINE_STREET_LIST) - 1) {
                         Player_Msg(playerid, COLOR_FADE2, "Khong the tien toi.");
                         return 1;
@@ -167,7 +167,7 @@ Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
 
             // Previous Pages
             case MAX_LINE_STREET_LIST + 1: {
-                if(condition == true) {
+                if(hasGreater == true) {
                     if(pages <= 0) {
                         Player_Msg(playerid, COLOR_FADE2, "Khong the quay lai.");
                         return 1;
@@ -178,7 +178,7 @@ Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
             }
         }
 
-        if(condition == true) {
+        if(hasGreater == true) {
             street_lists_show(playerid);
         } else {
             StreetLists_SetPages(playerid, 0);
@@ -191,8 +191,8 @@ Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
 Dialog:StreetSettingMainDialog(playerid, response, listitem, inputtext[]) {
     new streetid = Street_GetByPlayerEditting(playerid);
     if(response) {
-        new condition = await Street_Has(streetid);
-        if(!condition) {
+        new hasGreater = await Street_Has(streetid);
+        if(!hasGreater) {
             Street_DeletePlayerEditting(playerid);
             Player_Msg(playerid, COLOR_FADE2, "Street Index nay khong ton tai nua, vui long thu lai.");
             return 1;

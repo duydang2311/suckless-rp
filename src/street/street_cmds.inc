@@ -77,17 +77,8 @@ CMD:aliststreet(playerid) {
         return 0;
     }
 
-    new Iter:it = Street_GetIter();
-    if(iter_valid(it)) {
-        new bool:condition = false;
-        if(street_count > MAX_LINE_STREET_LIST) {
-            condition = true;
-        }
-
-        StreetLists_SetPages(playerid, 0);
-        ShowPlayerStreetListsDialog(playerid, condition, it, street_count);
-    }
-    
+    StreetLists_SetPages(playerid, 0);
+    ShowPlayerStreetListsDialog(playerid);  
     return 1;
 } 
 

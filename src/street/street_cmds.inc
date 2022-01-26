@@ -88,6 +88,7 @@ CMD:streetsetting(playerid, params[]) {
         return 1;
     }
 
+    task_unblock(1);
     new streetHas = await Street_Has(streetid);
     if(!streetHas) {
         Player_Msg(playerid, COLOR_FADE2, "Khong tim thay Index nay o trong he thong, vui long thu lai.");

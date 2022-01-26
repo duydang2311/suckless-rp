@@ -255,6 +255,7 @@ Dialog:StreetSettingStatsDialog(playerid, response, listitem, inputtext[]) {
 
 Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
     if(response) {
+        task_unblock(1);
         new     
             streetid = Street_GetByPlayerEditting(playerid),
             valid = await Street_Has(streetid);
@@ -285,6 +286,7 @@ Dialog:StreetSettingNumberInput(playerid, response, listitem, inputtext[]) {
 
 Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
     if(response) {
+        task_unblock(1);
         new     
             streetid = Street_GetByPlayerEditting(playerid),
             valid = await Street_Has(streetid);
@@ -321,6 +323,7 @@ Dialog:StreetSettingTypeSelect(playerid, response, listitem, inputtext[]) {
 
 Dialog:StreetSettingNameInput(playerid, response, listitem, inputtext[]) {
     if(response) {
+        task_unblock(1);
         new     
             streetid = Street_GetByPlayerEditting(playerid),
             valid = await Street_Has(streetid);

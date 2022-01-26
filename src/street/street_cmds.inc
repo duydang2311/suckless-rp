@@ -47,23 +47,22 @@ CMD:streetname(playerid) {
 
     new 
         province[MAX_ZONE_NAME], city[MAX_ZONE_NAME], 
-        number, name[STREET_NAME_LENGTH], type[STREET_TYPE_NAME_LENGTH];
+        number, name[STREET_NAME_LENGTH + 1], type[STREET_TYPE_NAME_LENGTH];
         
+    new Task:tasks[3];
+    tasks[0] = Street_GetName(streetid); tasks[1] = Street_GetTypeName(streetid); tasks[2] = Street_GetNumber(streetid);
+    task_keep(tasks[0]); task_keep(tasks[1]); task_keep(tasks[2]);
     task_unblock(1);
-    
-    new Task:t = Street_GetName(streetid);
-    task_await_arr(t, name, STREET_NAME_LENGTH);
-    task_delete(t);
+    await task_all(tasks[0], tasks[1], tasks[2]);
+    task_get_result_arr(tasks[0], name, STREET_NAME_LENGTH + 1);
+    task_get_result_arr(tasks[1], type, STREET_TYPE_NAME_LENGTH);
+    number = task_get_result(tasks[2]);
+    task_delete(tasks[0]); task_delete(tasks[1]); task_delete(tasks[2]);
 
-    t = Street_GetTypeName(streetid);
-    task_await_arr(t, type, STREET_TYPE_NAME_LENGTH);
-    task_delete(t);
-
-    number = await Street_GetNumber(streetid);
     GetPlayer3DProvince(playerid, province, MAX_ZONE_NAME);
     GetPlayer3DCity(playerid, city, MAX_ZONE_NAME);
 
-    new string[33 + 11 + STREET_NAME_LENGTH + MAX_ZONE_NAME + MAX_ZONE_NAME];
+    new string[33 + 11 + STREET_NAME_LENGTH + 1 + MAX_ZONE_NAME + MAX_ZONE_NAME];
     format(string, sizeof(string), "Street Name: %d, %s, (%s), %s, %s.", number, name, type, province, city);
     SendClientMessage(playerid, -1, string);
     return 1;

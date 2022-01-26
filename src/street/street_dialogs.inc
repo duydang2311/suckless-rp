@@ -109,7 +109,7 @@ stock Street_GetPlayerEdittingDialog(streetid) {
         return INVALID_PLAYER_ID;
     }
 
-    for(new Iter:it = map_iter(m_playerPagesStreetLists); iter_inside(it); iter_move_next(it)) {
+    for(new Iter:it = map_iter(m_playerSettingStreet); iter_inside(it); iter_move_next(it)) {
         if(iter_get_value(it) == streetid) {
             return iter_get_key(it);
         }
@@ -225,7 +225,7 @@ Dialog:StreetSettingMainDialog(playerid, response, listitem, inputtext[]) {
         }
     } 
 
-    Street_SetPlayerEdittingDialog(streetid, INVALID_PLAYER_ID);
+    Street_DeletePlayerEditting(playerid);
     return 1;
 }
 

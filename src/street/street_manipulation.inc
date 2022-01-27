@@ -107,6 +107,10 @@ stock Iter:Street_GetIter(index = 0) {
     return Iter:0;
 } 
 
+stock Street_GetKeyAt(index = 0) {
+    return map_key_at(m_streetAreaID, index);
+}
+
 stock Street_Count() {
     return map_size(m_streetAreaID);
 }

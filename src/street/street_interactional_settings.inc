@@ -186,7 +186,10 @@ Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
         if(hasGreater == true) {
             street_lists_show(playerid);
         } else {
+            new cmdtext[17 + 11 - 2 + 1];
             StreetLists_SetPages(playerid, 0);
+            format(cmdtext, sizeof(cmdtext), "/streetsetting %d", Street_GetKeyAt(listitem));
+            PC_EmulateCommand(playerid, cmdtext);
         }
     }
 
@@ -371,6 +374,6 @@ hook OnPlayerDisconnect(playerid, reason) {
         if(map_has_key(m_playerSettingStreet, playerid)) {
             Street_DeletePlayerEditting(playerid);
         }
-    }
+    }   
     return 1;
 }   

@@ -114,7 +114,7 @@ stock Street_GetInterior(streetid, &interiorid) {
         return 0;
     }
 
-    Streamer_GetIntData(TREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID, interiorid);
+    Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID, interiorid);
     return 1;
 }
 

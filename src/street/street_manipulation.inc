@@ -87,6 +87,51 @@ stock Task:Street_SetWorldId(streetid, worldid) {
     return t;
 }
 
+stock Street_GetPosition(streetid, &Float:minX, &Float:minY, &Float:maxX, &Float:maxY) {
+    if(!map_has_key(m_streetAreaID, streetid)) {
+        return 0;
+    }
+
+    new areaid = map_get(m_streetAreaID, streetid);
+    if(!IsValidDynamicArea(areaid)) {
+        return 0;
+    }
+
+    Streamer_GetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MIN_X, minX);
+    Streamer_GetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MIN_Y, minY);
+    Streamer_GetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_X, maxX);
+    Streamer_GetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_Y, maxY);
+    return 1;
+}
+
+stock Street_GetInterior(streetid, &interiorid) {
+    if(!map_has_key(m_streetAreaID, streetid)) {
+        return 0;
+    }
+
+    new areaid = map_get(m_streetAreaID, streetid);
+    if(!IsValidDynamicArea(areaid)) {
+        return 0;
+    }
+
+    Streamer_GetIntData(TREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID, interiorid);
+    return 1;
+}
+
+stock Street_GetWorldId(streetid, &worldid) {
+    if(!map_has_key(m_streetAreaID, streetid)) {
+        return 0;
+    }
+
+    new areaid = map_get(m_streetAreaID, streetid);
+    if(!IsValidDynamicArea(areaid)) {
+        return 0;
+    }
+
+    Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_WORLD_ID, worldid);
+    return 1;
+}
+
 stock Street_GetIDByArea(areaid) {
     for(new Iter:it = map_iter(m_streetAreaID); iter_inside(it); iter_move_next(it)) {
         if(iter_get_value(it) == areaid) {
@@ -177,6 +222,12 @@ hook OnGameModeInit@() {
             new areaid = CreateDynamicRectangle(minX, minY, maxX, maxY, worldid, interior);
             map_set(m_streetAreaID, streetid, areaid);
             Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, StreetExtraID);
+            Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MIN_X, minX);
+            Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MIN_Y, minY);
+            Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_X, maxX);
+            Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_Y, maxY);
+            Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID, interior);
+            Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_WORLD_ID, worldid);
         }
     }
 

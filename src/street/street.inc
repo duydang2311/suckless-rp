@@ -7,5 +7,5 @@
 #include "./street_stats.inc"
 #include "./street_manipulation.inc"
 #include "./street_player_manipulation.inc"
-#include "./street_dialogs.inc"
+#include "./street_interactional_settings.inc"
 #include "./street_cmds.inc"

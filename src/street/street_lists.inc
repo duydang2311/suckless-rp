@@ -6,7 +6,7 @@
 
 static Map:m_playerPagesStreetLists;
 
-stock street_lists_show(playerid) {
+stock StreetLists_Show(playerid) {
     new 
         pages = StreetLists_GetPages(playerid),
         Iter:it = Street_GetIter(MAX_LINE_STREET_LIST * pages); 
@@ -134,7 +134,7 @@ Dialog:StreetListDialog(playerid, response, listitem, inputtext[]) {
         }
 
         if(hasGreater == true) {
-            street_lists_show(playerid);
+            StreetLists_Show(playerid);
         } else {
             new cmdtext[17 + 11 - 2 + 1];
             StreetLists_SetPages(playerid, 0);

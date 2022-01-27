@@ -77,7 +77,7 @@ CMD:aliststreet(playerid) {
     }
 
     StreetLists_SetPages(playerid, 0);
-    street_lists_show(playerid);  
+    StreetLists_Show(playerid);  
     return 1;
 } 
 
@@ -101,6 +101,6 @@ CMD:streetsetting(playerid, params[]) {
     }
 
     Street_SetPlayerEdittingDialog(streetid, playerid);
-    street_settings_show(playerid);
+    StreetSettings_Show(playerid);
     return 1;
 }

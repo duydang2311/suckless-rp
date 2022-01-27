@@ -114,7 +114,7 @@ stock Street_GetInterior(streetid, &interiorid) {
         return 0;
     }
 
-    Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID, interiorid);
+    interiorid = Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID);
     return 1;
 }
 
@@ -128,7 +128,7 @@ stock Street_GetWorldId(streetid, &worldid) {
         return 0;
     }
 
-    Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_WORLD_ID, worldid);
+    worldid = Streamer_GetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID);
     return 1;
 }
 

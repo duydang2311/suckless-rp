@@ -106,7 +106,7 @@ stock StreetLists_GetPages(playerid) {
 }
 
 stock Street_GetPlayerEdittingDialog(streetid) {
-    if(!map_valid(m_playerPagesStreetLists)) {
+    if(!map_valid(m_playerSettingStreet)) {
         return INVALID_PLAYER_ID;
     }
 
@@ -137,10 +137,10 @@ stock Street_DeletePlayerEditting(playerid) {
         return 0;
     }
 
-    map_remove(m_playerSettingStreet, playerid);
+    map_remove_deep(m_playerSettingStreet, playerid);
     if(!map_size(m_playerSettingStreet)) {
         map_delete(m_playerSettingStreet);
-        m_playerSettingStreet = Map:0;
+        m_playerSettingStreet = Map:-1;
     }
 
     return 1;
@@ -368,13 +368,9 @@ hook OnGameModeInit@() {
 
 hook OnPlayerDisconnect(playerid, reason) {
     if(map_valid(m_playerSettingStreet)) {
-        for(new Iter:it = map_iter(m_playerSettingStreet); iter_inside(it); iter_move_next(it)) {
-            if(iter_get(it) == playerid) {
-                Street_SetPlayerEdittingDialog(iter_get_key(it), INVALID_PLAYER_ID);
-                return Y_HOOKS_BREAK_RETURN_1;
-            }
+        if(map_has_key(m_playerSettingStreet, playerid)) {
+            Street_DeletePlayerEditting(playerid);
         }
     }
-
     return 1;
 }   

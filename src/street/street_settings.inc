@@ -86,6 +86,18 @@ Dialog:StreetSettingMainDialog(playerid, response, listitem, inputtext[]) {
                 Dialog_Show(playerid, StreetSettingStatsDialog, DIALOG_STYLE_LIST, "Street Stats - Editing", caption, "Apply", "Close");
                 return 1;
             }
+            // Street Position
+            case 1: {
+                new Float:minX, Float:minY, Float:maxX, Float:maxY, Float:pZ, interiorid, worldid;
+                GetPlayerPos(playerid, minX, minY, pZ);
+                Street_GetPosition(streetid, minX, minY, maxX, maxY);
+                Street_GetInterior(streetid, interiorid);
+                Street_GetWorldId(streetid, worldid);
+
+                SetPlayerPos(playerid, (minX + maxX)/2, (minY + maxY)/2, pZ);
+                SetPlayerInterior(playerid, interiorid);
+                SetPlayerVirtualWorld(playerid, worldid);
+            }
         }
     } 
 

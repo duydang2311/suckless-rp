@@ -226,7 +226,7 @@ hook OnGameModeInit@() {
             Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MIN_Y, minY);
             Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_X, maxX);
             Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_Y, maxY);
-            Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID, interior);
+            Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID, interior);
             Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_WORLD_ID, worldid);
         }
     }

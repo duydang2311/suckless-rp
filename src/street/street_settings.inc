@@ -7,7 +7,7 @@
 static 
     Map:m_playerSettingStreet;
 
-static const string_streetSetting[] = "Street Stats\nStreet Position\nTeleporting\nDelete Street";
+static const string_streetSetting[] = "Street Stats\nTeleporting\nDelete Street";
 
 stock StreetSettings_Show(playerid) {
     Dialog_Show(playerid, StreetSettingMainDialog, DIALOG_STYLE_LIST, "Street Setting", string_streetSetting, "Apply", "Close");
@@ -85,6 +85,27 @@ Dialog:StreetSettingMainDialog(playerid, response, listitem, inputtext[]) {
                 format(caption, sizeof(caption), "Number: %d\nType: %s\nName: %s\n<< Back", number, type, name);
                 Dialog_Show(playerid, StreetSettingStatsDialog, DIALOG_STYLE_LIST, "Street Stats - Editing", caption, "Apply", "Close");
                 return 1;
+            }   
+            // Teleporting
+            case 1: {
+                new 
+                    Float:minX, Float:minY, Float:maxX, Float:maxY, 
+                    Float:pZ, interiorid, worldid;
+
+                GetPlayerPos(playerid, minX, minY, pZ);
+                Street_GetPosition(streetid, minX, minY, maxX, maxY);
+                Street_GetInterior(streetid, interiorid);
+                Street_GetWorldId(streetid, worldid);
+
+                SetPlayerPos(playerid, (minX + maxX)/2, (minY + maxY)/2, pZ);
+                SetPlayerInterior(playerid, interiorid);
+                SetPlayerVirtualWorld(playerid, worldid);
+            }
+
+            // Delete Street
+            case 2: {
+                Street_DestroyArea(streetid);
+                Street_Delete(streetid);
             }
         }
     } 

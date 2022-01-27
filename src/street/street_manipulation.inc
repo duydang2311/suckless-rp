@@ -142,6 +142,21 @@ stock Street_GetIDByArea(areaid) {
     return (-1);
 }
 
+stock Street_DestroyArea(streetid) {    
+    if(!map_has_key(m_streetAreaID, streetid)) {
+        return 0;
+    }
+
+    DestroyDynamicArea(map_get(m_streetAreaID, streetid));
+    map_remove_deep(m_streetAreaID, streetid);
+    if(!map_size(m_streetAreaID)) {
+        map_delete(m_streetAreaID);
+        m_streetAreaID = Map:-1;
+    }
+
+    return 1;
+}
+
 stock Iter:Street_GetIter(index = 0) {
     new Iter:it = map_iter(m_streetAreaID, index);
     if(iter_valid(it) && iter_inside(it)) {

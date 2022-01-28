@@ -34,7 +34,7 @@ CMD:acreatestreet(playerid, params[]) {
     }
 
     StreetManipulate_InitKey(playerid, number, street_type, name);
-    Player_Msg(playerid, COLOR_YELLOW, "Hay di den dia diem Min-X/Min-Y va bam nut N (hay di den dia diem truoc tien).");
+    Player_Msg(playerid, COLOR_YELLOW, "Hay di den dia diem Min-X/Min-Y va bam chuot trai (hay di den dia diem truoc tien).");
     return 1;
 }
 
@@ -47,7 +47,7 @@ CMD:streetname(playerid) {
 
     new 
         province[MAX_ZONE_NAME], city[MAX_ZONE_NAME], 
-        number, name[STREET_NAME_LENGTH + 1], type[STREET_TYPE_NAME_LENGTH];
+        number, name[STREET_NAME_LENGTH], type[STREET_TYPE_NAME_LENGTH];
         
     new Task:tasks[3];
     tasks[0] = Street_GetName(streetid); tasks[1] = Street_GetTypeName(streetid); tasks[2] = Street_GetNumber(streetid);

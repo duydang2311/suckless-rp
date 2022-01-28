@@ -76,7 +76,7 @@ hook OnGameModeInit@() {
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
     if(map_valid(m_streetPlayerManipulate)) {
         if(map_has_key(m_streetPlayerManipulate, playerid)) {
-            if(newkeys == KEY_FIRE) {
+            if(newkeys & KEY_FIRE) {
                 new temp_array[TempStreetData];
                 map_get_arr(m_streetPlayerManipulate, playerid, temp_array);
 

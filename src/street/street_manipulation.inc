@@ -143,6 +143,10 @@ stock Street_GetIDByArea(areaid) {
 }
 
 stock Street_DestroyArea(streetid) {    
+    if(!map_valid(m_streetAreaID)) {
+        return 0;
+    }
+
     if(!map_has_key(m_streetAreaID, streetid)) {
         return 0;
     }
@@ -237,12 +241,6 @@ hook OnGameModeInit@() {
             new areaid = CreateDynamicRectangle(minX, minY, maxX, maxY, worldid, interior);
             map_set(m_streetAreaID, streetid, areaid);
             Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_EXTRA_ID, StreetExtraID);
-            Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MIN_X, minX);
-            Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MIN_Y, minY);
-            Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_X, maxX);
-            Streamer_SetFloatData(STREAMER_TYPE_AREA, areaid, E_STREAMER_MAX_Y, maxY);
-            Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_INTERIOR_ID, interior);
-            Streamer_SetIntData(STREAMER_TYPE_AREA, areaid, E_STREAMER_WORLD_ID, worldid);
         }
     }
 

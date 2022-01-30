@@ -11,7 +11,11 @@
 		- Duy Dang
 		- Thom
 
-	Server Developer:
+	Developers:
+		- Duy Dang
+		- Nam Nguyen
+
+	Consultant:
 		- Duy Dang
 
 	Gameplay Designer:

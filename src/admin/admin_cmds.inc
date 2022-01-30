@@ -9,7 +9,7 @@ CMD:aveh(playerid, params[]) {
 		put_in,
 		primary,
 		secondary,
-		siren;
+		bool:siren;
 	if(sscanf(params, "iI(0)I(1)I(0)I(1)", model, primary, secondary, siren, put_in)) {
 		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Syntax: /aveh [model] (primary color [1]) (secondary color [0]) (siren 1/[0]) (put in [1]/0)");
 		return 1;

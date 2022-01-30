@@ -25,8 +25,13 @@ enum _:ItemStats {
 
 static Map:m_itemStats;
 
-stock Item_Has(id) {
-	return (map_valid(m_itemStats) && map_has_key(m_itemStats, id));
+stock Task:Item_Has(id) {
+	new
+		Task:t = task_new(),
+		query[128];
+	mysql_format(MySQL_Connection(), query, sizeof query, "select count(*) from item_stats where id = %d limit 1", id);
+	mysql_pquery(MySQL_Connection(), query, "Item_OnHas", "i", _:t);
+	return t;
 }
 
 stock Item_Delete(id) {
@@ -105,22 +110,22 @@ stock Item_GetFreeCapacity(id) {
 	return 0;
 }
 
-stock Item_GetOccupiedSpace(id) {
-	if(!map_valid(m_itemStats) || !map_has_key(m_itemStats, id)) {
-		return 0;
-	}
-	new stats[ItemStats];
-	map_get_arr(m_itemStats, id, stats);
-	return stats[iOccupiedSpace];
+stock Task:Item_GetOccupiedSpace(id) {
+	new
+		Task:t = task_new(),
+		query[128];
+	mysql_format(MySQL_Connection(), query, sizeof query, "select occupied_space from item_stats where id = %d limit 1", id);
+	mysql_pquery(MySQL_Connection(), query, "Item_OnOccupiedSpaceGot", "i", _:t);
+	return t;
 }
 
-stock Item_GetAbility(id) {
-	if(!map_valid(m_itemStats) || !map_has_key(m_itemStats, id)) {
-		return 0;
-	}
-	new stats[ItemStats];
-	map_get_arr(m_itemStats, id, stats);
-	return stats[iAbility];
+stock Task:Item_GetAbility(id) {
+	new
+		Task:t = task_new(),
+		query[128];
+	mysql_format(MySQL_Connection(), query, sizeof query, "select ability from item_stats where id = %d limit 1", id);
+	mysql_pquery(MySQL_Connection(), query, "Item_OnAbilityGot", "i", _:t);
+	return t;
 }
 
 stock Item_HasAbility(ability) {
@@ -134,6 +139,34 @@ stock Item_GetModelByAbility(ability) {
 		}
 	}
 	return 0;
+}
+
+forward Item_OnHas(Task:t);
+public Item_OnHas(Task:t) {
+	new count;
+	cache_get_value_name_int(0, "count(*)", count);
+	task_set_result(t, count);
+	return 1;
+}
+
+forward Item_OnOccupiedSpaceGot(Task:t);
+public Item_OnOccupiedSpaceGot(Task:t) {
+	new occupiedSpace = 0;
+	if(cache_num_rows()) {
+		cache_get_value_name_int(0, "occupied_space", occupiedSpace);
+	}
+	task_set_result(t, occupiedSpace);
+	return 1;
+}
+
+forward Item_OnAbilityGot(Task:t);
+public Item_OnAbilityGot(Task:t) {
+	new ability = -1;
+	if(cache_num_rows()) {
+		cache_get_value_name_int(0, "ability", ability);
+	}
+	task_set_result(t, ability);
+	return 1;
 }
 
 forward Item_OnCreated(item_id, ability, Float:reliability, occupied_space);

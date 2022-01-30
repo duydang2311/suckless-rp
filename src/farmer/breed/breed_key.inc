@@ -150,7 +150,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		new followTarget = Breed_GetFollowingPlayer(id);
 		if(followTarget == -1) {
 			new item_id = Player_GetCarryingItem(playerid);
-			if(item_id != -1 && Item_GetAbility(item_id) == iAbilityWhisk) {
+			if(item_id != -1 && task_await(Item_GetAbility(item_id)) == iAbilityWhisk) {
 				if(Breed_Eat(id)) {
 					Player_StopCarrying(playerid);
 					Item_Delete(item_id);

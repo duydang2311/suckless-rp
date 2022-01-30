@@ -167,7 +167,7 @@ public IGun_OnStatsRetrieving(id, Task:t) {
 }
 
 hook Item_OnStatsRetrieved(id, Task:t) {
-	if(Item_GetAbility(id) == iAbilityGun) {
+	if(task_await(Item_GetAbility(id)) == iAbilityGun) {
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_gun WHERE id = %d LIMIT 1", id);
 		mysql_pquery(MySQL_Connection(), query, "IGun_OnStatsRetrieving", "ii", id, _:t);
@@ -177,7 +177,7 @@ hook Item_OnStatsRetrieved(id, Task:t) {
 }
 
 hook Item_OnModelGetAttempt(id, &model) {
-	if(Item_GetAbility(id) == iAbilityGun) {
+	if(task_await(Item_GetAbility(id)) == iAbilityGun) {
 		model = IGun_GetModel(id);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -185,7 +185,7 @@ hook Item_OnModelGetAttempt(id, &model) {
 }
 
 hook Item_OnNameGetAttempt(id, name[], size) {
-	if(Item_GetAbility(id) == iAbilityGun) {
+	if(task_await(Item_GetAbility(id)) == iAbilityGun) {
 		IGun_GetName(id, name, size);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}

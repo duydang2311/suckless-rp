@@ -104,7 +104,7 @@ public IPhone_OnStatsRetrieving(id, Task:t) {
 }
 
 hook Item_OnStatsRetrieved(id, Task:t) {
-	if(Item_GetAbility(id) == iAbilityPhone) {
+	if(task_await(Item_GetAbility(id)) == iAbilityPhone) {
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_phone WHERE id = %d LIMIT 1", id);
 		mysql_pquery(MySQL_Connection(), query, "IPhone_OnStatsRetrieving", "ii", id, _:t);
@@ -114,7 +114,7 @@ hook Item_OnStatsRetrieved(id, Task:t) {
 }
 
 hook Item_OnModelGetAttempt(id, &model) {
-	if(Item_GetAbility(id) == iAbilityPhone) {
+	if(task_await(Item_GetAbility(id)) == iAbilityPhone) {
 		model = 330;
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -122,7 +122,7 @@ hook Item_OnModelGetAttempt(id, &model) {
 }
 
 hook Item_OnNameGetAttempt(id, name[], size) {
-	if(Item_GetAbility(id) == iAbilityPhone) {
+	if(task_await(Item_GetAbility(id)) == iAbilityPhone) {
 		name[0] = EOS;
 		strcat(name, "Nokia Phone", size);
 		return Y_HOOKS_BREAK_RETURN_1;

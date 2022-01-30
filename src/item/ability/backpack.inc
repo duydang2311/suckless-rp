@@ -65,7 +65,7 @@ stock IBackpack_GetFreeCapacity(id) {
 		new Iter:it = IGroup_GetIter(id);
 		if(iter_valid(it)) {
 			for(; iter_inside(it); iter_move_next(it)) {
-				stats[iBpCapacity] -= Item_GetOccupiedSpace(iter_get(it));
+				stats[iBpCapacity] -= task_await(Item_GetOccupiedSpace(iter_get(it)));
 			}
 			iter_release(it);
 		}
@@ -144,7 +144,7 @@ public IBackpack_OnStatsRetrieving(id, Task:t) {
 }
 
 hook Item_OnStatsRetrieved(id, Task:t) {
-	if(Item_GetAbility(id) == iAbilityBackpack) {
+	if(task_await(Item_GetAbility(id)) == iAbilityBackpack) {
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_backpack WHERE id = %d LIMIT 1", id);
 		mysql_pquery(MySQL_Connection(), query, "IBackpack_OnStatsRetrieving", "ii", id, _:t);
@@ -154,7 +154,7 @@ hook Item_OnStatsRetrieved(id, Task:t) {
 }
 
 hook Item_OnModelGetAttempt(id, &model) {
-	if(Item_GetAbility(id) == iAbilityBackpack) {
+	if(task_await(Item_GetAbility(id)) == iAbilityBackpack) {
 		model = IBackpack_GetModel(id);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -162,7 +162,7 @@ hook Item_OnModelGetAttempt(id, &model) {
 }
 
 hook Item_OnNameGetAttempt(id, name[], size) {
-	if(Item_GetAbility(id) == iAbilityBackpack) {
+	if(task_await(Item_GetAbility(id)) == iAbilityBackpack) {
 		name[0] = EOS;
 		strcat(name, "Backpack", size);
 		return Y_HOOKS_BREAK_RETURN_1;
@@ -173,7 +173,7 @@ hook Item_OnNameGetAttempt(id, name[], size) {
 hook IGroup_OnAddingAttempt(group, member, &error) {
 	if(IBackpack_Has(group)) {
 		new capacity = Item_GetFreeCapacity(group);
-		if(capacity < 0 || Item_GetOccupiedSpace(member) > capacity) {
+		if(capacity < 0 || task_await(Item_GetOccupiedSpace(member)) > capacity) {
 			error = grErrorCapacityLack;
 		} else {
 			error = grErrorNone;

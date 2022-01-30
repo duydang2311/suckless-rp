@@ -252,7 +252,7 @@ public ISim_OnStatsRetrieving(id, Task:t) {
 }
 
 hook Item_OnStatsRetrieved(id, Task:t) {
-	if(Item_GetAbility(id) == iAbilitySim) {
+	if(task_await(Item_GetAbility(id)) == iAbilitySim) {
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_sim WHERE id = %d LIMIT 1", id);
 		mysql_pquery(MySQL_Connection(), query, "ISim_OnStatsRetrieving", "ii", id, _:t);
@@ -262,7 +262,7 @@ hook Item_OnStatsRetrieved(id, Task:t) {
 }
 
 hook Item_OnModelGetAttempt(id, &model) {
-	if(Item_GetAbility(id) == iAbilitySim) {
+	if(task_await(Item_GetAbility(id)) == iAbilitySim) {
 		model = ISim_GetModel();
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -270,7 +270,7 @@ hook Item_OnModelGetAttempt(id, &model) {
 }
 
 hook Item_OnNameGetAttempt(id, name[], size) {
-	if(Item_GetAbility(id) == iAbilitySim) {
+	if(task_await(Item_GetAbility(id)) == iAbilitySim) {
 		ISim_GetName(id, name, size);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -296,7 +296,7 @@ public IGroup_OnMemRetrieved(group, id) {
 
 hook IGroup_OnMemRetrieved(group, id) {
 	printf("IGroup_OnMemRetrieved(%d, %d)", group, id);
-	if(Item_GetAbility(group) == iAbilityPhone && Item_GetAbility(id) == iAbilitySim) {
+	if(task_await(Item_GetAbility(group)) == iAbilityPhone && task_await(Item_GetAbility(id)) == iAbilitySim) {
 		if(!linked_list_valid(ll_cache)) {
 			ll_cache = linked_list_new();
 		}

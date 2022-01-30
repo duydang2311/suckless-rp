@@ -54,7 +54,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				if(Streamer_GetIntData(STREAMER_TYPE_OBJECT, items[i], E_STREAMER_EXTRA_ID) == ItemGroundExtraId) {
 					new id = IGround_GetByObjectId(items[i]);
 					if(id != -1) {
-						if(Item_GetOccupiedSpace(id) > 1) {
+						if(task_await(Item_GetOccupiedSpace(id)) > 1) {
 							if(Player_GetHandItemId(playerid, 0) != -1 || Player_GetHandItemId(playerid, 1) != -1) {
 								continue;
 							}

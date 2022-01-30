@@ -74,7 +74,7 @@ public IWhisk_OnStatsRetrieving(id, Task:t) {
 }
 
 hook Item_OnStatsRetrieved(id, Task:t) {
-	if(Item_GetAbility(id) == iAbilityWhisk) {
+	if(task_await(Item_GetAbility(id)) == iAbilityWhisk) {
 		new query[128];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT * FROM item_whisk WHERE id = %d LIMIT 1", id);
 		mysql_pquery(MySQL_Connection(), query, "IWhisk_OnStatsRetrieving", "ii", id, _:t);
@@ -84,7 +84,7 @@ hook Item_OnStatsRetrieved(id, Task:t) {
 }
 
 hook Item_OnModelGetAttempt(id, &model) {
-	if(Item_GetAbility(id) == iAbilityWhisk) {
+	if(task_await(Item_GetAbility(id)) == iAbilityWhisk) {
 		model = IWhisk_GetModel();
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
@@ -92,9 +92,10 @@ hook Item_OnModelGetAttempt(id, &model) {
 }
 
 hook Item_OnNameGetAttempt(id, name[], size) {
-	if(Item_GetAbility(id) == iAbilityWhisk) {
+	if(task_await(Item_GetAbility(id)) == iAbilityWhisk) {
 		name[0] = EOS;
 		strcat(name, "Whisk", size);
+		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;
 }

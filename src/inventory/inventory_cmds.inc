@@ -106,7 +106,7 @@ Dialog:InventoryDialog(playerid, response, listitem, inputtext[]) {
 		} else {
 			new id = Player_GetHandItemId(playerid, listitem - size);
 			if(id != -1) {
-				if(Item_GetOccupiedSpace(id) > 1) {
+				if(task_await(Item_GetOccupiedSpace(id)) > 1) {
 					Player_Msg(playerid, COLOR_YELLOW, "Day la loai vat pham khong the bo vao Inventory, hay mang no hoac vut no xuong dat (nhan N khi cam tren tay).");
 				} else {
 					Inventory_AddItem(playerid, id);

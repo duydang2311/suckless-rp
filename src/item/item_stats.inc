@@ -4,6 +4,7 @@
 
 #define item_stats_included
 
+const ITEM_NAME_LENGTH = 32;
 const Float:MAX_ITEM_RELIABILITY = 1.0;
 
 enum _:ItemAbility {
@@ -169,22 +170,22 @@ public Item_OnAbilityGot(Task:t) {
 	return 1;
 }
 
-forward Item_OnCreated(item_id, ability, Float:reliability, occupied_space);
-public Item_OnCreated(item_id, ability, Float:reliability, occupied_space) {
-	new stats[ItemStats];
-	stats[iAbility] = ability;
-	stats[iReliability] = reliability;
-	stats[iOccupiedSpace] = occupied_space;
-	if(!map_valid(m_itemStats)) {
-		m_itemStats = map_new();
-	}
-	map_set_arr(m_itemStats, item_id, stats);
-	return 1;
-}
+// forward Item_OnCreated(item_id, ability, Float:reliability, occupied_space);
+// public Item_OnCreated(item_id, ability, Float:reliability, occupied_space) {
+// 	new stats[ItemStats];
+// 	stats[iAbility] = ability;
+// 	stats[iReliability] = reliability;
+// 	stats[iOccupiedSpace] = occupied_space;
+// 	if(!map_valid(m_itemStats)) {
+// 		m_itemStats = map_new();
+// 	}
+// 	map_set_arr(m_itemStats, item_id, stats);
+// 	return 1;
+// }
 
 forward Item_OnStatsRetrieving(id, ability, Float:reliability, occupied_space, Task:t);
 public Item_OnStatsRetrieving(id, ability, Float:reliability, occupied_space, Task:t) {
-	Item_OnCreated(id, ability, reliability, occupied_space);
+	// Item_OnCreated(id, ability, reliability, occupied_space);
 	CallLocalFunction("Item_OnStatsRetrieved", "ii", id, _:t);
 	return 1;
 }

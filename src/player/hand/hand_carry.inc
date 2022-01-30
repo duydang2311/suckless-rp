@@ -88,7 +88,8 @@ public Player_CarryItem(playerid, id, slot) {
 		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_hand_carry(id, item_id) VALUES (%d, %d) ON DUPLICATE KEY UPDATE item_id = VALUES(item_id)", Player_GetId(playerid), id);
 		mysql_pquery(MySQL_Connection(), query);
 	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM item_carry_attach WHERE ability = %d LIMIT 1", Item_GetAbility(id));
+	task_unblock(1);
+	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "SELECT * FROM item_carry_attach WHERE ability = %d LIMIT 1", task_await(Item_GetAbility(id)));
 	return 1;
 }
 

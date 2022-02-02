@@ -67,11 +67,26 @@ stock Item_Delete(id) {
 	return 1;
 }
 
-stock Item_GetName(item_id, name[], size = sizeof(name)) {
-	if(Item_Has(item_id)) {
-		CallLocalFunction("Item_OnNameGetAttempt", "iii", item_id, ref(name), size);
+stock Task:Item_GetName(item_id) {
+	new
+		Task:t = task_new(),
+		Task:hasTask,
+		Task:abilityTask
+	;
+	hasTask = Item_Has(item_id);
+	abilityTask = Item_GetAbility(item_id);
+	task_unblock(t);
+	task_keep(hasTask);
+	task_keep(abilityTask);
+	await task_all(hasTask, abilityTask);
+	if(task_get_result(hasTask)) {
+		CallLocalFunction(pawn_nameof(Item_OnNameGet), "ii", task_get_result(abilityTask), _:t);
+	} else {
+		task_set_result_str(t, "");
 	}
-	return 1;
+	task_delete(hasTask);
+	task_delete(abilityTask);
+	return Task:INVALID_TASK;
 }
 
 stock Item_GetModel(id) {

@@ -11,13 +11,13 @@ enum _:ItemGunStats {
 
 static Map:m_gunStats;
 
-stock Weapon:IGun_GetWeapon(item_id) {
-	if(map_valid(m_gunStats) && map_has_key(m_gunStats, item_id)) {
-		new stats[ItemGunStats];
-		map_get_arr(m_gunStats, item_id, stats);
-		return stats[iGunWeapon];
-	}
-	return Weapon:-1;
+stock Task:IGun_GetWeapon(item_id) {
+	new
+		Task:t = task_new(),
+		query[128];
+	mysql_format(MySQL_Connection(), query, sizeof query, "select weapon from item_gun where id = %d limit 1", item_id);
+	mysql_pquery(MySQL_Connection(), query, "IGun_OnWeaponGot", "i", _:t);
+	return t;
 }
 
 stock Task:IGun_Create(Weapon:weapon, Float:damage, stock_ammo = 0, Float:reliability = 1.0, occupied_space = 1) {
@@ -49,21 +49,35 @@ stock Task:IGun_Create(Weapon:weapon, Float:damage, stock_ammo = 0, Float:reliab
 	return t;
 }
 
-stock IGun_GetName(item_id, name[], size = sizeof(name)) {
-	new Weapon:weapon = IGun_GetWeapon(item_id);
-	if(weapon == Weapon:-1) {
-		return 0;
+stock Task:IGun_GetModel(item_id) {
+	new
+		Task:t = task_new(),
+		query[128];
+	mysql_format(MySQL_Connection(), query, sizeof query, "select weapon from item_gun where id = %d limit 1", item_id);
+	mysql_pquery(MySQL_Connection(), query, "IGun_OnModelGot", "i", _:t);
+	return t;
+}
+
+forward IGun_OnWeaponGot(Task:task);
+public IGun_OnWeaponGot(Task:task) {
+	new weapon = -1;
+	if(cache_num_rows()) {
+		cache_get_value_name_int(0, "weapon", weapon);
 	}
-	Weapon_GetName(weapon, name, size);
+	task_set_result(task, weapon);
 	return 1;
 }
 
-stock IGun_GetModel(item_id) {
-	new Weapon:weapon = IGun_GetWeapon(item_id);
-	if(weapon == Weapon:-1) {
-		return 0;
+forward IGun_OnModelGot(Task:task);
+public IGun_OnModelGot(Task:task) {
+	if(cache_num_rows()) {
+		new weapon;
+		cache_get_value_name_int(0, "weapon", weapon);
+		task_set_result(task, Weapon_GetModel(Weapon:weapon));
+		return 1;
 	}
-	return Weapon_GetModel(weapon);
+	task_set_result(task, 0);
+	return 1;
 }
 
 forward IGun_OnDeleted(id);
@@ -100,10 +114,11 @@ public IGun_OnPlayerEquipped(playerid, bool:hand_leftright, item_id) {
 forward IGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id);
 public IGun_OnPlayerUnequipped(playerid, bool:hand_leftright, item_id) {
 	if(hand_leftright) {
-		new Weapon:weapon = IGun_GetWeapon(item_id); // this function already checks for map valid
-		if(weapon != Weapon:-1) {
+		task_unblock(1);
+		new weapon = await IGun_GetWeapon(item_id);
+		if(weapon != 1) {
 			new
-				ammo = Weapon_GetAmmo(playerid, weapon),
+				ammo = Weapon_GetAmmo(playerid, Weapon:weapon),
 				query[128];
 			mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE item_gun SET ammo = %d WHERE id = %d LIMIT 1", ammo, item_id);
 			mysql_pquery(MySQL_Connection(), query);
@@ -184,9 +199,15 @@ hook Item_OnModelGetAttempt(id, &model) {
 	return 1;
 }
 
-hook Item_OnNameGetAttempt(id, name[], size) {
-	if(task_await(Item_GetAbility(id)) == iAbilityGun) {
-		IGun_GetName(id, name, size);
+hook Item_OnNameGet(id, ability, Task:task) {
+	if(ability == iAbilityGun) {
+		task_unblock(Y_HOOKS_BREAK_RETURN_1);
+		new weapon = await IGun_GetWeapon(id);
+		new name[WEAPON_NAME_LENGTH] = "";
+		if(weapon != 1) {
+			Weapon_GetName(Weapon:weapon, name);
+		}
+		task_set_result_str(task, name);
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

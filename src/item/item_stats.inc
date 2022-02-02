@@ -67,20 +67,20 @@ stock Item_Delete(id) {
 	return 1;
 }
 
-stock Task:Item_GetName(item_id) {
+stock Task:Item_GetName(id) {
 	new
 		Task:t = task_new(),
 		Task:hasTask,
 		Task:abilityTask
 	;
-	hasTask = Item_Has(item_id);
-	abilityTask = Item_GetAbility(item_id);
+	hasTask = Item_Has(id);
+	abilityTask = Item_GetAbility(id);
 	task_unblock(t);
 	task_keep(hasTask);
 	task_keep(abilityTask);
 	await task_all(hasTask, abilityTask);
 	if(task_get_result(hasTask)) {
-		CallLocalFunction(pawn_nameof(Item_OnNameGet), "ii", task_get_result(abilityTask), _:t);
+		CallLocalFunction(pawn_nameof(Item_OnNameGet), "iii", id, task_get_result(abilityTask), _:t);
 	} else {
 		task_set_result_str(t, "");
 	}

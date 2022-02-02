@@ -161,10 +161,9 @@ hook Item_OnModelGetAttempt(id, &model) {
 	return 1;
 }
 
-hook Item_OnNameGetAttempt(id, name[], size) {
-	if(task_await(Item_GetAbility(id)) == iAbilityBackpack) {
-		name[0] = EOS;
-		strcat(name, "Backpack", size);
+hook Item_OnNameGet(id, ability, Task:task) {
+	if(ability == iAbilityBackpack) {
+		task_set_result_str(task, "Backpack");
 		return Y_HOOKS_BREAK_RETURN_1;
 	}
 	return 1;

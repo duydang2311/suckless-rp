@@ -57,9 +57,9 @@ DEFINE_HOOK_REPLACEMENT__(Destination, Dest);
 
 #include <mysql>
 #include <vehicle>
+#include <weapon>
 #include <item>
 #include <inventory>
-#include <weapon>
 #include <street>
 #include <player>
 #include <admin>

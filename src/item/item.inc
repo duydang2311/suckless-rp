@@ -24,6 +24,8 @@
 
 #include <mysql>
 
+#include "./item.h.inc"
+
 #include "./item_stats.inc"
 #include "./item_group.inc"
 

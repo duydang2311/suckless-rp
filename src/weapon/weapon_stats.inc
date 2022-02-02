@@ -4,6 +4,8 @@
 
 #define weapon_stats_included
 
+const WEAPON_NAME_LENGTH = 32;
+
 enum Weapon {
 	BrassKnuckle,
 	GolfClub,

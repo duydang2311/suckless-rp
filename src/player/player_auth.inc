@@ -29,7 +29,7 @@ public Player_OnAuthRetrieving(playerid) {
 		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Dang nhap khong thanh cong, xin hay thu lai.");
 		GetPlayerName(playerid, name);
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(*) FROM player_auth WHERE name = '%e' LIMIT 1", name);
-		mysql_pquery(MySQL_Connection(), query, "Player_OnAuthenticated", "i", playerid);
+		mysql_pquery(MySQL_Connection(), query, "Player_OnAuthenticated", "di", playerid);
 	}
 	return 1;
 }
@@ -46,6 +46,22 @@ public Player_OnAuthenticated(playerid) {
 	} else {
 		Dialog_Show(playerid, Auth_RegisterDialog, DIALOG_STYLE_PASSWORD, "Player | Register", sprintf("Tai khoan '%s' chua duoc dang ky.\n> Nhap mat khau de tien hanh dang ky.", name), "Dang ky", "<<");
 	}
+	return 1;
+}
+
+forward PlayerAuth_OnPasswordHashed(Task:t);
+public PlayerAuth_OnPasswordHashed(Task:t) {
+	new hash[BCRYPT_HASH_LENGTH];
+	bcrypt_get_hash(hash);
+	task_set_result_arr(t, hash);
+	return 1;
+}
+
+forward PlayerAuth_OnPasswordInserted(playerid, name[]);
+public PlayerAuth_OnPasswordInserted(playerid, name[]) {
+	new query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(*) FROM player_auth WHERE name = '%e'", name);
+	mysql_pquery(MySQL_Connection(), query, "Player_OnAuthenticated", "i", playerid);
 	return 1;
 }
 
@@ -144,18 +160,20 @@ Dialog:Auth_RegisterDialog(playerid, response, listitem, inputtext[]) {
 			return 1;
 		}
 
-		inline const Hashed(string:hash[]) {
-			new name[MAX_PLAYER_NAME + 1];
-			GetPlayerName(playerid, name);
+		new 
+			name[MAX_PLAYER_NAME + 1],
+			query[128],
+			Task:t = task_new();
 
-			inline const Inserted() {
-				new query[128];
-				mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(*) FROM player_auth WHERE name = '%e'", name);
-				mysql_pquery(MySQL_Connection(), query, "Player_OnAuthenticated", "i", playerid);
-			}
-			MySQL_PQueryInline(MySQL_Connection(), using inline Inserted, "INSERT INTO player_auth (name, hash) VALUES ('%e', '%e')", name, hash);
-		}
-		BCrypt_HashInline(inputtext, 12, using inline Hashed);
+		GetPlayerName(playerid, name);
+		Player_Msg(playerid, COLOR_FADE2, "Vui long doi trong giay lat, he thong dang ma hoa mat khau cua ban.");
+		bcrypt_hash(inputtext, 12, "PlayerAuth_OnPasswordHashed", "d", _:t);
+		task_wait(t);
+		
+		new hash[BCRYPT_HASH_LENGTH];
+		task_get_result_str(t, hash, BCRYPT_HASH_LENGTH);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_auth (name, hash) VALUES ('%e', '%e')", name, hash);
+		mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnPasswordInserted", "is", playerid, name);
 	} else {
 		Player_RequestAuthName(playerid);
 	}

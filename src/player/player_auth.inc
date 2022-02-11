@@ -49,11 +49,16 @@ public Player_OnAuthenticated(playerid) {
 	return 1;
 }
 
-forward PlayerAuth_OnPasswordHashed(Task:t);
-public PlayerAuth_OnPasswordHashed(Task:t) {
-	new hash[BCRYPT_HASH_LENGTH];
+forward PlayerAuth_OnPasswordHashed(playerid);
+public PlayerAuth_OnPasswordHashed(playerid) {
+	new 
+		hash[BCRYPT_HASH_LENGTH], name[MAX_PLAYER_NAME + 1],
+		query[128];
+
 	bcrypt_get_hash(hash);
-	task_set_result_arr(t, hash);
+	GetPlayerName(playerid, name);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_auth (name, hash) VALUES ('%e', '%e')", name, hash);
+	mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnPasswordInserted", "is", playerid, name);
 	return 1;
 }
 
@@ -160,20 +165,8 @@ Dialog:Auth_RegisterDialog(playerid, response, listitem, inputtext[]) {
 			return 1;
 		}
 
-		new 
-			name[MAX_PLAYER_NAME + 1],
-			query[128],
-			Task:t = task_new();
-
-		GetPlayerName(playerid, name);
 		Player_Msg(playerid, COLOR_FADE2, "Vui long doi trong giay lat, he thong dang ma hoa mat khau cua ban.");
-		bcrypt_hash(inputtext, 12, "PlayerAuth_OnPasswordHashed", "d", _:t);
-		task_wait(t);
-		
-		new hash[BCRYPT_HASH_LENGTH];
-		task_get_result_str(t, hash, BCRYPT_HASH_LENGTH);
-		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_auth (name, hash) VALUES ('%e', '%e')", name, hash);
-		mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnPasswordInserted", "is", playerid, name);
+		bcrypt_hash(inputtext, 12, "PlayerAuth_OnPasswordHashed", "d", playerid);
 	} else {
 		Player_RequestAuthName(playerid);
 	}

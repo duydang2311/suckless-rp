@@ -97,10 +97,11 @@ forward Faction_OnCreated(Task:t, legal);
 public Faction_OnCreated(Task:t, legal) {
 	if(cache_affected_rows()) {
 		new fac[FactionStats];
+		new insert_id = cache_insert_id();
 		fac[facName][0] = EOS;
 		fac[facType] = bool:legal;
 		map_set_arr(m_factionStats, insert_id, fac);
-		task_set_result(t, cache_insert_id());
+		task_set_result(t, insert_id);
 		return 1;
 	}
 	

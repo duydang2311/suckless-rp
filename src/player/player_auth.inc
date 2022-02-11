@@ -30,7 +30,7 @@ public Player_OnAuthRetrieving(playerid) {
 		GetPlayerName(playerid, name);
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(*) FROM player_auth WHERE name = '%e' LIMIT 1", name);
 		mysql_pquery(MySQL_Connection(), query, "Player_OnAuthenticated", "i", playerid);
-	}f
+	}
 	return 1;
 }
 

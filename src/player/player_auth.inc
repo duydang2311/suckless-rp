@@ -49,6 +49,27 @@ public Player_OnAuthenticated(playerid) {
 	return 1;
 }
 
+forward Player_OnPasswordHashed(playerid);
+public Player_OnPasswordHashed(playerid) {
+	new 
+		hash[BCRYPT_HASH_LENGTH], name[MAX_PLAYER_NAME + 1],
+		query[128];
+
+	bcrypt_get_hash(hash);
+	GetPlayerName(playerid, name);
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_auth (name, hash) VALUES ('%e', '%e')", name, hash);
+	mysql_pquery(MySQL_Connection(), query, "Player_OnAuthRegistered", "is", playerid, name);
+	return 1;
+}
+
+forward Player_OnAuthRegistered(playerid, name[]);
+public Player_OnAuthRegistered(playerid, name[]) {
+	new query[128];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(*) FROM player_auth WHERE name = '%e'", name);
+	mysql_pquery(MySQL_Connection(), query, "Player_OnAuthenticated", "i", playerid);
+	return 1;
+}
+
 forward Player_OnHashRetrieving(playerid, const raw[]);
 public Player_OnHashRetrieving(playerid, const raw[]) {
 	if(cache_num_rows()) {
@@ -144,18 +165,8 @@ Dialog:Auth_RegisterDialog(playerid, response, listitem, inputtext[]) {
 			return 1;
 		}
 
-		inline const Hashed(string:hash[]) {
-			new name[MAX_PLAYER_NAME + 1];
-			GetPlayerName(playerid, name);
-
-			inline const Inserted() {
-				new query[128];
-				mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(*) FROM player_auth WHERE name = '%e'", name);
-				mysql_pquery(MySQL_Connection(), query, "Player_OnAuthenticated", "i", playerid);
-			}
-			MySQL_PQueryInline(MySQL_Connection(), using inline Inserted, "INSERT INTO player_auth (name, hash) VALUES ('%e', '%e')", name, hash);
-		}
-		BCrypt_HashInline(inputtext, 12, using inline Hashed);
+		Player_Msg(playerid, COLOR_FADE2, "Vui long doi trong giay lat, he thong dang ma hoa mat khau cua ban.");
+		bcrypt_hash(inputtext, 12, "Player_OnPasswordHashed", "d", playerid);
 	} else {
 		Player_RequestAuthName(playerid);
 	}

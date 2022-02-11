@@ -43,8 +43,8 @@ public Player_OnStatsRetrieving(playerid) {
 	return 1;
 }
 
-forward PlayerStats_OnBirthdayInserted(playerid);
-public PlayerStats_OnBirthdayInserted(playerid) {
+forward Player_OnStatsSetup(playerid);
+public Player_OnStatsSetup(playerid) {
 	new name[MAX_PLAYER_NAME + 1];
 	GetPlayerName(playerid, name);
 	printf("INFO: Player %s (SQL ID %d) has completed their stats setup (%d affected rows).", name, Player_GetId(playerid), cache_affected_rows());
@@ -148,7 +148,7 @@ Dialog:StatsSetupBirthday(playerid, response, listitem, inputtext[]) {
 
 		new query[256];
 		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_stats (id, skin, birthday, gender) VALUES (%d, %d, '%e', %d)", Player_GetId(playerid), stats[pSkin], time, stats[pGender]);
-		mysql_pquery(MySQL_Connection(), query, "PlayerStats_OnBirthdayInserted", "d", playerid);
+		mysql_pquery(MySQL_Connection(), query, "Player_OnStatsSetup", "d", playerid);
 	} else {
 		if(map_valid(m_playerStats) && map_has_key(m_playerStats, playerid)) {
 			map_remove(m_playerStats, playerid);

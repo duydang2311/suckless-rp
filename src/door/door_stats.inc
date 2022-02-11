@@ -30,7 +30,7 @@ stock Task:Door_Create(DoorType:type = DOOR_TYPE_NONE) {
 
 	new query[41 + 11 - 2 + 1];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO door_stats (type) VALUES (%d)", _:type);
-	mysql_pquery(MySQL_Connection(), query, "DoorStats_OnCreated", "dd", _:t, _:type);
+	mysql_pquery(MySQL_Connection(), query, "Door_OnCreated", "dd", _:t, _:type);
 	return t;
 }
 
@@ -145,8 +145,8 @@ stock Door_GetTypeName(DoorType:type, name[], size = sizeof(name)) {
 	return 1;
 }
 
-forward DoorStats_OnCreated(Task:t, type);
-public DoorStats_OnCreated(Task:t, type) {
+forward Door_OnCreated(Task:t, type);
+public Door_OnCreated(Task:t, type) {
 	if(cache_affected_rows()) {
 		new
 			insert_id = cache_insert_id(),

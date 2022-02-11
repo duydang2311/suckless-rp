@@ -28,20 +28,9 @@ stock Task:Door_Create(DoorType:type = DOOR_TYPE_NONE) {
 	new Task:t = task_new();
 	task_detach();
 
-	inline const QueryFinished() {
-		if(!cache_affected_rows()) {
-			task_set_result(t, -1);
-		} else {
-			new
-				insert_id = cache_insert_id(),
-				stats[doorStats] = {DoorType:DOOR_TYPE_NONE, "", false, false, false};
-			stats[doorType] = type;
-			map_set_arr(m_doorStats, insert_id, stats);
-			task_set_result(t, insert_id);
-		}
-	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO door_stats (type) VALUES (%d)", _:type);
-	task_set_result_ms(t, -1, 2000);
+	new query[41 + 11 - 2 + 1];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO door_stats (type) VALUES (%d)", _:type);
+	mysql_pquery(MySQL_Connection(), query, "Door_OnCreated", "dd", _:t, _:type);
 	return t;
 }
 
@@ -153,6 +142,22 @@ stock Door_GetTypeName(DoorType:type, name[], size = sizeof(name)) {
 			format(name, size, "Business");
 		}
 	}
+	return 1;
+}
+
+forward Door_OnCreated(Task:t, type);
+public Door_OnCreated(Task:t, type) {
+	if(cache_affected_rows()) {
+		new
+			insert_id = cache_insert_id(),
+			stats[doorStats] = {DoorType:DOOR_TYPE_NONE, "", false, false, false};
+		stats[doorType] = DoorType:type;
+		map_set_arr(m_doorStats, insert_id, stats);
+		task_set_result(t, insert_id);
+		return 1;
+	} 
+
+	task_set_result(t, -1);
 	return 1;
 }
 

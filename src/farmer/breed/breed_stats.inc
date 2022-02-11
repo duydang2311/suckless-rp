@@ -95,48 +95,15 @@ stock Breed_GetAnimalSpeciesModel(species) {
 
 stock Task:Breed_CreateAnimal(species, breeder_id = -1) {
 	new Task:t = task_new();
-	task_detach();
 
-	inline const QueryFinished() {
-		if(cache_affected_rows()) {
-			new
-				name[48],
-				id = cache_insert_id();
-			Breed_GetAnimalSpeciesName(species, name);
-			format(name, sizeof(name), "%s_%d", name, id);
-			new npcid = FCNPC_Create(name);
-			if(npcid == INVALID_PLAYER_ID) {
-				task_set_result(t, -1);
-			} else {
-				new stats[BreedAnimalStats];
-				stats[anmlNPCId] = npcid;
-				stats[anmlBreederId] = breeder_id;
-				stats[anmlSpecies] = species;
-				stats[anmlMaturity] = 0.0;
-				stats[anmlHunger] = 0.3;
-				stats[anmlThirst] = 0.3;
-				if(!map_valid(m_animalStats)) {
-					m_animalStats = map_new();
-				}
-				map_set_arr(m_animalStats, id, stats);
-				if(!map_valid(m_npcAnimalId)) {
-					m_npcAnimalId = map_new();
-				}
-				map_set(m_npcAnimalId, npcid, id);
-				SetPreciseTimer("Breed_OnCreated", 0, false, "i", id);
-				SetPreciseTimer("Breed_Spawn", 0, false, "i", id);
-				task_set_result(t, id);
-			}
-		} else {
-			task_set_result(t, -1);
-		}
-	}
+	new query[60 + 11 + 11 - 4 + 1];
 	if(breeder_id == -1) {
-		MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO breed_stats(species) VALUES (%d)", species);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO breed_stats(species) VALUES (%d)", species);
 	} else {
-		MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO breed_stats(species, breeder_id) VALUES (%d, %d)", species, breeder_id);
+		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO breed_stats(species, breeder_id) VALUES (%d, %d)", species, breeder_id);
 	}
-	task_set_result_ms(t, -1, 2000);
+
+	mysql_pquery(MySQL_Connection(), query, "Breed_OnAnimalCreated", "ddd", _:t, species, breeder_id);
 	return t;
 }
 
@@ -328,6 +295,49 @@ public Breed_InitAnimal(id) {
 			Breed_Move(id);
 		}
 	}
+	return 1;
+}
+
+forward Breed_OnAnimalCreated(Task:t, species, breeder_id);
+public Breed_OnAnimalCreated(Task:t, species, breeder_id) {
+	if(cache_affected_rows()) {
+		new
+			name[48],
+			id = cache_insert_id();
+
+		Breed_GetAnimalSpeciesName(species, name);
+		format(name, sizeof(name), "%s_%d", name, id);
+		
+		new npcid = FCNPC_Create(name);
+		if(npcid == INVALID_PLAYER_ID) {
+			task_set_result(t, -1);
+		} else {
+			new stats[BreedAnimalStats];
+			stats[anmlNPCId] = npcid;
+			stats[anmlBreederId] = breeder_id;
+			stats[anmlSpecies] = species;
+			stats[anmlMaturity] = 0.0;
+			stats[anmlHunger] = 0.3;
+			stats[anmlThirst] = 0.3;
+
+			if(!map_valid(m_animalStats)) {
+				m_animalStats = map_new();
+			}
+
+			map_set_arr(m_animalStats, id, stats);
+			if(!map_valid(m_npcAnimalId)) {
+				m_npcAnimalId = map_new();
+			}
+
+			map_set(m_npcAnimalId, npcid, id);
+			SetPreciseTimer("Breed_OnCreated", 0, false, "i", id);
+			SetPreciseTimer("Breed_Spawn", 0, false, "i", id);
+			task_set_result(t, id);
+			return 1;
+		}
+	}
+
+	task_set_result(t, -1);
 	return 1;
 }
 

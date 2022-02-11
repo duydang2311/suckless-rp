@@ -13,19 +13,10 @@ static Map:m_houseStats;
 
 stock Task:House_Create() {
 	new Task:t = task_new();
-	task_detach();
 
-	inline const QueryFinished() {
-		new id = -1;
-		if(cache_affected_rows()) {
-			new stats[houseStats] = {-1, -1};
-			id = cache_insert_id();
-			map_set_arr(m_houseStats, id, stats);
-		}
-		task_set_result(t, id);
-	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO house_stats VALUES ()");
-	task_set_result_ms(t, -1, 2000);
+	new query[33 + 1];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO house_stats VALUES ()");
+	mysql_pquery(MySQL_Connection(), query, "HouseStats_OnCreated", "d", _:t);
 	return t;
 }
 
@@ -60,6 +51,22 @@ stock House_Delete(id) {
 	mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM house_stats WHERE id = %d LIMIT 1", id);
 	mysql_pquery(MySQL_Connection(), query);
 	// CallLocalFunction("House_OnDeleted", "i", id); // if needed in future
+	return 1;
+}
+
+forward HouseStats_OnCreated(Task:t);
+public HouseStats_OnCreated(Task:t) {
+	if(cache_affected_rows()) {
+		new 
+			stats[houseStats] = {-1, -1},
+			id = cache_insert_id();
+			
+		map_set_arr(m_houseStats, id, stats);
+		task_set_result(t, id);
+		return 1;
+	}
+	
+	task_set_result(t, -1);
 	return 1;
 }
 

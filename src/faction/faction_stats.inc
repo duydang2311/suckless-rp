@@ -14,19 +14,9 @@ static Map:m_factionStats;
 stock Task:Faction_Create(bool:legal) {
 	new Task:t = task_new();
 
-	inline const QueryFinished() {
-		new insert_id = -1;
-		if(cache_affected_rows()) {
-			new fac[FactionStats];
-			fac[facName][0] = EOS;
-			fac[facType] = legal;
-			insert_id = cache_insert_id();
-			map_set_arr(m_factionStats, insert_id, fac);
-		}
-		task_set_result(t, insert_id);
-	}
-	MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO faction_stats(type) VALUES (%d)", _:legal);
-	task_set_result_ms(t, -1, 2000);
+	new query[43 + 11 - 2 + 1];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO faction_stats(type) VALUES (%d)", _:legal);
+	mysql_pquery(MySQL_Connection(), query, "Faction_OnCreated", "dd", _:t, _:legal);
 	return t;
 }
 
@@ -101,6 +91,21 @@ stock Iter:Faction_GetIterByKey(key) {
 
 stock Faction_Count() {
 	return map_size(m_factionStats);
+}
+
+forward Faction_OnCreated(Task:t, legal);
+public Faction_OnCreated(Task:t, legal) {
+	if(cache_affected_rows()) {
+		new fac[FactionStats];
+		fac[facName][0] = EOS;
+		fac[facType] = bool:legal;
+		map_set_arr(m_factionStats, insert_id, fac);
+		task_set_result(t, cache_insert_id());
+		return 1;
+	}
+	
+	task_set_result(t, -1);
+	return 1;
 }
 
 #include <YSI_Coding\y_hooks>

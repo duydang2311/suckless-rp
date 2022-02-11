@@ -29,8 +29,8 @@ public Player_OnAuthRetrieving(playerid) {
 		Player_Msg(playerid, COLOR_LIGHTYELLOW, "Dang nhap khong thanh cong, xin hay thu lai.");
 		GetPlayerName(playerid, name);
 		mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(*) FROM player_auth WHERE name = '%e' LIMIT 1", name);
-		mysql_pquery(MySQL_Connection(), query, "Player_OnAuthenticated", "di", playerid);
-	}
+		mysql_pquery(MySQL_Connection(), query, "Player_OnAuthenticated", "i", playerid);
+	}f
 	return 1;
 }
 
@@ -49,8 +49,8 @@ public Player_OnAuthenticated(playerid) {
 	return 1;
 }
 
-forward PlayerAuth_OnPasswordHashed(playerid);
-public PlayerAuth_OnPasswordHashed(playerid) {
+forward Player_OnPasswordHashed(playerid);
+public Player_OnPasswordHashed(playerid) {
 	new 
 		hash[BCRYPT_HASH_LENGTH], name[MAX_PLAYER_NAME + 1],
 		query[128];
@@ -58,12 +58,12 @@ public PlayerAuth_OnPasswordHashed(playerid) {
 	bcrypt_get_hash(hash);
 	GetPlayerName(playerid, name);
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_auth (name, hash) VALUES ('%e', '%e')", name, hash);
-	mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnPasswordInserted", "is", playerid, name);
+	mysql_pquery(MySQL_Connection(), query, "Player_OnAuthRegistered", "is", playerid, name);
 	return 1;
 }
 
-forward PlayerAuth_OnPasswordInserted(playerid, name[]);
-public PlayerAuth_OnPasswordInserted(playerid, name[]) {
+forward Player_OnAuthRegistered(playerid, name[]);
+public Player_OnAuthRegistered(playerid, name[]) {
 	new query[128];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(*) FROM player_auth WHERE name = '%e'", name);
 	mysql_pquery(MySQL_Connection(), query, "Player_OnAuthenticated", "i", playerid);
@@ -166,7 +166,7 @@ Dialog:Auth_RegisterDialog(playerid, response, listitem, inputtext[]) {
 		}
 
 		Player_Msg(playerid, COLOR_FADE2, "Vui long doi trong giay lat, he thong dang ma hoa mat khau cua ban.");
-		bcrypt_hash(inputtext, 12, "PlayerAuth_OnPasswordHashed", "d", playerid);
+		bcrypt_hash(inputtext, 12, "Player_OnPasswordHashed", "d", playerid);
 	} else {
 		Player_RequestAuthName(playerid);
 	}

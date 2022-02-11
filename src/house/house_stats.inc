@@ -16,7 +16,7 @@ stock Task:House_Create() {
 
 	new query[33 + 1];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO house_stats VALUES ()");
-	mysql_pquery(MySQL_Connection(), query, "HouseStats_OnCreated", "d", _:t);
+	mysql_pquery(MySQL_Connection(), query, "House_OnCreated", "d", _:t);
 	return t;
 }
 
@@ -54,8 +54,8 @@ stock House_Delete(id) {
 	return 1;
 }
 
-forward HouseStats_OnCreated(Task:t);
-public HouseStats_OnCreated(Task:t) {
+forward House_OnCreated(Task:t);
+public House_OnCreated(Task:t) {
 	if(cache_affected_rows()) {
 		new 
 			stats[houseStats] = {-1, -1},

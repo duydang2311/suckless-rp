@@ -43,6 +43,15 @@ public Player_OnStatsRetrieving(playerid) {
 	return 1;
 }
 
+forward PlayerStats_OnBirthdayInserted(playerid);
+public PlayerStats_OnBirthdayInserted(playerid) {
+	new name[MAX_PLAYER_NAME + 1];
+	GetPlayerName(playerid, name);
+	printf("INFO: Player %s (SQL ID %d) has completed their stats setup (%d affected rows).", name, Player_GetId(playerid), cache_affected_rows());
+	CallLocalFunction("Player_OnAuthRetrieved", "i", playerid);
+	return 1;
+}
+
 stock Player_GetStats(playerid, stats[PlayerStats]) {
 	if(map_valid(m_playerStats) && map_has_key(m_playerStats, playerid)) {
 		return map_get_arr_safe(m_playerStats, playerid, stats);
@@ -136,13 +145,10 @@ Dialog:StatsSetupBirthday(playerid, response, listitem, inputtext[]) {
 		map_get_arr(m_playerStats, playerid, stats);
 		TimeParse(time, ISO6801_DATE, stats[pBirthday]);
 		map_set_arr(m_playerStats, playerid, stats);
-		inline const QueryFinished() {
-			new name[MAX_PLAYER_NAME + 1];
-			GetPlayerName(playerid, name);
-			printf("INFO: Player %s (SQL ID %d) has completed their stats setup (%d affected rows).", name, Player_GetId(playerid), cache_affected_rows());
-			CallLocalFunction("Player_OnAuthRetrieved", "i", playerid);
-		}
-		MySQL_PQueryInline(MySQL_Connection(), using inline QueryFinished, "INSERT INTO player_stats (id, skin, birthday, gender) VALUES (%d, %d, '%e', %d)", Player_GetId(playerid), stats[pSkin], time, stats[pGender]);
+
+		new query[256];
+		mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_stats (id, skin, birthday, gender) VALUES (%d, %d, '%e', %d)", Player_GetId(playerid), stats[pSkin], time, stats[pGender]);
+		mysql_pquery(MySQL_Connection(), query, "PlayerStats_OnBirthdayInserted", "d", playerid);
 	} else {
 		if(map_valid(m_playerStats) && map_has_key(m_playerStats, playerid)) {
 			map_remove(m_playerStats, playerid);

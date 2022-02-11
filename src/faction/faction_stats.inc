@@ -16,7 +16,7 @@ stock Task:Faction_Create(bool:legal) {
 
 	new query[43 + 11 - 2 + 1];
 	mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO faction_stats(type) VALUES (%d)", _:legal);
-	mysql_pquery(MySQL_Connection(), query, "FactionStats_OnCreated", "dd", _:t, _:legal);
+	mysql_pquery(MySQL_Connection(), query, "Faction_OnCreated", "dd", _:t, _:legal);
 	return t;
 }
 
@@ -93,8 +93,8 @@ stock Faction_Count() {
 	return map_size(m_factionStats);
 }
 
-forward FactionStats_OnCreated(Task:t, legal);
-public FactionStats_OnCreated(Task:t, legal) {
+forward Faction_OnCreated(Task:t, legal);
+public Faction_OnCreated(Task:t, legal) {
 	if(cache_affected_rows()) {
 		new fac[FactionStats];
 		fac[facName][0] = EOS;

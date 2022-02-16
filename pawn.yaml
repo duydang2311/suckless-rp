@@ -4,92 +4,92 @@ repo: suckless-rp
 entry: src/main.pwn
 output: gamemodes/main.amx
 dependencies:
-- sampctl/samp-stdlib
-- Zeex/samp-plugin-crashdetect:v4.20
-- pawn-lang/YSI-Includes@5.x
-- IllidanS4/PawnPlus:v1.4.0.1
-- pBlueG/SA-MP-MySQL:R41-4
-- dakyskye/pawn-env:1.1.1
-- Awsomedude/easyDialog
-- Open-GTO/zmessage:v3.2.1
-- lassir/bcrypt-samp:v2.2.3
-- Y-LESS/sscanf:2.10.2-r2
-- oscar-broman/strlib
-- southclaws/pawn-chrono:1.1.1
-- bmisiak/samp-precise-timers:v2.0.2
-- samp-incognito/samp-streamer-plugin:v2.9.5
-- Crayder/Skin-Tags
-- katursis/Pawn.CMD:3.3.3
-- Pottus/ColAndreas:1.5.0
-- kristoisberg/samp-td-string-width
+    - sampctl/samp-stdlib
+    - Zeex/samp-plugin-crashdetect:v4.20
+    - pawn-lang/YSI-Includes@5.x
+    - IllidanS4/PawnPlus:v1.4.0.1
+    - pBlueG/SA-MP-MySQL:R41-4
+    - dakyskye/pawn-env:1.1.1
+    - Awsomedude/easyDialog
+    - Open-GTO/zmessage:v3.2.1
+    - Y-LESS/sscanf:2.10.2-r2
+    - oscar-broman/strlib
+    - southclaws/pawn-chrono:1.1.1
+    - bmisiak/samp-precise-timers:v2.0.2
+    - samp-incognito/samp-streamer-plugin:v2.9.5
+    - Crayder/Skin-Tags
+    - katursis/Pawn.CMD:3.3.3
+    - Pottus/ColAndreas:1.5.0
+    - kristoisberg/samp-td-string-width
+    - Sreyas-Sreelal/samp-bcrypt:0.3.4
 local: true
 runtime:
-  version: 0.3.DL-R1
-  mode: server
-  plugins:
-  - FCNPC-DL
-  rcon_password: password
-  port: 7777
-  hostname: Sunday Development
-  maxplayers: 200
-  language: Vietnamese
-  mapname: Los Santos
-  weburl: www.sa-mp.com
-  gamemodetext: sunday-dev
-  announce: true
-  lanmode: false
-  query: true
-  rcon: false
-  logqueries: false
-  sleep: 5
-  maxnpc: 100
-  stream_rate: 1000
-  stream_distance: 200
-  onfoot_rate: 30
-  incar_rate: 30
-  weapon_rate: 30
-  chatlogging: true
-  timestamp: true
-  messageholelimit: 3000
-  messageslimit: 500
-  ackslimit: 3000
-  playertimeout: 10000
-  minconnectiontime: 0
-  lagcompmode: 1
-  connseedtime: 300000
-  db_logging: false
-  db_log_queries: false
-  conncookies: true
-  cookielogging: false
-  output: true
-  extra:
-    useartwork: "1"
+    version: 0.3.DL-R1
+    mode: server
+    plugins:
+        - FCNPC-DL
+    rcon_password: password
+    port: 7777
+    hostname: Sunday Development
+    maxplayers: 200
+    language: Vietnamese
+    mapname: Los Santos
+    weburl: www.sa-mp.com
+    gamemodetext: sunday-dev
+    announce: true
+    lanmode: false
+    query: true
+    rcon: false
+    logqueries: false
+    sleep: 5
+    maxnpc: 100
+    stream_rate: 1000
+    stream_distance: 200
+    onfoot_rate: 30
+    incar_rate: 30
+    weapon_rate: 30
+    chatlogging: true
+    timestamp: true
+    messageholelimit: 3000
+    messageslimit: 500
+    ackslimit: 3000
+    playertimeout: 10000
+    minconnectiontime: 0
+    lagcompmode: 1
+    connseedtime: 300000
+    db_logging: false
+    db_log_queries: false
+    conncookies: true
+    cookielogging: false
+    output: true
+    extra:
+        useartwork: "1"
 build:
-  compiler:
-    version: "3.10.10"
-  name: ""
-  args:
-  - -d3
-  - -;+
-  - -(+
-  - -Z+
-  includes:
-  - src/mysql
-  - src/player
-  - src/admin
-  - src/weapon
-  - src/item
-  - src/inventory
-  - src/door
-  - src/house
-  - src/faction
-  - src/farmer
-  - src/frequency
-  - src/subtitle
-  - src/util
-  - src/vehicle
-  - src/download
-  - src/map
-  - src/street
-  - src/
-  - libraries/
+    name: ""
+    args:
+        - -d3
+        - -;+
+        - -(+
+        - -Z+
+    includes:
+        - src/mysql
+        - src/player
+        - src/admin
+        - src/weapon
+        - src/item
+        - src/inventory
+        - src/door
+        - src/house
+        - src/faction
+        - src/farmer
+        - src/frequency
+        - src/subtitle
+        - src/util
+        - src/vehicle
+        - src/download
+        - src/map
+        - src/street
+        - src/
+        - libraries/
+    compiler:
+        version: 3.10.10

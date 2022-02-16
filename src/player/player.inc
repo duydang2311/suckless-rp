@@ -11,7 +11,7 @@
 #include <YSI_Data\y_iterate>
 #include <PawnPlus>
 #include <sscanf2>
-#include <bcrypt>
+#include <samp_bcrypt>
 #include <strlib>
 #include <easyDialog>
 #include <zmessage>

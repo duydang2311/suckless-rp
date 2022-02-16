@@ -73,12 +73,9 @@ public Player_OnAuthRegistered(playerid, name[]) {
 forward Player_OnHashRetrieving(playerid, const raw[]);
 public Player_OnHashRetrieving(playerid, const raw[]) {
 	if(cache_num_rows()) {
-		new
-			hash[BCRYPT_HASH_LENGTH],
-			raw_avoid_warning[128] = "";
-		strcat(raw_avoid_warning, raw);
+		new hash[BCRYPT_HASH_LENGTH];
 		cache_get_value_name(0, "hash", hash);
-		bcrypt_check(raw_avoid_warning, hash, "Player_OnHashChecking", "i", playerid);
+		bcrypt_verify(playerid, "Player_OnHashVerified", raw, hash);
 	} else {
 		new name[MAX_PLAYER_NAME + 1];
 		GetPlayerName(playerid, name);
@@ -87,9 +84,9 @@ public Player_OnHashRetrieving(playerid, const raw[]) {
 	return 1;
 }
 
-forward Player_OnHashChecking(playerid);
-public Player_OnHashChecking(playerid) {
-	if(bcrypt_is_equal()) {
+forward Player_OnHashVerified(playerid, bool:success);
+public Player_OnHashVerified(playerid, bool:success) {
+	if(success) {
 		Player_Login(playerid);
 	} else {
 		new name[MAX_PLAYER_NAME + 1];
@@ -166,7 +163,7 @@ Dialog:Auth_RegisterDialog(playerid, response, listitem, inputtext[]) {
 		}
 
 		Player_Msg(playerid, COLOR_FADE2, "Vui long doi trong giay lat, he thong dang ma hoa mat khau cua ban.");
-		bcrypt_hash(inputtext, 12, "Player_OnPasswordHashed", "d", playerid);
+		bcrypt_hash(playerid, "Player_OnPasswordHashed", inputtext, 12);
 	} else {
 		Player_RequestAuthName(playerid);
 	}

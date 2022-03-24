@@ -158,6 +158,11 @@ CMD:adoor(playerid, params[]) {
 		}
 	} else if(!strcmp(option, "houseid", true)) {
 		new string[128];
+		if(!task_await(House_Has(value)) {
+			format(string, sizeof(string), "ERROR: House ID %d khong ton tai - vui long thu lai.", value);
+			Player_Msg(playerid, COLOR_RED, string);
+		}
+
 		if(Door_SetHouseId(id, value)) {
 			format(string, sizeof(string), "INFO: House ID cua Door ID %d da duoc dieu chinh thanh %d.", id, value);
 			Player_Msg(playerid, COLOR_GREEN, string);

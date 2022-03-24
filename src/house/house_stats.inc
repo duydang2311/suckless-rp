@@ -11,6 +11,15 @@ enum houseStats {
 
 static Map:m_houseStats;
 
+stock Task:House_Has(houseid) {
+	new Task:t = task_new();
+
+	new query[100];
+	mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(id) FROM house_stats WHERE id = %d LIMIT 1", houseid);
+	mysql_pquery(MySQL_Connection(), query, "House_OnHas", "d", _:t);
+	return t;
+}
+
 stock Task:House_Create() {
 	new Task:t = task_new();
 
@@ -67,6 +76,20 @@ public House_OnCreated(Task:t) {
 	}
 	
 	task_set_result(t, -1);
+	return 1;
+}
+
+forward House_OnHas(Task:t);
+public House_OnHas(Task:t) {
+	new count;
+	cache_get_value_name_int(0, "COUNT(id)", count);
+
+	if(count > 0) {
+		task_set_result(t, 1);
+		return 1;
+	}
+
+	task_set_result(t, 0);
 	return 1;
 }
 

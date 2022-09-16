@@ -12,6 +12,8 @@ This gamemode was started in early 2021, for a local Vietnamese Role-Play server
 
 We decided to make this public as it is no longer developed and maintained.
 
+[Here](https://imgur.com/a/CCqj4ZW) is few images of this gamemode I still keep.
+
 ## What we've done in this gamemode?
 
 - Player module.

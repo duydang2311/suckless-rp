@@ -4,62 +4,60 @@
 
 [![sampctl](https://github.com/duydang2311/suckless-rp/actions/workflows/sampctl.yml/badge.svg)](https://github.com/duydang2311/suckless-rp/actions/workflows/sampctl.yml)
 
-<!--
-Short description of your library, why it's useful, some examples, pictures or
-videos. Link to your forum release thread too.
+## Information
 
-Remember: You can use "forumfmt" to convert this readme to forum BBCode!
+This gamemode was started in early 2021, for a local Vietnamese Role-Play server but then stopped in late 2021 as I moved to GTA:V.
 
-What the sections below should be used for:
+[@tavenguyen](https://github.com/tavenguyen) joined as a new developer later in 2022 and helped making the features.
 
-`## Installation`: Leave this section un-edited unless you have some specific
-additional installation procedure.
+We decided to make this public as it is no longer developed and maintained.
 
-`## Testing`: Whether your library is tested with a simple `main()` and `print`,
-unit-tested, or demonstrated via prompting the player to connect, you should
-include some basic information for users to try out your code in some way.
+## What we've done in this gamemode?
 
-And finally, maintaining your version number`:
+- Player module.
 
-* Follow [Semantic Versioning](https://semver.org/)
-* When you release a new version, update `VERSION` and `git tag` it
-* Versioning is important for sampctl to use the version control features
+  - Essential data, event handling.
 
-Happy Pawning!
--->
+  - Inventory, hand components.
+  
+  - Permissions.
 
-## Installation
+- Item module.
 
-Simply install to your project:
+  - Gun, melee.
+  
+  - Sim card (integrating into the phone item).
+  
+  - Radio (comes with a frequency management system).
+  
+  - Backpack (using item group for containing items).
+  
+  - Whisk (for the farmer job).
+  
+  - Phone:
+    
+    - Dynamic model. We made one, which is Nokia.
+    
+    - System functionalities that is pre-installed with all types of phone (think of it like OS API).
+    
+    - Registering apps to be featured on the system App Store.
+    
+  - Item adjustable attachment, drop, pick, carry.
+    
+- Job.
+  
+  - Farmer (with moving NPC cows, feeding, loading on car and selling).
+  
+- Door, house modules are ready to use.
 
-```bash
-sampctl package install duydang2311/suckless-rp
-```
+- Faction module is only ready at the core-level, such as faction essential info, rank, division. Your own development is required to build a specific faction, like features for a faction of type police.
 
-Include in your code and begin using the library:
+- Frequency module: a point where radio item connects to and works.
 
-```pawn
-#include <suckless-rp>
-```
+- Other modules: Subtitle UI, Street, Weapon, Commands...
 
-## Usage
+## Notes
 
-<!--
-Write your code documentation or examples here. If your library is documented in
-the source code, direct users there. If not, list your API and describe it well
-in this section. If your library is passive and has no API, simply omit this
-section.
--->
+- The source code of item module introduces a code pattern, which overall aims to simulate the inheritance in OOP (in a non-OOP language like Pawn), because there are so many types of item (in this gamemode, it is called ability, _bad naming honestly_). The pattern is basically a top-level function (for public use by other modules) would make a `CallLocalFunction` and all types of item would listen to that call (use hooks), then modify the `ref` argument if the written condition is met.
 
-## Testing
-
-<!--
-Depending on whether your package is tested via in-game "demo tests" or
-y_testing unit-tests, you should indicate to readers what to expect below here.
--->
-
-To test, simply run the package:
-
-```bash
-sampctl package run
-```
+- All the modules written early, store all the data in memory dynamically (thanks to PawnPlus). Later on, we see this as bad practice. Except for **very** frequently used data, we don't store any at all but just query the database every time we need it, and this is very handy to do thanks to PawnPlus task.

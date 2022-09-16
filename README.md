@@ -61,3 +61,5 @@ We decided to make this public as it is no longer developed and maintained.
 - The source code of item module introduces a code pattern, which overall aims to simulate the inheritance in OOP (in a non-OOP language like Pawn), because there are so many types of item. The pattern is basically a top-level function (for public use by other modules) would make a `CallLocalFunction` and all types of item would listen to that call (use hooks), then modify the `ref` argument if the written condition inside is met. After all of the hooks are executed, the top-level function returns the value of the modified argument as its result.
 
 - All the modules written early, store all the data in memory dynamically (thanks to PawnPlus). Later on, we see this as bad practice. Except for **very** frequently used data, we don't store any at all but just query the database every time we need it, and this is very handy to do thanks to PawnPlus task.
+
+- No .sql file is needed because we create tables on gamemode run. Remember to run the gamemode twice so all the tables are created, due to table referencing another table and script execution order.
